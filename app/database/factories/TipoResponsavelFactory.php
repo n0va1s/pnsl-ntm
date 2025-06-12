@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\TipoResponsavel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,14 +10,11 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TipoResponsavelFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = TipoResponsavel::class;
+
     public function definition(): array
     {
-         return [
+        return [
             'des_responsavel' => $this->faker->randomElement(['Pai', 'Mãe', 'Avô', 'Avó', 'Madrinha', 'Padrinho', 'Outro']),
         ];
     }
