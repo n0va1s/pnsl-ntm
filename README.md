@@ -7,7 +7,7 @@ Não tenhais medo! Essa foi uma frase bastante falada por São João Paulo II e 
 ## Responsáveis
 
 A equipe responsável pelo projeto é composta por:
-Gabriel Carvalho <>
+Gabriel Carvalho <oliveiracgabriel052@gmail.com>
 João Paulo Novais <jp.trabalho@gmail.com>
 Thales <>
 
