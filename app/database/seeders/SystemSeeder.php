@@ -14,7 +14,9 @@ class SystemSeeder extends Seeder
     {
         // Situações da ficha: Pendente, Aprovada e Cancelada
         DB::table('tipo_situacao')->insert([
-            ['des_situacao' => 'Pendente', 'created_at' => now(), 'updated_at' => now()],
+            ['des_situacao' => 'Cadastrada', 'created_at' => now(), 'updated_at' => now()],
+            ['des_situacao' => 'Avaliada', 'created_at' => now(), 'updated_at' => now()],
+            ['des_situacao' => 'Visitada', 'created_at' => now(), 'updated_at' => now()],
             ['des_situacao' => 'Aprovada', 'created_at' => now(), 'updated_at' => now()],
             ['des_situacao' => 'Cancelada', 'created_at' => now(), 'updated_at' => now()],
         ]);

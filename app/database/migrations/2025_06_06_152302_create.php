@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         // Tabela Tipo_Situacao
@@ -48,7 +51,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabela Ficha
+        // Tabela Ficha (agora sem relacionamento direto com participante/trabalhador)
         Schema::create('ficha', function (Blueprint $table) {
             $table->id('idt_ficha');
             $table->foreignId('idt_tipo_responsavel')
@@ -57,6 +60,7 @@ return new class extends Migration
             $table->string('tel_responsavel', 20)->nullable();
             $table->string('nom_candidato', 255);
             $table->string('des_telefone', 20)->nullable();
+            $table->string('des_email', 255)->nullable();
             $table->string('des_endereco', 255)->nullable();
             $table->date('dat_nascimento')->nullable();
             $table->string('des_onde_estuda', 255)->nullable();
@@ -94,22 +98,52 @@ return new class extends Migration
             $table->primary(['idt_ficha', 'idt_restricao']);
         });
 
-        // Tabela Participante
+        // Tabela Pessoa (dados básicos das pessoas) quando ingress
+        Schema::create('pessoa', function (Blueprint $table) {
+            $table->id('idt_pessoa');
+            $table->string('nom_pessoa', 255);
+            $table->string('des_telefone', 20)->nullable();
+            $table->string('des_endereco', 255)->nullable();
+            $table->string('des_email', 255)->nullable();
+            $table->boolean('ind_toca_violao')->default(false);
+            $table->date('dat_nascimento')->nullable();
+            $table->string('tam_camiseta', 2)->nullable();
+            $table->boolean('ind_toca_instrumento')->default(false);
+            $table->timestamps();
+        });
+
+        // Tabela Pessoa_Saude (nova - restrições de saúde das pessoas)
+        Schema::create('pessoa_saude', function (Blueprint $table) {
+            $table->foreignId('idt_pessoa')
+                  ->constrained('pessoa', 'idt_pessoa')
+                  ->onDelete('cascade');
+            $table->foreignId('idt_restricao')
+                  ->constrained('tipo_restricao', 'idt_restricao');
+            $table->text('txt_complemento')->nullable();
+            $table->timestamps();
+            
+            $table->primary(['idt_pessoa', 'idt_restricao']);
+        });
+
+        // Tabela Participante (agora referencia Pessoa em vez de Ficha)
         Schema::create('participante', function (Blueprint $table) {
-            $table->id('idt_participante');
-            $table->foreignId('idt_ficha')
-                  ->constrained('ficha', 'idt_ficha')
+            $table->foreignId('idt_pessoa')
+                  ->constrained('pessoa', 'idt_pessoa')
                   ->onDelete('cascade');
             $table->foreignId('idt_evento')
                   ->constrained('evento', 'idt_evento')
                   ->onDelete('cascade');
             $table->string('tip_cor_troca', 10)->nullable();
             $table->timestamps();
+            
+            $table->primary(['idt_pessoa', 'idt_evento']);
         });
 
-        // Tabela Trabalhador
+        // Tabela Trabalhador (agora referencia Pessoa em vez de ter ID próprio)
         Schema::create('trabalhador', function (Blueprint $table) {
-            $table->id('idt_trabalhador');
+            $table->foreignId('idt_pessoa')
+                  ->constrained('pessoa', 'idt_pessoa')
+                  ->onDelete('cascade');
             $table->foreignId('idt_evento')
                   ->constrained('evento', 'idt_evento')
                   ->onDelete('cascade');
@@ -120,8 +154,9 @@ return new class extends Migration
             $table->boolean('ind_destaque')->default(false); // indicaria para a coordenação geral?
             $table->boolean('ind_coordenador')->default(false);
             $table->timestamps();
+            
+            $table->primary(['idt_pessoa', 'idt_evento', 'idt_equipe']);
         });
-
     }
 
     /**
@@ -131,9 +166,11 @@ return new class extends Migration
     {
         Schema::dropIfExists('trabalhador');
         Schema::dropIfExists('participante');
+        Schema::dropIfExists('pessoa_saude');
         Schema::dropIfExists('ficha_saude');
         Schema::dropIfExists('ficha_analise');
         Schema::dropIfExists('ficha');
+        Schema::dropIfExists('pessoa');
         Schema::dropIfExists('tipo_equipe');
         Schema::dropIfExists('evento');
         Schema::dropIfExists('tipo_restricao');
