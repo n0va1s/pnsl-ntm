@@ -20,9 +20,10 @@ class TipoEquipeSeeder extends Seeder
             'Alimentação',
             'Sala',
             'Limpeza',
-            'Liturgia',
-            'Apoio Técnico',
-            'Espiritualidade',
+            'Oração',
+            'Emaús',
+            'Secretaria',
+            'Vendinha',
         ];
 
         foreach ($equipes as $equipe) {
