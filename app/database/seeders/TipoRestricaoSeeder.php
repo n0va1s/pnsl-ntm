@@ -12,12 +12,15 @@ class TipoRestricaoSeeder extends Seeder
         $restricoes = [
             ['Gluten', 'INT'],
             ['Gluten', 'ALE'],
+            ['Remédio', 'ALE'],
             ['Ovo', 'ALE'],
             ['Castanhas', 'ALE'],
             ['Frutos do Mar', 'ALE'],
             ['Motor', 'PNE'],
             ['Auditivo', 'PNE'],
             ['Neurodivergente', 'PNE'],
+            ['Vegano', 'VEG'],
+            ['Vegeteariano', 'VEG'],
         ];
 
         foreach ($restricoes as [$descricao, $tipo]) {

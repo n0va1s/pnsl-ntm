@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\FichaController;
+use App\Http\Controllers\{EventoController, FichaController};
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -14,11 +14,13 @@ Route::view('dashboard', 'dashboard')
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
-    Route::resource('fichas', FichaController::class);
+    Route::resources([
+        'eventos' => EventoController::class,
+    ]);
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
