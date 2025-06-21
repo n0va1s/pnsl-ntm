@@ -12,14 +12,27 @@
                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Buscar por descrição ou número" />
                 <button type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    aria-label="Cadastrar um novo evento">
+                    <x-heroicon-c-arrow-long-right class="w-5 h-5 mr-2" />
                     Buscar
                 </button>
+                @if ($search)
+                <a href="{{ route('eventos.index') }}"
+                    class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+                    aria-label="Limpar a busca">
+                    <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
+                    Limpar
+                </a>
+                @endif
             </form>
 
+
             <a href="{{ route('eventos.create') }}"
-                class="ml-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none">
-                Novo Evento
+                class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                aria-label="Novo Evento">
+                <x-heroicon-s-plus class="w-5 h-5 mr-2" />
+                Novo
             </a>
         </div>
 
@@ -43,16 +56,16 @@
                     <tr class="border-t hover:bg-gray-50">
                         <td class="p-3 text-gray-900">{{ $evento->des_evento }}</td>
                         <td class="p-3 text-gray-700">Nº {{ $evento->num_evento }}</td>
-                        <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($evento->dat_inicio)->format('d/m/Y') }}</td>
-                        <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($evento->dat_termino)->format('d/m/Y') }}</td>
+                        <td class="p-3 text-gray-700">{{ $evento->getDataInicioFormatada()}}</td>
+                        <td class="p-3 text-gray-700">{{ $evento->getDataTerminoFormatada() }}</td>
                         <td class="p-3">
                             @if ($evento->ind_pos_encontro)
                             <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-                                Sim
+                                {{ $evento->getPosEncontroTexto() }}
                             </span>
                             @else
                             <span class="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800">
-                                Não
+                                {{ $evento->getPosEncontroTexto() }}
                             </span>
                             @endif
                         </td>

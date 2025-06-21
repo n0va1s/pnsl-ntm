@@ -51,24 +51,52 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabela Ficha (agora sem relacionamento direto com participante/trabalhador)
+        // Tabela Ficha com os dados básicos do participante
         Schema::create('ficha', function (Blueprint $table) {
             $table->id('idt_ficha');
-            $table->foreignId('idt_tipo_responsavel')
-                  ->constrained('tipo_responsavel', 'idt_responsavel');
-            $table->string('nom_responsavel', 255)->nullable();
-            $table->string('tel_responsavel', 20)->nullable();
+            $table->foreignId('idt_evento')
+                  ->constrained('evento', 'idt_evento');
+            $table->string('tip_genero', 3);
             $table->string('nom_candidato', 255);
-            $table->string('des_telefone', 20)->nullable();
-            $table->string('des_email', 255)->nullable();
+            $table->string('nom_apelido', 255);
+            $table->date('dat_nascimento');
+            $table->string('tel_candidato', 20)->nullable();
+            $table->string('eml_candidato', 255)->nullable();
             $table->string('des_endereco', 255)->nullable();
-            $table->date('dat_nascimento')->nullable();
-            $table->string('des_onde_estuda', 255)->nullable();
-            $table->string('des_mora_quem', 255)->nullable();
-            $table->string('tam_camiseta', 2)->nullable();
-            $table->integer('num_satisfacao')->nullable(); // avaliação do evento de 0 a 10
-            $table->boolean('ind_toca_instrumento')->default(false);
-            $table->boolean('ind_aprovado')->default(false);
+            $table->string('tam_camiseta', 2);
+            $table->string('tip_como_soube', 3)->nullable(); //indicacao, padre
+            $table->boolean('ind_catolico')->default(false); //candidato catolico
+            $table->boolean('ind_toca_instrumento')->default(false); //toca algum instrumento
+            $table->boolean('ind_consentimento')->default(false); //concordou com o termo
+            $table->boolean('ind_aprovado')->default(false); // flag para facilitar busca
+            $table->text('txt_observacao')->nullable(); //qual o instrumento, remedio continuo
+            $table->timestamps();
+        });
+
+        // Tabela Ficha com os detalhes do vem
+        Schema::create('ficha_vem', function (Blueprint $table) {
+            $table->foreignId('idt_ficha')
+                  ->constrained('ficha', 'idt_ficha');
+            $table->foreignId('idt_falar_com')
+                  ->constrained('tipo_responsavel', 'idt_responsavel');
+            $table->string('des_onde_estuda', 255);
+            $table->string('des_mora_quem', 255);
+            $table->string('nom_pai', 150)->nullable();
+            $table->string('tel_pai', 15)->nullable();
+            $table->string('nom_mae', 150)->nullable();
+            $table->string('tel_mae', 10)->nullable();
+            $table->timestamps();
+        });
+
+        // Tabela Ficha com os detalhes do ecc
+        Schema::create('ficha_ecc', function (Blueprint $table) {
+            $table->foreignId('idt_ficha')
+                  ->constrained('ficha', 'idt_ficha');
+            $table->string('nom_conjuge', 150);
+            $table->string('nom_apelido_conjuge', 50)->nullable();
+            $table->string('tel_conjuge', 15);
+            $table->date('dat_nascimento_conjuge', 10);
+            $table->string('tam_camiseta_conjuge', 2);
             $table->timestamps();
         });
 

@@ -4,13 +4,15 @@
             <h1 class="text-3xl font-bold text-gray-900">Novo Evento</h1>
             <p class="text-gray-700 mt-1">Cadastre um novo evento no sistema</p>
         </div>
-        <div class="flex justify-between items-center mb-4">
-            <a href="{{ route('eventos.create') }}"
-                class="ml-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none">
+        <div class="flex justify-end mt-4">
+            <a href="{{ route('eventos.index') }}"
+                class="inline-flex items-center px-4 py-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                aria-label="Voltar para a lista de eventos">
+                <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
                 Eventos
             </a>
         </div>
-     
+
         <div class="mb-6 bg-white dark:bg-zinc-800 rounded-md shadow p-6">
             <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100">
                 <i class="bi bi-plus-circle text-blue-600 text-2xl"></i> Dados do Evento
@@ -32,10 +34,9 @@
                         value="{{ old('des_evento') }}"
                         placeholder="Digite a descrição completa do evento"
                         class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-                        @error('des_evento') border-red-500 @enderror"
-                    />
+                        @error('des_evento') border-red-500 @enderror" />
                     @error('des_evento')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Máximo de 255 caracteres</p>
                 </div>
@@ -53,10 +54,9 @@
                         value="{{ old('num_evento') }}"
                         placeholder="Ex: 001, 002"
                         class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-                        @error('num_evento') border-red-500 @enderror"
-                    />
+                        @error('num_evento') border-red-500 @enderror" />
                     @error('num_evento')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Código ou número identificador do evento (opcional)</p>
                 </div>
@@ -71,10 +71,9 @@
                             name="dat_inicio"
                             value="{{ old('dat_inicio') }}"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
-                            @error('dat_inicio') border-red-500 @enderror"
-                        />
+                            @error('dat_inicio') border-red-500 @enderror" />
                         @error('dat_inicio')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
@@ -85,10 +84,9 @@
                             name="dat_termino"
                             value="{{ old('dat_termino') }}"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
-                            @error('dat_termino') border-red-500 @enderror"
-                        />
+                            @error('dat_termino') border-red-500 @enderror" />
                         @error('dat_termino')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Deve ser igual ou posterior à data de início</p>
                     </div>
@@ -102,30 +100,29 @@
                         name="ind_pos_encontro"
                         value="1"
                         {{ old('ind_pos_encontro') ? 'checked' : '' }}
-                        class="w-5 h-5 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2"
-                    />
+                        class="w-5 h-5 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2" />
                     <label for="ind_pos_encontro" class="font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
                         Pós Encontro
                     </label>
                 </div>
                 @error('ind_pos_encontro')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Marque se este evento é um pós encontro</p>
 
                 <!-- Buttons -->
                 <div class="flex gap-3">
-                    <button
-                        type="submit"
-                        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none text-white px-4 py-2 rounded-md"
-                    >
-                        <i class="bi bi-check-lg"></i> Salvar Evento
+                    <button type="submit"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-label="Salvar o evento">
+                        <x-heroicon-c-arrow-long-right class="w-5 h-5 mr-2" />
+                        Salvar
                     </button>
-                    <a
-                        href="{{ route('eventos.index') }}"
-                        class="inline-flex items-center gap-2 bg-gray-300 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:outline-none text-gray-800 px-4 py-2 rounded-md"
-                    >
-                        <i class="bi bi-x-lg"></i> Cancelar
+                    <a href=#"
+                        class="inline-flex items-center px-4 bg-gray-300 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:outline-none text-gray-800 "
+                        aria-label="Cancelar a operação">
+                        <x-heroicon-o-x-mark class="w-5 h-5 mr-2" />
+                        Cancelar
                     </a>
                 </div>
             </form>
@@ -148,7 +145,7 @@
     @push('scripts')
     <script>
         // Validação de data no cliente
-        document.getElementById('dat_inicio').addEventListener('change', function () {
+        document.getElementById('dat_inicio').addEventListener('change', function() {
             const dataInicio = this.value;
             const dataTermino = document.getElementById('dat_termino');
 
