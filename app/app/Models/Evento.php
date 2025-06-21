@@ -32,7 +32,7 @@ class Evento extends Model
     /**
      * Accessor para formatar a data de início
      */
-    public function getDataInicioFormatadaAttribute()
+    public function getDataInicioFormatada()
     {
         return $this->dat_inicio ? $this->dat_inicio->format('d/m/Y') : null;
     }
@@ -40,7 +40,7 @@ class Evento extends Model
     /**
      * Accessor para formatar a data de término
      */
-    public function getDataTerminoFormatadaAttribute()
+    public function getDataTerminoFormatada()
     {
         return $this->dat_termino ? $this->dat_termino->format('d/m/Y') : null;
     }
@@ -48,7 +48,7 @@ class Evento extends Model
     /**
      * Accessor para o status de pós encontro
      */
-    public function getPosEncontroTextoAttribute()
+    public function getPosEncontroTexto()
     {
         return $this->ind_pos_encontro ? 'Sim' : 'Não';
     }

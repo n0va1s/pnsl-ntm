@@ -11,58 +11,63 @@ class Ficha extends Model
 
     protected $table = 'ficha';
     protected $primaryKey = 'idt_ficha';
-    public $timestamps = false;
 
     protected $fillable = [
-        'idt_tipo_responsavel',
-        'nom_responsavel',
-        'tel_responsavel',
+        'idt_evento',
+        'tip_genero',
         'nom_candidato',
-        'des_telefone',
-        'des_endereco',
+        'nom_apelido',
         'dat_nascimento',
-        'des_onde_estuda',
-        'des_mora_quem',
+        'tel_candidato',
+        'eml_candidato',
+        'des_endereco',
         'tam_camiseta',
-        'num_satisfacao',
+        'tip_como_soube',
+        'ind_catolico',
         'ind_toca_instrumento',
-        'ind_aprovado'
+        'ind_consentimento',
+        'ind_aprovado',
+        'txt_observacao',
     ];
 
     protected $casts = [
-        'ind_aprovado' => 'boolean',
         'dat_nascimento' => 'date',
+        'ind_catolico' => 'boolean',
+        'ind_toca_instrumento' => 'boolean',
+        'ind_consentimento' => 'boolean',
+        'ind_aprovado' => 'boolean',
     ];
 
-    public function tipoResponsavel()
+    // RELACIONAMENTOS
+
+    public function evento()
     {
-        return $this->belongsTo(TipoResponsavel::class, 'idt_tipo_responsavel');
+        return $this->belongsTo(Evento::class, 'idt_evento');
     }
 
-    public function analises()
+    public function fichaVem()
     {
-        return $this->hasMany(FichaAnalise::class, 'idt_ficha');
+        return $this->hasOne(FichaVem::class, 'idt_ficha');
     }
 
-    public function restricoes()
+    public function fichaEcc()
     {
-        return $this->hasMany(FichaSaude::class, 'idt_ficha');
+        return $this->hasOne(FichaEcc::class, 'idt_ficha');
     }
 
     public function aprovar()
     {
-
         $pessoa = \App\Models\Pessoa::create([
-            'nom_pessoa'        => $this->nom_candidato,
-            'des_telefone'      => $this->des_telefone,
-            'des_endereco'      => $this->des_endereco,
-            'dat_nascimento'    => $this->dat_nascimento,
-            'tam_camiseta'      => $this->tam_camiseta,
+            'nom_pessoa'           => $this->nom_candidato,
+            'des_telefone'         => $this->tel_candidato,
+            'des_endereco'         => $this->des_endereco,
+            'dat_nascimento'       => $this->dat_nascimento,
+            'tam_camiseta'         => $this->tam_camiseta,
             'ind_toca_instrumento' => $this->ind_toca_instrumento,
         ]);
 
-        // Associar com último evento existente
         $evento = \App\Models\Evento::latest()->first();
+
         if ($evento) {
             \App\Models\Participante::create([
                 'idt_pessoa'    => $pessoa->idt_pessoa,

@@ -2,30 +2,31 @@
 
 namespace Database\Factories;
 
-use App\Models\Ficha;
-use App\Models\TipoResponsavel;
+use App\Models\Evento;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FichaFactory extends Factory
 {
-    protected $model = Ficha::class;
+    protected $model = \App\Models\Ficha::class;
 
     public function definition(): array
     {
         return [
-            'idt_tipo_responsavel' => TipoResponsavel::inRandomOrder()->first()->idt_responsavel ?? 1,
-            'nom_responsavel' => $this->faker->name(),
-            'tel_responsavel' => $this->faker->phoneNumber(),
+            'idt_evento' => Evento::factory(), // cria um evento automaticamente
+            'tip_genero' => $this->faker->randomElement(['M', 'F', 'O']),
             'nom_candidato' => $this->faker->name(),
-            'des_telefone' => $this->faker->phoneNumber(),
-            'des_endereco' => $this->faker->address(),
-            'dat_nascimento' => $this->faker->date('Y-m-d', '-10 years'),
-            'des_onde_estuda' => $this->faker->company(),
-            'des_mora_quem' => $this->faker->name(),
+            'nom_apelido' => $this->faker->firstName(),
+            'dat_nascimento' => $this->faker->date('Y-m-d', '-12 years'),
+            'tel_candidato' => $this->faker->optional()->phoneNumber(),
+            'eml_candidato' => $this->faker->optional()->safeEmail(),
+            'des_endereco' => $this->faker->optional()->address(),
             'tam_camiseta' => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
-            'num_satisfacao' => $this->faker->numberBetween(0, 10),
-            'ind_toca_instrumento' => $this->faker->boolean(),
-            'ind_aprovado' => $this->faker->boolean(70),
+            'tip_como_soube' => $this->faker->optional()->randomElement(['IND', 'PAD', 'OUT']),
+            'ind_catolico' => $this->faker->boolean(80),
+            'ind_toca_instrumento' => $this->faker->boolean(30),
+            'ind_consentimento' => $this->faker->boolean(95),
+            'ind_aprovado' => $this->faker->boolean(60),
+            'txt_observacao' => $this->faker->optional()->sentence(),
         ];
     }
 }
