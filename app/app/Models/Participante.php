@@ -13,7 +13,10 @@ class Participante extends Model
     public $timestamps = false;
     public $incrementing = false;
 
-    protected $fillable = ['idt_pessoa', 'idt_evento', 'tip_cor_troca'];
+    protected $fillable = ['idt_pessoa',
+                            'idt_evento',
+                            'tip_cor_troca'
+                        ];
 
     public function evento()
     {
