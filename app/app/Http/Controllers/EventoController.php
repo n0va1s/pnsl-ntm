@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EventoRequest;
 use App\Models\Evento;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -32,7 +33,7 @@ class EventoController extends Controller
      */
     public function create(): View
     {
-        return view('evento.form');
+        return view('evento.form', ['evento' => new Evento]);
     }
 
 
@@ -51,16 +52,18 @@ class EventoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Evento $evento): View
+    public function show($id): View
     {
+        $evento = Evento::findOrFail($id);
         return view('evento.form', compact('evento'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Evento $evento): View
+    public function edit($id): View
     {
+        $evento = Evento::findOrFail($id);
         return view('evento.form', compact('evento'));
     }
 
@@ -81,10 +84,23 @@ class EventoController extends Controller
      */
     public function destroy(Evento $evento): RedirectResponse
     {
-        $evento->delete();
-
-        return redirect()
-            ->route('eventos.index')
-            ->with('success', 'Evento excluído com sucesso!');
+        try {
+            $evento->delete();
+    
+            return redirect()
+                ->route('eventos.index')
+                ->with('success', 'Evento excluído com sucesso!');
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return redirect()
+                    ->route('eventos.index')
+                    ->with('error', 'Não é possível excluir este evento. Ele está associado a fichas ou participantes.');
+            }
+    
+            // Se for outro erro de banco
+            return redirect()
+                ->route('eventos.index')
+                ->with('error', 'Erro ao tentar excluir o evento.');
+        }
     }
 }

@@ -60,9 +60,9 @@ class FichaController extends Controller
     /**
      * Exibir ficha individual.
      */
-    public function show($id)
+    public function show(Ficha $ficha)
     {
-        $ficha = Ficha::with(['fichaVem', 'fichaEcc'])->findOrFail($id);
+        //$ficha = Ficha::with(['fichaVem', 'fichaEcc'])->findOrFail($id);
 
         return view('fichas.show', compact('ficha'));
     }
@@ -70,9 +70,9 @@ class FichaController extends Controller
     /**
      * Formulário de edição.
      */
-    public function edit($id)
+    public function edit(Ficha $ficha)
     {
-        $ficha = Ficha::with(['fichaVem', 'fichaEcc'])->findOrFail($id);
+        //$ficha = Ficha::with(['fichaVem', 'fichaEcc'])->findOrFail($id);
 
         return view('fichas.edit', compact('ficha'));
     }
@@ -84,9 +84,9 @@ class FichaController extends Controller
         FichaRequest  $fichaRequest,
         FichaVemRequest $vemRequest,
         FichaEccRequest $eccRequest,
-        $id
+        Ficha $ficha
     ) {
-        $ficha = Ficha::findOrFail($id);
+        //$ficha = Ficha::findOrFail($id);
 
         $data = $fichaRequest->validate();
 
@@ -110,9 +110,9 @@ class FichaController extends Controller
     /**
      * Remover ficha.
      */
-    public function destroy($id)
+    public function destroy(Ficha $ficha)
     {
-        $ficha = Ficha::findOrFail($id);
+        //$ficha = Ficha::findOrFail($id);
 
         // Deleta FichaVem e FichaEcc com cascade no banco
         // Nao ha necessidade de deletar os filhos aqui

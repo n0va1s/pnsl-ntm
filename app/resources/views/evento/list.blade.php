@@ -1,5 +1,22 @@
 <x-layouts.app :title="'Novo Evento'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
+        @if (session('success') || session('error'))
+        <div
+            x-data="{ show: true }"
+            x-init="setTimeout(() => show = false, 3000)"
+            x-show="show"
+            class="mb-4 px-4 py-3 rounded-md text-white font-semibold flex items-center gap-2
+        {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}"
+            role="alert">
+            @if (session('success'))
+            <x-heroicon-o-check-circle class="w-6 h-6 text-white" />
+            <span>{{ session('success') }}</span>
+            @else
+            <x-heroicon-o-x-circle class="w-6 h-6 text-white" />
+            <span>{{ session('error') }}</span>
+            @endif
+        </div>
+        @endif
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900">Gerenciar Eventos</h1>
             <p class="text-gray-700 mt-1">Cadastre e gerencie os eventos do sistema.</p>
