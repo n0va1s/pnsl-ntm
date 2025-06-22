@@ -18,7 +18,7 @@ class PresencaFactory extends Factory
     {
         return [
             'ind_par' => Participante::inRandomOrder()->first()->idt_participante ?? Participante::factory(),
-            'dat_presenca' => $this->faker->dateTimeBetween('-1 month', 'now')->format('d/m/Y'),
+            'dat_presenca' => $this->faker->dateTimeBetween('-3 day', 'now')->format('d/m/Y'),
             'inc_presenca' => $this->faker->boolean(80), // 80% chance de presença
         ];
     }
