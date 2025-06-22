@@ -23,7 +23,6 @@ class ParticipanteSeeder extends Seeder
             ]);
         }
 
-        // Gera participantes usando a factory
         Participante::factory()->count(15)->create();
     }
 }

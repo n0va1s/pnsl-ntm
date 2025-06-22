@@ -17,7 +17,7 @@ class TipoResponsavel extends Model
 
     public function fichas()
     {
-        return $this->hasMany(Ficha::class, 'idt_tipo_responsavel');
+        return $this->hasMany(FichaVem::class, 'idt_falar_com');
     }
 }
 

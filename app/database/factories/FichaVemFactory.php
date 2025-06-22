@@ -14,7 +14,7 @@ class FichaVemFactory extends Factory
     {
         return [
             'idt_ficha' => Ficha::factory(),
-            'idt_falar_com' => TipoResponsavel::factory(),
+            'idt_falar_com' => TipoResponsavel::inRandomOrder()->first()->idt_responsavel ?? TipoResponsavel::factory(),            
             'des_onde_estuda' => $this->faker->company(),
             'des_mora_quem' => $this->faker->name(),
             'nom_pai' => $this->faker->optional()->name('male'),

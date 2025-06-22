@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Habilidade;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Support\Facades\DB;
@@ -31,5 +32,8 @@ class TipoEquipeSeeder extends Seeder
                 'des_grupo' => $equipe,
             ]);
         }
+
+        //Cria habilidades para equipes
+        Habilidade::factory()->count(15)->create();
     }
 }

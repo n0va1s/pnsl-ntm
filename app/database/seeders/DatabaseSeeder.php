@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\TipoEquipe;
+use App\Models\TipoMovimento;
+use App\Models\TipoResponsavel;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,9 +20,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
 
-            TipoEquipeSeeder::class,
             TipoRestricaoSeeder::class,
             TipoSituacaoSeeder::class,
+            TipoResponsavelSeeder::class,
+            TipoEquipeSeeder::class,
             EventoSeeder::class,
             FichaSeeder::class,
             PessoaSeeder::class,

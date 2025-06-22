@@ -24,9 +24,9 @@ class EventoRequest extends FormRequest
         return [
             'des_evento' => 'required|string|max:255',
             'num_evento' => 'nullable|string|max:5',
-            'dat_inicio' => 'nullable|date',
+            'dat_inicio' => 'required|date',
             'dat_termino' => 'nullable|date|after_or_equal:dat_inicio',
-            'ind_pos_encontro' => 'nullable|boolean',
+            'ind_pos_encontro' => 'required|boolean',
         ];
     }
 
@@ -39,10 +39,10 @@ class EventoRequest extends FormRequest
     {
         return [
             'des_evento.required' => 'A descrição do evento é obrigatória.',
-            'des_evento.string' => 'A descrição do evento deve ser um texto.',
             'des_evento.max' => 'A descrição do evento não pode ter mais de 255 caracteres.',
             'num_evento.string' => 'O número do evento deve ser um texto.',
             'num_evento.max' => 'O número do evento não pode ter mais de 5 caracteres.',
+            'dat_inicio.required' => 'A data de início é obrigatória',
             'dat_inicio.date' => 'A data de início deve ser uma data válida.',
             'dat_termino.date' => 'A data de término deve ser uma data válida.',
             'dat_termino.after_or_equal' => 'A data de término deve ser igual ou posterior à data de início.',
