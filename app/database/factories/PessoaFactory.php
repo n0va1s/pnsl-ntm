@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Pessoa;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PessoaFactory extends Factory
@@ -12,6 +13,7 @@ class PessoaFactory extends Factory
     public function definition(): array
     {
         return [
+            'idt_pessoa' => User::factory(),
             'nom_pessoa' => $this->faker->name(),
             'nom_apelido' => $this->faker->lastName(),
             'tip_genero' => $this->faker->randomElement(['M', 'F']), // Masculino, Feminino

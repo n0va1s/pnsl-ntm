@@ -2,7 +2,7 @@
     <section class="p-6 w-full max-w-[80vw] ml-auto">
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900">Novo Evento</h1>
-            <p class="text-gray-700 mt-1">Cadastre um novo evento no sistema</p>
+            <p class="text-gray-700 mt-1">Cadastre um novo evento ou atividade de pós-encontro</p>
         </div>
         <div class="flex justify-end mt-4">
             <a href="{{ route('eventos.index') }}"
@@ -12,64 +12,67 @@
                 Eventos
             </a>
         </div>
-
         <div class="mb-6 bg-white dark:bg-zinc-800 rounded-md shadow p-6">
             <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100">
                 <i class="bi bi-plus-circle text-blue-600 text-2xl"></i> Dados do Evento
             </h2>
 
-            <form method="POST" action="{{ route('eventos.store') }}" class="space-y-6">
+            <form method="POST" action="{{ $evento->exists ? route('eventos.update', $evento) : route('eventos.store') }}" class="space-y-6">
                 @csrf
 
-                <!-- Descrição do Evento -->
-                <div>
-                    <label for="des_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Descrição do Evento <span class="text-red-600">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        id="des_evento"
-                        name="des_evento"
-                        maxlength="255"
-                        value="{{ old('des_evento') }}"
-                        placeholder="Digite a descrição completa do evento"
-                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-                        @error('des_evento') border-red-500 @enderror" />
-                    @error('des_evento')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Máximo de 255 caracteres</p>
-                </div>
-
-                <!-- Número do Evento -->
-                <div>
-                    <label for="num_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Número do Evento
-                    </label>
-                    <input
-                        type="text"
-                        id="num_evento"
-                        name="num_evento"
-                        maxlength="5"
-                        value="{{ old('num_evento') }}"
-                        placeholder="Ex: 001, 002"
-                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-                        @error('num_evento') border-red-500 @enderror" />
-                    @error('num_evento')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Código ou número identificador do evento (opcional)</p>
-                </div>
-
-                <!-- Datas -->
+                @if ($evento->exists)
+                @method('PUT')
+                @endif
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Descrição do Evento -->
+                    <div>
+                        <label for="des_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Descrição do Evento <span class="text-red-600">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="des_evento"
+                            name="des_evento"
+                            maxlength="255"
+                            value="{{ $evento->des_evento ? $evento->des_evento : old('des_evento') }}"
+                            placeholder="Digite a descrição completa do evento"
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                        @error('des_evento') border-red-500 @enderror" />
+                        @error('des_evento')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Máximo de 255 caracteres</p>
+                    </div>
+
+                    <!-- Número do Evento -->
+                    <div>
+                        <label for="num_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Número do Evento
+                        </label>
+                        <input
+                            type="text"
+                            id="num_evento"
+                            name="num_evento"
+                            maxlength="5"
+                            value="{{ $evento->num_evento ? $evento->num_evento : old('num_evento') }}"
+                            placeholder="Ex: 001, 002"
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                        @error('num_evento') border-red-500 @enderror" />
+                        @error('num_evento')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Código ou número identificador do evento (opcional)</p>
+                    </div>
+
+                    <!-- Datas -->
+
                     <div>
                         <label for="dat_inicio" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Data de Início</label>
                         <input
                             type="date"
                             id="dat_inicio"
                             name="dat_inicio"
-                            value="{{ old('dat_inicio') }}"
+                            value="{{ old('dat_inicio', optional($evento->dat_inicio)->format('Y-m-d')) }}"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('dat_inicio') border-red-500 @enderror" />
                         @error('dat_inicio')
@@ -82,7 +85,7 @@
                             type="date"
                             id="dat_termino"
                             name="dat_termino"
-                            value="{{ old('dat_termino') }}"
+                            value="{{ old('dat_termino', optional($evento->dat_termino)->format('Y-m-d')) }}"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('dat_termino') border-red-500 @enderror" />
                         @error('dat_termino')
@@ -98,8 +101,8 @@
                         type="checkbox"
                         id="ind_pos_encontro"
                         name="ind_pos_encontro"
-                        value="1"
-                        {{ old('ind_pos_encontro') ? 'checked' : '' }}
+                        value="{{ $evento->ind_pos_encontro ? $evento->ind_pos_encontro : old('ind_pos_encontro') }}"
+                        {{ $evento->ind_pos_encontro ? 'checked' : '' }}
                         class="w-5 h-5 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2" />
                     <label for="ind_pos_encontro" class="font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
                         Pós Encontro
@@ -118,7 +121,7 @@
                         <x-heroicon-c-arrow-long-right class="w-5 h-5 mr-2" />
                         Salvar
                     </button>
-                    <a href=#"
+                    <a href="{{ route('eventos.index') }}"
                         class="inline-flex items-center px-4 bg-gray-300 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:outline-none text-gray-800 "
                         aria-label="Cancelar a operação">
                         <x-heroicon-o-x-mark class="w-5 h-5 mr-2" />
@@ -126,19 +129,6 @@
                     </a>
                 </div>
             </form>
-        </div>
-
-        <!-- Help Card -->
-        <div class="bg-gray-50 dark:bg-zinc-900 rounded-md p-4 mt-6 text-sm text-gray-600 dark:text-gray-400">
-            <h3 class="flex items-center gap-2 mb-2 font-semibold text-blue-600">
-                <i class="bi bi-info-circle"></i> Dicas de Preenchimento
-            </h3>
-            <ul class="list-disc list-inside space-y-1">
-                <li><strong>Descrição:</strong> Campo obrigatório. Use uma descrição clara e objetiva do evento.</li>
-                <li><strong>Número:</strong> Campo opcional. Pode ser usado para códigos internos ou numeração sequencial.</li>
-                <li><strong>Datas:</strong> Opcionais. A data de término deve ser igual ou posterior à data de início.</li>
-                <li><strong>Pós Encontro:</strong> Marque esta opção se o evento for uma continuação ou complemento de outro evento.</li>
-            </ul>
         </div>
     </section>
 

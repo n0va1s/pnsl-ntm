@@ -18,7 +18,7 @@ class FichaFactory extends Factory
             'nom_apelido' => $this->faker->firstName(),
             'dat_nascimento' => $this->faker->date('Y-m-d', '-12 years'),
             'tel_candidato' => $this->faker->optional()->phoneNumber(),
-            'eml_candidato' => $this->faker->optional()->safeEmail(),
+            'eml_candidato' => $this->faker->safeEmail(),
             'des_endereco' => $this->faker->optional()->address(),
             'tam_camiseta' => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
             'tip_como_soube' => $this->faker->optional()->randomElement(['IND', 'PAD', 'OUT']),
