@@ -13,6 +13,7 @@ class Evento extends Model
     protected $primaryKey = 'idt_evento';
 
     protected $fillable = [
+        'idt_movimento',
         'des_evento',
         'num_evento',
         'dat_inicio',
@@ -24,6 +25,7 @@ class Evento extends Model
     ];
 
     protected $casts = [
+        'idt_movimento' => 'integer',
         'dat_inicio' => 'date',
         'dat_termino' => 'date',
         'ind_pos_encontro' => 'boolean',

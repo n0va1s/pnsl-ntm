@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EventoRequest;
 use App\Models\Evento;
+use App\Models\TipoMovimento;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -33,7 +34,14 @@ class EventoController extends Controller
      */
     public function create(): View
     {
-        return view('evento.form', ['evento' => new Evento]);
+        $movimentos = TipoMovimento::all();
+        return view(
+            'evento.form', 
+            [
+                'evento' => new Evento,
+                'movimentos' => $movimentos
+            ]
+        );
     }
 
 
@@ -52,19 +60,18 @@ class EventoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id): View
+    public function show(Evento $evento): View
     {
-        $evento = Evento::findOrFail($id);
         return view('evento.form', compact('evento'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id): View
+    public function edit(Evento $evento): View
     {
-        $evento = Evento::findOrFail($id);
-        return view('evento.form', compact('evento'));
+        $movimentos = TipoMovimento::all();
+        return view('evento.form', compact('evento', 'movimentos'));
     }
 
     /**

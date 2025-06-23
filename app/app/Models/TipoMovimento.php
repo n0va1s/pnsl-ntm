@@ -22,4 +22,12 @@ class TipoMovimento extends Model
     protected $casts = [
         'dat_inicio' => 'date',
     ];
+
+    /**
+     * Accessor para formatar a data de início
+     */
+    public function getDataInicioFormatada()
+    {
+        return $this->dat_inicio ? $this->dat_inicio->format('d/m/Y') : null;
+    }
 }

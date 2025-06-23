@@ -13,7 +13,6 @@ class EventoSeeder extends Seeder
 
     public function run(): void
     {
-        TipoMovimento::factory()->count(10)->create();
         Evento::factory()->count(10)->create();
     }
 }

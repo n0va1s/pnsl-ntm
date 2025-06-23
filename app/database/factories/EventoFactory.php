@@ -16,7 +16,7 @@ class EventoFactory extends Factory
         $dataTermino = (clone $dataInicio)->modify('+3 days');
 
         return [
-            'idt_movimento' => TipoMovimento::inRandomOrder()->first()->idt_movimento ?? TipoMovimento::factory(),            
+            'idt_movimento' => $this->faker->numberBetween(1,3),
             'des_evento' => $this->faker->words(2, true) . ' VEM',
             'num_evento' => $this->faker->numberBetween(1, 99),
             'dat_inicio' => $dataInicio->format('Y-m-d'),
