@@ -21,6 +21,9 @@ class EventoFactory extends Factory
             'num_evento' => $this->faker->numberBetween(1, 99),
             'dat_inicio' => $dataInicio->format('Y-m-d'),
             'dat_termino' => $dataTermino->format('Y-m-d'),
+            'val_trabalhador' => $this->faker->randomFloat(2, 45),
+            'val_venista' => $this->faker->randomFloat(2, 50),
+            'val_camiseta' => $this->faker->randomFloat(2, 40),
             'ind_pos_encontro' => $this->faker->boolean(30),
         ];
     }

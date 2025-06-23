@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Evento extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'evento';
     protected $primaryKey = 'idt_evento';
 
@@ -17,6 +17,9 @@ class Evento extends Model
         'num_evento',
         'dat_inicio',
         'dat_termino',
+        'val_trabalhador',
+        'val_venista',
+        'val_camiseta',
         'ind_pos_encontro',
     ];
 
