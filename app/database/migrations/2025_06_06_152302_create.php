@@ -130,8 +130,8 @@ return new class extends Migration
                 ->constrained('ficha', 'idt_ficha');
             $table->timestamps();
 
-            $table->primary(['idt_ficha', 'idt_situacao']);
-        });
+           $table->primary(['idt_ficha', 'idt_situacao']);
+         });
 
         // Tabela Ficha_Saude com os dados de saude do candidato
         Schema::create('ficha_saude', function (Blueprint $table) {
@@ -175,8 +175,6 @@ return new class extends Migration
             $table->string('eml_pessoa', 255)->nullable();
             $table->string('tam_camiseta', 2)->nullable();
             $table->boolean('ind_toca_violao')->default(false);
-            $table->date('dat_nascimento')->nullable();
-            $table->string('tam_camiseta', 2)->nullable();
             $table->string('tip_genero', 10)->nullable(); // masculino, feminino, outro
             $table->string('ind_consentimento', 3)->default('não'); // sim, não
             $table->timestamps();
@@ -221,7 +219,7 @@ return new class extends Migration
 
         // Tabela Participante indica todos o encontro que a pessoa fez
         Schema::create('participante', function (Blueprint $table) {
-            $table->foreignId('idt_participante');
+            $table->foreignId('idt_participante')->nullable();
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
                 ->onDelete('cascade');
