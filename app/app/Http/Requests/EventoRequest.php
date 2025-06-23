@@ -22,6 +22,7 @@ class EventoRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'idt_movimento' => 'required|exists:tipo_movimento,idt_movimento',
             'des_evento' => 'required|string|max:255',
             'num_evento' => 'nullable|string|max:5',
             'dat_inicio' => 'required|date',
@@ -38,6 +39,7 @@ class EventoRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'idt_movimento.required' => 'O movimento é obrigatório.',
             'des_evento.required' => 'A descrição do evento é obrigatória.',
             'des_evento.max' => 'A descrição do evento não pode ter mais de 255 caracteres.',
             'num_evento.string' => 'O número do evento deve ser um texto.',

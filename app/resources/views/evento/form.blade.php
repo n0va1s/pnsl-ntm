@@ -23,6 +23,28 @@
                 @if ($evento->exists)
                 @method('PUT')
                 @endif
+                <div>
+                    <label for="idt_movimento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Movimento <span class="text-red-600">*</span>
+                    </label>
+                    <select
+                        id="idt_movimento"
+                        name="idt_movimento"
+                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
+               @error('idt_movimento') border-red-500 @enderror">
+                        <option value="">Selecione um movimento</option>
+                        @foreach ($movimentos as $movimento)
+                        <option value="{{ $movimento->idt_movimento }}"
+                            {{ (old('idt_movimento', $evento->idt_movimento ?? null) == $movimento->idt_movimento) ? 'selected' : '' }}>
+                            {{ $movimento->nom_movimento }} ({{ $movimento->des_sigla }})
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('idt_movimento')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Escolha o movimento relacionado ao evento.</p>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Descrição do Evento -->
                     <div>

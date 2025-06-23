@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             TipoSituacaoSeeder::class,
             TipoResponsavelSeeder::class,
             TipoEquipeSeeder::class,
+            TipoMovimentoSeeder::class,
             EventoSeeder::class,
             FichaSeeder::class,
             PessoaSeeder::class,
