@@ -22,7 +22,7 @@ class PessoaFactory extends Factory
             'des_endereco' => $this->faker->address(),
             'dat_nascimento' => $this->faker->date('Y-m-d', '-20 years'),
             'tam_camiseta' => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
-            'ind_toca_instrumento' => $this->faker->boolean(),
+            'ind_toca_violao' => $this->faker->boolean(),
             'ind_consentimento' => $this->faker->randomElement(['sim', 'não']),
         ];
     }
