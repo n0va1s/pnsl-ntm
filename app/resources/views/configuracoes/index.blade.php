@@ -43,7 +43,7 @@
             </a>
 
             <!-- Card 5 -->
-            <a href="" class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
+            <a href="{{ route('tiposituacao.index') }}" class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
                 <div class="flex flex-col items-center justify-center h-full">
                     <x-heroicon-o-clipboard-document-check class="w-12 h-12 text-yellow-600 mb-4" />
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Tipos de Situações</h2>
