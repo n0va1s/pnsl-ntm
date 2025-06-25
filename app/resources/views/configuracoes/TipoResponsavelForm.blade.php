@@ -19,7 +19,7 @@
                    required
                    value="{{ old('des_responsavel', $responsavel->des_responsavel) }}"
                    aria-required="true"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:border-gray-600 dark:focus:border-blue-400"
+                   class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                    placeholder="Ex: Pai, Mãe, Padrinho...">
             @error('des_responsavel')
                 <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
