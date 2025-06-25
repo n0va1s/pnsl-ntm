@@ -35,18 +35,18 @@
             <table class="w-full text-left border border-gray-200 dark:border-zinc-700 rounded-md overflow-hidden text-sm">
 
                 <caption class="sr-only">Tipos de Movimentos</caption>
-                <thead>
-                    <tr class="bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
 
-                        <th class="p-3 font-semibold">Descrição</th>
-                        <th class="p-3 font-semibold">Sigla</th>
-                        <th class="p-3 font-semibold">Data de Início</th>
-                        <th class="p-3 font-semibold">Ações</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Descrição</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Sigla</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Data de Início</th>
+                        <th class="p-3 font-semibold text-center dark:text-gray-800 w-24">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($tipos as $tipo)
-                    <tr class="border-t hover:bg-gray-500">
+                    <tr class="border-t hover:bg-gray-200 dark:hover:bg-gray-500">
                         <td class="p-3 text-gray-900 dark:text-gray-300">{{ $tipo->nom_movimento }}</td>
                         <td class="p-3 text-gray-900 dark:text-gray-300">{{ $tipo->des_sigla }}</td>
                         <td class="p-3 text-gray-900 dark:text-gray-300">{{ $tipo->getDataInicioFormatada() }}</td>

@@ -43,7 +43,7 @@
             </thead>
             <tbody>
                 @forelse ($responsavel as $responsavel)
-                    <tr class="border-t hover:bg-gray-500">
+                    <tr class="border-t hover:bg-gray-200 dark:hover:bg-gray-500">
                         <td class="p-3 text-gray-900 dark:text-gray-100">{{ $responsavel->des_responsavel }}</td>
 
                         <td class="p-3 flex justify-end items-center gap-2">
