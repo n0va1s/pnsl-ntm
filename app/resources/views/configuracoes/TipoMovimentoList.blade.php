@@ -18,8 +18,8 @@
         </div>
         @endif
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">Gerenciar Movimentos</h1>
-            <p class="text-gray-700 mt-1">Cadastre e gerencie os tipos de movimentos do sistema.</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Movimentos</h1>
+            <p class="text-gray-700 mt-1 dark:text-gray-400">Cadastre e gerencie os tipos de movimentos do sistema.</p>
         </div>
 
         <div class="flex justify-end items-center mb-4">
@@ -46,10 +46,10 @@
                 </thead>
                 <tbody>
                     @forelse ($tipos as $tipo)
-                    <tr class="border-t hover:bg-gray-50">
-                        <td class="p-3 text-gray-900">{{ $tipo->nom_movimento }}</td>
-                        <td class="p-3 text-gray-900">{{ $tipo->des_sigla }}</td>
-                        <td class="p-3 text-gray-900">{{ $tipo->getDataInicioFormatada() }}</td>
+                    <tr class="border-t hover:bg-gray-500">
+                        <td class="p-3 text-gray-900 dark:text-gray-300">{{ $tipo->nom_movimento }}</td>
+                        <td class="p-3 text-gray-900 dark:text-gray-300">{{ $tipo->des_sigla }}</td>
+                        <td class="p-3 text-gray-900 dark:text-gray-300">{{ $tipo->getDataInicioFormatada() }}</td>
 
                         <td class="p-3 flex items-center gap-2">
                             <a href="{{ route('tiposmovimentos.edit', $tipo) }}"
