@@ -5,7 +5,7 @@
             x-data="{ show: true }"
             x-init="setTimeout(() => show = false, 3000)"
             x-show="show"
-            class="mb-4 px-4 py-3 rounded-md text-white font-semibold flex items-center gap-2
+            class="fixed top-6 left-1/2 z-50 px-4 py-3 rounded-md text-white font-semibold shadow-lg flex items-center gap-2
         {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}"
             role="alert">
             @if (session('success'))
