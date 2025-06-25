@@ -1,5 +1,24 @@
 <x-layouts.app>
-    <h2 id="titulo-pagina" class="text-2xl font-bold mb-4">Lista de Tipos de Responsável</h2>
+    <section class="p-6 w-full max-w-[80vw] ml-auto">
+
+        @if (session('success') || session('error'))
+        <div
+            x-data="{ show: true }"
+            x-init="setTimeout(() => show = false, 3000)"
+            x-show="show"
+            class="fixed top-6 left-1/2 z-50 px-4 py-3 rounded-md text-white font-semibold shadow-lg flex items-center gap-2
+        {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}"
+            role="alert">
+            @if (session('success'))
+            <x-heroicon-o-check-circle class="w-6 h-6 text-white" />
+            <span>{{ session('success') }}</span>
+            @else
+            <x-heroicon-o-x-circle class="w-6 h-6 text-white" />
+            <span>{{ session('error') }}</span>
+            @endif
+        </div>
+        @endif
+    <h1 id="titulo-pagina" class="text-2xl font-bold mb-4">Lista de Tipos de Responsável</h1>
 
     <div class="flex justify-end items-center mb-4">
         <a href="{{ route('tiporesponsavel.create') }}"
@@ -61,5 +80,5 @@
         </table>
     </div>
 
-
+</section>
 </x-layouts.app>
