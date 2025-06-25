@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{ConfiguracoesController, EventoController, FichaController, TipoMovimentoController, TipoResponsavelController};
+use App\Http\Controllers\{ConfiguracoesController, EventoController, FichaController, TipoMovimentoController, TipoResponsavelController, TipoSituacaoController};
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -23,6 +23,7 @@ Route::middleware(['auth'])->group(function () {
         'eventos' => EventoController::class,
         'tiposmovimentos' => TipoMovimentoController::class,
         'tiporesponsavel' => TipoResponsavelController::class,
+        'tiposituacao' => TipoSituacaoController::class,
     ]);
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
