@@ -10,8 +10,7 @@ class PessoaHabilidade extends Model
     use HasFactory;
 
     protected $table = 'pessoa_habilidade';
-    public $incrementing = false;
-    protected $primaryKey = null; // porque é chave composta
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_pessoa',

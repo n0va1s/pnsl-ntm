@@ -13,6 +13,11 @@ class TipoSituacao extends Model
     protected $primaryKey = 'idt_situacao';
     public $timestamps = false;
 
+    const CADASTRADA = 1;
+    const CONFIRMADA = 7;
+    const DESISTENTE = 8;
+    const CANCELADA = 9;
+
     protected $fillable = ['des_situacao'];
 
     public function fichasAnalises()
@@ -20,4 +25,3 @@ class TipoSituacao extends Model
         return $this->hasMany(FichaAnalise::class, 'idt_situacao');
     }
 }
-

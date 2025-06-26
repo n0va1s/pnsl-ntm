@@ -11,6 +11,7 @@ class Habilidade extends Model
 
     protected $table = 'habilidade';
     protected $primaryKey = 'idt_habilidade';
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_equipe',

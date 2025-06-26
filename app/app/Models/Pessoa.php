@@ -11,7 +11,7 @@ class Pessoa extends Model
 
     protected $table = 'pessoa';
     protected $primaryKey = 'idt_pessoa';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'nom_pessoa', 'des_telefone', 'des_endereco',

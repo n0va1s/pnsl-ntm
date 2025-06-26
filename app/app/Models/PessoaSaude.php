@@ -10,8 +10,7 @@ class PessoaSaude extends Model
     use HasFactory;
 
     protected $table = 'pessoa_saude';
-    public $timestamps = false;
-    public $incrementing = false;
+    public $timestamps = true;
 
     protected $fillable = ['idt_pessoa', 'idt_restricao', 'txt_complemento'];
 
@@ -25,4 +24,3 @@ class PessoaSaude extends Model
         return $this->belongsTo(TipoRestricao::class, 'idt_restricao');
     }
 }
-

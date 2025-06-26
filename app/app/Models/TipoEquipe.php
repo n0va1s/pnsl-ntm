@@ -11,7 +11,7 @@ class TipoEquipe extends Model
 
     protected $table = 'tipo_equipe';
     protected $primaryKey = 'idt_equipe';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = ['des_grupo'];
 

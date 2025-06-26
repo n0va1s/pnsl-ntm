@@ -10,8 +10,7 @@ class FichaSaude extends Model
     use HasFactory;
 
     protected $table = 'ficha_saude';
-    public $timestamps = false;
-    public $incrementing = false;
+    public $timestamps = true;
 
     protected $fillable = ['idt_ficha', 'idt_restricao', 'txt_complemento'];
 
@@ -25,4 +24,3 @@ class FichaSaude extends Model
         return $this->belongsTo(TipoRestricao::class, 'idt_restricao');
     }
 }
-
