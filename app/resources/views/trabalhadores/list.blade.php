@@ -32,15 +32,15 @@
 
         <div class="overflow-x-auto mt-4">
             <table class="w-full text-left border border-gray-200 dark:border-zinc-700 rounded-md overflow-hidden text-sm">
-                <thead class="bg-gray-100 dark:bg-zinc-800">
+                <thead class="bg-gray-100">
                     <tr>
-                        <th class="p-3 font-semibold text-gray-800 dark:text-gray-200">Nome</th>
-                        <th class="p-3 font-semibold text-gray-800 dark:text-gray-200">Apelido</th>
-                        <th class="p-3 font-semibold text-gray-800 dark:text-gray-200">Gênero</th>
-                        <th class="p-3 font-semibold text-gray-800 dark:text-gray-200">Telefone</th>
-                        <th class="p-3 font-semibold text-gray-800 dark:text-gray-200">Endereço</th>
-                        <th class="p-3 font-semibold text-gray-800 dark:text-gray-200">Toca violão?</th>
-                        <th class="p-3 font-semibold text-center text-gray-800 dark:text-gray-200 w-24">Ações</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Nome</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Apelido</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Gênero</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Telefone</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Endereço</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Toca violão?</th>
+                        <th class="p-3 font-semibold text-center dark:text-gray-800 w-24">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,7 +51,7 @@
                             <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->tip_genero }}</td>
                             <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->tel_pessoa }}</td>
                             <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->des_endereco }}</td>
-                            <td class="p-3 text-gray-900 dark:text-gray-100">
+                            <td class="p-3 text-gray-900 dark:text-gray-100 text-center">
                                 {{ $trabalhador->ind_toca_violao ? 'Sim' : 'Não' }}
                             </td>
                             <td class="p-3 flex justify-end items-center gap-2">

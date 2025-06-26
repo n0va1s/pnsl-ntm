@@ -174,8 +174,9 @@
         {{-- Botões --}}
         <div class="flex items-center gap-4">
             <button type="submit"
-                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    aria-label="Salvar inscrição de trabalhador">
+                class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                aria-label="Salvar inscrição de trabalhador"
+            >
                 <x-heroicon-c-arrow-long-right class="w-5 h-5 mr-2" />
                 Salvar
             </button>

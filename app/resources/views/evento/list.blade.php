@@ -56,7 +56,7 @@
 
                 <caption class="sr-only">Lista de Eventos</caption>
                 <thead class="bg-gray-100">
-                    <tr">
+                    <tr>
 
                         <th class="p-3 font-semibold dark:text-gray-800">Descrição</th>
                         <th class="p-3 font-semibold dark:text-gray-800">Número</th>
@@ -69,11 +69,11 @@
                 </thead>
                 <tbody>
                     @forelse ($eventos as $evento)
-                        <tr class="border-t hover:bg-gray-50">
-                            <td class="p-3 text-gray-900">{{ $evento->des_evento }}</td>
-                            <td class="p-3 text-gray-700">Nº {{ $evento->num_evento }}</td>
-                            <td class="p-3 text-gray-700">{{ $evento->getDataInicioFormatada() }}</td>
-                            <td class="p-3 text-gray-700">{{ $evento->getDataTerminoFormatada() }}</td>
+                        <tr class="border-t dark:hover:bg-gray-500">
+                            <td class="p-3 text-gray-900 dark:text-gray-300">{{ $evento->des_evento }}</td>
+                            <td class="p-3 text-gray-700 dark:text-gray-300">Nº {{ $evento->num_evento }}</td>
+                            <td class="p-3 text-gray-700 dark:text-gray-300">{{ $evento->getDataInicioFormatada() }}</td>
+                            <td class="p-3 text-gray-700 dark:text-gray-300">{{ $evento->getDataTerminoFormatada() }}</td>
                             <td class="p-3">
                                 @php
                                     $sig_movimento = $evento->movimento->des_sigla;
@@ -81,22 +81,32 @@
 
                                 @if ($sig_movimento === 'ECC')
                                     <span
-                                        class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                                        class="inline-flex items-center rounded-full bg-lime-400 px-2 py-0.5 text-xs font-medium text-green-700">
                                         {{ $sig_movimento }}
                                     </span>
                                 @elseif ($sig_movimento === 'Segue-Me')
                                     <span
-                                        class="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800">
+                                        class="inline-flex items-center rounded-full bg-orange-300 px-2 py-0.5 text-xs font-medium text-red-700">
                                         {{ $sig_movimento }}
                                     </span>
                                 @else
                                     <span
-                                        class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                                        class="inline-flex items-center rounded-full bg-sky-400 px-2 py-0.5 text-xs font-medium text-blue-700">
                                         {{ $sig_movimento }}
                                     </span>
                                 @endif
                             </td>
 
+                            {{-- Coluna Inscrever-se --}}
+                            <td class="p-3 items-center">
+                                <a href="{{ route('trabalhadores.create') }}"
+                                    class="inline-flex items-center px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <x-heroicon-o-user-plus class="w-4 h-4 mr-1" />
+                                    <span class="sr-only sm:not-sr-only">Inscrever</span>
+                                </a>
+                            </td>
+
+                        {{-- Coluna Ações --}}
                             <td class="p-3 flex items-center gap-2">
                                 <a href="{{ route('eventos.edit', $evento) }}"
                                     class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1 rounded-md">

@@ -23,11 +23,8 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get(
-    '/configuracoes',
 Route::get('/configuracoes',
-    [ConfiguracoesController::class, 'index']
-)->name('configuracoes.index');
+    [ConfiguracoesController::class, 'index'])->name('configuracoes.index');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
