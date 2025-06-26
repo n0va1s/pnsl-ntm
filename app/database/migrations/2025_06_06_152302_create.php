@@ -49,7 +49,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabela Evento ex: XXX VEM, 
+        // Tabela Evento ex: XXX VEM,
         Schema::create('evento', function (Blueprint $table) {
             $table->id('idt_evento');
             $table->foreignId('idt_movimento')
@@ -58,6 +58,9 @@ return new class extends Migration
             $table->string('num_evento', 5)->nullable();
             $table->date('dat_inicio');
             $table->date('dat_termino')->nullable();
+            $table->string('val_trabalhador', 10)->nullable(); // contribuição do trabalhador
+            $table->string('val_venista', 10)->nullable(); // contribuição do venista (participante)
+            $table->string('val_camiseta', 10)->nullable(); // valor da camiseta
             $table->boolean('ind_pos_encontro')->default(false);
             $table->timestamps();
         });
@@ -148,6 +151,7 @@ return new class extends Migration
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
 
+
             $table->primary(['idt_ficha', 'idt_restricao']);
         });
 
@@ -171,11 +175,16 @@ return new class extends Migration
             $table->unsignedBigInteger('idt_pessoa')->primary();
             $table->foreign('idt_pessoa')->references('id')->on('users')->onDelete('cascade');
             $table->string('nom_pessoa', 255);
+            $table->string('nom_apelido', 255)->nullable();
+            $table->string('tel_pessoa', 20)->nullable();
             $table->date('dat_nascimento')->nullable();
             $table->string('des_telefone', 20)->nullable();
             $table->string('des_endereco', 255)->nullable();
+            $table->string('eml_pessoa', 255)->nullable();
             $table->string('tam_camiseta', 2)->nullable();
             $table->boolean('ind_toca_violao')->default(false);
+            $table->string('tip_genero', 10)->nullable(); // masculino, feminino, outro
+            $table->string('ind_consentimento', 3)->default('não'); // sim, não
             $table->timestamps();
         });
 
@@ -188,6 +197,7 @@ return new class extends Migration
                 ->constrained('tipo_restricao', 'idt_restricao');
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
+
 
             $table->primary(['idt_pessoa', 'idt_restricao']);
         });
@@ -219,6 +229,7 @@ return new class extends Migration
 
         // Tabela Participante indica todos o encontro que a pessoa fez
         Schema::create('participante', function (Blueprint $table) {
+            $table->foreignId('idt_participante')->nullable();
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
                 ->onDelete('cascade');
@@ -228,7 +239,19 @@ return new class extends Migration
             $table->string('tip_cor_troca', 10)->nullable();
             $table->timestamps();
 
+
             $table->primary(['idt_pessoa', 'idt_evento']);
+        });
+
+         // Tabela Presenca (Frequencia dos participantes nos eventos)
+        Schema::create('presenca', function (Blueprint $table) {
+            $table->foreignId('idt_participante')
+                  ->constrained('participante', 'idt_participante')
+                  ->onDelete('cascade');
+            $table->date('dat_presenca');
+            $table->boolean('ind_presente')->default(false); // se o participante estava presente nesse dia
+            $table->timestamps();
+            $table->primary(['idt_participante', 'dat_presenca']);
         });
 
         // Tabela Trabalhador indica os encontros que a pessoa trabalhou ou coordenou
@@ -247,7 +270,7 @@ return new class extends Migration
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->timestamps();
 
-            $table->primary(['idt_pessoa', 'idt_evento']);
+          $table->primary(['idt_pessoa', 'idt_evento']);
         });
     }
 
@@ -277,3 +300,4 @@ return new class extends Migration
         Schema::dropIfExists('tipo_situacao');
     }
 };
+

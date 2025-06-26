@@ -18,6 +18,9 @@ class Evento extends Model
         'num_evento',
         'dat_inicio',
         'dat_termino',
+        'val_trabalhador',
+        'val_venista',
+        'val_camiseta',
         'ind_pos_encontro',
     ];
 
