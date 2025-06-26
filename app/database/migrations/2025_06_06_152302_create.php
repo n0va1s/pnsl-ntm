@@ -130,8 +130,8 @@ return new class extends Migration
                 ->constrained('ficha', 'idt_ficha');
             $table->timestamps();
 
-           $table->primary(['idt_ficha', 'idt_situacao']);
-         });
+            $table->primary(['idt_ficha']);
+        });
 
         // Tabela Ficha_Saude com os dados de saude do candidato
         Schema::create('ficha_saude', function (Blueprint $table) {
@@ -233,11 +233,11 @@ return new class extends Migration
             $table->primary(['idt_pessoa', 'idt_evento']);
         });
 
-         // Tabela Presenca (Frequencia dos participantes nos eventos)
+        // Tabela Presenca (Frequencia dos participantes nos eventos)
         Schema::create('presenca', function (Blueprint $table) {
             $table->foreignId('idt_participante')
-                  ->constrained('participante', 'idt_participante')
-                  ->onDelete('cascade');
+                ->constrained('participante', 'idt_participante')
+                ->onDelete('cascade');
             $table->date('dat_presenca');
             $table->boolean('ind_presente')->default(false); // se o participante estava presente nesse dia
             $table->timestamps();
@@ -291,4 +291,3 @@ return new class extends Migration
         Schema::dropIfExists('tipo_situacao');
     }
 };
-
