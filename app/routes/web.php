@@ -1,6 +1,11 @@
 <?php
 
-use App\Http\Controllers\{ConfiguracoesController, EventoController, FichaController, TipoMovimentoController, TipoResponsavelController, TipoSituacaoController};
+use App\Http\Controllers\ConfiguracoesController;
+use App\Http\Controllers\EventoController;
+use App\Http\Controllers\TipoMovimentoController;
+use App\Http\Controllers\TipoResponsavelController;
+use App\Http\Controllers\TipoSituacaoController;
+use App\Http\Controllers\TrabalhadorController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -25,6 +30,11 @@ Route::middleware(['auth'])->group(function () {
         'tiporesponsavel' => TipoResponsavelController::class,
         'tiposituacao' => TipoSituacaoController::class,
     ]);
+
+    Route::resource('trabalhadores', TrabalhadorController::class)
+        ->parameters([
+            'trabalhadores' => 'idt_pessoa',
+        ]);
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
