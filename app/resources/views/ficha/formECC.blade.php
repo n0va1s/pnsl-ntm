@@ -12,7 +12,7 @@
                 Fichas
             </a>
         </div>
-        <form method="POST"
+        <form method="POST" x-data="{ bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }} }"
             action="{{ $ficha->exists ? route('fichas-ecc.update', $ficha) : route('fichas-ecc.store') }}"
             class="space-y-8">
             @csrf
@@ -53,7 +53,7 @@
                             <label for="idt_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Evento <span class="text-red-600">*</span>
                             </label>
-                            <select name="idt_evento" id="idt_evento" required
+                            <select name="idt_evento" id="idt_evento" required x-bind:disabled="bloqueado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('idt_evento') border-red-500 @enderror">
                                 <option value="">Selecione um evento</option>
@@ -74,7 +74,7 @@
                             <label for="tip_genero" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Gênero <span class="text-red-600">*</span>
                             </label>
-                            <select name="tip_genero" id="tip_genero" required
+                            <select name="tip_genero" id="tip_genero" required x-bind:disabled="bloqueado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('tip_genero') border-red-500 @enderror">
                                 <option value="">Selecione o gênero</option>
@@ -97,7 +97,7 @@
                             <label for="nom_candidato" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Nome completo <span class="text-red-600">*</span>
                             </label>
-                            <input type="text" name="nom_candidato" id="nom_candidato"
+                            <input type="text" name="nom_candidato" id="nom_candidato" x-bind:disabled="bloqueado"
                                 value="{{ old('nom_candidato', $ficha->nom_candidato) }}" required maxlength="255"
                                 placeholder="Digite o nome completo"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
@@ -112,7 +112,7 @@
                             <label for="nom_apelido" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Apelido <span class="text-red-600">*</span>
                             </label>
-                            <input type="text" name="nom_apelido" id="nom_apelido"
+                            <input type="text" name="nom_apelido" id="nom_apelido" x-bind:disabled="bloqueado"
                                 value="{{ old('nom_apelido', $ficha->nom_apelido) }}" required maxlength="100"
                                 placeholder="Como gosta de ser chamado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
@@ -127,7 +127,7 @@
                             <label for="dat_nascimento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Data de Nascimento <span class="text-red-600">*</span>
                             </label>
-                            <input type="date" name="dat_nascimento" id="dat_nascimento"
+                            <input type="date" name="dat_nascimento" id="dat_nascimento" x-bind:disabled="bloqueado"
                                 value="{{ old('dat_nascimento', $ficha->getDataNascimentoFormatada()) }}" required
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('dat_nascimento') border-red-500 @enderror" />
@@ -141,7 +141,7 @@
                             <label for="tel_candidato" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Telefone
                             </label>
-                            <input type="text" name="tel_candidato" id="tel_candidato"
+                            <input type="text" name="tel_candidato" id="tel_candidato" x-bind:disabled="bloqueado"
                                 value="{{ old('tel_candidato', $ficha->tel_candidato) }}" maxlength="20"
                                 placeholder="(00) 00000-0000"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
@@ -156,7 +156,7 @@
                             <label for="eml_candidato" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Email <span class="text-red-600">*</span>
                             </label>
-                            <input type="email" name="eml_candidato" id="eml_candidato"
+                            <input type="email" name="eml_candidato" id="eml_candidato" x-bind:disabled="bloqueado"
                                 value="{{ old('eml_candidato', $ficha->eml_candidato) }}" required maxlength="255"
                                 placeholder="exemplo@email.com"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
@@ -171,7 +171,7 @@
                             <label for="des_endereco" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Endereço
                             </label>
-                            <input type="text" name="des_endereco" id="des_endereco"
+                            <input type="text" name="des_endereco" id="des_endereco" x-bind:disabled="bloqueado"
                                 value="{{ old('des_endereco', $ficha->des_endereco) }}" maxlength="500"
                                 placeholder="Rua, número, bairro, cidade"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
@@ -186,7 +186,7 @@
                             <label for="tam_camiseta" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Tamanho da Camiseta <span class="text-red-600">*</span>
                             </label>
-                            <select name="tam_camiseta" id="tam_camiseta" required
+                            <select name="tam_camiseta" id="tam_camiseta" required x-bind:disabled="bloqueado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('tam_camiseta') border-red-500 @enderror">
                                 <option value="">Selecione o tamanho</option>
@@ -207,7 +207,7 @@
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Como soube do evento
                             </label>
-                            <select name="tip_como_soube" id="tip_como_soube"
+                            <select name="tip_como_soube" id="tip_como_soube" x-bind:disabled="bloqueado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('tip_como_soube') border-red-500 @enderror">
                                 <option value="">Selecione uma opção</option>
@@ -237,6 +237,7 @@
                              caso seja marcado o checkbox sera enviado no request -->
                                 <input type="hidden" name="ind_consentimento" value="0">
                                 <input type="checkbox" name="ind_catolico" value="1"
+                                    x-bind:disabled="bloqueado"
                                     {{ old('ind_catolico', $ficha->ind_catolico) ? 'checked' : '' }}
                                     class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="text-gray-800 dark:text-gray-100">O candidato é católico?</span>
@@ -244,6 +245,7 @@
                             <label class="flex items-center space-x-2">
                                 <input type="hidden" name="ind_toca_instrumento" value="0">
                                 <input type="checkbox" name="ind_toca_instrumento" value="1"
+                                    x-bind:disabled="bloqueado"
                                     {{ old('ind_toca_instrumento', $ficha->ind_toca_instrumento) ? 'checked' : '' }}
                                     class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="text-gray-800 dark:text-gray-100">Toca algum instrumento?</span>
@@ -261,7 +263,7 @@
                         <label for="nom_conjuge" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Nome do Cônjuge
                         </label>
-                        <input type="text" name="nom_conjuge" id="nom_conjuge"
+                        <input type="text" name="nom_conjuge" id="nom_conjuge" x-bind:disabled="bloqueado"
                             value="{{ old('nom_conjuge', optional($ficha->fichaEcc)->nom_conjuge) }}" maxlength="150"
                             placeholder="Nome completo do cônjuge"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
@@ -278,6 +280,7 @@
                             Apelido do Cônjuge (opcional)
                         </label>
                         <input type="text" name="nom_apelido_conjuge" id="nom_apelido_conjuge"
+                            x-bind:disabled="bloqueado"
                             value="{{ old('nom_apelido_conjuge', optional($ficha->fichaEcc)->nom_apelido_conjuge) }}"
                             maxlength="50"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -288,7 +291,7 @@
                         <label for="tel_conjuge" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Telefone do Cônjuge
                         </label>
-                        <input type="text" name="tel_conjuge" id="tel_conjuge"
+                        <input type="text" name="tel_conjuge" id="tel_conjuge" x-bind:disabled="bloqueado"
                             value="{{ old('tel_conjuge', optional($ficha->fichaEcc)->tel_conjuge) }}" maxlength="15"
                             placeholder="(00) 00000-0000"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
@@ -305,6 +308,7 @@
                             Data de Nascimento do Cônjuge
                         </label>
                         <input type="date" name="dat_nascimento_conjuge" id="dat_nascimento_conjuge"
+                            x-bind:disabled="bloqueado"
                             value="{{ old('dat_nascimento_conjuge', optional($ficha->fichaEcc)->dat_nascimento_conjuge?->format('Y-m-d')) }}"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                 @error('dat_nascimento_conjuge') border-red-500 @enderror" />
@@ -319,7 +323,7 @@
                             class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Tamanho da Camiseta do Cônjuge
                         </label>
-                        <select name="tam_camiseta_conjuge" id="tam_camiseta_conjuge"
+                        <select name="tam_camiseta_conjuge" id="tam_camiseta_conjuge" x-bind:disabled="bloqueado"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Selecione</option>
                             @foreach (['PP', 'P', 'M', 'G', 'GG', 'XG'] as $tamanho)
@@ -341,6 +345,7 @@
                 <label class="flex items-center space-x-2">
                     <input type="hidden" name="ind_restricao" value="0">
                     <input type="checkbox" name="ind_restricao" value="1" x-model="mostrarRestricoes"
+                        x-bind:disabled="bloqueado"
                         {{ old('ind_restricao', $ficha->ind_restricao) ? 'checked' : '' }}
                         class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                     <span class="text-gray-800 dark:text-gray-100">Possui restrição alimentar?</span>
@@ -366,7 +371,7 @@
                             <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
                                 <div class="flex items-center space-x-2">
                                     <input type="checkbox" name="restricoes[{{ $restricao->idt_restricao }}]"
-                                        id="restricao_{{ $restricao->idt_restricao }}"
+                                        x-bind:disabled="bloqueado" id="restricao_{{ $restricao->idt_restricao }}"
                                         class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                         {{ $checked ? 'checked' : '' }}>
 
@@ -382,7 +387,8 @@
                                 </div>
 
                                 <input type="text" name="complementos[{{ $restricao->idt_restricao }}]"
-                                    value="{{ $complemento }}" placeholder="Complemento" maxlength="255"
+                                    x-bind:disabled="bloqueado" value="{{ $complemento }}"
+                                    placeholder="Complemento" maxlength="255"
                                     class="mt-2 sm:mt-0 sm:ml-2 px-3 py-1 border border-gray-300 dark:border-zinc-600 rounded w-full sm:w-1/2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                         @endforeach
@@ -397,6 +403,7 @@
                     <label class="flex items-center space-x-2">
                         <input type="hidden" name="ind_consentimento" value="0">
                         <input type="checkbox" name="ind_consentimento" value="1" required
+                            x-bind:disabled="bloqueado"
                             {{ old('ind_consentimento', $ficha->ind_consentimento) ? 'checked' : '' }}
                             class="rounded border-gray-300 text-blue-600 focus:ring-blue-500
                         @error('ind_consentimento') border-red-500 @enderror">
@@ -413,7 +420,7 @@
                     <label for="txt_observacao" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Observações
                     </label>
-                    <textarea name="txt_observacao" id="txt_observacao" rows="4" maxlength="1000"
+                    <textarea name="txt_observacao" id="txt_observacao" rows="4" maxlength="1000" x-bind:disabled="bloqueado"
                         placeholder="Inclua observações como remédios contínuos ou outros pontos de atenção"
                         class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
                     @error('txt_observacao') border-red-500 @enderror">{{ old('txt_observacao', $ficha->txt_observacao) }}</textarea>
@@ -434,7 +441,7 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Situação
                             </label>
-                            <select name="idt_situacao" id="idt_situacao" required
+                            <select name="idt_situacao" id="idt_situacao" required x-bind:disabled="bloqueado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                                 <option value="">Selecione
                                 a situação</option>
@@ -453,7 +460,7 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Análise
                             </label>
-                            <textarea name="txt_analise" id="txt_analise" rows="3"
+                            <textarea name="txt_analise" id="txt_analise" rows="3" x-bind:disabled="bloqueado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:outline-none"
                                 placeholder="Descreva a análise realizada">{{ old('txt_analise', $ultimaAnalise->txt_analise ?? '') }}</textarea>
                         </div>
@@ -463,7 +470,7 @@
 
             <!-- Ações -->
             <div class="flex gap-3 justify-end">
-                <button type="submit"
+                <button type="submit" x-bind:disabled="bloqueado"
                     class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
