@@ -11,7 +11,7 @@ class TipoResponsavel extends Model
 
     protected $table = 'tipo_responsavel';
     protected $primaryKey = 'idt_responsavel';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = ['des_responsavel'];
 
@@ -20,4 +20,3 @@ class TipoResponsavel extends Model
         return $this->hasMany(FichaVem::class, 'idt_falar_com');
     }
 }
-

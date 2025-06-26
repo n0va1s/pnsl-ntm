@@ -1,11 +1,17 @@
 <?php
 
-use App\Http\Controllers\ConfiguracoesController;
-use App\Http\Controllers\EventoController;
-use App\Http\Controllers\TipoMovimentoController;
-use App\Http\Controllers\TipoResponsavelController;
-use App\Http\Controllers\TipoSituacaoController;
-use App\Http\Controllers\TrabalhadorController;
+use App\Http\Controllers\{
+    ConfiguracoesController,
+    EventoController,
+    FichaVemController,
+    FichaEccController,
+    TipoMovimentoController,
+    TipoResponsavelController,
+    TipoSituacaoController,
+    TrabalhadorController,
+};
+
+
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -17,15 +23,18 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::get(
+    '/configuracoes',
 Route::get('/configuracoes',
     [ConfiguracoesController::class, 'index']
 )->name('configuracoes.index');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
-
     Route::resources([
         'eventos' => EventoController::class,
+        'fichas-vem' => FichaVemController::class,
+        'fichas-ecc' => FichaEccController::class,
         'tiposmovimentos' => TipoMovimentoController::class,
         'tiporesponsavel' => TipoResponsavelController::class,
         'tiposituacao' => TipoSituacaoController::class,
@@ -41,4 +50,4 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

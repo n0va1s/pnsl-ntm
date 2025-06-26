@@ -1,4 +1,4 @@
-<x-layouts.app :title="'Novo Evento'">
+<x-layouts.app :title="'Evento'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900">Novo Evento</h1>

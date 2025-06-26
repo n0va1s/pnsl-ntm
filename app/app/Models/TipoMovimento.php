@@ -13,6 +13,10 @@ class TipoMovimento extends Model
     protected $primaryKey = 'idt_movimento';
     public $timestamps = true;
 
+    const ECC = 1;
+    const VEM = 2;
+    const SegueMe = 3;
+
     protected $fillable = [
         'nom_movimento',
         'des_sigla',
@@ -22,6 +26,11 @@ class TipoMovimento extends Model
     protected $casts = [
         'dat_inicio' => 'date',
     ];
+
+    public function eventos()
+    {
+        return $this->hasMany(Evento::class, 'idt_movimento');
+    }
 
     /**
      * Accessor para formatar a data de início

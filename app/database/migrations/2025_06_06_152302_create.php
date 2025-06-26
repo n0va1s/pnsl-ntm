@@ -93,6 +93,7 @@ return new class extends Migration
             $table->boolean('ind_toca_instrumento')->default(false); //toca algum instrumento
             $table->boolean('ind_consentimento')->default(false); //concordou com o termo
             $table->boolean('ind_aprovado')->default(false); // flag para facilitar busca
+            $table->boolean('ind_restricao')->default(false); // nao possui restricao alimentar
             $table->text('txt_observacao')->nullable(); //qual o instrumento, remedio continuo
             $table->timestamps();
         });
@@ -100,7 +101,8 @@ return new class extends Migration
         // Tabela Ficha com os detalhes do vem
         Schema::create('ficha_vem', function (Blueprint $table) {
             $table->foreignId('idt_ficha')
-                ->constrained('ficha', 'idt_ficha');
+                ->constrained('ficha', 'idt_ficha')
+                ->onDelete('cascade');
             $table->foreignId('idt_falar_com')
                 ->constrained('tipo_responsavel', 'idt_responsavel');
             $table->string('des_onde_estuda', 255);
@@ -108,30 +110,36 @@ return new class extends Migration
             $table->string('nom_pai', 150)->nullable();
             $table->string('tel_pai', 15)->nullable();
             $table->string('nom_mae', 150)->nullable();
-            $table->string('tel_mae', 10)->nullable();
+            $table->string('tel_mae', 15)->nullable();
             $table->timestamps();
+
+            $table->primary(['idt_ficha']);
         });
 
         // Tabela Ficha com os detalhes do ecc
         Schema::create('ficha_ecc', function (Blueprint $table) {
             $table->foreignId('idt_ficha')
-                ->constrained('ficha', 'idt_ficha');
+                ->constrained('ficha', 'idt_ficha')
+                ->onDelete('cascade');
             $table->string('nom_conjuge', 150);
             $table->string('nom_apelido_conjuge', 50)->nullable();
             $table->string('tel_conjuge', 15);
-            $table->date('dat_nascimento_conjuge', 10);
+            $table->date('dat_nascimento_conjuge');
             $table->string('tam_camiseta_conjuge', 2);
             $table->timestamps();
+
+            $table->primary(['idt_ficha']);
         });
 
         // Tabela Ficha com os detalhes do Segue-Me
         Schema::create('ficha_sgm', function (Blueprint $table) {
             $table->foreignId('idt_ficha')
-                ->constrained('ficha', 'idt_ficha');
+                ->constrained('ficha', 'idt_ficha')
+                ->onDelete('cascade');
             $table->timestamps();
 
-           $table->primary(['idt_ficha', 'idt_situacao']);
-         });
+            $table->primary(['idt_ficha']);
+        });
 
         // Tabela Ficha_Saude com os dados de saude do candidato
         Schema::create('ficha_saude', function (Blueprint $table) {
@@ -201,6 +209,8 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->string('url_foto'); //armazenar no filesystem
             $table->timestamps();
+
+            $table->primary(['idt_pessoa']);
         });
 
         // Tabela Pessoa_Habilidade ex: pessoa 33 sabe cantar e recortar papel
@@ -233,11 +243,11 @@ return new class extends Migration
             $table->primary(['idt_pessoa', 'idt_evento']);
         });
 
-         // Tabela Presenca (Frequencia dos participantes nos eventos)
+        // Tabela Presenca (Frequencia dos participantes nos eventos)
         Schema::create('presenca', function (Blueprint $table) {
             $table->foreignId('idt_participante')
-                  ->constrained('participante', 'idt_participante')
-                  ->onDelete('cascade');
+                ->constrained('participante', 'idt_participante')
+                ->onDelete('cascade');
             $table->date('dat_presenca');
             $table->boolean('ind_presente')->default(false); // se o participante estava presente nesse dia
             $table->timestamps();
@@ -260,8 +270,7 @@ return new class extends Migration
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->timestamps();
 
-
-            $table->primary(['idt_pessoa', 'idt_evento', 'idt_equipe']);
+          $table->primary(['idt_pessoa', 'idt_evento']);
         });
     }
 
@@ -291,4 +300,3 @@ return new class extends Migration
         Schema::dropIfExists('tipo_situacao');
     }
 };
-

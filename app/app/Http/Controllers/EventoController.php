@@ -18,15 +18,22 @@ class EventoController extends Controller
     public function index(Request $request): View
     {
         $search = $request->get('search');
-        
-        $eventos = Evento::when($search, function ($query, $search) {
+
+        $eventos = Evento::with(['movimento'])
+            ->when($search, function ($query, $search) {
                 return $query->search($search);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
 
-        return view('evento.list', compact('eventos', 'search'));
+        return view(
+            'evento.list',
+            compact(
+                'eventos',
+                'search'
+            )
+        );
     }
 
     /**
@@ -36,7 +43,7 @@ class EventoController extends Controller
     {
         $movimentos = TipoMovimento::all();
         return view(
-            'evento.form', 
+            'evento.form',
             [
                 'evento' => new Evento,
                 'movimentos' => $movimentos
@@ -93,7 +100,7 @@ class EventoController extends Controller
     {
         try {
             $evento->delete();
-    
+
             return redirect()
                 ->route('eventos.index')
                 ->with('success', 'Evento excluído com sucesso!');
@@ -103,7 +110,7 @@ class EventoController extends Controller
                     ->route('eventos.index')
                     ->with('error', 'Não é possível excluir este evento. Ele está associado a fichas ou participantes.');
             }
-    
+
             // Se for outro erro de banco
             return redirect()
                 ->route('eventos.index')

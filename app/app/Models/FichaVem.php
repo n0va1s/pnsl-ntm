@@ -10,6 +10,7 @@ class FichaVem extends Model
     use HasFactory;
 
     protected $table = 'ficha_vem';
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_ficha',
