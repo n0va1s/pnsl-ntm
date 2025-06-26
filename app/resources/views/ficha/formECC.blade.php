@@ -337,49 +337,58 @@
             </div>
 
             <!-- Saúde e Restrições -->
-            <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Restrições</h2>
-                <div class="space-y-4">
-                    @php
-                        $restricoesSelecionadas = $ficha->fichaSaude->pluck('idt_restricao')->toArray();
-                        $complementos = $ficha->fichaSaude->pluck('txt_complemento', 'idt_restricao')->toArray();
-                    @endphp
+            <div x-data="{ mostrarRestricoes: {{ old('ind_restricao', $ficha->ind_restricao ?? false) ? 'true' : 'false' }} }">
+                <label class="flex items-center space-x-2">
+                    <input type="hidden" name="ind_restricao" value="0">
+                    <input type="checkbox" name="ind_restricao" value="1" x-model="mostrarRestricoes"
+                        {{ old('ind_restricao', $ficha->ind_restricao) ? 'checked' : '' }}
+                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-gray-800 dark:text-gray-100">Possui restrição alimentar?</span>
+                </label>
 
-                    @foreach ($restricoes as $restricao)
+                <div x-show="mostrarRestricoes" x-transition class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Restrições</h2>
+                    <div class="space-y-4">
                         @php
-                            $checked = in_array($restricao->idt_restricao, $restricoesSelecionadas);
-                            $complemento = old(
-                                "complementos.{$restricao->idt_restricao}",
-                                $complementos[$restricao->idt_restricao] ?? '',
-                            );
+                            $restricoesSelecionadas = $ficha->fichaSaude->pluck('idt_restricao')->toArray();
+                            $complementos = $ficha->fichaSaude->pluck('txt_complemento', 'idt_restricao')->toArray();
                         @endphp
 
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
-                            <div class="flex items-center space-x-2">
-                                <input type="checkbox" name="restricoes[{{ $restricao->idt_restricao }}]"
-                                    id="restricao_{{ $restricao->idt_restricao }}"
-                                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                    {{ $checked ? 'checked' : '' }}>
+                        @foreach ($restricoes as $restricao)
+                            @php
+                                $checked = in_array($restricao->idt_restricao, $restricoesSelecionadas);
+                                $complemento = old(
+                                    "complementos.{$restricao->idt_restricao}",
+                                    $complementos[$restricao->idt_restricao] ?? '',
+                                );
+                            @endphp
 
-                                <label for="restricao_{{ $restricao->idt_restricao }}"
-                                    class="text-gray-800 dark:text-gray-100 flex items-center space-x-2">
-                                    <span
-                                        class="text-sm font-semibold px-2 py-0.5 rounded-full 
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" name="restricoes[{{ $restricao->idt_restricao }}]"
+                                        id="restricao_{{ $restricao->idt_restricao }}"
+                                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        {{ $checked ? 'checked' : '' }}>
+
+                                    <label for="restricao_{{ $restricao->idt_restricao }}"
+                                        class="text-gray-800 dark:text-gray-100 flex items-center space-x-2">
+                                        <span
+                                            class="text-sm font-semibold px-2 py-0.5 rounded-full 
                             bg-gray-200 text-gray-700 dark:bg-zinc-700 dark:text-gray-300">
-                                        {{ $restricao->tip_restricao }}
-                                    </span>
-                                    <span>{{ $restricao->des_restricao }}</span>
-                                </label>
-                            </div>
+                                            {{ $restricao->tip_restricao }}
+                                        </span>
+                                        <span>{{ $restricao->des_restricao }}</span>
+                                    </label>
+                                </div>
 
-                            <input type="text" name="complementos[{{ $restricao->idt_restricao }}]"
-                                value="{{ $complemento }}" placeholder="Complemento" maxlength="255"
-                                class="mt-2 sm:mt-0 sm:ml-2 px-3 py-1 border border-gray-300 dark:border-zinc-600 rounded w-full sm:w-1/2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    @endforeach
+                                <input type="text" name="complementos[{{ $restricao->idt_restricao }}]"
+                                    value="{{ $complemento }}" placeholder="Complemento" maxlength="255"
+                                    class="mt-2 sm:mt-0 sm:ml-2 px-3 py-1 border border-gray-300 dark:border-zinc-600 rounded w-full sm:w-1/2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
-
 
             <!-- Consentimentos -->
             <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">

@@ -25,7 +25,7 @@ class FichaVemController extends Controller
     {
         $search = $request->get('search');
 
-        $fichas = Ficha::with(['fichaVem', 'analises.situacao'])
+        $fichas = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])
             ->when($search, function ($query, $search) {
                 return $query->where('nom_candidato', 'like', "%{$search}%")
                     ->orWhere('nom_apelido', 'like', "%{$search}%");
@@ -94,7 +94,7 @@ class FichaVemController extends Controller
      */
     public function show($id)
     {
-        $ficha = Ficha::with(['fichaVem', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
 
         return view('ficha.formVEM', [
             'ficha' => $ficha,
@@ -114,7 +114,7 @@ class FichaVemController extends Controller
      */
     public function edit($id)
     {
-        $ficha = Ficha::with(['fichaVem', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
 
         return view('ficha.formVEM', [
             'ficha' => $ficha,
@@ -137,7 +137,7 @@ class FichaVemController extends Controller
         FichaVemRequest $vemRequest,
         $id
     ) {
-        $ficha = Ficha::with(['fichaVem', 'analises'])->findOrFail($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises'])->findOrFail($id);
 
         $fichaData = $fichaRequest->validated();
         $ficha->update($fichaData);
@@ -171,8 +171,10 @@ class FichaVemController extends Controller
             }
         }
 
-        if ($fichaRequest->filled('restricoes')) {
-            $ficha->fichaSaude()->delete();
+        $ficha->fichaSaude()->delete();
+        // filled() avalia se o campo existe no request e nao se foi marcado ou desmarcado
+        // por isso estou testando diretamente o campo
+        if ($fichaRequest->input('ind_restricao') == 1) {
             foreach ($fichaRequest->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
                     $ficha->fichaSaude()->create([

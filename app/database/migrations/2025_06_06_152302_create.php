@@ -90,6 +90,7 @@ return new class extends Migration
             $table->boolean('ind_toca_instrumento')->default(false); //toca algum instrumento
             $table->boolean('ind_consentimento')->default(false); //concordou com o termo
             $table->boolean('ind_aprovado')->default(false); // flag para facilitar busca
+            $table->boolean('ind_restricao')->default(false); // nao possui restricao alimentar
             $table->text('txt_observacao')->nullable(); //qual o instrumento, remedio continuo
             $table->timestamps();
         });

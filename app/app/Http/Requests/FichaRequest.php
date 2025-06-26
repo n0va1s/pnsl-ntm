@@ -27,6 +27,7 @@ class FichaRequest extends FormRequest
             'ind_catolico' => 'nullable|boolean',
             'ind_toca_instrumento' => 'nullable|boolean',
             'ind_consentimento' => 'required|accepted',
+            'ind_restricao' => 'required|boolean',
             'txt_observacao' => 'nullable|string',
             'idt_situacao' => ['nullable', 'exists:tipo_situacao,idt_situacao'],
             'txt_analise' => ['nullable', 'string'],

@@ -26,6 +26,7 @@ class FichaFactory extends Factory
             'ind_toca_instrumento' => $this->faker->boolean(30),
             'ind_consentimento' => $this->faker->boolean(95),
             'ind_aprovado' => $this->faker->boolean(60),
+            'ind_restricao' => $this->faker->boolean(60),
             'txt_observacao' => $this->faker->optional()->sentence(),
         ];
     }

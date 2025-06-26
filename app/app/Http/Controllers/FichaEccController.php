@@ -24,7 +24,7 @@ class FichaEccController extends Controller
     {
         $search = $request->get('search');
 
-        $fichas = Ficha::with(['fichaEcc', 'analises.situacao'])
+        $fichas = Ficha::with(['fichaEcc', 'fichaSaude', 'analises.situacao'])
             ->when($search, function ($query, $search) {
                 return $query->where('nom_candidato', 'like', "%{$search}%")
                     ->orWhere('nom_apelido', 'like', "%{$search}%");
@@ -92,7 +92,7 @@ class FichaEccController extends Controller
      */
     public function show($id)
     {
-        $ficha = Ficha::with(['fichaEcc', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaEcc', 'fichaSaude', 'analises.situacao'])->find($id);
         $ultimaAnalise = $ficha->analises()->latest('created_at')->first();
         return view('ficha.formECC', [
             'ficha' => $ficha,
@@ -109,7 +109,7 @@ class FichaEccController extends Controller
      */
     public function edit($id)
     {
-        $ficha = Ficha::with(['fichaEcc', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaEcc', 'fichaSaude', 'analises.situacao'])->find($id);
         $ultimaAnalise = $ficha->analises()->latest('created_at')->first();
         return view('ficha.formECC', [
             'ficha' => $ficha,
@@ -128,11 +128,10 @@ class FichaEccController extends Controller
         FichaEccRequest $eccRequest,
         $id
     ) {
-        $ficha = Ficha::with(['fichaEcc', 'analises'])->findOrFail($id);
+        $ficha = Ficha::with(['fichaEcc', 'fichaSaude', 'analises'])->findOrFail($id);
 
         $fichaData = $fichaRequest->validated();
         $ficha->update($fichaData);
-
 
         // Nao usei o UpdateOrCreate porque a chave e composta
         // Verificamos se o registro existe para decidir a operacao (update or create)
@@ -163,8 +162,10 @@ class FichaEccController extends Controller
             }
         }
 
-        if ($fichaRequest->filled('restricoes')) {
-            $ficha->fichaSaude()->delete();
+        $ficha->fichaSaude()->delete();
+        // filled() avalia se o campo existe no request e nao se foi marcado ou desmarcado
+        // por isso estou testando diretamente o campo
+        if ($fichaRequest->input('ind_restricao') == 1) {
             foreach ($fichaRequest->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
                     $ficha->fichaSaude()->create([

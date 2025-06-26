@@ -28,6 +28,7 @@ class Ficha extends Model
         'ind_toca_instrumento',
         'ind_consentimento',
         'ind_aprovado',
+        'ind_restricao',
         'txt_observacao',
     ];
 
@@ -37,6 +38,7 @@ class Ficha extends Model
         'ind_toca_instrumento' => 'boolean',
         'ind_consentimento' => 'boolean',
         'ind_aprovado' => 'boolean',
+        'ind_restricao' => 'boolean',
     ];
 
     public function getRouteKeyName()
