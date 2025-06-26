@@ -10,6 +10,8 @@ class PessoaFoto extends Model
     use HasFactory;
 
     protected $table = 'pessoa_foto';
+    protected $primaryKey = 'idt_pessoa';
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_pessoa',

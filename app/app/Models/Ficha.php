@@ -11,6 +11,7 @@ class Ficha extends Model
 
     protected $table = 'ficha';
     protected $primaryKey = 'idt_ficha';
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_evento',
@@ -27,6 +28,7 @@ class Ficha extends Model
         'ind_toca_instrumento',
         'ind_consentimento',
         'ind_aprovado',
+        'ind_restricao',
         'txt_observacao',
     ];
 
@@ -36,7 +38,13 @@ class Ficha extends Model
         'ind_toca_instrumento' => 'boolean',
         'ind_consentimento' => 'boolean',
         'ind_aprovado' => 'boolean',
+        'ind_restricao' => 'boolean',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'idt_ficha';
+    }
 
     // RELACIONAMENTOS
 
@@ -53,6 +61,16 @@ class Ficha extends Model
     public function fichaEcc()
     {
         return $this->hasOne(FichaEcc::class, 'idt_ficha');
+    }
+
+    public function fichaSaude()
+    {
+        return $this->hasMany(FichaSaude::class, 'idt_ficha');
+    }
+
+    public function analises()
+    {
+        return $this->hasMany(FichaAnalise::class, 'idt_ficha');
     }
 
     public function aprovar()
@@ -77,5 +95,10 @@ class Ficha extends Model
         }
 
         $this->update(['ind_aprovado' => true]);
+    }
+
+    public function getDataNascimentoFormatada()
+    {
+        return $this->dat_nascimento ? $this->dat_nascimento->format('Y-m-d') : null;
     }
 }

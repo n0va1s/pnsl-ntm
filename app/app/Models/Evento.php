@@ -31,6 +31,11 @@ class Evento extends Model
         'ind_pos_encontro' => 'boolean',
     ];
 
+    public function movimento()
+    {
+        return $this->belongsTo(TipoMovimento::class, 'idt_movimento');
+    }
+
     /**
      * Accessor para formatar a data de início
      */
@@ -62,7 +67,7 @@ class Evento extends Model
     {
         return $query->where(function ($query) use ($search) {
             $query->where('des_evento', 'like', "%{$search}%")
-                  ->orWhere('num_evento', 'like', "%{$search}%");
+                ->orWhere('num_evento', 'like', "%{$search}%");
         });
     }
 }

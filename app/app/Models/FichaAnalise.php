@@ -10,10 +10,8 @@ class FichaAnalise extends Model
     use HasFactory;
 
     protected $table = 'ficha_analise';
-    public $timestamps = false;
-    public $incrementing = false;
+    public $timestamps = true;
 
-    protected $primaryKey = null;
 
     protected $fillable = ['idt_ficha', 'idt_situacao', 'txt_analise'];
 
@@ -27,4 +25,3 @@ class FichaAnalise extends Model
         return $this->belongsTo(TipoSituacao::class, 'idt_situacao');
     }
 }
-

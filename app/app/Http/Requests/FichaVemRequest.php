@@ -20,7 +20,7 @@ class FichaVemRequest extends FormRequest
             'nom_pai'          => 'nullable|string|max:150',
             'tel_pai'          => 'nullable|string|max:15',
             'nom_mae'          => 'nullable|string|max:150',
-            'tel_mae'          => 'nullable|string|max:10',
+            'tel_mae'          => 'nullable|string|max:15',
         ];
     }
 

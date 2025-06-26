@@ -10,8 +10,7 @@ class Participante extends Model
     use HasFactory;
 
     protected $table = 'participante';
-    public $timestamps = false;
-    public $incrementing = false;
+    public $timestamps = true;
 
     protected $fillable = ['idt_pessoa',
                             'idt_evento',
@@ -28,4 +27,3 @@ class Participante extends Model
         return $this->belongsTo(Pessoa::class, 'idt_pessoa');
     }
 }
-
