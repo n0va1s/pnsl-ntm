@@ -2,7 +2,7 @@
 
 **Como** Administrador do Sistema 
 **Quero** cadastrar, editar e excluir tipos de responsáveis (Ex.: Mãe, Pai, Avó, Avô, etc.) 
-**Para** poder me voluntariar em alguma equipe para que o encontro aconteça
+**Para** que os tipos de responsáveis sejam devidamente classificados e organizado.
 
 ---
 

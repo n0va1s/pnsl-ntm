@@ -5,8 +5,13 @@ use App\Http\Controllers\{
     EventoController,
     FichaVemController,
     FichaEccController,
-    TipoMovimentoController
+    TipoMovimentoController,
+    TipoResponsavelController,
+    TipoSituacaoController,
+    TrabalhadorController,
 };
+
+
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -18,10 +23,8 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get(
-    '/configuracoes',
-    [ConfiguracoesController::class, 'index']
-)->name('configuracoes.index');
+Route::get('/configuracoes',
+    [ConfiguracoesController::class, 'index'])->name('configuracoes.index');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -30,7 +33,14 @@ Route::middleware(['auth'])->group(function () {
         'fichas-vem' => FichaVemController::class,
         'fichas-ecc' => FichaEccController::class,
         'tiposmovimentos' => TipoMovimentoController::class,
+        'tiporesponsavel' => TipoResponsavelController::class,
+        'tiposituacao' => TipoSituacaoController::class,
     ]);
+
+    Route::resource('trabalhadores', TrabalhadorController::class)
+        ->parameters([
+            'trabalhadores' => 'idt_pessoa',
+        ]);
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');

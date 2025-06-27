@@ -5,7 +5,7 @@
             x-data="{ show: true }"
             x-init="setTimeout(() => show = false, 3000)"
             x-show="show"
-            class="mb-4 px-4 py-3 rounded-md text-white font-semibold flex items-center gap-2
+            class="fixed top-6 left-1/2 z-50 px-4 py-3 rounded-md text-white font-semibold shadow-lg flex items-center gap-2
         {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}"
             role="alert">
             @if (session('success'))
@@ -18,8 +18,8 @@
         </div>
         @endif
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">Gerenciar Movimentos</h1>
-            <p class="text-gray-700 mt-1">Cadastre e gerencie os tipos de movimentos do sistema.</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Movimentos</h1>
+            <p class="text-gray-700 mt-1 dark:text-gray-400">Cadastre e gerencie os tipos de movimentos do sistema.</p>
         </div>
 
         <div class="flex justify-end items-center mb-4">
@@ -35,21 +35,21 @@
             <table class="w-full text-left border border-gray-200 dark:border-zinc-700 rounded-md overflow-hidden text-sm">
 
                 <caption class="sr-only">Tipos de Movimentos</caption>
-                <thead>
-                    <tr class="bg-gray-100 dark:bg-zinc-800 text-gray-800 dark:text-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
 
-                        <th class="p-3 font-semibold">Descrição</th>
-                        <th class="p-3 font-semibold">Sigla</th>
-                        <th class="p-3 font-semibold">Data de Início</th>
-                        <th class="p-3 font-semibold">Ações</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Descrição</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Sigla</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Data de Início</th>
+                        <th class="p-3 font-semibold text-center dark:text-gray-800 w-24">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($tipos as $tipo)
-                    <tr class="border-t hover:bg-gray-50">
-                        <td class="p-3 text-gray-900">{{ $tipo->nom_movimento }}</td>
-                        <td class="p-3 text-gray-900">{{ $tipo->des_sigla }}</td>
-                        <td class="p-3 text-gray-900">{{ $tipo->getDataInicioFormatada() }}</td>
+                    <tr class="border-t hover:bg-gray-200 dark:hover:bg-gray-500">
+                        <td class="p-3 text-gray-900 dark:text-gray-300">{{ $tipo->nom_movimento }}</td>
+                        <td class="p-3 text-gray-900 dark:text-gray-300">{{ $tipo->des_sigla }}</td>
+                        <td class="p-3 text-gray-900 dark:text-gray-300">{{ $tipo->getDataInicioFormatada() }}</td>
 
                         <td class="p-3 flex items-center gap-2">
                             <a href="{{ route('tiposmovimentos.edit', $tipo) }}"
@@ -63,7 +63,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
-                                    class="inline-flex items-center gap-1 text-red-600 hover:text-red-800 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 px-2 py-1 rounded-md">
+                                    class="inline-flex items-center gap-1 text-red-600 hover:text-red-800 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 px-2 py-1 rounded-md cursor-pointer">
                                     <x-heroicon-o-trash class="w-5 h-5" />
                                     <span class="sr-only sm:not-sr-only">Excluir</span>
                                 </button>

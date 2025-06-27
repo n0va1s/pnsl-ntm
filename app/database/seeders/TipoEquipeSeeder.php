@@ -14,15 +14,15 @@ class TipoEquipeSeeder extends Seeder
     public function run(): void
     {
         $equipes = [
-            'Bandinha',
-            'Recepção',
-            'Reportagem',
-            'Coordenação Geral',
             'Alimentação',
-            'Sala',
+            'Bandinha',
+            'Coordenação Geral',
+            'Emaús',
             'Limpeza',
             'Oração',
-            'Emaús',
+            'Recepção',
+            'Reportagem',
+            'Sala',
             'Secretaria',
             'Vendinha',
         ];
