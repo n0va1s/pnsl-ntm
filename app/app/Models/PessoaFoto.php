@@ -15,7 +15,7 @@ class PessoaFoto extends Model
 
     protected $fillable = [
         'idt_pessoa',
-        'url_foto',
+        'med_foto',
     ];
 
     public function pessoa()

@@ -14,9 +14,15 @@ class Trabalhador extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'idt_pessoa', 'idt_evento', 'idt_equipe',
-        'ind_recomendado', 'ind_lideranca',
-        'ind_destaque', 'ind_coordenador'
+        'idt_pessoa',
+        'idt_evento',
+        'idt_equipe',
+        'ind_recomendado',
+        'ind_lideranca',
+        'ind_destaque',
+        'ind_camiseta_pediu',
+        'ind_camiseta_pagou',
+        'ind_coordenador',
     ];
 
     public function pessoa()
