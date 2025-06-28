@@ -17,6 +17,22 @@
 
     <!-- Conteúdo principal -->
     <main class="flex-1 px-6 py-12 max-w-7xl mx-auto space-y-20">
+        <header class="bg-white dark:bg-gray-900 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <h1 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                    NTM - Não Tenhais Medo
+                </h1>
+                <div class="space-x-4">
+                    <a href="/dashboard"
+                        class="text-sm font-medium px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition">
+                        Área Restrita </a>
+                    <a href="/register"
+                        class="text-sm font-medium px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                        Cadastre-se
+                    </a>
+                </div>
+            </div>
+        </header>
 
         <!-- Seção: Sistema de Gestão -->
         <section
@@ -88,6 +104,61 @@
                 </div>
             </div>
         </section>
+
+        <!-- FAQ Sections lado a lado -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto my-16 px-4">
+            <!-- FAQ VEM -->
+            <section class="max-w-full bg-blue-50 dark:bg-blue-900 rounded-xl p-6 shadow">
+                <h4 class="font-bold text-blue-600 mb-8">Perguntas Frequentes - VEM</h4>
+                <div class="space-y-4">
+                    <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                        <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium">
+                            Quem pode participar do VEM?
+                            <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <p class="mt-2 text-gray-700 dark:text-gray-100">Jovens solteiros entre 11 e 15 anos que
+                            desejam iniciar sua caminhada cristã.</p>
+                    </details>
+                </div>
+            </section>
+            <!-- FAQ Segue-Me -->
+            <section class="max-w-full bg-orange-50 dark:bg-orange-900 rounded-xl p-6 shadow">
+                <h4 class="font-bold text-orange-600 mb-8">Perguntas Frequentes - Segue-Me</h4>
+                <div class="space-y-4">
+                    <details class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-800">
+                        <summary class="flex justify-between items-center cursor-pointer text-orange-700 font-medium">
+                            Quem pode participar do Segue-Me?
+                            <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
+                                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <p class="mt-2 text-gray-700 dark:text-gray-100">Jovens solteiros entre 17 e 30 anos que
+                            desejam aprofundar sua caminhada cristã.</p>
+                    </details>
+                </div>
+            </section>
+
+            <!-- FAQ Segue-Me -->
+            <section class="max-w-full bg-green-50 dark:bg-green-900 rounded-xl p-6 shadow">
+                <h4 class="font-bold text-green-600 mb-8">Perguntas Frequentes - ECC</h4>
+                <div class="space-y-4">
+                    <details class="group border border-green-200 rounded-lg p-4 bg-white dark:bg-green-800">
+                        <summary class="flex justify-between items-center cursor-pointer text-green-700 font-medium">
+                            Quem pode participar do ECC?
+                            <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-green-600"
+                                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <p class="mt-2 text-gray-700 dark:text-gray-100">Casais de todas as idades</p>
+                    </details>
+                </div>
+            </section>
+        </div>
     </main>
 
     <!-- Rodapé -->
