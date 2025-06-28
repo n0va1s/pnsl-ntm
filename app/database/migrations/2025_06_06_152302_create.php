@@ -116,7 +116,6 @@ return new class extends Migration
             $table->string('nom_mae', 150)->nullable();
             $table->string('tel_mae', 15)->nullable();
             $table->timestamps();
-
             $table->primary(['idt_ficha']);
         });
 
@@ -131,7 +130,6 @@ return new class extends Migration
             $table->date('dat_nascimento_conjuge');
             $table->string('tam_camiseta_conjuge', 2);
             $table->timestamps();
-
             $table->primary(['idt_ficha']);
         });
 
@@ -141,7 +139,6 @@ return new class extends Migration
                 ->constrained('ficha', 'idt_ficha')
                 ->onDelete('cascade');
             $table->timestamps();
-
             $table->primary(['idt_ficha']);
         });
 
@@ -154,8 +151,6 @@ return new class extends Migration
                 ->constrained('tipo_restricao', 'idt_restricao');
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
-
-
             $table->primary(['idt_ficha', 'idt_restricao']);
         });
 
@@ -168,7 +163,6 @@ return new class extends Migration
                 ->constrained('tipo_situacao', 'idt_situacao');
             $table->text('txt_analise')->nullable();
             $table->timestamps();
-
             $table->primary(['idt_ficha', 'idt_situacao']);
         });
 
@@ -201,8 +195,6 @@ return new class extends Migration
                 ->constrained('tipo_restricao', 'idt_restricao');
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
-
-
             $table->primary(['idt_pessoa', 'idt_restricao']);
         });
 
@@ -213,7 +205,6 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->string('url_foto'); //armazenar no filesystem
             $table->timestamps();
-
             $table->primary(['idt_pessoa']);
         });
 
@@ -228,13 +219,12 @@ return new class extends Migration
             $table->integer('num_escala'); // zero a cinco quanto a pessoa sabe
             $table->text('txt_complemento');
             $table->timestamps();
-
             $table->primary(['idt_pessoa', 'idt_habilidade']);
         });
 
         // Tabela Participante indica todos o encontro que a pessoa fez
         Schema::create('participante', function (Blueprint $table) {
-            $table->foreignId('idt_participante')->nullable();
+            $table->id('idt_participante');
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
                 ->onDelete('cascade');
@@ -243,9 +233,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->string('tip_cor_troca', 10)->nullable();
             $table->timestamps();
-
-
-            $table->primary(['idt_pessoa', 'idt_evento']);
+            //$table->primary(['idt_pessoa', 'idt_evento']);
         });
 
         // Tabela Presenca (Frequencia dos participantes nos eventos)
@@ -274,7 +262,6 @@ return new class extends Migration
             $table->boolean('ind_destaque')->default(false); // indicaria para a coordenação geral?
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->timestamps();
-
             $table->primary(['idt_pessoa', 'idt_evento']);
         });
     }
