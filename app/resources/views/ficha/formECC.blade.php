@@ -479,14 +479,14 @@
                     </svg>
                     Salvar
                 </button>
-                <a href="{{ route('fichas-ecc.index') }}"
+                <a href="{{ route('fichas-ecc.approve', $ficha) }}""
                     class="inline-flex items-center px-4 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
-                    Cancelar
+                    Aprovar
                 </a>
             </div>
         </form>

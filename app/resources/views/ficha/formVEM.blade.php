@@ -512,14 +512,21 @@
                     </svg>
                     Salvar
                 </button>
-                <a href="{{ route('fichas-vem.index') }}"
-                    class="inline-flex items-center px-4 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md">
+                <a href="{{ route('fichas-ecc.approve', $ficha) }}"
+                    class="inline-flex items-center px-4 py-2 bg-{{ $ficha->ind_aprovado ? 'red-500 hover:bg-red-600' : 'green-500 hover:bg-green-600' }} text-white font-medium rounded-md shadow-sm transition duration-150 ease-in-out">
+
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"></path>
+                        @if ($ficha->ind_aprovado)
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path> <!-- Ícone de X -->
+                        @else
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path> <!-- Ícone de check -->
+                        @endif
                     </svg>
-                    Cancelar
+
+                    {{ $ficha->ind_aprovado ? 'Desfazer aprovação' : 'Aprovar' }}
                 </a>
             </div>
         </form>
