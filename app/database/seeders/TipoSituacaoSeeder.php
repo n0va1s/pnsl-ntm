@@ -14,7 +14,7 @@ class TipoSituacaoSeeder extends Seeder
      */
     public function run(): void
     {
-        $situacoes = ['Cadastrada', 'Avaliada', 'Encaminhada', 'Contactada', 'Pendente', 'Paga', 'Confirmada', 'Desistente', 'Cancelada'];
+        $situacoes = ['Cadastrada', 'Avaliada', 'Encaminhada', 'Contactada', 'Pendente', 'Paga'];
         foreach ($situacoes as $situacao) {
             TipoSituacao::firstOrCreate(['des_situacao' => $situacao]);
         }

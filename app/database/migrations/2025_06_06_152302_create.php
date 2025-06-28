@@ -33,19 +33,21 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabela Tipo_Equipe ex: bandinha, reportagem, oracao
-        Schema::create('tipo_equipe', function (Blueprint $table) {
-            $table->id('idt_equipe');
-            $table->string('des_grupo', 255);
-            $table->timestamps();
-        });
-
         // Tabela Tipo_Movimento ex: ECC, Segue-Me, VEM
         Schema::create('tipo_movimento', function (Blueprint $table) {
             $table->id('idt_movimento');
             $table->string('nom_movimento', 255);
             $table->string('des_sigla', 10);
             $table->date('dat_inicio');
+            $table->timestamps();
+        });
+
+        // Tabela Tipo_Equipe ex: bandinha, reportagem, oracao
+        Schema::create('tipo_equipe', function (Blueprint $table) {
+            $table->id('idt_equipe');
+            $table->foreignId('idt_movimento')
+                ->constrained('tipo_movimento', 'idt_movimento');
+            $table->string('des_grupo', 255);
             $table->timestamps();
         });
 
@@ -66,6 +68,7 @@ return new class extends Migration
         });
 
         // Tabela Habilidade ex: toca violao, sabe cantar, edicao de video
+        // Vamos validar com um Google Forms antes de implementar
         Schema::create('habilidade', function (Blueprint $table) {
             $table->id('idt_habilidade');
             $table->foreignId('idt_equipe')
@@ -96,6 +99,7 @@ return new class extends Migration
             $table->boolean('ind_restricao')->default(false); // nao possui restricao alimentar
             $table->text('txt_observacao')->nullable(); //qual o instrumento, remedio continuo
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Tabela Ficha com os detalhes do vem
@@ -214,6 +218,7 @@ return new class extends Migration
         });
 
         // Tabela Pessoa_Habilidade ex: pessoa 33 sabe cantar e recortar papel
+        // Vamos validar com um Google Forms antes de implementar
         Schema::create('pessoa_habilidade', function (Blueprint $table) {
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
@@ -270,7 +275,7 @@ return new class extends Migration
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->timestamps();
 
-          $table->primary(['idt_pessoa', 'idt_evento']);
+            $table->primary(['idt_pessoa', 'idt_evento']);
         });
     }
 

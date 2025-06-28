@@ -25,6 +25,10 @@ Route::get(
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
+    Route::get('fichas-vem/approve/{id}', [FichaVemController::class, 'approve'])
+        ->name('fichas-vem.approve');
+    Route::get('fichas-ecc/approve/{id}', [FichaEccController::class, 'approve'])
+        ->name('fichas-ecc.approve');
     Route::resources([
         'eventos' => EventoController::class,
         'fichas-vem' => FichaVemController::class,

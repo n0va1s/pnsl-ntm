@@ -14,9 +14,6 @@ class TipoSituacao extends Model
     public $timestamps = false;
 
     const CADASTRADA = 1;
-    const CONFIRMADA = 7;
-    const DESISTENTE = 8;
-    const CANCELADA = 9;
 
     protected $fillable = ['des_situacao'];
 

@@ -96,10 +96,10 @@ class EventoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Evento $evento): RedirectResponse
+    public function destroy($id): RedirectResponse
     {
         try {
-            $evento->delete();
+            Evento::find($id)->delete();
 
             return redirect()
                 ->route('eventos.index')

@@ -30,6 +30,7 @@ class TipoEquipeSeeder extends Seeder
         foreach ($equipes as $equipe) {
             DB::table('tipo_equipe')->insert([
                 'des_grupo' => $equipe,
+                'idt_movimento' => 2, //VEM 
             ]);
         }
 
