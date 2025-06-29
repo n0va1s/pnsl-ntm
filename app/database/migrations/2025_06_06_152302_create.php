@@ -189,6 +189,18 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Tabela Pessoa_Foto ex: foto da pessoa 22 tirada durante o evento
+        Schema::create('pessoa_foto', function (Blueprint $table) {
+            $table->foreignId('idt_pessoa')
+                ->constrained('pessoa', 'idt_pessoa')
+                ->onDelete('cascade');
+            $table->string('med_foto'); //armazenar no filesystem
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->primary(['idt_pessoa']);
+        });
+
         // Tabela Pessoa_Saude ex: pessoa 22 tem alergia a castanha
         Schema::create('pessoa_saude', function (Blueprint $table) {
             $table->foreignId('idt_pessoa')
@@ -199,20 +211,9 @@ return new class extends Migration
             $table->boolean('ind_remedio_regular')->default(false);
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
-
+            $table->softDeletes();
 
             $table->primary(['idt_pessoa', 'idt_restricao']);
-        });
-
-        // Tabela Pessoa_Foto ex: foto da pessoa 22 tirada durante o evento
-        Schema::create('pessoa_foto', function (Blueprint $table) {
-            $table->foreignId('idt_pessoa')
-                ->constrained('pessoa', 'idt_pessoa')
-                ->onDelete('cascade');
-            $table->string('med_foto'); //armazenar no filesystem
-            $table->timestamps();
-
-            $table->primary(['idt_pessoa']);
         });
 
         // Tabela Pessoa_Habilidade ex: pessoa 33 sabe cantar e recortar papel
@@ -273,8 +274,9 @@ return new class extends Migration
             $table->boolean('ind_camiseta_pagou')->default(false);
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->timestamps();
+            $table->softDeletes();
 
-          $table->primary(['idt_pessoa', 'idt_evento']);
+            $table->primary(['idt_pessoa', 'idt_evento']);
         });
     }
 
