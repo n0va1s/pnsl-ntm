@@ -13,7 +13,9 @@ class TipoResponsavel extends Model
     protected $primaryKey = 'idt_responsavel';
     public $timestamps = true;
 
-    protected $fillable = ['des_responsavel'];
+    protected $fillable = [
+        'des_responsavel'
+    ];
 
     public function fichas()
     {

@@ -12,10 +12,11 @@ class Participante extends Model
     protected $table = 'participante';
     public $timestamps = true;
 
-    protected $fillable = ['idt_pessoa',
-                            'idt_evento',
-                            'tip_cor_troca'
-                        ];
+    protected $fillable = [
+        'idt_pessoa',
+        'idt_evento',
+        'tip_cor_troca'
+    ];
 
     public function evento()
     {

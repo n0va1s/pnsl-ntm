@@ -16,6 +16,7 @@ class PessoaSaudeFactory extends Factory
         return [
             'idt_pessoa' => Pessoa::inRandomOrder()->first()->id ?? Pessoa::factory(),
             'idt_restricao' => TipoRestricao::inRandomOrder()->first()->idt_restricao,
+            'ind_remedio_regular' => $this->faker->boolean(),
             'txt_complemento' => $this->faker->optional()->sentence,
         ];
     }

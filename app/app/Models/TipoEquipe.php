@@ -13,7 +13,10 @@ class TipoEquipe extends Model
     protected $primaryKey = 'idt_equipe';
     public $timestamps = true;
 
-    protected $fillable = ['des_grupo'];
+    protected $fillable = [
+        'des_grupo',
+        'txt_documento',
+    ];
 
     public function trabalhadores()
     {
