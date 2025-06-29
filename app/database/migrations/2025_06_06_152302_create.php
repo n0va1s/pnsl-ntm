@@ -37,6 +37,7 @@ return new class extends Migration
         Schema::create('tipo_equipe', function (Blueprint $table) {
             $table->id('idt_equipe');
             $table->string('des_grupo', 255);
+            $table->text('txt_documento')->nullable();
             $table->timestamps();
         });
 
@@ -195,6 +196,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->foreignId('idt_restricao')
                 ->constrained('tipo_restricao', 'idt_restricao');
+            $table->boolean('ind_remedio_regular')->default(false);
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
 
@@ -207,7 +209,7 @@ return new class extends Migration
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
                 ->onDelete('cascade');
-            $table->string('url_foto'); //armazenar no filesystem
+            $table->string('med_foto'); //armazenar no filesystem
             $table->timestamps();
 
             $table->primary(['idt_pessoa']);
@@ -267,6 +269,8 @@ return new class extends Migration
             $table->boolean('ind_recomendado')->default(false); // recomenda trabalhar novamente?
             $table->boolean('ind_lideranca')->default(false); // tem potencial para liderar uma equipe no futuro?
             $table->boolean('ind_destaque')->default(false); // indicaria para a coordenação geral?
+            $table->boolean('ind_camiseta_pediu')->default(false);
+            $table->boolean('ind_camiseta_pagou')->default(false);
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->timestamps();
 
