@@ -14,16 +14,16 @@ class Pessoa extends Model
     public $timestamps = true;
 
     protected $fillable = [
-                            'nom_pessoa',
-                            'nom_apelido',
-                            'tip_genero',
-                            'tel_pessoa',
-                            'eml_pessoa',
-                            'des_endereco',
-                            'dat_nascimento',
-                            'tam_camiseta',
-                            'ind_toca_instrumento',
-                            'ind_consentimento'
+        'nom_pessoa',
+        'nom_apelido',
+        'tip_genero',
+        'tel_pessoa',
+        'eml_pessoa',
+        'des_endereco',
+        'dat_nascimento',
+        'tam_camiseta',
+        'ind_toca_instrumento',
+        'ind_consentimento'
     ];
 
     public function restricoes()

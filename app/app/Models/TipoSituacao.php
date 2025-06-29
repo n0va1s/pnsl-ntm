@@ -20,7 +20,9 @@ class TipoSituacao extends Model
     const DESISTENTE = 8;
     const CANCELADA = 9;
 
-    protected $fillable = ['des_situacao'];
+    protected $fillable = [
+        'des_situacao'
+    ];
 
     public function fichasAnalises()
     {
