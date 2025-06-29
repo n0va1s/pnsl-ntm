@@ -40,6 +40,13 @@
     },
     "scripts": {
         "post-autoload-dump": [
+            "@php -r \"is_dir('storage/framework') || mkdir('storage/framework', 0755, true);\"",
+            "@php -r \"is_dir('storage/framework/cache') || mkdir('storage/framework/cache', 0755, true);\"",
+            "@php -r \"is_dir('storage/framework/views') || mkdir('storage/framework/views', 0755, true);\"",
+            "@php -r \"is_dir('storage/framework/sessions') || mkdir('storage/framework/sessions', 0755, true);\"",
+            "@php -r \"is_dir('storage/logs') || mkdir('storage/logs', 0755, true);\"",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
