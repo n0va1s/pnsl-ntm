@@ -214,18 +214,18 @@ return new class extends Migration
         });
 
         // Tabela Pessoa_Habilidade ex: pessoa 33 sabe cantar e recortar papel
-        Schema::create('pessoa_habilidade', function (Blueprint $table) {
-            $table->foreignId('idt_pessoa')
-                ->constrained('pessoa', 'idt_pessoa')
-                ->onDelete('cascade');
-            $table->foreignId('idt_habilidade')
-                ->constrained('habilidade', 'idt_habilidade');
-            $table->integer('num_escala'); // zero a cinco quanto a pessoa sabe
-            $table->text('txt_complemento');
-            $table->timestamps();
+        // Schema::create('pessoa_habilidade', function (Blueprint $table) {
+        //     $table->foreignId('idt_pessoa')
+        //         ->constrained('pessoa', 'idt_pessoa')
+        //         ->onDelete('cascade');
+        //     $table->foreignId('idt_habilidade')
+        //         ->constrained('habilidade', 'idt_habilidade');
+        //     $table->integer('num_escala'); // zero a cinco quanto a pessoa sabe
+        //     $table->text('txt_complemento');
+        //     $table->timestamps();
 
-            $table->primary(['idt_pessoa', 'idt_habilidade']);
-        });
+        //     $table->primary(['idt_pessoa', 'idt_habilidade']);
+        // });
 
         // Tabela Participante indica todos o encontro que a pessoa fez
         Schema::create('participante', function (Blueprint $table) {
@@ -268,6 +268,7 @@ return new class extends Migration
             $table->boolean('ind_lideranca')->default(false); // tem potencial para liderar uma equipe no futuro?
             $table->boolean('ind_destaque')->default(false); // indicaria para a coordenação geral?
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
+            $table->boolean('bol_primeira_vez')->default(false); // é a primeira vez que trabalha?
             $table->timestamps();
 
           $table->primary(['idt_pessoa', 'idt_evento']);
@@ -281,7 +282,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('trabalhador');
         Schema::dropIfExists('participante');
-        Schema::dropIfExists('pessoa_habilidade');
+        // Schema::dropIfExists('pessoa_habilidade');
         Schema::dropIfExists('pessoa_foto');
         Schema::dropIfExists('pessoa_saude');
         Schema::dropIfExists('pessoa');
@@ -291,7 +292,7 @@ return new class extends Migration
         Schema::dropIfExists('ficha_ecc');
         Schema::dropIfExists('ficha_vem');
         Schema::dropIfExists('ficha');
-        Schema::dropIfExists('habilidade');
+        // Schema::dropIfExists('habilidade');
         Schema::dropIfExists('evento');
         Schema::dropIfExists('tipo_movimento');
         Schema::dropIfExists('tipo_equipe');

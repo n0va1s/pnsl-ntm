@@ -24,7 +24,6 @@ class PessoaFactory extends Factory
             'tam_camiseta' => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
             'ind_toca_violao' => $this->faker->boolean(),
             'ind_consentimento' => $this->faker->randomElement(['sim', 'não']),
-            'des_habilidades' => $this->faker->sentence(),
         ];
     }
 }

@@ -16,7 +16,7 @@ class Trabalhador extends Model
     protected $fillable = [
         'idt_pessoa', 'idt_evento', 'idt_equipe',
         'ind_recomendado', 'ind_lideranca',
-        'ind_destaque', 'ind_coordenador', 'des_habilidades',
+        'ind_destaque', 'ind_coordenador',
         'bol_primeira_vez',
     ];
 

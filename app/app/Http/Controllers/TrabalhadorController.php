@@ -17,7 +17,6 @@ class TrabalhadorController extends Controller
         'num_telefone' => 'required|string|max:11',
         'equipes' => 'nullable|array',
         'equipes.*' => 'string|in:Alimentação,Bandinha,Emaús,Limpeza,Oração,Recepção,Reportagem,Sala,Secretaria,Troca de ideias,Vendinha',
-        'des_habilidades' => 'nullable|string|max:255',
         'bol_primeira_vez' => 'nullable|boolean',
         'idt_evento' => 'required|exists:evento,idt_evento',
 
@@ -60,7 +59,6 @@ class TrabalhadorController extends Controller
             'idt_pessoa' => $pessoa->idt_pessoa,
             'nom_completo' => $validated['nom_completo'],
             'num_telefone' => $validated['num_telefone'],
-            'des_habilidades' => $validated['des_habilidades'] ?? null,
             'bol_primeira_vez' => $validated['bol_primeira_vez'] ?? false,
         ]);
 
@@ -109,7 +107,6 @@ class TrabalhadorController extends Controller
         $pessoa->update([
             'nom_pessoa' => $validated['nom_completo'],
             'tel_pessoa' => $validated['num_telefone'],
-            'des_habilidades' => $validated['des_habilidades'] ?? null,
         ]);
 
 
@@ -117,7 +114,7 @@ class TrabalhadorController extends Controller
         $trabalhador->idt_evento = $validated['idt_evento'];
         $trabalhador->idt_equipe = $validated['equipes'][0] ?? null;
         $trabalhador ->save();
-        
+
 
         return redirect()->route('trabalhadores.index')
             ->with('success', 'Trabalhador atualizado com sucesso!');

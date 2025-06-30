@@ -150,7 +150,21 @@
             });
         </script>
 
-
+         <div>
+            <label for="#" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Habilidades (opcional)
+            </label>
+            <input type="text"
+                   id="#"
+                   name="#"
+                   maxlength="255"
+                   value="#"
+                   class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   placeholder="Ex: Tocar violão, tirar fotos, liderança...">
+            @error('#')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
 
 
 
@@ -168,7 +182,7 @@
 
 
         {{-- Habilidades --}}
-        <div>
+        {{-- <div>
             <label for="des_habilidades" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Habilidades (opcional)
             </label>
@@ -182,7 +196,7 @@
             @error('des_habilidades')
                 <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
             @enderror
-        </div>
+        </div> --}}
 
         {{-- Primeira vez trabalhando --}}
         <div class="flex items-center">
