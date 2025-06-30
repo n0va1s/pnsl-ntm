@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\{
     ConfiguracoesController,
+    ContatoController,
     EventoController,
     FichaVemController,
     FichaEccController,
@@ -37,6 +38,14 @@ Route::middleware(['auth'])->group(function () {
         '/configuracoes',
         [ConfiguracoesController::class, 'index']
     )->name('configuracoes.index');
+    Route::get(
+        '/contatos',
+        [ContatoController::class, 'index']
+    )->name('contatos.index');
+    Route::delete(
+        '/contatos/{id}',
+        [ContatoController::class, 'destroy']
+    )->name('contatos.destroy');
 
     Route::get('fichas-vem/approve/{id}', [FichaVemController::class, 'approve'])
         ->name('fichas-vem.approve');
