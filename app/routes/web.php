@@ -5,6 +5,7 @@ use App\Http\Controllers\{
     EventoController,
     FichaVemController,
     FichaEccController,
+    HomeController,
     TipoMovimentoController,
     TipoResponsavelController,
     TipoSituacaoController,
@@ -15,19 +16,28 @@ use App\Http\Controllers\{
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get(
+    '/',
+    [HomeController::class, 'index']
+)->name('home');
+
+Route::post(
+    '/',
+    [HomeController::class, 'contato']
+)->name('home.contato');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get('/configuracoes',
-    [ConfiguracoesController::class, 'index'])->name('configuracoes.index');
-
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
+
+    Route::get(
+        '/configuracoes',
+        [ConfiguracoesController::class, 'index']
+    )->name('configuracoes.index');
+
     Route::get('fichas-vem/approve/{id}', [FichaVemController::class, 'approve'])
         ->name('fichas-vem.approve');
     Route::get('fichas-ecc/approve/{id}', [FichaEccController::class, 'approve'])

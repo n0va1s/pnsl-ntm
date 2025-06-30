@@ -105,7 +105,7 @@
             </div>
         </section>
 
-        <!-- FAQ Sections lado a lado -->
+        <!-- FAQ -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto my-16 px-4">
             <!-- FAQ VEM -->
             <section class="max-w-full bg-blue-50 dark:bg-blue-900 rounded-xl p-6 shadow">
@@ -159,6 +159,106 @@
                 </div>
             </section>
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto my-16 px-4">
+            <!-- Seção: Últimos 5 eventos -->
+            <section class="max-w-3xl mx-auto mt-24 px-4">
+                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Próximos Eventos</h2>
+                <ul class="space-y-4">
+                    @forelse ($proximoseventos as $evento)
+                        <li
+                            class="flex items-start gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+                            <svg class="w-6 h-6 mt-1" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                                    {{ $evento->des_evento }}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    {{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('d \d\e F \d\e Y') }}
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    {{ $evento->movimento?->des_sigla }}</p>
+                            </div>
+                        </li>
+                    @empty
+                        <li class="text-gray-600 dark:text-gray-300">Nenhum evento encontrado</li>
+                    @endforelse
+                </ul>
+            </section>
+            <!-- Seção: Contato -->
+            @if (session('message'))
+                <div class="max-w-3xl mx-auto mt-6 px-4">
+                    <div class="bg-green-50 dark:bg-green-900 text-green-800 dark:text-green-200 p-4 rounded-lg">
+                        <p class="font-semibold">{{ session('message') }}</p>
+                    </div>
+                </div>
+            @endif
+            <section class="max-w-3xl mx-auto mt-24 px-4">
+                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Entre em Contato</h2>
+
+                <form action="{{ route('home.contato') }}" method="POST"
+                    class="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                    @csrf
+
+                    <!-- Nome -->
+                    <div>
+                        <label for="nom_contato"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome *</label>
+                        <input type="text" name="nom_contato" id="nom_contato" required
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label for="eml_contato"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                        <input type="email" name="eml_contato" id="eml_contato"
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- Telefone -->
+                    <div>
+                        <label for="tel_contato"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Telefone *</label>
+                        <input type="tel" name="tel_contato" id="tel_contato" required
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- Movimento -->
+                    <div>
+                        <label for="idt_movimento"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Movimento *</label>
+                        <select name="idt_movimento" id="idt_movimento" required
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Selecione um movimento</option>
+                            @foreach ($movimentos as $movimento)
+                                <option value="{{ $movimento->idt_movimento }}">{{ $movimento->des_sigla }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Mensagem -->
+                    <div>
+                        <label for="txt_mensagem"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mensagem *</label>
+                        <textarea name="txt_mensagem" id="txt_mensagem" rows="4" required
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+
+                    <!-- Botão -->
+                    <div>
+                        <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">
+                            Enviar Mensagem
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+        </div>
     </main>
 
     <!-- Rodapé -->
@@ -176,7 +276,8 @@
                 Instagram da Paróquia
             </a>
 
-            <a href="https://www.instagram.com/vempnsl" target="_blank" class="flex items-center gap-2 hover:underline">
+            <a href="https://www.instagram.com/vempnsl" target="_blank"
+                class="flex items-center gap-2 hover:underline">
                 <svg class="w-6 h-6 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                     viewBox="0 0 24 24">
                     <path
