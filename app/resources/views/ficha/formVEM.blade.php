@@ -512,22 +512,24 @@
                     </svg>
                     Salvar
                 </button>
-                <a href="{{ route('fichas-ecc.approve', $ficha) }}"
-                    class="inline-flex items-center px-4 py-2 bg-{{ $ficha->ind_aprovado ? 'red-500 hover:bg-red-600' : 'green-500 hover:bg-green-600' }} text-white font-medium rounded-md shadow-sm transition duration-150 ease-in-out">
+                @if ($ficha->exists)
+                    <a href="{{ route('fichas-vem.approve', $ficha->idt_ficha) }}"
+                        class="inline-flex items-center px-4 py-2 bg-{{ $ficha->ind_aprovado ? 'red-500 hover:bg-red-600' : 'green-500 hover:bg-green-600' }} text-white font-medium rounded-md shadow-sm transition duration-150 ease-in-out">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            @if ($ficha->ind_aprovado)
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            @else
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7">
+                                </path>
+                            @endif
+                        </svg>
 
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        @if ($ficha->ind_aprovado)
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path> <!-- Ícone de X -->
-                        @else
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                            </path> <!-- Ícone de check -->
-                        @endif
-                    </svg>
-
-                    {{ $ficha->ind_aprovado ? 'Desfazer aprovação' : 'Aprovar' }}
-                </a>
+                        {{ $ficha->ind_aprovado ? 'Desfazer aprovação' : 'Aprovar' }}
+                    </a>
+                @endif
             </div>
         </form>
     </section>
