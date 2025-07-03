@@ -38,7 +38,8 @@
                         <th class="p-3 font-semibold dark:text-gray-800">Apelido</th>
                         <th class="p-3 font-semibold dark:text-gray-800">Gênero</th>
                         <th class="p-3 font-semibold dark:text-gray-800">Telefone</th>
-                        <th class="p-3 font-semibold dark:text-gray-800">Endereço</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Equipe</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Evento</th>
                         <th class="p-3 font-semibold dark:text-gray-800">Toca violão?</th>
                         <th class="p-3 font-semibold text-center dark:text-gray-800 w-24">Ações</th>
                     </tr>
@@ -46,20 +47,29 @@
                 <tbody>
                     @forelse ($trabalhadores as $trabalhador)
                         <tr class="border-t hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->nom_pessoa }}</td>
-                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->nom_apelido }}</td>
-                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->tip_genero }}</td>
-                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->tel_pessoa }}</td>
-                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->des_endereco }}</td>
+                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->pessoa->nom_pessoa }}</td>
+                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->pessoa->nom_apelido }}</td>
+                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->pessoa->tip_genero }}</td>
+                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->pessoa->tel_pessoa }}</td>
+                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $trabalhador->equipe->des_grupo }}</td>
+                            <td class="p-3 text-gray-900 dark:text-gray-100">
+                                {{ $trabalhador->evento ? $trabalhador->evento->des_evento : '-' }}
+                            </td>
                             <td class="p-3 text-gray-900 dark:text-gray-100 text-center">
-                                {{ $trabalhador->ind_toca_violao ? 'Sim' : 'Não' }}
+                                {{ $trabalhador->pessoa->ind_toca_violao ? 'Sim' : 'Não' }}
                             </td>
                             <td class="p-3 flex justify-end items-center gap-2">
+                                <a href="{{ route('trabalhadores.show', $trabalhador->idt_pessoa) }}"
+                                class="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1 rounded-md"
+                                aria-label="Ver detalhes de {{ $trabalhador->nom_pessoa }}">
+                                    <x-heroicon-o-eye class="w-5 h-5" />
+                                    <span class="sr-only sm:not-sr-only"></span>
+                                </a>
+
                                 <a href="{{ route('trabalhadores.edit', $trabalhador->idt_pessoa) }}"
                                    class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1 rounded-md"
-                                   aria-label="Editar {{ $trabalhador->nom_completo }}">
+                                   aria-label="Editar {{ $trabalhador->pessoa->nom_completo }}">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
-                                    <span class="sr-only sm:not-sr-only">Editar</span>
                                 </a>
 
                                 <form action="{{ route('trabalhadores.destroy', $trabalhador->idt_pessoa) }}"
@@ -70,9 +80,8 @@
                                     @method('DELETE')
                                     <button type="submit"
                                             class="inline-flex items-center gap-1 text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 px-2 py-1 rounded-md cursor-pointer"
-                                            aria-label="Excluir {{ $trabalhador->nom_completo }}">
+                                            aria-label="Excluir {{ $trabalhador->pessoa->nom_completo }}">
                                         <x-heroicon-o-trash class="w-5 h-5" />
-                                        <span class="sr-only sm:not-sr-only">Excluir</span>
                                     </button>
                                 </form>
                             </td>

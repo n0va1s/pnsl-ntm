@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Trabalhador;
 use App\Models\TipoEquipe;
 use App\Models\Pessoa;
+use App\Models\Evento;
 
 class TrabalhadorController extends Controller
 {
@@ -17,13 +18,16 @@ class TrabalhadorController extends Controller
         'equipes' => 'nullable|array',
         'equipes.*' => 'string|in:Alimentação,Bandinha,Emaús,Limpeza,Oração,Recepção,Reportagem,Sala,Secretaria,Troca de ideias,Vendinha',
         'des_habilidades' => 'nullable|string|max:255',
-        'bol_primeira_vez' => 'nullable|boolean'
+        'bol_primeira_vez' => 'nullable|boolean',
+        'idt_evento' => 'required|exists:evento,idt_evento',
 
     ];
 
     public function index()
     {
-        $trabalhadores = \App\Models\Pessoa::all();
+        $trabalhadores = \App\Models\Trabalhador::with('pessoa', 'evento', 'equipe')
+            ->orderBy('nom_completo')
+            ->get();
         return view('trabalhadores.list', compact('trabalhadores'));
     }
 
@@ -34,9 +38,12 @@ class TrabalhadorController extends Controller
     {
 
         $equipes = TipoEquipe::all();
+        $eventos = Evento::all();
+
         return view('trabalhadores.form', [
             'trabalhador' => new Trabalhador(),
             'equipes' => $equipes,
+            'eventos' => $eventos,
         ]);
     }
 
@@ -47,7 +54,15 @@ class TrabalhadorController extends Controller
     {
         $validated = $request->validate($this->regras);
 
-        Trabalhador::create($validated);
+        $pessoa = auth()->user()->pessoa;
+
+        $trablhador = Trabalhador::create([
+            'idt_pessoa' => $pessoa->idt_pessoa,
+            'nom_completo' => $validated['nom_completo'],
+            'num_telefone' => $validated['num_telefone'],
+            'des_habilidades' => $validated['des_habilidades'] ?? null,
+            'bol_primeira_vez' => $validated['bol_primeira_vez'] ?? false,
+        ]);
 
 
         return redirect()->route('trabalhadores.index')
@@ -57,9 +72,13 @@ class TrabalhadorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $idt_pessoa)
     {
-        //
+        $trabalhador = Pessoa::with('trabalhador.equipe', 'trabalhador.evento')
+            ->where('idt_pessoa', $idt_pessoa)
+            ->firstOrFail();
+
+            return view('trabalhadores.show', compact('trabalhador'));
     }
 
     /**
@@ -67,10 +86,13 @@ class TrabalhadorController extends Controller
      */
     public function edit(string $idt_pessoa)
     {
-        $trabalhador = Pessoa::where('idt_pessoa', $idt_pessoa)->firstOrFail();
+        // $trabalhador = Pessoa::where('idt_pessoa', $idt_pessoa)->firstOrFail();
+        // $trabalhador = $trabalhador->trabalhador()->first();
+        $trabalhador = Trabalhador::with('pessoa', 'evento')->where('idt_pessoa', $idt_pessoa)->firstOrFail();
         $equipes = TipoEquipe::all();
+        $eventos = Evento::all();
 
-        return view('trabalhadores.form', compact('trabalhador', 'equipes'));
+        return view('trabalhadores.form', compact('trabalhador', 'eventos','equipes'));
     }
 
     /**
@@ -78,7 +100,27 @@ class TrabalhadorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate($this->regras);
+
+        $pessoa = Pessoa::where('idt_pessoa', $id)->firstOrFail();
+        $trabalhador = Trabalhador::where('idt_pessoa', $id)->firstOrFail();
+
+        // Apagar após os testes, o nome e telefone não podem ser alterados
+        $pessoa->update([
+            'nom_pessoa' => $validated['nom_completo'],
+            'tel_pessoa' => $validated['num_telefone'],
+            'des_habilidades' => $validated['des_habilidades'] ?? null,
+        ]);
+
+
+
+        $trabalhador->idt_evento = $validated['idt_evento'];
+        $trabalhador->idt_equipe = $validated['equipes'][0] ?? null;
+        $trabalhador ->save();
+        
+
+        return redirect()->route('trabalhadores.index')
+            ->with('success', 'Trabalhador atualizado com sucesso!');
     }
 
     /**

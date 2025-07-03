@@ -16,8 +16,8 @@
         @endif
 
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">Gerenciar Fichas</h1>
-            <p class="text-gray-700 mt-1">Cadastre e gerencie as fichas do VEM.</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Fichas</h1>
+            <p class="text-gray-700 mt-1 dark:text-gray-400">Cadastre e gerencie as fichas do VEM.</p>
         </div>
 
         <div class="flex justify-between items-center mb-4">
@@ -49,26 +49,26 @@
 
         <div class="overflow-x-auto mt-4">
             <table class="w-full text-left border border-gray-200 rounded-md overflow-hidden text-sm">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-800">
-                        <th class="p-3 font-semibold">Nome</th>
-                        <th class="p-3 font-semibold">Apelido</th>
-                        <th class="p-3 font-semibold">Nascimento</th>
-                        <th class="p-3 font-semibold">Evento</th>
-                        <th class="p-3 font-semibold">Aprovado</th>
-                        <th class="p-3 font-semibold">Ações</th>
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-3 font-semibold dark:text-gray-800">Nome</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Apelido</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Nascimento</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Evento</th>
+                        <th class="p-3 font-semibold dark:text-gray-800">Aprovado</th>
+                        <th class="p-3 font-semibold text-center dark:text-gray-800 w-24">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($fichas as $ficha)
-                        <tr class="border-t hover:bg-gray-50">
-                            <td class="p-3 text-gray-900">{{ $ficha->nom_candidato }}</td>
-                            <td class="p-3 text-gray-700">{{ $ficha->nom_apelido }}</td>
-                            <td class="p-3 text-gray-700">
+                        <tr class="border-t hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <td class="p-3 text-gray-900 dark:text-gray-100">{{ $ficha->nom_candidato }}</td>
+                            <td class="p-3 text-gray-700 dark:text-gray-50">{{ $ficha->nom_apelido }}</td>
+                            <td class="p-3 text-gray-700 dark:text-gray-50">
                                 {{ \Carbon\Carbon::parse($ficha->dat_nascimento)->format('d/m/Y') }}</td>
 
-                            <td class="p-3 text-gray-700">{{ $ficha->evento->des_evento ?? '—' }}</td>
-                            <td class="p-3">
+                            <td class="p-3 text-gray-700 dark:text-gray-50">{{ $ficha->evento->des_evento ?? '—' }}</td>
+                            <td class="p-3 dark:text-gray-100">
                                 @if ($ficha->ind_aprovado)
                                     <span
                                         class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Sim</span>
@@ -79,7 +79,7 @@
                             </td>
                             <td class="p-3 flex items-center gap-2">
                                 <a href="{{ route('fichas-vem.edit', $ficha) }}"
-                                    class="text-blue-600 hover:text-blue-800 px-2 py-1 rounded-md">
+                                    class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1 rounded-md">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                     <span class="sr-only sm:not-sr-only">Editar</span>
                                 </a>
@@ -87,7 +87,7 @@
                                     onsubmit="return confirm('Tem certeza que deseja excluir esta ficha?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 px-2 py-1 rounded-md">
+                                    <button type="submit" class="inline-flex items-center gap-1 text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 px-2 py-1 rounded-md cursor-pointer">
                                         <x-heroicon-o-trash class="w-5 h-5" />
                                         <span class="sr-only sm:not-sr-only">Excluir</span>
                                     </button>

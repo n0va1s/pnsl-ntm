@@ -2,7 +2,7 @@
     <h2 id="titulo-pagina" class="text-2xl font-bold mb-6">Inscrever Trabalhador</h2>
 
     <form method="POST"
-          action="{{ $trabalhador->exists ? route('trabalhadores.update', $trabalhador) : route('trabalhadores.store') }}"
+          action="{{ $trabalhador->exists ? route('trabalhadores.update', ['idt_pessoa' => $trabalhador->idt_pessoa]) : route('trabalhadores.store') }}"
           class="space-y-6" novalidate>
         @csrf
         @if ($trabalhador->exists)
@@ -17,7 +17,7 @@
             <input type="text"
                id="nom_completo"
                name="nom_completo"
-               value="{{ old('nom_completo', $trabalhador->nom_pessoa ?? '') }}"
+               value="{{ old('nom_completo', $trabalhador->pessoa->nom_pessoa ?? '') }}"
                placeholder="Nome completo"
                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-zinc-800"
                {{-- readonly --}}
@@ -36,7 +36,7 @@
                name="num_telefone"
                maxlength="11"
                required
-               value="{{ old('num_telefone', $trabalhador->tel_pessoa ?? '') }}"
+               value="{{ old('num_telefone', $trabalhador->pessoa->tel_pessoa ?? '') }}"
                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 dark:bg-zinc-800"
                placeholder="DDD + número (somente números)"
                {{-- readonly --}}
@@ -47,6 +47,31 @@
             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
+
+        {{-- Evento --}}
+        <div>
+            <label for="idt_evento" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Evento <span class="text-red-600">*</span>
+            </label>
+            <select
+                id="idt_evento"
+                name="idt_evento"
+                required
+                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100"
+            >
+                <option value="">Selecione um evento</option>
+                @foreach ($eventos as $evento)
+                    <option value="{{ $evento->idt_evento }}"
+                        {{ old('idt_evento', $trabalhador->evento->idt_evento ?? '') == $evento->idt_evento ? 'selected' : '' }}>
+                        {{ $evento->des_evento }}
+                    </option>
+                @endforeach
+            </select>
+            @error('idt_evento')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
 
         {{-- Equipe de Interesse --}}
         <div>
@@ -181,7 +206,7 @@
                 Salvar
             </button>
 
-            <a href="{{ route('eventos.index') }}"
+            <a href="{{ route('trabalhadores.index') }}"
                class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md focus:ring-2 focus:ring-gray-500 focus:outline-none text-gray-800"
                aria-label="Cancelar e voltar para a lista">
                <x-heroicon-o-x-mark class="w-5 h-5 mr-2" />
