@@ -12,7 +12,11 @@ class FichaSaude extends Model
     protected $table = 'ficha_saude';
     public $timestamps = true;
 
-    protected $fillable = ['idt_ficha', 'idt_restricao', 'txt_complemento'];
+    protected $fillable = [
+        'idt_ficha',
+        'idt_restricao',
+        'txt_complemento'
+    ];
 
     public function ficha()
     {

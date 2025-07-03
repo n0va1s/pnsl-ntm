@@ -14,7 +14,7 @@ class PessoaFotoFactory extends Factory
     {
         return [
             'idt_pessoa' => Pessoa::inRandomOrder()->first()->id ?? Pessoa::factory(),
-            'url_foto' => 'fotos/' . $this->faker->uuid . '.jpg', // caminho fictício
+            'med_foto' => 'fotos/' . $this->faker->uuid . '.jpg', // caminho fictício
         ];
     }
 }

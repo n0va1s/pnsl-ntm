@@ -17,7 +17,9 @@ class TipoSituacao extends Model
 
     const CADASTRADA = 1;
 
-    protected $fillable = ['des_situacao'];
+    protected $fillable = [
+        'des_situacao'
+    ];
 
     public function fichasAnalises()
     {
