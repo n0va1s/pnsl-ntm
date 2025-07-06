@@ -41,6 +41,10 @@
                     :current="request()->routeIs('fichas-ecc.index')" wire:navigate>
                     {{ __('Fichas do ECC') }}
                 </flux:navlist.item>
+                <flux:navlist.item icon="user" :href="route('pessoas.index')"
+                    :current="request()->routeIs('pessoas.index')" wire:navigate>
+                    {{ __('Pessoas') }}
+                </flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
         <flux:spacer />

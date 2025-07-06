@@ -7,6 +7,7 @@ use App\Http\Controllers\{
     FichaVemController,
     FichaEccController,
     HomeController,
+    PessoaController,
     TipoMovimentoController,
     TipoResponsavelController,
     TipoSituacaoController,
@@ -17,6 +18,7 @@ use App\Http\Controllers\{
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
+// Area Publica
 Route::get(
     '/',
     [HomeController::class, 'index']
@@ -31,6 +33,7 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// Area Administrativa
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
@@ -58,6 +61,7 @@ Route::middleware(['auth'])->group(function () {
         'tiposmovimentos' => TipoMovimentoController::class,
         'tiporesponsavel' => TipoResponsavelController::class,
         'tiposituacao' => TipoSituacaoController::class,
+        'pessoas' => PessoaController::class,
     ]);
 
     Route::resource('trabalhadores', TrabalhadorController::class)
