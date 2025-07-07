@@ -4,14 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FichaEccRequest;
 use App\Http\Requests\FichaRequest;
-use App\Http\Requests\FichaVemRequest;
 use App\Models\Evento;
 use App\Models\Ficha;
-use App\Models\FichaEcc;
 use App\Models\TipoMovimento;
-use App\Models\TipoResponsavel;
-use App\Models\TipoRestricao;
-use App\Models\TipoSituacao;
+use App\Services\FichaService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
@@ -45,16 +41,11 @@ class FichaEccController extends Controller
     public function create()
     {
         $ficha = new Ficha();
-        return view('ficha.formECC', [
+        return view('ficha.formECC', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'situacoes' => TipoSituacao::all(),
-            'ultimaSituacao' => TipoSituacao::find(TipoSituacao::CADASTRADA),
-            'ultimaAnalise' => NULL,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
-            'movimentos' => TipoMovimento::all(),
+            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
             'movimentopadrao' => TipoMovimento::ECC,
-            'restricoes' => TipoRestricao::all(),
-        ]);
+        ]));
     }
 
     /**
@@ -94,14 +85,11 @@ class FichaEccController extends Controller
     {
         $ficha = Ficha::with(['fichaEcc', 'fichaSaude', 'analises.situacao'])->find($id);
         $ultimaAnalise = $ficha->analises()->latest('created_at')->first();
-        return view('ficha.formECC', [
+        return view('ficha.formECC', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'ultimaAnalise' => $ultimaAnalise,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
-            'movimentos' => TipoMovimento::all(),
+            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
             'movimentopadrao' => TipoMovimento::ECC,
-            'restricoes' => TipoRestricao::all(),
-        ]);
+        ]));
     }
 
     /**
@@ -111,16 +99,11 @@ class FichaEccController extends Controller
     {
         $ficha = Ficha::with(['fichaEcc', 'fichaSaude', 'analises.situacao'])->find($id);
         $ultimaAnalise = $ficha->analises()->latest('created_at')->first();
-        return view('ficha.formECC', [
+        return view('ficha.formECC', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'situacoes' => TipoSituacao::all(),
-            'ultimaSituacao' => $ficha->analises->last()?->situacao,
-            'ultimaAnalise' => $ficha->analises->last(),
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
-            'movimentos' => TipoMovimento::all(),
+            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
             'movimentopadrao' => TipoMovimento::ECC,
-            'restricoes' => TipoRestricao::all(),
-        ]);
+        ]));
     }
 
     public function update(
@@ -177,6 +160,15 @@ class FichaEccController extends Controller
         }
 
         return redirect()->route('fichas-ecc.index')->with('success', 'Ficha atualizada com sucesso!');
+    }
+
+    public function approve($id)
+    {
+        $ficha = Ficha::findOrFail($id);
+        $ficha->ind_aprovado = !$ficha->ind_aprovado;
+        $ficha->save();
+
+        return redirect()->route('fichas-vem.index')->with('success', 'Ficha aprovada com sucesso!');
     }
 
     /**

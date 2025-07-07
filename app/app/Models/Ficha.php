@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ficha extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'ficha';
     protected $primaryKey = 'idt_ficha';
@@ -84,7 +85,7 @@ class Ficha extends Model
             'ind_toca_instrumento' => $this->ind_toca_instrumento,
         ]);
 
-        $evento = \App\Models\Evento::latest()->first();
+        $evento = $this->idt_evento;
 
         if ($evento) {
             \App\Models\Participante::create([
