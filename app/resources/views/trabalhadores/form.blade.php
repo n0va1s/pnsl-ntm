@@ -11,13 +11,13 @@
 
         {{-- Nome Completo --}}
         <div>
-            <label for="nom_completo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label for="nom_pessoa" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Nome Completo <span class="text-red-600">*</span>
             </label>
             <input type="text"
-               id="nom_completo"
-               name="nom_completo"
-               value="{{ old('nom_completo', $trabalhador->pessoa->nom_pessoa ?? '') }}"
+               id="nom_pessoa"
+               name="nom_pessoa"
+               value="{{ old('nom_pessoa', $trabalhador->pessoa->nom_pessoa ?? '') }}"
                placeholder="Nome completo"
                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-zinc-800"
                {{-- readonly --}}
@@ -28,22 +28,22 @@
 
         {{-- Telefone --}}
         <div>
-            <label for="num_telefone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label for="tel_pessoa" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Telefone <span class="text-red-600">*</span>
             </label>
             <input type="tel"
-               id="num_telefone"
-               name="num_telefone"
+               id="tel_pessoa"
+               name="tel_pessoa"
                maxlength="11"
                required
-               value="{{ old('num_telefone', $trabalhador->pessoa->tel_pessoa ?? '') }}"
+               value="{{ old('tel_pessoa', $trabalhador->pessoa->tel_pessoa ?? '') }}"
                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 dark:bg-zinc-800"
                placeholder="DDD + número (somente números)"
                {{-- readonly --}}
                {{-- disabled --}}
                {{-- Desbloqueado para teste --}}
                >
-            @error('num_telefone')
+            @error('tel_pessoa')
             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>

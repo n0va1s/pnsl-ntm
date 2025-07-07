@@ -26,6 +26,11 @@ Route::view('dashboard', 'dashboard')
 Route::get('/configuracoes',
     [ConfiguracoesController::class, 'index'])->name('configuracoes.index');
 
+
+Route::get('/teste-redirect', function () {
+    return "<h1>Redirecionamento temporário funcionou!</h1>";
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
     Route::resources([
