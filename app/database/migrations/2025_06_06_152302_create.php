@@ -32,6 +32,16 @@ return new class extends Migration
             $table->string('tip_restricao', 3); // alergia, intolerância, PNE
             $table->timestamps();
         });
+// CONFERINDO TIPO EQUIPE
+        // Tabela Tipo_Equipe ex: bandinha, reportagem, oracao
+        Schema::create('tipo_equipe', function (Blueprint $table) {
+            $table->id('idt_equipe');
+            $table->foreignId('idt_movimento')
+                ->constrained('tipo_movimento', 'idt_movimento');
+            $table->string('des_grupo', 255);
+            $table->text('txt_documento')->nullable();
+            $table->timestamps();
+        });
 
         // Tabela Tipo_Movimento ex: ECC, Segue-Me, VEM
         Schema::create('tipo_movimento', function (Blueprint $table) {
@@ -39,15 +49,6 @@ return new class extends Migration
             $table->string('nom_movimento', 255);
             $table->string('des_sigla', 10);
             $table->date('dat_inicio');
-            $table->timestamps();
-        });
-
-        // Tabela Tipo_Equipe ex: bandinha, reportagem, oracao
-        Schema::create('tipo_equipe', function (Blueprint $table) {
-            $table->id('idt_equipe');
-            $table->foreignId('idt_movimento')
-                ->constrained('tipo_movimento', 'idt_movimento');
-            $table->string('des_grupo', 255);
             $table->timestamps();
         });
 
@@ -186,6 +187,18 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Tabela Pessoa_Foto ex: foto da pessoa 22 tirada durante o evento
+        Schema::create('pessoa_foto', function (Blueprint $table) {
+            $table->foreignId('idt_pessoa')
+                ->constrained('pessoa', 'idt_pessoa')
+                ->onDelete('cascade');
+            $table->string('med_foto'); //armazenar no filesystem
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->primary(['idt_pessoa']);
+        });
+
         // Tabela Pessoa_Saude ex: pessoa 22 tem alergia a castanha
         Schema::create('pessoa_saude', function (Blueprint $table) {
             $table->foreignId('idt_pessoa')
@@ -193,19 +206,12 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->foreignId('idt_restricao')
                 ->constrained('tipo_restricao', 'idt_restricao');
+            $table->boolean('ind_remedio_regular')->default(false);
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
-            $table->primary(['idt_pessoa', 'idt_restricao']);
-        });
+            $table->softDeletes();
 
-        // Tabela Pessoa_Foto ex: foto da pessoa 22 tirada durante o evento
-        Schema::create('pessoa_foto', function (Blueprint $table) {
-            $table->foreignId('idt_pessoa')
-                ->constrained('pessoa', 'idt_pessoa')
-                ->onDelete('cascade');
-            $table->string('url_foto'); //armazenar no filesystem
-            $table->timestamps();
-            $table->primary(['idt_pessoa']);
+            $table->primary(['idt_pessoa', 'idt_restricao']);
         });
 
         // Tabela Pessoa_Habilidade ex: pessoa 33 sabe cantar e recortar papel
@@ -260,9 +266,13 @@ return new class extends Migration
             $table->boolean('ind_recomendado')->default(false); // recomenda trabalhar novamente?
             $table->boolean('ind_lideranca')->default(false); // tem potencial para liderar uma equipe no futuro?
             $table->boolean('ind_destaque')->default(false); // indicaria para a coordenação geral?
+            $table->boolean('ind_camiseta_pediu')->default(false);
+            $table->boolean('ind_camiseta_pagou')->default(false);
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->boolean('bol_primeira_vez')->default(false); // é a primeira vez que trabalha?
             $table->timestamps();
+            $table->softDeletes();
+
             $table->primary(['idt_pessoa', 'idt_evento']);
         });
 

@@ -4,20 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Trabalhador extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'trabalhador';
     public $timestamps = false;
     public $incrementing = false;
 
     protected $fillable = [
-        'idt_pessoa', 'idt_evento', 'idt_equipe',
-        'ind_recomendado', 'ind_lideranca',
-        'ind_destaque', 'ind_coordenador',
+        'idt_pessoa',
+        'idt_evento',
+        'idt_equipe',
+        'ind_recomendado',
+        'ind_lideranca',
+        'ind_destaque',
+        'ind_coordenador',
+
         'bol_primeira_vez',
+        'ind_camiseta_pediu',
+        'ind_camiseta_pagou',
+        'ind_coordenador',
     ];
 
     public function pessoa()

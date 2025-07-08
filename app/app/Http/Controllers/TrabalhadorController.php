@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Trabalhador;
 use App\Models\TipoEquipe;
 use App\Models\Pessoa;
 use App\Models\Evento;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
