@@ -9,6 +9,7 @@ use App\Models\TipoEquipe;
 use App\Models\Pessoa;
 use App\Models\Evento;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TrabalhadorController extends Controller
 {
@@ -60,6 +61,13 @@ class TrabalhadorController extends Controller
              $idtEquipe = $equipeSelecionada->idt_equipe;
          }
     }
+
+    // Cria a pessoa antes de criar o trabalhador
+    $pessoa = Pessoa::create([
+        'nom_pessoa' => $validated['nom_pessoa'],
+        'tel_pessoa' => $validated['tel_pessoa'],
+        // Adicione outros campos necessários para Pessoa aqui, se houver
+    ]);
 
     Trabalhador::create([
         'idt_pessoa' => $pessoa->idt_pessoa,
@@ -147,7 +155,7 @@ class TrabalhadorController extends Controller
 
     } catch (\Exception $e) {
         // É crucial logar o erro para depuração
-        \Log::error('Erro ao atualizar trabalhador: ' . $e->getMessage(), ['exception' => $e, 'request_data' => $request->all()]);
+        Log::error('Erro ao atualizar trabalhador: ' . $e->getMessage(), ['exception' => $e, 'request_data' => $request->all()]);
         // Em produção, você pode retornar uma mensagem mais amigável
         return redirect()->back()->with('error', 'Ocorreu um erro inesperado ao atualizar o trabalhador. Por favor, tente novamente.')->withInput();
     }
