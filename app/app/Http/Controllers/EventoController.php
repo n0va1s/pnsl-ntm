@@ -8,6 +8,7 @@ use App\Models\TipoMovimento;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class EventoController extends Controller
@@ -105,13 +106,20 @@ class EventoController extends Controller
                 ->route('eventos.index')
                 ->with('success', 'Evento excluído com sucesso!');
         } catch (QueryException $e) {
+            Log::error('Erro ao excluir evento:', [
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
             if ($e->getCode() === '23000') {
                 return redirect()
                     ->route('eventos.index')
                     ->with('error', 'Não é possível excluir este evento. Ele está associado a fichas ou participantes.');
+            } elseif ($e->getCode() === '42000') {
+                return redirect()
+                    ->route('eventos.index')
+                    ->with('error', 'Erro de sintaxe na consulta SQL.');
             }
 
-            // Se for outro erro de banco
             return redirect()
                 ->route('eventos.index')
                 ->with('error', 'Erro ao tentar excluir o evento.');

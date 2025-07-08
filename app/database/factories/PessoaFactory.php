@@ -13,7 +13,7 @@ class PessoaFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_pessoa' => User::factory(),
+            'idt_usuario' => User::factory(),
             'nom_pessoa' => $this->faker->name(),
             'nom_apelido' => $this->faker->lastName(),
             'tip_genero' => $this->faker->randomElement(['M', 'F']), // Masculino, Feminino
@@ -23,8 +23,8 @@ class PessoaFactory extends Factory
             'dat_nascimento' => $this->faker->date('Y-m-d', '-20 years'),
             'tam_camiseta' => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
             'ind_toca_violao' => $this->faker->boolean(),
-            'ind_consentimento' => $this->faker->randomElement(['sim', 'não']),
-            'des_habilidades' => $this->faker->sentence(),
+            'ind_consentimento' => $this->faker->boolean(),
+            'ind_restricao' => $this->faker->boolean(),
         ];
     }
 }

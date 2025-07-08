@@ -33,19 +33,21 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabela Tipo_Equipe ex: bandinha, reportagem, oracao
-        Schema::create('tipo_equipe', function (Blueprint $table) {
-            $table->id('idt_equipe');
-            $table->string('des_grupo', 255);
-            $table->timestamps();
-        });
-
         // Tabela Tipo_Movimento ex: ECC, Segue-Me, VEM
         Schema::create('tipo_movimento', function (Blueprint $table) {
             $table->id('idt_movimento');
             $table->string('nom_movimento', 255);
             $table->string('des_sigla', 10);
             $table->date('dat_inicio');
+            $table->timestamps();
+        });
+
+        // Tabela Tipo_Equipe ex: bandinha, reportagem, oracao
+        Schema::create('tipo_equipe', function (Blueprint $table) {
+            $table->id('idt_equipe');
+            $table->foreignId('idt_movimento')
+                ->constrained('tipo_movimento', 'idt_movimento');
+            $table->string('des_grupo', 255);
             $table->timestamps();
         });
 
@@ -66,6 +68,7 @@ return new class extends Migration
         });
 
         // Tabela Habilidade ex: toca violao, sabe cantar, edicao de video
+        // Vamos validar com um Google Forms antes de implementar
         Schema::create('habilidade', function (Blueprint $table) {
             $table->id('idt_habilidade');
             $table->foreignId('idt_equipe')
@@ -96,6 +99,7 @@ return new class extends Migration
             $table->boolean('ind_restricao')->default(false); // nao possui restricao alimentar
             $table->text('txt_observacao')->nullable(); //qual o instrumento, remedio continuo
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Tabela Ficha com os detalhes do vem
@@ -112,7 +116,6 @@ return new class extends Migration
             $table->string('nom_mae', 150)->nullable();
             $table->string('tel_mae', 15)->nullable();
             $table->timestamps();
-
             $table->primary(['idt_ficha']);
         });
 
@@ -127,7 +130,6 @@ return new class extends Migration
             $table->date('dat_nascimento_conjuge');
             $table->string('tam_camiseta_conjuge', 2);
             $table->timestamps();
-
             $table->primary(['idt_ficha']);
         });
 
@@ -137,7 +139,6 @@ return new class extends Migration
                 ->constrained('ficha', 'idt_ficha')
                 ->onDelete('cascade');
             $table->timestamps();
-
             $table->primary(['idt_ficha']);
         });
 
@@ -150,8 +151,6 @@ return new class extends Migration
                 ->constrained('tipo_restricao', 'idt_restricao');
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
-
-
             $table->primary(['idt_ficha', 'idt_restricao']);
         });
 
@@ -164,7 +163,6 @@ return new class extends Migration
                 ->constrained('tipo_situacao', 'idt_situacao');
             $table->text('txt_analise')->nullable();
             $table->timestamps();
-
             $table->primary(['idt_ficha', 'idt_situacao']);
         });
 
@@ -173,18 +171,18 @@ return new class extends Migration
         // os dados vem da ficha
         Schema::create('pessoa', function (Blueprint $table) {
             $table->unsignedBigInteger('idt_pessoa')->primary();
-            $table->foreign('idt_pessoa')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('idt_usuario')->constrained('users', 'id')->onDelete('cascade');
             $table->string('nom_pessoa', 255);
             $table->string('nom_apelido', 255)->nullable();
             $table->string('tel_pessoa', 20)->nullable();
-            $table->date('dat_nascimento')->nullable();
-            $table->string('des_telefone', 20)->nullable();
+            $table->date('dat_nascimento');
             $table->string('des_endereco', 255)->nullable();
-            $table->string('eml_pessoa', 255)->nullable();
-            $table->string('tam_camiseta', 2)->nullable();
+            $table->string('eml_pessoa', 255);
+            $table->string('tam_camiseta', 2);
+            $table->string('tip_genero', 1); // m, f, n - não informado
             $table->boolean('ind_toca_violao')->default(false);
-            $table->string('tip_genero', 10)->nullable(); // masculino, feminino, outro
-            $table->string('ind_consentimento', 3)->default('não'); // sim, não
+            $table->boolean('ind_consentimento')->default(false);
+            $table->boolean('ind_restricao')->default(false);
             $table->timestamps();
         });
 
@@ -197,8 +195,6 @@ return new class extends Migration
                 ->constrained('tipo_restricao', 'idt_restricao');
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
-
-
             $table->primary(['idt_pessoa', 'idt_restricao']);
         });
 
@@ -209,11 +205,11 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->string('url_foto'); //armazenar no filesystem
             $table->timestamps();
-
             $table->primary(['idt_pessoa']);
         });
 
         // Tabela Pessoa_Habilidade ex: pessoa 33 sabe cantar e recortar papel
+        // Vamos validar com um Google Forms antes de implementar
         Schema::create('pessoa_habilidade', function (Blueprint $table) {
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
@@ -223,13 +219,12 @@ return new class extends Migration
             $table->integer('num_escala'); // zero a cinco quanto a pessoa sabe
             $table->text('txt_complemento');
             $table->timestamps();
-
             $table->primary(['idt_pessoa', 'idt_habilidade']);
         });
 
         // Tabela Participante indica todos o encontro que a pessoa fez
         Schema::create('participante', function (Blueprint $table) {
-            $table->foreignId('idt_participante')->nullable();
+            $table->id('idt_participante');
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
                 ->onDelete('cascade');
@@ -238,9 +233,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->string('tip_cor_troca', 10)->nullable();
             $table->timestamps();
-
-
-            $table->primary(['idt_pessoa', 'idt_evento']);
+            //$table->primary(['idt_pessoa', 'idt_evento']);
         });
 
         // Tabela Presenca (Frequencia dos participantes nos eventos)
@@ -269,8 +262,22 @@ return new class extends Migration
             $table->boolean('ind_destaque')->default(false); // indicaria para a coordenação geral?
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->timestamps();
+            $table->primary(['idt_pessoa', 'idt_evento']);
+        });
 
-          $table->primary(['idt_pessoa', 'idt_evento']);
+        // Tabela Contato para tirar dúvidas externas
+        Schema::create('contato', function (Blueprint $table) {
+            $table->id('idt_contato');
+            $table->date('dat_contato')->default(now());
+            $table->string('nom_contato', 255);
+            $table->string('eml_contato', 255)->nullable();
+            $table->string('tel_contato', 20);
+            $table->text('txt_mensagem');
+            $table->foreignId('idt_movimento')
+                ->constrained('tipo_movimento', 'idt_movimento')
+                ->onDelete('cascade'); // para direcionar para os responsaveis
+            $table->timestamps();
+            $table->softDeletes(); // para manter histórico de contatos\
         });
     }
 
@@ -279,6 +286,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('contato');
         Schema::dropIfExists('trabalhador');
         Schema::dropIfExists('participante');
         Schema::dropIfExists('pessoa_habilidade');

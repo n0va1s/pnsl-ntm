@@ -2,19 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FichaEccRequest;
 use App\Http\Requests\FichaRequest;
 use App\Http\Requests\FichaVemRequest;
 use App\Models\Evento;
 use App\Models\Ficha;
-use App\Models\FichaVem;
 use App\Models\TipoMovimento;
-use App\Models\TipoResponsavel;
-use App\Models\TipoRestricao;
-use App\Models\TipoSituacao;
+use App\Services\FichaService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class FichaVemController extends Controller
 {
@@ -46,17 +41,11 @@ class FichaVemController extends Controller
     public function create()
     {
         $ficha = new Ficha();
-        return view('ficha.formVEM', [
+        return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'situacoes' => TipoSituacao::all(),
-            'ultimaSituacao' => TipoSituacao::find(TipoSituacao::CADASTRADA),
-            'ultimaAnalise' => NULL,
             'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
-            'movimentos' => TipoMovimento::all(),
             'movimentopadrao' => TipoMovimento::VEM,
-            'responsaveis' => TipoResponsavel::all(),
-            'restricoes' => TipoRestricao::all(),
-        ]);
+        ]));
     }
 
     /**
@@ -96,17 +85,11 @@ class FichaVemController extends Controller
     {
         $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
 
-        return view('ficha.formVEM', [
+        return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'situacoes' => TipoSituacao::all(),
-            'ultimaSituacao' => $ficha->analises->last()?->situacao,
-            'ultimaAnalise' => $ficha->analises->last(),
             'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
-            'movimentos' => TipoMovimento::all(),
             'movimentopadrao' => TipoMovimento::VEM,
-            'responsaveis' => TipoResponsavel::all(),
-            'restricoes' => TipoRestricao::all(),
-        ]);
+        ]));
     }
 
     /**
@@ -116,17 +99,11 @@ class FichaVemController extends Controller
     {
         $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
 
-        return view('ficha.formVEM', [
+        return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'situacoes' => TipoSituacao::all(),
-            'ultimaSituacao' => $ficha->analises->last()?->situacao,
-            'ultimaAnalise' => $ficha->analises->last(),
             'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
-            'movimentos' => TipoMovimento::all(),
             'movimentopadrao' => TipoMovimento::VEM,
-            'responsaveis' => TipoResponsavel::all(),
-            'restricoes' => TipoRestricao::all(),
-        ]);
+        ]));
     }
 
     /**
@@ -188,6 +165,14 @@ class FichaVemController extends Controller
         return redirect()->route('fichas-vem.index')->with('success', 'Ficha atualizada com sucesso!');
     }
 
+    public function approve($id)
+    {
+        $ficha = Ficha::findOrFail($id);
+        $ficha->ind_aprovado = !$ficha->ind_aprovado;
+        $ficha->save();
+
+        return redirect()->route('fichas-vem.index')->with('success', 'Ficha aprovada com sucesso!');
+    }
 
     /**
      * Remover ficha.
@@ -196,6 +181,7 @@ class FichaVemController extends Controller
     {
         try {
             // FichaVem, FichaSaude e FichaAnalise são deletadas por cascata
+            // Soft delete
             Ficha::find($id)->delete();
 
             return redirect()
