@@ -36,6 +36,11 @@ class Evento extends Model
         return $this->belongsTo(TipoMovimento::class, 'idt_movimento');
     }
 
+    public function trabalhadores()
+    {
+        return $this->hasMany(Trabalhador::class, 'idt_evento');
+    }
+
     /**
      * Accessor para formatar a data de início
      */

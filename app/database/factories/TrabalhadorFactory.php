@@ -27,6 +27,8 @@ class TrabalhadorFactory extends Factory
             'ind_camiseta_pediu' => $this->faker->boolean(),
             'ind_camiseta_pagou' => $this->faker->boolean(),
             'ind_coordenador' => $this->faker->boolean(20),
+            'bol_primeira_vez' => $this->faker->boolean(50),
+            'des_habilidades' => Pessoa::factory()->des_habilidades ?? $this->faker->sentence(10),
         ];
     }
 }
