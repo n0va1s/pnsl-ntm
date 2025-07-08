@@ -8,7 +8,7 @@ class FichaRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // ajuste se necessário
+        return true;
     }
 
     public function rules(): array

@@ -14,19 +14,31 @@ class Pessoa extends Model
     public $timestamps = true;
 
     protected $fillable = [
+        'idt_usuario',
         'nom_pessoa',
         'nom_apelido',
-        'tip_genero',
         'tel_pessoa',
-        'eml_pessoa',
-        'des_endereco',
         'dat_nascimento',
+        'des_endereco',
+        'eml_pessoa',
         'tam_camiseta',
-        'ind_toca_instrumento',
-        'ind_consentimento'
+        'tip_genero',
+        'ind_toca_violao',
+        'ind_consentimento',
+        'ind_restricao',
     ];
 
-    public function restricoes()
+    public function usuario()
+    {
+        return $this->hasOne(User::class, 'id', 'idt_usuario');
+    }
+
+    public function foto()
+    {
+        return $this->hasOne(PessoaFoto::class, 'idt_pessoa');
+    }
+
+    public function saude()
     {
         return $this->hasMany(PessoaSaude::class, 'idt_pessoa');
     }
@@ -41,4 +53,3 @@ class Pessoa extends Model
         return $this->hasMany(Trabalhador::class, 'idt_pessoa');
     }
 }
-

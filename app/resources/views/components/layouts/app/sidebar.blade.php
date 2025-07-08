@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+
 <head>
     @include('partials.head')
 </head>
+
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
@@ -11,23 +13,37 @@
         </a>
         <flux:navlist variant="outline">
             <flux:navlist.group :heading="__('Platform')" class="grid">
-                <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                <flux:navlist.item icon="home" :href="route('dashboard')"
+                    :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="calendar" :href="route('eventos.index')" :current="request()->routeIs('eventos.index')" wire:navigate>
-                    {{ __('Eventos') }}
-                </flux:navlist.item>
-                <flux:navlist.item icon="users" :href="route('trabalhadores.index')" :current="request()->routeIs('trabalhadores.index')" wire:navigate>
-                    {{ __('Trabalhadores') }}
-                </flux:navlist.item>
-                <flux:navlist.item icon="cog" :href="route('configuracoes.index')" :current="request()->routeIs('configuracoes.index')" wire:navigate>
+                <flux:navlist.item icon="cog" :href="route('configuracoes.index')"
+                    :current="request()->routeIs('configuracoes.index')" wire:navigate>
                     {{ __('Configurações') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="document-duplicate" :href="route('fichas-vem.index')" :current="request()->routeIs('fichas-vem.index')" wire:navigate>
+                <flux:navlist.item icon="phone" :href="route('contatos.index')"
+                    :current="request()->routeIs('contatos.index')" wire:navigate>
+                    {{ __('Contatos') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="calendar" :href="route('eventos.index')"
+                    :current="request()->routeIs('eventos.index')" wire:navigate>
+                    {{ __('Eventos') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="users" :href="route('trabalhadores.index')"
+                    :current="request()->routeIs('trabalhadores.index')" wire:navigate>
+                    {{ __('Trabalhadores') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="document-duplicate" :href="route('fichas-vem.index')"
+                    :current="request()->routeIs('fichas-vem.index')" wire:navigate>
                     {{ __('Fichas do VEM') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="document-duplicate" :href="route('fichas-ecc.index')" :current="request()->routeIs('fichas-ecc.index')" wire:navigate>
+                <flux:navlist.item icon="document-duplicate" :href="route('fichas-ecc.index')"
+                    :current="request()->routeIs('fichas-ecc.index')" wire:navigate>
                     {{ __('Fichas do ECC') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="user" :href="route('pessoas.index')"
+                    :current="request()->routeIs('pessoas.index')" wire:navigate>
+                    {{ __('Pessoas') }}
                 </flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
@@ -35,42 +51,32 @@
 
         <div class="flex items-center my-4 gap-2">
             <!-- Sun Icon (left) -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 dark:text-zinc-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.07l-.71.71M21 12h-1M4 12H3m16.66 5.66l-.71-.71M4.05 4.93l-.71-.71M12 5a7 7 0 100 14 7 7 0 000-14z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 dark:text-zinc-100" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.07l-.71.71M21 12h-1M4 12H3m16.66 5.66l-.71-.71M4.05 4.93l-.71-.71M12 5a7 7 0 100 14 7 7 0 000-14z" />
             </svg>
             <!-- Switch Button -->
-            <button
-            x-data="{ dark: $flux.appearance === 'dark' }"
-            @click="dark = !dark; $flux.appearance = dark ? 'dark' : 'light'"
-            :aria-pressed="dark"
-            type="button"
-            class="relative flex items-center rounded-full w-12 h-6 bg-zinc-200 dark:bg-zinc-700 transition-colors duration-200 focus:outline-none"
-            >
-            <!-- Switch Track -->
-            <span class="absolute inset-0 rounded-full bg-zinc-300 dark:bg-zinc-600 transition-colors"></span>
-            <!-- Switch Knob -->
-            <span
-                class="absolute top-0 left-0 h-6 w-6 bg-white dark:bg-zinc-800 rounded-full shadow transition-transform duration-200"
-                :class="dark ? 'translate-x-6' : 'translate-x-0'"
-            ></span>
-            <span class="sr-only">
-                {{ __('Toggle dark mode') }}
-            </span>
+            <button x-data="{ dark: $flux.appearance === 'dark' }" @click="dark = !dark; $flux.appearance = dark ? 'dark' : 'light'"
+                :aria-pressed="dark" type="button"
+                class="relative flex items-center rounded-full w-12 h-6 bg-zinc-200 dark:bg-zinc-700 transition-colors duration-200 focus:outline-none">
+                <!-- Switch Track -->
+                <span class="absolute inset-0 rounded-full bg-zinc-300 dark:bg-zinc-600 transition-colors"></span>
+                <!-- Switch Knob -->
+                <span
+                    class="absolute top-0 left-0 h-6 w-6 bg-white dark:bg-zinc-800 rounded-full shadow transition-transform duration-200"
+                    :class="dark ? 'translate-x-6' : 'translate-x-0'"></span>
+                <span class="sr-only">
+                    {{ __('Toggle dark mode') }}
+                </span>
             </button>
             <!-- Moon Icon (right) -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-800 dark:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-800 dark:text-yellow-300" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
             </svg>
         </div>
-
-        <flux:navlist variant="outline">
-            <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                {{ __('Repository') }}
-            </flux:navlist.item>
-            <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                {{ __('Documentation') }}
-            </flux:navlist.item>
-        </flux:navlist>
 
 
         {{-- Botão de alternância de tema siples, colocar como balão flutuante futuramente --}}
@@ -97,12 +103,14 @@
 
         <!-- Desktop User Menu -->
         <flux:dropdown class="hidden lg:block" position="bottom" align="start">
-            <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()" icon:trailing="chevrons-up-down" />
+            <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
+                icon:trailing="chevrons-up-down" />
             <flux:menu class="w-[220px]">
                 <flux:menu.radio.group>
                     <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                         <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                            <span class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                            <span
+                                class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                                 {{ auth()->user()->initials() }}
                             </span>
                         </span>
@@ -138,7 +146,8 @@
                 <flux:menu.radio.group>
                     <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                         <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                            <span class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                            <span
+                                class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                                 {{ auth()->user()->initials() }}
                             </span>
                         </span>
@@ -167,4 +176,5 @@
     {{ $slot }}
     @fluxScripts
 </body>
+
 </html>

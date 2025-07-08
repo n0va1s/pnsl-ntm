@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FichaEccRequest;
 use App\Http\Requests\FichaRequest;
 use App\Http\Requests\FichaVemRequest;
 use App\Models\Evento;
 use App\Models\Ficha;
-use App\Models\FichaVem;
 use App\Models\TipoMovimento;
-use App\Models\TipoResponsavel;
-use App\Models\TipoRestricao;
-use App\Models\TipoSituacao;
 use App\Services\FichaService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class FichaVemController extends Controller
 {

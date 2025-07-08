@@ -172,18 +172,18 @@ return new class extends Migration
         // os dados vem da ficha
         Schema::create('pessoa', function (Blueprint $table) {
             $table->unsignedBigInteger('idt_pessoa')->primary();
-            $table->foreign('idt_pessoa')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('idt_usuario')->constrained('users', 'id')->onDelete('cascade');
             $table->string('nom_pessoa', 255);
             $table->string('nom_apelido', 255)->nullable();
             $table->string('tel_pessoa', 20)->nullable();
-            $table->date('dat_nascimento')->nullable();
-            $table->string('des_telefone', 20)->nullable();
+            $table->date('dat_nascimento');
             $table->string('des_endereco', 255)->nullable();
-            $table->string('eml_pessoa', 255)->nullable();
-            $table->string('tam_camiseta', 2)->nullable();
+            $table->string('eml_pessoa', 255);
+            $table->string('tam_camiseta', 2);
+            $table->string('tip_genero', 1); // m, f, n - não informado
             $table->boolean('ind_toca_violao')->default(false);
-            $table->string('tip_genero', 10)->nullable(); // masculino, feminino, outro
-            $table->string('ind_consentimento', 3)->default('não'); // sim, não
+            $table->boolean('ind_consentimento')->default(false);
+            $table->boolean('ind_restricao')->default(false);
             $table->timestamps();
         });
 
@@ -274,6 +274,21 @@ return new class extends Migration
 
             $table->primary(['idt_pessoa', 'idt_evento']);
         });
+
+        // Tabela Contato para tirar dúvidas externas
+        Schema::create('contato', function (Blueprint $table) {
+            $table->id('idt_contato');
+            $table->date('dat_contato')->default(now());
+            $table->string('nom_contato', 255);
+            $table->string('eml_contato', 255)->nullable();
+            $table->string('tel_contato', 20);
+            $table->text('txt_mensagem');
+            $table->foreignId('idt_movimento')
+                ->constrained('tipo_movimento', 'idt_movimento')
+                ->onDelete('cascade'); // para direcionar para os responsaveis
+            $table->timestamps();
+            $table->softDeletes(); // para manter histórico de contatos\
+        });
     }
 
     /**
@@ -281,6 +296,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('contato');
         Schema::dropIfExists('trabalhador');
         Schema::dropIfExists('participante');
         Schema::dropIfExists('pessoa_habilidade');
