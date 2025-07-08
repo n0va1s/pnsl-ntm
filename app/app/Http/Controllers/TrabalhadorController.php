@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Trabalhador;
 use App\Models\TipoEquipe;
 use App\Models\Pessoa;
 use App\Models\Evento;
+
 
 class TrabalhadorController extends Controller
 {
@@ -54,9 +56,13 @@ class TrabalhadorController extends Controller
     {
         $validated = $request->validate($this->regras);
 
-        $pessoa = auth()->user()->pessoa;
+        $pessoa = Auth::user();
+        if (!$pessoa || !$pessoa->pessoa) {
+            abort(403, 'Usuário não autenticado ou sem pessoa associada.');
+        }
+        $pessoa = $pessoa->pessoa;
 
-        $trablhador = Trabalhador::create([
+        $trabalhador = Trabalhador::create([
             'idt_pessoa' => $pessoa->idt_pessoa,
             'nom_completo' => $validated['nom_completo'],
             'num_telefone' => $validated['num_telefone'],
@@ -117,7 +123,7 @@ class TrabalhadorController extends Controller
         $trabalhador->idt_evento = $validated['idt_evento'];
         $trabalhador->idt_equipe = $validated['equipes'][0] ?? null;
         $trabalhador ->save();
-        
+
 
         return redirect()->route('trabalhadores.index')
             ->with('success', 'Trabalhador atualizado com sucesso!');
