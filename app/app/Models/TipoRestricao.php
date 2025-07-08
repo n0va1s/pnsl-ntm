@@ -13,7 +13,10 @@ class TipoRestricao extends Model
     protected $primaryKey = 'idt_restricao';
     public $timestamps = false;
 
-    protected $fillable = ['des_restricao', 'tip_restrição'];
+    protected $fillable = [
+        'des_restricao',
+        'tip_restrição'
+    ];
 
     public function fichaSaude()
     {

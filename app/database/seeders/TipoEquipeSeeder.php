@@ -34,6 +34,8 @@ class TipoEquipeSeeder extends Seeder
             ]);
         }
 
+        // TODO: Refatorar a criação de Habilidades para um HabilidadeSeeder próprio
+        // Obs.: está violando o SRP (Single Responsibility Principle)
         //Cria habilidades para equipes
         Habilidade::factory()->count(15)->create();
     }
