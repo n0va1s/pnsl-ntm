@@ -8,20 +8,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Trabalhador extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'trabalhador';
     public $timestamps = false;
     public $incrementing = false;
 
     protected $fillable = [
-        'idt_pessoa', 
-        'idt_evento', 
+        'idt_pessoa',
+        'idt_evento',
         'idt_equipe',
-        'ind_recomendado', 
+        'ind_recomendado',
         'ind_lideranca',
-        'ind_destaque', 
-        'ind_coordenador', 
+        'ind_destaque',
+        'ind_coordenador',
         'des_habilidades',
         'bol_primeira_vez',
         'ind_camiseta_pediu',
@@ -44,4 +44,3 @@ class Trabalhador extends Model
         return $this->belongsTo(TipoEquipe::class, 'idt_equipe');
     }
 }
-

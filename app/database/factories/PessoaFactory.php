@@ -13,7 +13,7 @@ class PessoaFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_usuario' => User::factory(),
+            'idt_usuario' => User::inRandomOrder()->first()->id,
             'nom_pessoa' => $this->faker->name(),
             'nom_apelido' => $this->faker->lastName(),
             'tip_genero' => $this->faker->randomElement(['M', 'F']), // Masculino, Feminino

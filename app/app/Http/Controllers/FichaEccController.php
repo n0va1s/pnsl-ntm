@@ -43,7 +43,7 @@ class FichaEccController extends Controller
         $ficha = new Ficha();
         return view('ficha.formECC', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
+            'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
             'movimentopadrao' => TipoMovimento::ECC,
         ]));
     }
@@ -87,7 +87,7 @@ class FichaEccController extends Controller
         $ultimaAnalise = $ficha->analises()->latest('created_at')->first();
         return view('ficha.formECC', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
+            'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
             'movimentopadrao' => TipoMovimento::ECC,
         ]));
     }
@@ -101,7 +101,7 @@ class FichaEccController extends Controller
         $ultimaAnalise = $ficha->analises()->latest('created_at')->first();
         return view('ficha.formECC', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
+            'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
             'movimentopadrao' => TipoMovimento::ECC,
         ]));
     }
@@ -164,11 +164,9 @@ class FichaEccController extends Controller
 
     public function approve($id)
     {
-        $ficha = Ficha::findOrFail($id);
-        $ficha->ind_aprovado = !$ficha->ind_aprovado;
-        $ficha->save();
+        FichaService::atualizarAprovacaoFicha($id);
 
-        return redirect()->route('fichas-vem.index')->with('success', 'Ficha aprovada com sucesso!');
+        return redirect()->route('fichas-ecc.index')->with('success', 'Aprovação atualizada com sucesso!');
     }
 
     /**
@@ -177,7 +175,6 @@ class FichaEccController extends Controller
     public function destroy($id)
     {
         try {
-            // FichaVem, FichaSaude e FichaAnalise são deletadas por cascata
             Ficha::find($id)->delete();
 
             return redirect()
