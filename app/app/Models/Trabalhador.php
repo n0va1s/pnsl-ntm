@@ -11,7 +11,7 @@ class Trabalhador extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'trabalhador';
-    public $timestamps = false;
+    public $timestamps = true; // Mudança: habilitar timestamps pois a migration os define
     public $incrementing = false;
 
     protected $fillable = [
@@ -22,11 +22,9 @@ class Trabalhador extends Model
         'ind_lideranca',
         'ind_destaque',
         'ind_coordenador',
-
         'bol_primeira_vez',
         'ind_camiseta_pediu',
         'ind_camiseta_pagou',
-        'ind_coordenador',
     ];
 
     public function pessoa()

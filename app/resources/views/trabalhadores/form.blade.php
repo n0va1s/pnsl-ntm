@@ -19,11 +19,16 @@
                name="nom_pessoa"
                value="{{ old('nom_pessoa', $trabalhador->pessoa->nom_pessoa ?? '') }}"
                placeholder="Nome completo"
-               class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-zinc-800"
-               {{-- readonly --}}
-               {{-- disabled --}}
+               class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-zinc-800 opacity-50"
+               readonly
+               disabled
                {{-- Desbloqueado para teste --}}
-            >
+               >
+            {{-- Campo hidden para enviar o valor quando o campo estiver desabilitado --}}
+            <input type="hidden" name="nom_pessoa" value="{{ old('nom_pessoa', $trabalhador->pessoa->nom_pessoa ?? '') }}">
+            @error('nom_pessoa')
+            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Telefone --}}
@@ -35,14 +40,15 @@
                id="tel_pessoa"
                name="tel_pessoa"
                maxlength="11"
-               required
                value="{{ old('tel_pessoa', $trabalhador->pessoa->tel_pessoa ?? '') }}"
-               class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 dark:bg-zinc-800"
+               class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 dark:bg-zinc-800 opacity-50"
                placeholder="DDD + número (somente números)"
-               {{-- readonly --}}
-               {{-- disabled --}}
+               readonly
+               disabled
                {{-- Desbloqueado para teste --}}
                >
+            {{-- Campo hidden para enviar o valor quando o campo estiver desabilitado --}}
+            <input type="hidden" name="tel_pessoa" value="{{ old('tel_pessoa', $trabalhador->pessoa->tel_pessoa ?? '') }}">
             @error('tel_pessoa')
             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
             @enderror
@@ -150,39 +156,8 @@
             });
         </script>
 
+         {{-- Habilidades --}}
          <div>
-            <label for="#" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Habilidades (opcional)
-            </label>
-            <input type="text"
-                   id="#"
-                   name="#"
-                   maxlength="255"
-                   value="#"
-                   class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                   placeholder="Ex: Tocar violão, tirar fotos, liderança...">
-            @error('#')
-                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {{-- Habilidades --}}
-        {{-- <div>
             <label for="des_habilidades" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Habilidades (opcional)
             </label>
@@ -190,13 +165,13 @@
                    id="des_habilidades"
                    name="des_habilidades"
                    maxlength="255"
-                   value="{{ old('des_habilidades', $trabalhador->des_habilidades) }}"
+                   value="{{ old('des_habilidades', $trabalhador->des_habilidades ?? '') }}"
                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                    placeholder="Ex: Tocar violão, tirar fotos, liderança...">
             @error('des_habilidades')
                 <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
             @enderror
-        </div> --}}
+        </div>
 
         {{-- Primeira vez trabalhando --}}
         <div class="flex items-center">
