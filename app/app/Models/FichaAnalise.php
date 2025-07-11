@@ -13,7 +13,11 @@ class FichaAnalise extends Model
     public $timestamps = true;
 
 
-    protected $fillable = ['idt_ficha', 'idt_situacao', 'txt_analise'];
+    protected $fillable = [
+        'idt_ficha',
+        'idt_situacao',
+        'txt_analise'
+    ];
 
     public function ficha()
     {

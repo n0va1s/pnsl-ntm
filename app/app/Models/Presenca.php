@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Presenca extends Model
 {
     use HasFactory;
+
     protected $table = 'presenca';
     public $timestamps = false;
     protected $fillable = [
@@ -23,5 +25,4 @@ class Presenca extends Model
     {
         return $this->belongsTo(Evento::class, 'idt_evento', 'idt_evento');
     }
-
 }

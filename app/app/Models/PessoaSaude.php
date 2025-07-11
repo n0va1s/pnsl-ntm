@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PessoaSaude extends Model
 {
@@ -12,7 +13,12 @@ class PessoaSaude extends Model
     protected $table = 'pessoa_saude';
     public $timestamps = true;
 
-    protected $fillable = ['idt_pessoa', 'idt_restricao', 'txt_complemento'];
+    protected $fillable = [
+        'idt_pessoa',
+        'idt_restricao',
+        'ind_remedio_regular',
+        'txt_complemento',
+    ];
 
     public function pessoa()
     {
