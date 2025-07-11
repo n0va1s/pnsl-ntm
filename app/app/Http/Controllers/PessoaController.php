@@ -6,6 +6,8 @@ use App\Http\Requests\PessoaRequest;
 use App\Models\Pessoa;
 use App\Models\TipoRestricao;
 use App\Models\User;
+use App\Services\UserService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -48,14 +50,11 @@ class PessoaController extends Controller
     public function store(PessoaRequest $request): RedirectResponse
     {
         // Pega o ID do usuário conforme o email informado no cadastro da pessoa
-        $user = User::where('email', $request->input('eml_pessoa'))->first();
-
-        if (!$user) {
-            return redirect()->route('pessoas.index')->with('error', 'Usuário não encontrado. Verifique o e-mail informado.');
-        }
-
         $data = $request->validated();
-        $data['idt_usuario'] = $user->id;
+        $user = UserService::getUsuarioByEmail($request->input('eml_pessoa'));
+        if($user) {
+            $data['idt_usuario'] = $user->id;
+        }        
         $pessoa = Pessoa::create($data);
 
         // Foto
@@ -110,8 +109,11 @@ class PessoaController extends Controller
     public function update(PessoaRequest $request, $id): RedirectResponse
     {
         $pessoa = Pessoa::with(['foto', 'usuario', 'saude'])->findOrFail($id);
-
+        $user = UserService::getUsuarioByEmail($request->input('eml_pessoa'));
         $data = $request->validated();
+        if($user) {
+            $data['idt_usuario'] = $user->id;
+        }
         $pessoa->update($data);
 
         // Foto

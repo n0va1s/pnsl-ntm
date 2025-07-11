@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Evento;
+use App\Models\Pessoa;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FichaFactory extends Factory
@@ -12,7 +13,8 @@ class FichaFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_evento' => Evento::factory(), // cria um evento automaticamente
+            'idt_evento' => Evento::inRandomOrder()->first()->idt_evento,
+            'idt_pessoa' => Pessoa::inRandomOrder()->first()->idt_pessoa,
             'tip_genero' => $this->faker->randomElement(['M', 'F', 'O']),
             'nom_candidato' => $this->faker->name(),
             'nom_apelido' => $this->faker->firstName(),

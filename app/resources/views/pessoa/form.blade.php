@@ -84,7 +84,7 @@
                             Data de Nascimento <span class="text-red-600">*</span>
                         </label>
                         <input type="date" id="dat_nascimento" name="dat_nascimento"
-                            value="{{ old('dat_nascimento', $pessoa->dat_nascimento) }}"
+                            value="{{ old('dat_nascimento', $pessoa->getDataNascimentoFormatada()) }}"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 
                             @error('dat_nascimento') border-red-500 @enderror" />
                         @error('dat_nascimento')
@@ -156,12 +156,12 @@
                             @error('tip_genero') border-red-500 @enderror">
                             <option value="">Selecione o gênero</option>
                             <option value="m"
-                                {{ old('tip_genero', $pessoa->tip_genero) == 'm' ? 'selected' : '' }}>Masculino
+                                {{ old('tip_genero', $pessoa->tip_genero) == 'M' ? 'selected' : '' }}>Masculino
                             </option>
                             <option value="f"
-                                {{ old('tip_genero', $pessoa->tip_genero) == 'f' ? 'selected' : '' }}>Feminino</option>
+                                {{ old('tip_genero', $pessoa->tip_genero) == 'F' ? 'selected' : '' }}>Feminino</option>
                             <option value="n"
-                                {{ old('tip_genero', $pessoa->tip_genero) == 'n' ? 'selected' : '' }}>Não informado
+                                {{ old('tip_genero', $pessoa->tip_genero) == 'O' ? 'selected' : '' }}>Não informado
                             </option>
                         </select>
                         @error('tip_genero')

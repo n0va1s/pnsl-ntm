@@ -78,101 +78,12 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabela Ficha com os dados básicos do participante
-        // devem ser informacoes comuns aos movimentos
-        Schema::create('ficha', function (Blueprint $table) {
-            $table->id('idt_ficha');
-            $table->foreignId('idt_evento')
-                ->constrained('evento', 'idt_evento');
-            $table->string('tip_genero', 3);
-            $table->string('nom_candidato', 255);
-            $table->string('nom_apelido', 255);
-            $table->date('dat_nascimento');
-            $table->string('tel_candidato', 20)->nullable();
-            $table->string('eml_candidato', 255);
-            $table->string('des_endereco', 255)->nullable();
-            $table->string('tam_camiseta', 2);
-            $table->string('tip_como_soube', 3)->nullable(); //indicacao, padre
-            $table->boolean('ind_catolico')->default(false); //candidato catolico
-            $table->boolean('ind_toca_instrumento')->default(false); //toca algum instrumento
-            $table->boolean('ind_consentimento')->default(false); //concordou com o termo
-            $table->boolean('ind_aprovado')->default(false); // flag para facilitar busca
-            $table->boolean('ind_restricao')->default(false); // nao possui restricao alimentar
-            $table->text('txt_observacao')->nullable(); //qual o instrumento, remedio continuo
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        // Tabela Ficha com os detalhes do vem
-        Schema::create('ficha_vem', function (Blueprint $table) {
-            $table->foreignId('idt_ficha')
-                ->constrained('ficha', 'idt_ficha')
-                ->onDelete('cascade');
-            $table->foreignId('idt_falar_com')
-                ->constrained('tipo_responsavel', 'idt_responsavel');
-            $table->string('des_onde_estuda', 255);
-            $table->string('des_mora_quem', 255);
-            $table->string('nom_pai', 150)->nullable();
-            $table->string('tel_pai', 15)->nullable();
-            $table->string('nom_mae', 150)->nullable();
-            $table->string('tel_mae', 15)->nullable();
-            $table->timestamps();
-            $table->primary(['idt_ficha']);
-        });
-
-        // Tabela Ficha com os detalhes do ecc
-        Schema::create('ficha_ecc', function (Blueprint $table) {
-            $table->foreignId('idt_ficha')
-                ->constrained('ficha', 'idt_ficha')
-                ->onDelete('cascade');
-            $table->string('nom_conjuge', 150);
-            $table->string('nom_apelido_conjuge', 50)->nullable();
-            $table->string('tel_conjuge', 15);
-            $table->date('dat_nascimento_conjuge');
-            $table->string('tam_camiseta_conjuge', 2);
-            $table->timestamps();
-            $table->primary(['idt_ficha']);
-        });
-
-        // Tabela Ficha com os detalhes do Segue-Me
-        Schema::create('ficha_sgm', function (Blueprint $table) {
-            $table->foreignId('idt_ficha')
-                ->constrained('ficha', 'idt_ficha')
-                ->onDelete('cascade');
-            $table->timestamps();
-            $table->primary(['idt_ficha']);
-        });
-
-        // Tabela Ficha_Saude com os dados de saude do candidato
-        Schema::create('ficha_saude', function (Blueprint $table) {
-            $table->foreignId('idt_ficha')
-                ->constrained('ficha', 'idt_ficha')
-                ->onDelete('cascade');
-            $table->foreignId('idt_restricao')
-                ->constrained('tipo_restricao', 'idt_restricao');
-            $table->text('txt_complemento')->nullable();
-            $table->timestamps();
-            $table->primary(['idt_ficha', 'idt_restricao']);
-        });
-
-        // Tabela Ficha_Analise é o histórico da ficha ex: ficha 14 cadastrada, ficha 14 aprovada
-        Schema::create('ficha_analise', function (Blueprint $table) {
-            $table->foreignId('idt_ficha')
-                ->constrained('ficha', 'idt_ficha')
-                ->onDelete('cascade');
-            $table->foreignId('idt_situacao')
-                ->constrained('tipo_situacao', 'idt_situacao');
-            $table->text('txt_analise')->nullable();
-            $table->timestamps();
-            $table->primary(['idt_ficha', 'idt_situacao']);
-        });
-
         // Tabela Pessoa dados básicos das pessoas
         // e criada apos a conclusao do evento. Ex: XXX Vem
         // os dados vem da ficha
         Schema::create('pessoa', function (Blueprint $table) {
-            $table->unsignedBigInteger('idt_pessoa')->primary();
-            $table->foreignId('idt_usuario')->constrained('users', 'id')->onDelete('cascade');
+            $table->id('idt_pessoa');
+            $table->foreignId('idt_usuario')->nullable()->constrained('users')->nullOnDelete();
             $table->string('nom_pessoa', 255);
             $table->string('nom_apelido', 255)->nullable();
             $table->string('tel_pessoa', 20)->nullable();
@@ -271,10 +182,106 @@ return new class extends Migration
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->boolean('bol_primeira_vez')->default(false); // é a primeira vez que trabalha?
             $table->timestamps();
+<<<<<<< HEAD
+            $table->primary(['idt_pessoa', 'idt_evento', 'idt_equipe']);
+=======
             $table->softDeletes();
 
             $table->primary(['idt_pessoa', 'idt_evento']);
+>>>>>>> f55e1d72dd402db5cd82d8b45c5f68d75180cea2
         });
+
+        // Tabela Ficha com os dados básicos do participante
+        // devem ser informacoes comuns aos movimentos
+        Schema::create('ficha', function (Blueprint $table) {
+            $table->id('idt_ficha');
+            $table->foreignId('idt_evento')
+                ->constrained('evento', 'idt_evento');
+            $table->foreignId('idt_pessoa')->nullable()
+                ->constrained('pessoa', 'idt_pessoa')->nullOnDelete(); //pessoa criada apos aprovacao
+            $table->string('tip_genero', 3);
+            $table->string('nom_candidato', 255);
+            $table->string('nom_apelido', 255);
+            $table->date('dat_nascimento');
+            $table->string('tel_candidato', 20)->nullable();
+            $table->string('eml_candidato', 255);
+            $table->string('des_endereco', 255)->nullable();
+            $table->string('tam_camiseta', 2);
+            $table->string('tip_como_soube', 3)->nullable(); //indicacao, padre
+            $table->boolean('ind_catolico')->default(false); //candidato catolico
+            $table->boolean('ind_toca_instrumento')->default(false); //toca algum instrumento
+            $table->boolean('ind_consentimento')->default(false); //concordou com o termo
+            $table->boolean('ind_aprovado')->default(false); // flag para facilitar busca
+            $table->boolean('ind_restricao')->default(false); // nao possui restricao alimentar
+            $table->text('txt_observacao')->nullable(); //qual o instrumento, remedio continuo
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        // Tabela Ficha com os detalhes do vem
+        Schema::create('ficha_vem', function (Blueprint $table) {
+            $table->foreignId('idt_ficha')
+                ->constrained('ficha', 'idt_ficha')
+                ->onDelete('cascade');
+            $table->foreignId('idt_falar_com')
+                ->constrained('tipo_responsavel', 'idt_responsavel');
+            $table->string('des_onde_estuda', 255);
+            $table->string('des_mora_quem', 255);
+            $table->string('nom_pai', 150)->nullable();
+            $table->string('tel_pai', 15)->nullable();
+            $table->string('nom_mae', 150)->nullable();
+            $table->string('tel_mae', 15)->nullable();
+            $table->timestamps();
+            $table->primary(['idt_ficha']);
+        });
+
+        // Tabela Ficha com os detalhes do ecc
+        Schema::create('ficha_ecc', function (Blueprint $table) {
+            $table->foreignId('idt_ficha')
+                ->constrained('ficha', 'idt_ficha')
+                ->onDelete('cascade');
+            $table->string('nom_conjuge', 150);
+            $table->string('nom_apelido_conjuge', 50)->nullable();
+            $table->string('tel_conjuge', 15);
+            $table->date('dat_nascimento_conjuge');
+            $table->string('tam_camiseta_conjuge', 2);
+            $table->timestamps();
+            $table->primary(['idt_ficha']);
+        });
+
+        // Tabela Ficha com os detalhes do Segue-Me
+        Schema::create('ficha_sgm', function (Blueprint $table) {
+            $table->foreignId('idt_ficha')
+                ->constrained('ficha', 'idt_ficha')
+                ->onDelete('cascade');
+            $table->timestamps();
+            $table->primary(['idt_ficha']);
+        });
+
+        // Tabela Ficha_Saude com os dados de saude do candidato
+        Schema::create('ficha_saude', function (Blueprint $table) {
+            $table->foreignId('idt_ficha')
+                ->constrained('ficha', 'idt_ficha')
+                ->onDelete('cascade');
+            $table->foreignId('idt_restricao')
+                ->constrained('tipo_restricao', 'idt_restricao');
+            $table->text('txt_complemento')->nullable();
+            $table->timestamps();
+            $table->primary(['idt_ficha', 'idt_restricao']);
+        });
+
+        // Tabela Ficha_Analise é o histórico da ficha ex: ficha 14 cadastrada, ficha 14 aprovada
+        Schema::create('ficha_analise', function (Blueprint $table) {
+            $table->foreignId('idt_ficha')
+                ->constrained('ficha', 'idt_ficha')
+                ->onDelete('cascade');
+            $table->foreignId('idt_situacao')
+                ->constrained('tipo_situacao', 'idt_situacao');
+            $table->text('txt_analise')->nullable();
+            $table->timestamps();
+            $table->primary(['idt_ficha', 'idt_situacao']);
+        });
+
 
         // Tabela Contato para tirar dúvidas externas
         Schema::create('contato', function (Blueprint $table) {
@@ -298,19 +305,19 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('contato');
-        Schema::dropIfExists('trabalhador');
-        Schema::dropIfExists('participante');
-        // Schema::dropIfExists('pessoa_habilidade');
-        Schema::dropIfExists('pessoa_foto');
-        Schema::dropIfExists('pessoa_saude');
-        Schema::dropIfExists('pessoa');
         Schema::dropIfExists('ficha_analise');
         Schema::dropIfExists('ficha_saude');
         Schema::dropIfExists('ficha_sgm');
         Schema::dropIfExists('ficha_ecc');
         Schema::dropIfExists('ficha_vem');
         Schema::dropIfExists('ficha');
-        // Schema::dropIfExists('habilidade');
+        Schema::dropIfExists('trabalhador');
+        Schema::dropIfExists('participante');
+        // Schema::dropIfExists('pessoa_habilidade');
+        Schema::dropIfExists('pessoa_foto');
+        Schema::dropIfExists('pessoa_saude');
+        Schema::dropIfExists('pessoa');
+        Schema::dropIfExists('habilidade');
         Schema::dropIfExists('evento');
         Schema::dropIfExists('tipo_movimento');
         Schema::dropIfExists('tipo_equipe');
