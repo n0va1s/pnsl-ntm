@@ -167,11 +167,9 @@ class FichaVemController extends Controller
 
     public function approve($id)
     {
-        $ficha = Ficha::findOrFail($id);
-        $ficha->ind_aprovado = !$ficha->ind_aprovado;
-        $ficha->save();
+        FichaService::atualizarAprovacaoFicha($id);
 
-        return redirect()->route('fichas-vem.index')->with('success', 'Ficha aprovada com sucesso!');
+        return redirect()->route('fichas-vem.index')->with('success', 'Aprovação atualizada com sucesso!');
     }
 
     /**

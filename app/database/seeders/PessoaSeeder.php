@@ -15,9 +15,9 @@ class PessoaSeeder extends Seeder
 
     public function run(): void
     {
-        Pessoa::factory()->count(15)->create();
-        PessoaSaude::factory()->count(15)->create();
-        PessoaFoto::factory()->count(15)->create();
-        PessoaHabilidade::factory()->count(15)->create();
+        Pessoa::factory()->count(50)->create();
+        PessoaSaude::factory()->count(50)->create();
+        PessoaFoto::factory()->count(50)->create();
+        PessoaHabilidade::factory()->count(50)->create();
     }
 }

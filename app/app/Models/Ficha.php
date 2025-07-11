@@ -16,6 +16,7 @@ class Ficha extends Model
 
     protected $fillable = [
         'idt_evento',
+        'idt_pessoa',
         'tip_genero',
         'nom_candidato',
         'nom_apelido',
@@ -54,6 +55,11 @@ class Ficha extends Model
         return $this->belongsTo(Evento::class, 'idt_evento');
     }
 
+    public function pessoa()
+    {
+        return $this->belongsTo(Pessoa::class, 'idt_pessoa');
+    }
+
     public function fichaVem()
     {
         return $this->hasOne(FichaVem::class, 'idt_ficha');
@@ -74,32 +80,10 @@ class Ficha extends Model
         return $this->hasMany(FichaAnalise::class, 'idt_ficha');
     }
 
-    public function aprovar()
-    {
-        $pessoa = \App\Models\Pessoa::create([
-            'nom_pessoa'           => $this->nom_candidato,
-            'des_telefone'         => $this->tel_candidato,
-            'des_endereco'         => $this->des_endereco,
-            'dat_nascimento'       => $this->dat_nascimento,
-            'tam_camiseta'         => $this->tam_camiseta,
-            'ind_toca_instrumento' => $this->ind_toca_instrumento,
-        ]);
-
-        $evento = $this->idt_evento;
-
-        if ($evento) {
-            \App\Models\Participante::create([
-                'idt_pessoa'    => $pessoa->idt_pessoa,
-                'idt_evento'    => $evento->idt_evento,
-                'tip_cor_troca' => null,
-            ]);
-        }
-
-        $this->update(['ind_aprovado' => true]);
-    }
-
     public function getDataNascimentoFormatada()
     {
-        return $this->dat_nascimento ? $this->dat_nascimento->format('Y-m-d') : null;
+        return $this->dat_nascimento
+            ? $this->dat_nascimento->format('Y-m-d')
+            : null;
     }
 }

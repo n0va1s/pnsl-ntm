@@ -15,8 +15,8 @@ class FichaSeeder extends Seeder
 
     public function run(): void
     {
-        Ficha::factory()->count(10)->create();
-        FichaVem::factory()->count(10)->create();
-        FichaEcc::factory()->count(10)->create();
+        Ficha::factory()->count(20)->create();
+        FichaVem::factory()->count(20)->create();
+        FichaEcc::factory()->count(20)->create();
     }
 }

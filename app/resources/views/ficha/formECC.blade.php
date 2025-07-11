@@ -190,7 +190,7 @@
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('tam_camiseta') border-red-500 @enderror">
                                 <option value="">Selecione o tamanho</option>
-                                @foreach (['PP', 'P', 'M', 'G', 'GG'] as $tamanho)
+                                @foreach (['PP', 'P', 'M', 'G', 'GG', 'EG'] as $tamanho)
                                     <option value="{{ $tamanho }}"
                                         {{ old('tam_camiseta', $ficha->tam_camiseta) == $tamanho ? 'selected' : '' }}>
                                         {{ $tamanho }}</option>

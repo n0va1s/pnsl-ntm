@@ -28,6 +28,13 @@ class Pessoa extends Model
         'ind_restricao',
     ];
 
+    protected $casts = [
+        'dat_nascimento' => 'date',
+        'ind_toca_violao' => 'boolean',
+        'ind_consentimento' => 'boolean',
+        'ind_restricao' => 'boolean',
+    ];
+
     public function usuario()
     {
         return $this->hasOne(User::class, 'id', 'idt_usuario');
@@ -51,5 +58,13 @@ class Pessoa extends Model
     public function trabalhador()
     {
         return $this->hasMany(Trabalhador::class, 'idt_pessoa');
+    }
+
+    public function getDataNascimentoFormatada()
+    {
+
+        return $this->dat_nascimento
+            ? $this->dat_nascimento->format('Y-m-d')
+            : null;
     }
 }
