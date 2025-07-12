@@ -16,8 +16,12 @@
         @endif
 
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Fichas</h1>
-            <p class="text-gray-700 mt-1 dark:text-gray-400">Cadastre e gerencie as fichas do VEM.</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Fichas do VEM</h1>
+            @if ($evento?->exists)
+                <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
+                    Evento: <b>{{ $evento->des_evento }}</b>
+                </p>
+            @endif
         </div>
 
         <div class="flex justify-between items-center mb-4">
@@ -67,7 +71,8 @@
                             <td class="p-3 text-gray-700 dark:text-gray-50">
                                 {{ \Carbon\Carbon::parse($ficha->dat_nascimento)->format('d/m/Y') }}</td>
 
-                            <td class="p-3 text-gray-700 dark:text-gray-50">{{ $ficha->evento->des_evento ?? '—' }}</td>
+                            <td class="p-3 text-gray-700 dark:text-gray-50">{{ $ficha->evento->des_evento ?? '—' }}
+                            </td>
                             <td class="p-3 dark:text-gray-100">
                                 @if ($ficha->ind_aprovado)
                                     <span
@@ -87,7 +92,8 @@
                                     onsubmit="return confirm('Tem certeza que deseja excluir esta ficha?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center gap-1 text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 px-2 py-1 rounded-md cursor-pointer">
+                                    <button type="submit"
+                                        class="inline-flex items-center gap-1 text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 px-2 py-1 rounded-md cursor-pointer">
                                         <x-heroicon-o-trash class="w-5 h-5" />
                                         <span class="sr-only sm:not-sr-only">Excluir</span>
                                     </button>

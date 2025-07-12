@@ -7,6 +7,7 @@ use App\Http\Controllers\{
     FichaVemController,
     FichaEccController,
     HomeController,
+    ParticipanteController,
     PessoaController,
     TipoMovimentoController,
     TipoResponsavelController,
@@ -49,6 +50,11 @@ Route::middleware(['auth'])->group(function () {
         '/contatos/{id}',
         [ContatoController::class, 'destroy']
     )->name('contatos.destroy');
+
+    Route::get(
+        '/participantes',
+        [ParticipanteController::class, 'index']
+    )->name('participantes.index');
 
     Route::get('fichas-vem/approve/{id}', [FichaVemController::class, 'approve'])
         ->name('fichas-vem.approve');

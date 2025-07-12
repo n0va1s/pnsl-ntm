@@ -62,6 +62,14 @@
                         <div>
                             @php
                                 $sigla = $evento->movimento->des_sigla;
+
+                                $rotaFichas = match ($sigla) {
+                                    'ECC' => route('fichas-ecc.index', ['evento' => $evento->idt_evento]),
+                                    'VEM' => route('fichas-vem.index', ['evento' => $evento->idt_evento]),
+                                    'Segue-Me' => '#',
+                                    default => '#',
+                                };
+
                                 $badgeClasses = match ($sigla) {
                                     'ECC' => 'bg-lime-400 text-green-800',
                                     'Segue-Me' => 'bg-orange-300 text-red-800',
@@ -87,19 +95,22 @@
                     @if (
                         !$evento->ind_pos_encontro &&
                             ($evento->fichas_count || $evento->trabalhadores_count || $evento->participantes_count))
-                        <div class="flex w-full gap-x-2 mb-4 text-sm text-white">
+                        <div class="flex w-full gap-x-2 mb-4 text-sm text-white"
+                            title="Fichas cadastradas para o evento">
                             {{-- Fichas --}}
                             <div
                                 class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->fichas_count ? 'bg-green-600 rounded-l-md' : 'invisible' }}">
                                 @if ($evento->fichas_count)
-                                    <x-heroicon-o-document-text class="w-4 h-4" />
-                                    {{ $evento->fichas_count }}
+                                    <a href="{{ $rotaFichas }}" class="flex items-center gap-1 text-white">
+                                        <x-heroicon-o-document-text class="w-4 h-4" />
+                                        {{ $evento->fichas_count }}
+                                    </a>
                                 @endif
                             </div>
 
                             {{-- Candidatos --}}
-                            <div
-                                class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600' : 'invisible' }}">
+                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600' : 'invisible' }}"
+                                title="Voluntários interessados no evento">
                                 @if ($evento->trabalhadores_count)
                                     <x-heroicon-o-hand-thumb-up class="w-4 h-4" />
                                     {{ $evento->trabalhadores_count }}
@@ -107,11 +118,14 @@
                             </div>
 
                             {{-- Participantes --}}
-                            <div
-                                class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->participantes_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}">
+                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->participantes_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
+                                title="Pessoas aprovadas para o evento">
                                 @if ($evento->participantes_count)
-                                    <x-heroicon-o-users class="w-4 h-4" />
-                                    {{ $evento->participantes_count }}
+                                    <a href="{{ route('participantes.index', ['evento' => $evento->idt_evento]) }}"
+                                        class="flex items-center gap-1 text-white">
+                                        <x-heroicon-o-users class="w-4 h-4" />
+                                        {{ $evento->participantes_count }}
+                                    </a>
                                 @endif
                             </div>
                         </div>
