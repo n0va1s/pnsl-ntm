@@ -41,6 +41,16 @@ class Evento extends Model
         return $this->hasMany(Trabalhador::class, 'idt_evento');
     }
 
+    public function participantes()
+    {
+        return $this->hasMany(Participante::class, 'idt_evento');
+    }
+
+    public function fichas()
+    {
+        return $this->hasMany(Ficha::class, 'idt_evento');
+    }
+
     /**
      * Accessor para formatar a data de início
      */

@@ -21,7 +21,11 @@ class EventoController extends Controller
         $search = $request->get('search');
 
         $eventos = Evento::with(['movimento'])
-            ->when($search, function ($query, $search) {
+            ->withCount([
+                'fichas',
+                'trabalhadores',
+                'participantes'
+            ])->when($search, function ($query, $search) {
                 return $query->search($search);
             })
             ->orderBy('created_at', 'desc')

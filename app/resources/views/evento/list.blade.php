@@ -50,90 +50,97 @@
             </a>
         </div>
 
-        <div class="overflow-x-auto mt-4">
-            <table
-                class="w-full text-left border border-gray-200 dark:border-zinc-700 rounded-md overflow-hidden text-sm">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
+            @forelse ($eventos as $evento)
+                <div
+                    class="bg-white dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-zinc-700 p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800 dark:text-white">{{ $evento->des_evento }}</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Nº {{ $evento->num_evento }}</p>
+                        </div>
+                        <div>
+                            @php
+                                $sigla = $evento->movimento->des_sigla;
+                                $badgeClasses = match ($sigla) {
+                                    'ECC' => 'bg-lime-400 text-green-800',
+                                    'Segue-Me' => 'bg-orange-300 text-red-800',
+                                    default => 'bg-sky-400 text-blue-800',
+                                };
+                            @endphp
+                            <span
+                                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ $badgeClasses }}">
+                                {{ $sigla }}
+                            </span>
+                        </div>
+                    </div>
 
-                <caption class="sr-only">Lista de Eventos</caption>
-                <thead class="bg-gray-100">
-                    <tr>
+                    <div class="mb-3 text-sm text-gray-700 dark:text-gray-300">
+                        <span class="font-semibold">Período:</span><br>
+                        <time
+                            datetime="{{ $evento->dat_inicio->toDateString() }}">{{ $evento->getDataInicioFormatada() }}</time>
+                        <span class="text-gray-400"> até </span>
+                        <time
+                            datetime="{{ $evento->dat_termino->toDateString() }}">{{ $evento->getDataTerminoFormatada() }}</time>
+                    </div>
 
-                        <th class="p-3 font-semibold dark:text-gray-800">Descrição</th>
-                        <th class="p-3 font-semibold dark:text-gray-800">Número</th>
-                        <th class="p-3 font-semibold dark:text-gray-800">Data Início</th>
-                        <th class="p-3 font-semibold dark:text-gray-800">Data Término</th>
-                        <th class="p-3 font-semibold dark:text-gray-800">Movimento</th>
-                        <th class="p-3 font-semibold dark:text-gray-800 text-center w-36">Inscrição</th>
-                        <th class="p-3 font-semibold dark:text-gray-800 text-center w-36">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($eventos as $evento)
-                        <tr class="border-t dark:hover:bg-gray-500">
-                            <td class="p-3 text-gray-900 dark:text-gray-300">{{ $evento->des_evento }}</td>
-                            <td class="p-3 text-gray-700 dark:text-gray-300">Nº {{ $evento->num_evento }}</td>
-                            <td class="p-3 text-gray-700 dark:text-gray-300">{{ $evento->getDataInicioFormatada() }}</td>
-                            <td class="p-3 text-gray-700 dark:text-gray-300">{{ $evento->getDataTerminoFormatada() }}</td>
-                            <td class="p-3">
-                                @php
-                                    $sig_movimento = $evento->movimento->des_sigla;
-                                @endphp
-
-                                @if ($sig_movimento === 'ECC')
-                                    <span
-                                        class="inline-flex items-center rounded-full bg-lime-400 px-2 py-0.5 text-xs font-medium text-green-700">
-                                        {{ $sig_movimento }}
-                                    </span>
-                                @elseif ($sig_movimento === 'Segue-Me')
-                                    <span
-                                        class="inline-flex items-center rounded-full bg-orange-300 px-2 py-0.5 text-xs font-medium text-red-700">
-                                        {{ $sig_movimento }}
-                                    </span>
-                                @else
-                                    <span
-                                        class="inline-flex items-center rounded-full bg-sky-400 px-2 py-0.5 text-xs font-medium text-blue-700">
-                                        {{ $sig_movimento }}
-                                    </span>
+                    @if (
+                        !$evento->ind_pos_encontro &&
+                            ($evento->fichas_count || $evento->trabalhadores_count || $evento->participantes_count))
+                        <div class="flex w-full gap-x-2 mb-4 text-sm text-white">
+                            {{-- Fichas --}}
+                            <div
+                                class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->fichas_count ? 'bg-green-600 rounded-l-md' : 'invisible' }}">
+                                @if ($evento->fichas_count)
+                                    <x-heroicon-o-document-text class="w-4 h-4" />
+                                    {{ $evento->fichas_count }}
                                 @endif
-                            </td>
+                            </div>
 
-                            {{-- Coluna Inscrever-se --}}
-                            <td class="p-3 items-center">
-                                <a href="{{ route('trabalhadores.create') }}"
-                                    class="inline-flex items-center px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <x-heroicon-o-user-plus class="w-4 h-4 mr-1" />
-                                    <span class="sr-only sm:not-sr-only">Inscrever</span>
-                                </a>
-                            </td>
+                            {{-- Candidatos --}}
+                            <div
+                                class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600' : 'invisible' }}">
+                                @if ($evento->trabalhadores_count)
+                                    <x-heroicon-o-hand-thumb-up class="w-4 h-4" />
+                                    {{ $evento->trabalhadores_count }}
+                                @endif
+                            </div>
 
-                        {{-- Coluna Ações --}}
-                            <td class="p-3 flex items-center gap-2">
-                                <a href="{{ route('eventos.edit', $evento) }}"
-                                    class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1 rounded-md">
-                                    <x-heroicon-o-pencil-square class="w-5 h-5" />
-                                    <span class="sr-only sm:not-sr-only">Editar</span>
-                                </a>
+                            {{-- Participantes --}}
+                            <div
+                                class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->participantes_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}">
+                                @if ($evento->participantes_count)
+                                    <x-heroicon-o-users class="w-4 h-4" />
+                                    {{ $evento->participantes_count }}
+                                @endif
+                            </div>
+                        </div>
+                    @endif
 
-                            <form method="POST" action="{{ route('eventos.destroy', $evento) }}"
-                                onsubmit="return confirm('Tem certeza que deseja excluir este evento?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="inline-flex items-center gap-1 text-red-600 hover:text-red-800 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 px-2 py-1 rounded-md cursor-pointer">
-                                    <x-heroicon-o-trash class="w-5 h-5" />
-                                    <span class="sr-only sm:not-sr-only">Excluir</span>
-                                </button>
-                            </form>
-                        </td>
+                    <div class="flex gap-0 mt-4 border-t pt-3">
+                        <a href="{{ route('eventos.edit', $evento) }}"
+                            class="flex items-center justify-center w-1/2 text-sm font-semibold text-blue-600 hover:text-white hover:bg-blue-600 px-3 py-2 rounded-bl-lg transition-colors">
+                            <x-heroicon-o-pencil-square class="w-5 h-5 mr-1" />
+                            Editar
+                        </a>
 
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="p-4 text-center text-gray-500">Nenhum evento encontrado.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                        <form method="POST" action="{{ route('eventos.destroy', $evento) }}"
+                            onsubmit="return confirm('Tem certeza que deseja excluir este evento?');" class="w-1/2">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="flex items-center justify-center w-full text-sm font-semibold text-red-600 hover:text-white hover:bg-red-600 px-3 py-2 rounded-br-lg transition-colors">
+                                <x-heroicon-o-trash class="w-5 h-5 mr-1" />
+                                Excluir
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full text-center text-gray-500 dark:text-gray-300">
+                    Nenhum evento encontrado.
+                </div>
+            @endforelse
         </div>
 
         <div class="mt-6">
