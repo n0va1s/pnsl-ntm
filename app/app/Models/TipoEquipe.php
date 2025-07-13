@@ -22,5 +22,9 @@ class TipoEquipe extends Model
     {
         return $this->hasMany(Trabalhador::class, 'idt_equipe');
     }
-}
 
+    public function voluntarios()
+    {
+        return $this->hasMany(Voluntario::class, 'idt_equipe');
+    }
+}

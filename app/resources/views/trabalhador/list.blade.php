@@ -1,7 +1,7 @@
-<x-layouts.app :title="'Participante'">
+<x-layouts.app :title="'Trabalhador'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Lista de Participantes</h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Lista de Trabalhadores</h1>
             @if ($evento?->exists)
                 <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
                     Evento: <b>{{ $evento->des_evento }}</b>
@@ -9,7 +9,7 @@
             @endif
         </div>
         <div class="flex justify-between items-center mb-4">
-            <form method="GET" action="{{ route('participantes.index') }}"
+            <form method="GET" action="{{ route('trabalhadores.index') }}"
                 class="flex items-center gap-2 w-full max-w-md">
                 <input type="text" name="search" id="search" value="{{ $search }}"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -20,7 +20,7 @@
                     Buscar
                 </button>
                 @if ($search)
-                    <a href="{{ route('participantes.index') }}"
+                    <a href="{{ route('trabalhadores.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400">
                         <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
                         Limpar
@@ -37,26 +37,17 @@
                         <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Nome</th>
                         <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Apelido</th>
                         <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Telefone</th>
-                        <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Troca</th>
+                        <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Coordenador(a)</th>
+                        <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Primeira vez</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($participantes as $participante)
-                        @php
-                            $corTrocha = match (strtolower($participante->tip_cor_troca)) {
-                                'verde' => 'bg-lime-400',
-                                'amarela' => 'bg-yellow-300',
-                                'azul' => 'bg-blue-400',
-                                'vermelha' => 'bg-red-500',
-                                'laranja' => 'bg-orange-400',
-                                default => 'bg-gray-300',
-                            };
-                        @endphp
+                    @forelse ($trabalhadores as $trabalhador)
                         <tr class="border-t dark:border-zinc-600 dark:hover:bg-zinc-800">
                             <td class="p-3">
-                                @if ($participante->pessoa->foto && $participante->pessoa->foto->url_foto)
-                                    <img src="{{ asset('storage/' . $participante->pessoa->foto->url_foto) }}"
-                                        alt="Foto de {{ $participante->pessoa->nom_pessoa }}"
+                                @if ($trabalhador->pessoa->foto && $trabalhador->pessoa->foto->url_foto)
+                                    <img src="{{ asset('storage/' . $trabalhador->pessoa->foto->url_foto) }}"
+                                        alt="Foto de {{ $trabalhador->pessoa->nom_pessoa }}"
                                         class="w-10 h-10 rounded-full object-cover border border-gray-300 dark:border-zinc-600 shadow-sm">
                                 @else
                                     <div
@@ -66,16 +57,31 @@
                                 @endif
                             </td>
 
-                            <td class="p-3 text-gray-900 dark:text-gray-200">{{ $participante->pessoa->nom_pessoa }}
+                            <td class="p-3 text-gray-900 dark:text-gray-200">{{ $trabalhador->pessoa->nom_pessoa }}
                             </td>
-                            <td class="p-3 text-gray-900 dark:text-gray-200">{{ $participante->pessoa->nom_apelido }}
+                            <td class="p-3 text-gray-900 dark:text-gray-200">{{ $trabalhador->pessoa->nom_apelido }}
                             </td>
-                            <td class="p-3 text-gray-700 dark:text-gray-300">{{ $participante->pessoa->tel_pessoa }}
+                            <td class="p-3 text-gray-700 dark:text-gray-300">{{ $trabalhador->pessoa->tel_pessoa }}
                             </td>
                             <td class="p-3 text-gray-700 dark:text-gray-300">
-                                <span
-                                    class="inline-block w-4 h-4 rounded-full border border-gray-300 dark:border-zinc-600 {{ $corTrocha }}"
-                                    title="{{ ucfirst($participante->tip_cor_troca) }}"></span>
+                                @if ($trabalhador->ind_coordenador)
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100">
+                                        Sim
+                                    </span>
+                                @else
+                                    Não
+                                @endif
+                            </td>
+                            <td class="p-3 text-gray-700 dark:text-gray-300">
+                                @if ($trabalhador->ind_primeira_vez)
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">
+                                        Sim
+                                    </span>
+                                @else
+                                    Não
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -88,7 +94,7 @@
         </div>
 
         <div class="mt-6">
-            {{ $participantes->links() }}
+            {{ $trabalhadores->links() }}
         </div>
     </section>
 </x-layouts.app>

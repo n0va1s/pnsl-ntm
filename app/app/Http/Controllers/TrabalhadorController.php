@@ -2,132 +2,169 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Trabalhador;
-use App\Models\TipoEquipe;
-use App\Models\Pessoa;
 use App\Models\Evento;
+use App\Models\Pessoa;
+use App\Models\TipoEquipe;
+use App\Models\Trabalhador;
+use App\Models\Voluntario;
+use App\Services\PessoaService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\View\View;
 
 class TrabalhadorController extends Controller
 {
-
-    protected array $regras = [
-        'nom_completo' => 'required|string|max:255',
-        'num_telefone' => 'required|string|max:11',
-        'equipes' => 'nullable|array',
-        'equipes.*' => 'string|in:Alimentação,Bandinha,Emaús,Limpeza,Oração,Recepção,Reportagem,Sala,Secretaria,Troca de ideias,Vendinha',
-        'des_habilidades' => 'nullable|string|max:255',
-        'bol_primeira_vez' => 'nullable|boolean',
-        'idt_evento' => 'required|exists:evento,idt_evento',
-
-    ];
-
-    public function index()
+    public function index(Request $request): View
     {
-        $trabalhadores = \App\Models\Trabalhador::with('pessoa', 'evento', 'equipe')
-            ->orderBy('nom_completo')
-            ->get();
-        return view('trabalhadores.list', compact('trabalhadores'));
+        $search = $request->get('search');
+        $eventoId = $request->get('evento');
+
+        $evento = null;
+        if ($eventoId) {
+            $evento = Evento::find($eventoId);
+        }
+
+        $trabalhadores = Trabalhador::with(['pessoa', 'evento'])
+            ->when($search, function ($query, $search) {
+                return $query->where('nom_pessoa', 'like', "%{$search}%")
+                    ->orWhere('nom_apelido', 'like', "%{$search}%");
+            })->when($eventoId, function ($query, $eventoId) {
+                return $query->where('idt_evento', $eventoId);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('trabalhador.list', compact('trabalhadores', 'search', 'evento'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(Request $request): View
     {
+        $eventoId = $request->get('evento');
 
-        $equipes = TipoEquipe::all();
-        $eventos = Evento::all();
+        $evento = null;
+        if ($eventoId) {
+            $evento = Evento::find($eventoId);
+        }
 
-        return view('trabalhadores.form', [
-            'trabalhador' => new Trabalhador(),
-            'equipes' => $equipes,
-            'eventos' => $eventos,
-        ]);
+        $equipes  = TipoEquipe::select('idt_equipe', 'des_grupo')->get();
+        return view('trabalhador.form', compact('equipes', 'evento'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $validated = $request->validate($this->regras);
-
-        $pessoa = auth()->user()->pessoa;
-
-        $trablhador = Trabalhador::create([
-            'idt_pessoa' => $pessoa->idt_pessoa,
-            'nom_completo' => $validated['nom_completo'],
-            'num_telefone' => $validated['num_telefone'],
-            'des_habilidades' => $validated['des_habilidades'] ?? null,
-            'bol_primeira_vez' => $validated['bol_primeira_vez'] ?? false,
+        $request->validate([
+            'equipes' => 'required|array|min:3',
+            'idt_evento' => 'required|exists:evento,idt_evento',
+        ], [
+            'equipes.min' => 'Selecione ao menos 3 equipes.',
+            'idt_evento.required' => 'O evento é obrigatório.',
         ]);
 
+        $pessoa = PessoaService::criarPessoaAPartirDoUsuario(auth()->user());
+        $eventoId = $request->input('idt_evento');
+        $equipesSelecionadas = collect($request->input('equipes', []))
+            ->filter(fn($item) => array_key_exists('selecionado', $item));
 
-        return redirect()->route('trabalhadores.index')
-            ->with('success', 'Inscrição para trabalhar feita com sucesso!');
+        if ($equipesSelecionadas->count() > 3) {
+            return back()->withErrors(['equipes' => 'Selecione no máximo 3 equipes.'])->withInput();
+        }
+
+        foreach ($equipesSelecionadas as $idt_equipe => $dados) {
+            Voluntario::create([
+                'idt_pessoa'     => $pessoa->idt_pessoa,
+                'idt_evento'     => $eventoId,
+                'idt_equipe'     => $idt_equipe,
+                'txt_habilidade' => $dados['habilidade'] ?? null,
+            ]);
+        }
+
+        return redirect()
+            ->route('eventos.index')
+            ->with('success', 'Recebemos seu pedido e entraremos em contato.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $idt_pessoa)
+    //Lista de voluntarios para indicacao da equipe definitiva
+    public function mount(Request $request)
     {
-        $trabalhador = Pessoa::with('trabalhador.equipe', 'trabalhador.evento')
-            ->where('idt_pessoa', $idt_pessoa)
-            ->firstOrFail();
+        $eventoId = $request->get('evento');
 
-            return view('trabalhadores.show', compact('trabalhador'));
+        $evento = Evento::find($eventoId);
+
+        $voluntarios = $evento
+            ? Voluntario::listarAgrupadoPorPessoa($evento->idt_evento)
+            : collect(); // coleção vazia se não tiver evento
+
+        return view('evento.montagem', [
+            'evento' => $evento,
+            'equipes' => TipoEquipe::select('idt_equipe', 'des_grupo')->get(),
+            'voluntarios' => $voluntarios,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $idt_pessoa)
+    // Confirma a equipe que o voluntario vai trabalhar
+    // indica tambem se a pessoa e o coordenador ou a primeira vez
+    public function confirm(Request $request)
     {
-        // $trabalhador = Pessoa::where('idt_pessoa', $idt_pessoa)->firstOrFail();
-        // $trabalhador = $trabalhador->trabalhador()->first();
-        $trabalhador = Trabalhador::with('pessoa', 'evento')->where('idt_pessoa', $idt_pessoa)->firstOrFail();
-        $equipes = TipoEquipe::all();
-        $eventos = Evento::all();
-
-        return view('trabalhadores.form', compact('trabalhador', 'eventos','equipes'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $validated = $request->validate($this->regras);
-
-        $pessoa = Pessoa::where('idt_pessoa', $id)->firstOrFail();
-        $trabalhador = Trabalhador::where('idt_pessoa', $id)->firstOrFail();
-
-        // Apagar após os testes, o nome e telefone não podem ser alterados
-        $pessoa->update([
-            'nom_pessoa' => $validated['nom_completo'],
-            'tel_pessoa' => $validated['num_telefone'],
-            'des_habilidades' => $validated['des_habilidades'] ?? null,
+        $request->validate([
+            'idt_voluntario' => 'required|exists:voluntario,idt_voluntario',
+            'idt_equipe' => 'required|exists:tipo_equipe,idt_equipe',
+            'ind_coordenador' => 'nullable|boolean',
+            'ind_primeira_vez' => 'nullable|boolean',
+        ], [
+            'idt_voluntario.required' => 'O voluntário é obrigatório.',
+            'idt_equipe.required' => 'A equipe é obrigatória.',
         ]);
 
+        $voluntario = Voluntario::find($request->input('idt_voluntario'));
 
+        if (!$voluntario) {
+            return redirect()
+                ->back()
+                ->with('error', 'Voluntário não encontrado.');
+        }
 
-        $trabalhador->idt_evento = $validated['idt_evento'];
-        $trabalhador->idt_equipe = $validated['equipes'][0] ?? null;
-        $trabalhador ->save();
-        
+        Trabalhador::updateOrCreate([
+            'idt_pessoa' => $voluntario->idt_pessoa,
+            'idt_evento' => $voluntario->idt_evento,
+            'idt_equipe' => $voluntario->idt_equipe,
+            'idt_voluntario' => $voluntario->idt_voluntario,
+            'ind_coordenador' => $request->get('ind_coordenador'),
+            'ind_primeira_vez' => $request->get('ind_primeira_vez'),
+        ]);
 
-        return redirect()->route('trabalhadores.index')
-            ->with('success', 'Trabalhador atualizado com sucesso!');
+        return redirect()
+            ->back()
+            ->with('success', 'Trabalhador confirmado.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    // Gera o quadrante dos trabalhadores do evento
+    public function generate(Request $request)
     {
-        //
+        $eventoId = $request->get('evento');
+
+        $evento = Evento::find($eventoId);
+
+        $trabalhadoresPorEquipe = collect();
+
+        if ($evento) {
+            // Carrega todos os trabalhadores do evento com suas equipes e pessoas
+            $trabalhadores = Trabalhador::with(['pessoa', 'equipe'])
+                ->where('idt_evento', $evento->idt_evento)
+                ->get();
+
+            // Agrupa por equipe e ordena coordenadores no topo
+            $trabalhadoresPorEquipe = $trabalhadores
+                ->groupBy(fn($t) => $t->equipe->des_grupo)
+                ->map(function (Collection $grupo) {
+                    return $grupo->sortByDesc('ind_coordenador')->values();
+                });
+        }
+
+        return view('evento.quadrante', [
+            'evento' => $evento,
+            'trabalhadoresPorEquipe' => $trabalhadoresPorEquipe,
+        ]);
     }
 }

@@ -60,6 +60,11 @@ class Pessoa extends Model
         return $this->hasMany(Trabalhador::class, 'idt_pessoa');
     }
 
+    public function voluntario()
+    {
+        return $this->hasMany(Voluntario::class, 'idt_pessoa');
+    }
+
     public function getDataNascimentoFormatada()
     {
 

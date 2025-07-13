@@ -23,6 +23,7 @@ class EventoController extends Controller
         $eventos = Evento::with(['movimento'])
             ->withCount([
                 'fichas',
+                'voluntarios',
                 'trabalhadores',
                 'participantes'
             ])->when($search, function ($query, $search) {

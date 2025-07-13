@@ -14,6 +14,11 @@ class ParticipanteController extends Controller
         $search = $request->get('search');
         $eventoId = $request->get('evento');
 
+        $evento = null;
+        if ($eventoId) {
+            $evento = Evento::find($eventoId);
+        }
+
         $participantes = Participante::with(['pessoa', 'evento'])
             ->when($search, function ($query, $search) {
                 return $query->where('nom_pessoa', 'like', "%{$search}%")
@@ -25,11 +30,6 @@ class ParticipanteController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        if ($eventoId) {
-            $evento = Evento::find($eventoId);
-            return view('participante.list', compact('participantes', 'search', 'evento'));
-        } else {
-            return view('participante.list', compact('participantes', 'search'));
-        }
+        return view('participante.list', compact('participantes', 'search', 'evento'));
     }
 }

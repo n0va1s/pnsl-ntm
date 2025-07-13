@@ -32,16 +32,6 @@ return new class extends Migration
             $table->string('tip_restricao', 3); // alergia, intolerância, PNE
             $table->timestamps();
         });
-// CONFERINDO TIPO EQUIPE
-        // Tabela Tipo_Equipe ex: bandinha, reportagem, oracao
-        Schema::create('tipo_equipe', function (Blueprint $table) {
-            $table->id('idt_equipe');
-            $table->foreignId('idt_movimento')
-                ->constrained('tipo_movimento', 'idt_movimento');
-            $table->string('des_grupo', 255);
-            $table->text('txt_documento')->nullable();
-            $table->timestamps();
-        });
 
         // Tabela Tipo_Movimento ex: ECC, Segue-Me, VEM
         Schema::create('tipo_movimento', function (Blueprint $table) {
@@ -49,6 +39,16 @@ return new class extends Migration
             $table->string('nom_movimento', 255);
             $table->string('des_sigla', 10);
             $table->date('dat_inicio');
+            $table->timestamps();
+        });
+
+        // Tabela Tipo_Equipe ex: bandinha, reportagem, oracao
+        Schema::create('tipo_equipe', function (Blueprint $table) {
+            $table->id('idt_equipe');
+            $table->foreignId('idt_movimento')
+                ->constrained('tipo_movimento', 'idt_movimento');
+            $table->string('des_grupo', 255);
+            $table->text('txt_documento')->nullable();
             $table->timestamps();
         });
 
@@ -90,8 +90,8 @@ return new class extends Migration
             $table->date('dat_nascimento');
             $table->string('des_endereco', 255)->nullable();
             $table->string('eml_pessoa', 255);
-            $table->string('tam_camiseta', 2);
-            $table->string('tip_genero', 1); // m, f, n - não informado
+            $table->string('tam_camiseta', 2)->nullable();
+            $table->string('tip_genero', 1)->nullable();
             $table->boolean('ind_toca_violao')->default(false);
             $table->boolean('ind_consentimento')->default(false);
             $table->boolean('ind_restricao')->default(false);
@@ -164,7 +164,18 @@ return new class extends Migration
             $table->primary(['idt_participante', 'dat_presenca']);
         });
 
+        // Tabela Voluntario indica as equipes que a pessoas quer trabalhar
+        Schema::create('voluntario', function (Blueprint $table) {
+            $table->id('idt_voluntario');
+            $table->foreignId('idt_pessoa')->constrained('pessoa', 'idt_pessoa');
+            $table->foreignId('idt_evento')->constrained('evento', 'idt_evento');
+            $table->foreignId('idt_equipe')->constrained('tipo_equipe', 'idt_equipe');
+            $table->text('txt_habilidade')->nullable(); // quais as suas habilidades para esta equipe
+            $table->timestamps();
+        });
+
         // Tabela Trabalhador indica os encontros que a pessoa trabalhou ou coordenou
+        // Nao ha necessidade do trabalhador ter indicado as equipes que quer trabalhar
         Schema::create('trabalhador', function (Blueprint $table) {
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
@@ -174,20 +185,17 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->foreignId('idt_equipe')
                 ->constrained('tipo_equipe', 'idt_equipe');
+            $table->foreignId('idt_voluntario')->nullable()->constrained('voluntario', 'idt_voluntario')->nullOnDelete();
+            $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
+            $table->boolean('ind_primeira_vez')->default(false); // primeira vez no encontro
             $table->boolean('ind_recomendado')->default(false); // recomenda trabalhar novamente?
             $table->boolean('ind_lideranca')->default(false); // tem potencial para liderar uma equipe no futuro?
             $table->boolean('ind_destaque')->default(false); // indicaria para a coordenação geral?
+            $table->boolean('ind_avaliacao')->default(false); // a pessoa foi avaliada
             $table->boolean('ind_camiseta_pediu')->default(false);
             $table->boolean('ind_camiseta_pagou')->default(false);
-            $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->timestamps();
-<<<<<<< HEAD
             $table->primary(['idt_pessoa', 'idt_evento', 'idt_equipe']);
-=======
-            $table->softDeletes();
-
-            $table->primary(['idt_pessoa', 'idt_evento']);
->>>>>>> f55e1d72dd402db5cd82d8b45c5f68d75180cea2
         });
 
         // Tabela Ficha com os dados básicos do participante
@@ -311,6 +319,7 @@ return new class extends Migration
         Schema::dropIfExists('ficha_vem');
         Schema::dropIfExists('ficha');
         Schema::dropIfExists('trabalhador');
+        Schema::dropIfExists('voluntario');
         Schema::dropIfExists('participante');
         Schema::dropIfExists('pessoa_habilidade');
         Schema::dropIfExists('pessoa_foto');

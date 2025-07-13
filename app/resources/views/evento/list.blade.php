@@ -91,7 +91,7 @@
                         <time
                             datetime="{{ $evento->dat_termino->toDateString() }}">{{ $evento->getDataTerminoFormatada() }}</time>
                     </div>
-
+                    {{-- @if (Auth::user() && Auth::user()->isAdmin()) --}}
                     @if (
                         !$evento->ind_pos_encontro &&
                             ($evento->fichas_count || $evento->trabalhadores_count || $evento->participantes_count))
@@ -101,7 +101,7 @@
                             <div
                                 class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->fichas_count ? 'bg-green-600 rounded-l-md' : 'invisible' }}">
                                 @if ($evento->fichas_count)
-                                    <a href="{{ $rotaFichas }}" class="flex items-center gap-1 text-white">
+                                    <a href="{{ $rotaFichas }}">
                                         <x-heroicon-o-document-text class="w-4 h-4" />
                                         {{ $evento->fichas_count }}
                                     </a>
@@ -110,10 +110,12 @@
 
                             {{-- Candidatos --}}
                             <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600' : 'invisible' }}"
-                                title="Voluntários interessados no evento">
+                                title="Pessoas querendo trabalhar no evento">
                                 @if ($evento->trabalhadores_count)
-                                    <x-heroicon-o-hand-thumb-up class="w-4 h-4" />
-                                    {{ $evento->trabalhadores_count }}
+                                    <a href="{{ route('trabalhadores.index', ['evento' => $evento->idt_evento]) }}">
+                                        <x-heroicon-o-hand-thumb-up class="w-4 h-4" />
+                                        {{ $evento->trabalhadores_count }}
+                                    </a>
                                 @endif
                             </div>
 
@@ -121,16 +123,47 @@
                             <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->participantes_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
                                 title="Pessoas aprovadas para o evento">
                                 @if ($evento->participantes_count)
-                                    <a href="{{ route('participantes.index', ['evento' => $evento->idt_evento]) }}"
-                                        class="flex items-center gap-1 text-white">
-                                        <x-heroicon-o-users class="w-4 h-4" />
+                                    <a href="{{ route('participantes.index', ['evento' => $evento->idt_evento]) }}">
+                                        <x-heroicon-o-user-group class="w-4 h-4" />
                                         {{ $evento->participantes_count }}
+                                    </a>
+                                @endif
+                            </div>
+
+                            {{-- Voluntarios --}}
+                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->voluntarios_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
+                                title="Pessoas que sugeriram equipes para trabalhar">
+                                @if ($evento->voluntarios_count)
+                                    <a href="{{ route('montagem.list', ['evento' => $evento->idt_evento]) }}">
+                                        <x-heroicon-o-hand-raised class="w-4 h-4" />
+                                        {{ $evento->voluntarios_count }}
+                                    </a>
+                                @endif
+                            </div>
+
+                            {{-- Trabalhadores --}}
+                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
+                                title="Voluntários já confirmados em uma equipe">
+                                @if ($evento->trabalhadores_count)
+                                    <a href="{{ route('trabalhadores.index', ['evento' => $evento->idt_evento]) }}">
+                                        <x-heroicon-o-briefcase class="w-4 h-4" />
+                                        {{ $evento->trabalhadores_count }}
+                                    </a>
+                                @endif
+                            </div>
+
+                            {{-- Quadrante --}}
+                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 bg-green-600 rounded-r-md"
+                                title="Veja o quadrante do evento">
+                                @if ($evento->trabalhadores_count)
+                                    <a href="{{ route('quadrante.list', ['evento' => $evento->idt_evento]) }}">
+                                        <x-heroicon-o-clipboard class="w-4 h-4" />
+                                        {{ $evento->trabalhadores_count }}
                                     </a>
                                 @endif
                             </div>
                         </div>
                     @endif
-
                     <div class="flex gap-0 mt-4 border-t pt-3">
                         <a href="{{ route('eventos.edit', $evento) }}"
                             class="flex items-center justify-center w-1/2 text-sm font-semibold text-blue-600 hover:text-white hover:bg-blue-600 px-3 py-2 rounded-bl-lg transition-colors">
@@ -149,6 +182,16 @@
                             </button>
                         </form>
                     </div>
+                    {{-- @else --}}
+                    @if (!$evento->ind_pos_encontro)
+                        <a href="{{ route('trabalhadores.create', ['evento' => $evento->idt_evento]) }}"
+                            class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150"
+                            title="Quero trabalhar neste evento">
+                            <x-heroicon-o-hand-raised class="w-5 h-5" />
+                            Quero trabalhar
+                        </a>
+                    @endif
+                    {{-- @endif --}}
                 </div>
             @empty
                 <div class="col-span-full text-center text-gray-500 dark:text-gray-300">

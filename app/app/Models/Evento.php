@@ -36,9 +36,9 @@ class Evento extends Model
         return $this->belongsTo(TipoMovimento::class, 'idt_movimento');
     }
 
-    public function trabalhadores()
+    public function fichas()
     {
-        return $this->hasMany(Trabalhador::class, 'idt_evento');
+        return $this->hasMany(Ficha::class, 'idt_evento');
     }
 
     public function participantes()
@@ -46,9 +46,14 @@ class Evento extends Model
         return $this->hasMany(Participante::class, 'idt_evento');
     }
 
-    public function fichas()
+    public function voluntarios()
     {
-        return $this->hasMany(Ficha::class, 'idt_evento');
+        return $this->hasMany(Voluntario::class, 'idt_evento');
+    }
+
+    public function trabalhadores()
+    {
+        return $this->hasMany(Trabalhador::class, 'idt_evento');
     }
 
     /**

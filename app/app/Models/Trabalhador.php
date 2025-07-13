@@ -18,15 +18,25 @@ class Trabalhador extends Model
         'idt_pessoa',
         'idt_evento',
         'idt_equipe',
+        'ind_coordenador',
         'ind_recomendado',
         'ind_lideranca',
         'ind_destaque',
-        'ind_coordenador',
-        'des_habilidades',
-        'bol_primeira_vez',
+        'ind_avaliacao',
+        'ind_primeira_vez',
         'ind_camiseta_pediu',
         'ind_camiseta_pagou',
-        'ind_coordenador',
+    ];
+
+    protected $casts = [
+        'ind_coordenador' => 'boolean',
+        'ind_recomendado' => 'boolean',
+        'ind_lideranca' => 'boolean',
+        'ind_destaque' => 'boolean',
+        'ind_avaliacao' => 'boolean',
+        'ind_primeira_vez' => 'boolean',
+        'ind_camiseta_pediu' => 'boolean',
+        'ind_camiseta_pagou' => 'boolean',
     ];
 
     public function pessoa()
