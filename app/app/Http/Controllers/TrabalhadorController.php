@@ -15,6 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 
+
 class TrabalhadorController extends Controller
 {
     public function index(Request $request): View
@@ -64,9 +65,16 @@ class TrabalhadorController extends Controller
             'idt_evento.required' => 'O evento é obrigatório.',
         ]);
 
-        $pessoa = auth()->user()->pessoa;
+        $pessoa = Auth::user()->pessoa;
 
-        $trablhador = Trabalhador::create([
+        $validated = $request->validate([
+            'nom_completo' => 'required|string|max:255',
+            'num_telefone' => 'required|string|max:20',
+            'des_habilidades' => 'nullable|string|max:1000',
+            'bol_primeira_vez' => 'nullable|boolean',
+        ]);
+
+        $trabalhador = Trabalhador::create([
             'idt_pessoa' => $pessoa->idt_pessoa,
             'nom_completo' => $validated['nom_completo'],
             'num_telefone' => $validated['num_telefone'],
@@ -194,11 +202,25 @@ class TrabalhadorController extends Controller
         ]);
 
 
+        // Corrigindo variáveis e lógica
+        // Busca o trabalhador pelo identificador único (pessoa, equipe, evento)
+        $trabalhador = Trabalhador::where('idt_pessoa', $dados['idt_pessoa'])
+            ->where('idt_equipe', $dados['idt_equipe'])
+            ->where('idt_evento', $dados['idt_evento'])
+            ->first();
 
-        $trabalhador->idt_evento = $validated['idt_evento'];
-        $trabalhador->idt_equipe = $validated['equipes'][0] ?? null;
-        $trabalhador ->save();
-        
+        if (!$trabalhador) {
+            return redirect()->back()->with('error', 'Trabalhador não encontrado.');
+        }
+
+        // Atualiza os campos booleanos, se existirem
+        $trabalhador->ind_recomendado = $dados['ind_recomendado'] ?? false;
+        $trabalhador->ind_lideranca = $dados['ind_lideranca'] ?? false;
+        $trabalhador->ind_destaque = $dados['ind_destaque'] ?? false;
+        $trabalhador->ind_camiseta_pediu = $dados['ind_camiseta_pediu'] ?? false;
+        $trabalhador->ind_camiseta_pagou = $dados['ind_camiseta_pagou'] ?? false;
+
+        $trabalhador->save();
 
         return redirect()->route('trabalhadores.index')
             ->with('success', 'Trabalhador atualizado com sucesso!');
