@@ -98,7 +98,9 @@ class TrabalhadorController extends Controller
 
         return view('evento.montagem', [
             'evento' => $evento,
-            'equipes' => TipoEquipe::select('idt_equipe', 'des_grupo')->get(),
+            'equipes' => TipoEquipe::select('idt_equipe', 'des_grupo')
+                ->where('idt_movimento', $evento->idt_movimento)
+                ->get(),
             'voluntarios' => $voluntarios,
         ]);
     }
@@ -166,5 +168,46 @@ class TrabalhadorController extends Controller
             'evento' => $evento,
             'trabalhadoresPorEquipe' => $trabalhadoresPorEquipe,
         ]);
+    }
+
+    public function review(Request $request)
+    {
+        $trabalhador = Trabalhador::with(['pessoa', 'evento', 'equipe'])
+            ->where('idt_evento', $request->get('evento'))
+            ->where('idt_equipe', $request->get('equipe'))
+            ->where('idt_pessoa', $request->get('pessoa'))
+            ->first();
+
+        return view('trabalhador.avaliacao', compact('trabalhador'));
+    }
+
+    public function send(Request $request)
+    {
+        $dados = $request->validate([
+            'idt_pessoa' => 'required',
+            'idt_equipe' => 'required',
+            'idt_evento' => 'required',
+            'ind_recomendado'  => 'nullable|boolean',
+            'ind_lideranca'  => 'nullable|boolean',
+            'ind_destaque'  => 'nullable|boolean',
+            'ind_camiseta_pediu'  => 'nullable|boolean',
+            'ind_camiseta_pagou'  => 'nullable|boolean',
+        ], [
+            'idt_trabalhador.required' => 'O trabalhador é obrigatório.',
+            'idt_equipe.required' => 'A equipe é obrigatória.',
+            'idt_evento.required' => 'O evento é obrigatório.',
+        ]);
+
+        $trabalhador = Trabalhador::where('idt_evento', $dados['idt_evento'])
+            ->where('idt_equipe', $dados['idt_equipe'])
+            ->where('idt_pessoa', $dados['idt_pessoa'])
+            ->first();
+
+        $trabalhador->ind_avaliacao = true;
+        $trabalhador->update($dados);
+
+        return redirect()
+            ->route('quadrante.list', ['evento' => $dados['idt_evento']])
+            ->with('success', 'Avaliação realizada. Valeu!');
     }
 }

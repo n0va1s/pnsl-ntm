@@ -72,6 +72,16 @@ Route::middleware(['auth'])->group(function () {
     )->name('trabalhadores.store');
 
     Route::get(
+        '/trabalhadores/review',
+        [TrabalhadorController::class, 'review']
+    )->name('trabalhadores.review');
+
+    Route::post(
+        '/avaliacao',
+        [TrabalhadorController::class, 'send']
+    )->name('avaliacao.send');
+
+    Route::get(
         '/montagem',
         [TrabalhadorController::class, 'mount']
     )->name('montagem.list');

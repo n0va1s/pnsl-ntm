@@ -11,6 +11,7 @@ class Trabalhador extends Model
     use HasFactory;
 
     protected $table = 'trabalhador';
+    protected $primaryKey = 'idt_trabalhador';
     public $timestamps = false;
     public $incrementing = false;
 

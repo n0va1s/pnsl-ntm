@@ -74,7 +74,7 @@
                             {{-- Botão Avaliar (no rodapé do card) --}}
                             @if (!$trabalhador->ind_avaliacao)
                                 <div class="mt-4">
-                                    <a href="{{ route('trabalhadores.create', ['evento' => $evento->idt_evento]) }}"
+                                    <a href="{{ route('trabalhadores.review', ['evento' => $trabalhador->evento->idt_evento, 'equipe' => $trabalhador->equipe->idt_equipe, 'pessoa' => $trabalhador->pessoa->idt_pessoa]) }}"
                                         class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150"
                                         title="Quero trabalhar neste evento">
                                         <x-heroicon-o-heart class="w-5 h-5" />

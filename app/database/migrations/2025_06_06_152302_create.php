@@ -177,6 +177,7 @@ return new class extends Migration
         // Tabela Trabalhador indica os encontros que a pessoa trabalhou ou coordenou
         // Nao ha necessidade do trabalhador ter indicado as equipes que quer trabalhar
         Schema::create('trabalhador', function (Blueprint $table) {
+            $table->id('idt_trabalhador');
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
                 ->onDelete('cascade');
@@ -195,7 +196,6 @@ return new class extends Migration
             $table->boolean('ind_camiseta_pediu')->default(false);
             $table->boolean('ind_camiseta_pagou')->default(false);
             $table->timestamps();
-            $table->primary(['idt_pessoa', 'idt_evento', 'idt_equipe']);
         });
 
         // Tabela Ficha com os dados básicos do participante
