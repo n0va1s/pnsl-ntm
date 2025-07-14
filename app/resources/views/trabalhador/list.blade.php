@@ -37,6 +37,7 @@
                         <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Nome</th>
                         <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Apelido</th>
                         <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Telefone</th>
+                        <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Equipe</th>
                         <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Coordenador(a)</th>
                         <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Primeira vez</th>
                     </tr>
@@ -61,7 +62,11 @@
                             </td>
                             <td class="p-3 text-gray-900 dark:text-gray-200">{{ $trabalhador->pessoa->nom_apelido }}
                             </td>
-                            <td class="p-3 text-gray-700 dark:text-gray-300">{{ $trabalhador->pessoa->tel_pessoa }}
+                            <td class="p-3 text-gray-700 dark:text-gray-300">
+                                {{ $trabalhador->pessoa->tel_pessoa }}
+                            </td>
+                            <td class="p-3 text-gray-700 dark:text-gray-300">
+                                {{ $trabalhador->equipe->des_grupo }}
                             </td>
                             <td class="p-3 text-gray-700 dark:text-gray-300">
                                 @if ($trabalhador->ind_coordenador)
