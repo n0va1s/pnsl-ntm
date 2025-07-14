@@ -6,10 +6,13 @@ use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Pessoa;
 use App\Models\Evento;
+use App\Models\Participante;
 use App\Models\TipoEquipe;
 use App\Models\Trabalhador;
+use App\Models\Voluntario;
 
-class TrabalhadorSeeder extends Seeder
+//Participante, Voluntario e Trabalhador
+class EnvolvidoSeeder extends Seeder
 {
     use WithoutModelEvents;
 
@@ -24,8 +27,8 @@ class TrabalhadorSeeder extends Seeder
                 TipoEquipeSeeder::class,
             ]);
         }
-
-        // Gera trabalhadores usando a factory
+        Participante::factory()->count(20)->create();
+        Voluntario::factory()->count(30)->create();
         Trabalhador::factory()->count(20)->create();
     }
 }

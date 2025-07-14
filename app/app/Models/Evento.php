@@ -36,6 +36,21 @@ class Evento extends Model
         return $this->belongsTo(TipoMovimento::class, 'idt_movimento');
     }
 
+    public function fichas()
+    {
+        return $this->hasMany(Ficha::class, 'idt_evento');
+    }
+
+    public function participantes()
+    {
+        return $this->hasMany(Participante::class, 'idt_evento');
+    }
+
+    public function voluntarios()
+    {
+        return $this->hasMany(Voluntario::class, 'idt_evento');
+    }
+
     public function trabalhadores()
     {
         return $this->hasMany(Trabalhador::class, 'idt_evento');
