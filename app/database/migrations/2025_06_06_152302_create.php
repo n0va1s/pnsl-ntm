@@ -182,13 +182,7 @@ return new class extends Migration
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->boolean('bol_primeira_vez')->default(false); // é a primeira vez que trabalha?
             $table->timestamps();
-<<<<<<< HEAD
             $table->primary(['idt_pessoa', 'idt_evento', 'idt_equipe']);
-=======
-            $table->softDeletes();
-
-            $table->primary(['idt_pessoa', 'idt_evento']);
->>>>>>> f55e1d72dd402db5cd82d8b45c5f68d75180cea2
         });
 
         // Tabela Ficha com os dados básicos do participante
