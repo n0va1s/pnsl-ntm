@@ -7,6 +7,7 @@ use App\Http\Controllers\{
     FichaVemController,
     FichaEccController,
     HomeController,
+    ParticipanteController,
     PessoaController,
     TipoMovimentoController,
     TipoResponsavelController,
@@ -50,6 +51,51 @@ Route::middleware(['auth'])->group(function () {
         [ContatoController::class, 'destroy']
     )->name('contatos.destroy');
 
+    Route::get(
+        '/participantes',
+        [ParticipanteController::class, 'index']
+    )->name('participantes.index');
+
+    Route::get(
+        '/trabalhadores',
+        [TrabalhadorController::class, 'index']
+    )->name('trabalhadores.index');
+
+    Route::get(
+        '/trabalhadores/create',
+        [TrabalhadorController::class, 'create']
+    )->name('trabalhadores.create');
+
+    Route::post(
+        '/trabalhadores',
+        [TrabalhadorController::class, 'store']
+    )->name('trabalhadores.store');
+
+    Route::get(
+        '/trabalhadores/review',
+        [TrabalhadorController::class, 'review']
+    )->name('trabalhadores.review');
+
+    Route::post(
+        '/avaliacao',
+        [TrabalhadorController::class, 'send']
+    )->name('avaliacao.send');
+
+    Route::get(
+        '/montagem',
+        [TrabalhadorController::class, 'mount']
+    )->name('montagem.list');
+
+    Route::post(
+        '/montagem',
+        [TrabalhadorController::class, 'confirm']
+    )->name('montagem.confirm');
+
+    Route::get(
+        '/quadrante',
+        [TrabalhadorController::class, 'generate']
+    )->name('quadrante.list');
+
     Route::get('fichas-vem/approve/{id}', [FichaVemController::class, 'approve'])
         ->name('fichas-vem.approve');
     Route::get('fichas-ecc/approve/{id}', [FichaEccController::class, 'approve'])
@@ -63,11 +109,6 @@ Route::middleware(['auth'])->group(function () {
         'tiposituacao' => TipoSituacaoController::class,
         'pessoas' => PessoaController::class,
     ]);
-
-    Route::resource('trabalhadores', TrabalhadorController::class)
-        ->parameters([
-            'trabalhadores' => 'idt_pessoa',
-        ]);
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');

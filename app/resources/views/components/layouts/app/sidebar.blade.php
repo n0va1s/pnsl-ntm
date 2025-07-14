@@ -29,18 +29,6 @@
                     :current="request()->routeIs('eventos.index')" wire:navigate>
                     {{ __('Eventos') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="users" :href="route('trabalhadores.index')"
-                    :current="request()->routeIs('trabalhadores.index')" wire:navigate>
-                    {{ __('Trabalhadores') }}
-                </flux:navlist.item>
-                <flux:navlist.item icon="document-duplicate" :href="route('fichas-vem.index')"
-                    :current="request()->routeIs('fichas-vem.index')" wire:navigate>
-                    {{ __('Fichas do VEM') }}
-                </flux:navlist.item>
-                <flux:navlist.item icon="document-duplicate" :href="route('fichas-ecc.index')"
-                    :current="request()->routeIs('fichas-ecc.index')" wire:navigate>
-                    {{ __('Fichas do ECC') }}
-                </flux:navlist.item>
                 <flux:navlist.item icon="user" :href="route('pessoas.index')"
                     :current="request()->routeIs('pessoas.index')" wire:navigate>
                     {{ __('Pessoas') }}

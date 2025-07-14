@@ -11,7 +11,8 @@ class Trabalhador extends Model
     use HasFactory;
 
     protected $table = 'trabalhador';
-    public $timestamps = true; // Mudança: habilitar timestamps pois a migration os define
+    protected $primaryKey = 'idt_trabalhador';
+    public $timestamps = false;
     public $incrementing = false;
 
     protected $fillable = [
@@ -20,6 +21,7 @@ class Trabalhador extends Model
         'idt_pessoa',
         'idt_evento',
         'idt_equipe',
+        'ind_coordenador',
         'ind_recomendado',
         'ind_recomendado',
         'ind_lideranca',
@@ -27,10 +29,22 @@ class Trabalhador extends Model
         'ind_coordenador',
         'ind_destaque',
         'ind_coordenador',
-        'des_habilidades',
-        'bol_primeira_vez',
+        'ind_destaque',
+        'ind_avaliacao',
+        'ind_primeira_vez',
         'ind_camiseta_pediu',
         'ind_camiseta_pagou',
+    ];
+
+    protected $casts = [
+        'ind_coordenador' => 'boolean',
+        'ind_recomendado' => 'boolean',
+        'ind_lideranca' => 'boolean',
+        'ind_destaque' => 'boolean',
+        'ind_avaliacao' => 'boolean',
+        'ind_primeira_vez' => 'boolean',
+        'ind_camiseta_pediu' => 'boolean',
+        'ind_camiseta_pagou' => 'boolean',
     ];
 
     public function pessoa()

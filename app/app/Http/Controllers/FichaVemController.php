@@ -19,11 +19,22 @@ class FichaVemController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
+        $eventoId = $request->get('evento');
+        $evento = null;
+
+        if ($eventoId) {
+            $evento = Evento::find($eventoId);
+        }
 
         $fichas = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])
             ->when($search, function ($query, $search) {
-                return $query->where('nom_candidato', 'like', "%{$search}%")
-                    ->orWhere('nom_apelido', 'like', "%{$search}%");
+                return $query->where(function ($q) use ($search) {
+                    $q->where('nom_candidato', 'like', "%{$search}%")
+                        ->orWhere('nom_apelido', 'like', "%{$search}%");
+                });
+            })
+            ->when($eventoId, function ($query, $eventoId) {
+                return $query->where('idt_evento', $eventoId);
             })
             ->whereHas('evento', function ($query) {
                 $query->where('idt_movimento', TipoMovimento::VEM);
@@ -32,8 +43,9 @@ class FichaVemController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('ficha.listVEM', compact('fichas', 'search'));
+        return view('ficha.listVEM', compact('fichas', 'search', 'evento'));
     }
+
 
     /**
      * Formulário de criação.

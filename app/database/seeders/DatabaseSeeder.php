@@ -2,11 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\TipoEquipe;
-use App\Models\TipoMovimento;
-use App\Models\TipoResponsavel;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -27,8 +23,7 @@ class DatabaseSeeder extends Seeder
             EventoSeeder::class,
             PessoaSeeder::class,
             FichaSeeder::class,
-            ParticipanteSeeder::class,
-            TrabalhadorSeeder::class,
+            EnvolvidoSeeder::class,
         ]);
     }
 }
