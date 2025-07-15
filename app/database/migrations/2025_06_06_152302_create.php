@@ -195,9 +195,7 @@ return new class extends Migration
             $table->boolean('ind_avaliacao')->default(false); // a pessoa foi avaliada
             $table->boolean('ind_camiseta_pediu')->default(false);
             $table->boolean('ind_camiseta_pagou')->default(false);
-            $table->boolean('bol_primeira_vez')->default(false); // é a primeira vez que trabalha?
             $table->timestamps();
-            $table->primary(['idt_pessoa', 'idt_evento', 'idt_equipe']);
         });
 
         // Tabela Ficha com os dados básicos do participante

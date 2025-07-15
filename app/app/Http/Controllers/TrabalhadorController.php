@@ -78,12 +78,11 @@ class TrabalhadorController extends Controller
         $trabalhador = Trabalhador::create([
             'idt_pessoa' => $pessoa->idt_pessoa,
             'bol_primeira_vez' => $validated['bol_primeira_vez'] ?? false,
-            'idt_evento' => $validated['idt_evento'],
-            'idt_equipe' => $idtEquipe,
-        ]);
+            'idt_evento' => $request->input('idt_evento'),
+            'idt_equipe' => $request->input('equipes')[0], // Seleciona a primeira equipe do array
 
-        // return redirect()->route('trabalhadores.index')
-        //     ->with('success', 'Inscrição para trabalhar feita com sucesso!');
+            // dd('Chegou até aqui - trabalhador criado', $validated, $request->all());
+        ]);
 
         return redirect()
             ->route('eventos.index')
