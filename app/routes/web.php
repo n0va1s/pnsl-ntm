@@ -56,6 +56,11 @@ Route::middleware(['auth'])->group(function () {
         [ParticipanteController::class, 'index']
     )->name('participantes.index');
 
+    Route::post(
+        '/participantes/{evento}/{pessoa}',
+        [EventoController::class, 'confirm']
+    )->name('participantes.confirm');
+
     Route::get(
         '/trabalhadores',
         [TrabalhadorController::class, 'index']

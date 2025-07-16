@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EventoRequest;
 use App\Models\Evento;
+use App\Models\Participante;
+use App\Models\Pessoa;
 use App\Models\TipoMovimento;
+use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -16,9 +20,21 @@ class EventoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request)
     {
         $search = $request->get('search');
+
+        $participacoes = [];
+
+        //TODO: substituir pela app() instance
+        $pessoa = UserService::createPessoaFromLoggedUser();
+
+        // Buscar os eventos ja inscritos da pessoa
+        if ($pessoa) {
+            $participacoes = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+                ->pluck('idt_evento')
+                ->toArray();
+        }
 
         $eventos = Evento::with(['movimento'])
             ->withCount([
@@ -37,7 +53,9 @@ class EventoController extends Controller
             'evento.list',
             compact(
                 'eventos',
-                'search'
+                'search',
+                'pessoa',
+                'participacoes'
             )
         );
     }
@@ -97,6 +115,19 @@ class EventoController extends Controller
         return redirect()
             ->route('eventos.index')
             ->with('success', 'Evento atualizado com sucesso!');
+    }
+
+    public function confirm(Evento $evento, Pessoa $pessoa): RedirectResponse
+    {
+
+        Participante::create([
+            'idt_evento' => $evento->idt_evento,
+            'idt_pessoa' => $pessoa->idt_pessoa,
+        ]);
+
+        return redirect()
+            ->route('eventos.index')
+            ->with('success', 'Sua participação  foi confirmada. Até lá!');
     }
 
     /**
