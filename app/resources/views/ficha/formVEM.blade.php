@@ -461,44 +461,44 @@
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Máximo de 1000 caracteres</p>
                 </div>
             </div>
+            @if (Auth::user() && Auth::user()->isAdmin())
+                <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Análise</h2>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Select da Situação -->
+                            <div>
+                                <label for="idt_situacao"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Situação
+                                </label>
 
-            <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Análise</h2>
-                <div class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Select da Situação -->
-                        <div>
-                            <label for="idt_situacao"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Situação
-                            </label>
+                                <select name="idt_situacao" id="idt_situacao" required x-bind:disabled="bloqueado"
+                                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Selecione a situação</option>
+                                    @foreach ($situacoes as $situacao)
+                                        <option value="{{ $situacao->idt_situacao }}"
+                                            {{ old('idt_situacao', $ultimaSituacao->idt_situacao ?? null) == $situacao->idt_situacao ? 'selected' : '' }}>
+                                            {{ $situacao->des_situacao }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                            <select name="idt_situacao" id="idt_situacao" required x-bind:disabled="bloqueado"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Selecione a situação</option>
-                                @foreach ($situacoes as $situacao)
-                                    <option value="{{ $situacao->idt_situacao }}"
-                                        {{ old('idt_situacao', $ultimaSituacao->idt_situacao ?? null) == $situacao->idt_situacao ? 'selected' : '' }}>
-                                        {{ $situacao->des_situacao }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Textarea da análise -->
-                        <div>
-                            <label for="txt_analise"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Análise
-                            </label>
-                            <textarea name="txt_analise" id="txt_analise" rows="3" x-bind:disabled="bloqueado"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:outline-none"
-                                placeholder="Descreva a análise realizada">{{ old('txt_analise', $ultimaAnalise->txt_analise ?? '') }}</textarea>
+                            <!-- Textarea da análise -->
+                            <div>
+                                <label for="txt_analise"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Análise
+                                </label>
+                                <textarea name="txt_analise" id="txt_analise" rows="3" x-bind:disabled="bloqueado"
+                                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:outline-none"
+                                    placeholder="Descreva a análise realizada">{{ old('txt_analise', $ultimaAnalise->txt_analise ?? '') }}</textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
+            @endif
             <!-- Ações -->
             <div class="flex gap-3 justify-end">
                 <button type="submit" x-bind:disabled="bloqueado"

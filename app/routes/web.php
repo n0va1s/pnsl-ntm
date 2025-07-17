@@ -3,6 +3,7 @@
 use App\Http\Controllers\{
     ConfiguracoesController,
     ContatoController,
+    DashboardController,
     EventoController,
     FichaVemController,
     FichaEccController,
@@ -30,13 +31,16 @@ Route::post(
     [HomeController::class, 'contato']
 )->name('home.contato');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+
 
 // Area Administrativa
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
+
+    Route::get(
+        '/dashboard',
+        [DashboardController::class, 'index']
+    )->name('dashboard');
 
     Route::get(
         '/configuracoes',
@@ -55,6 +59,11 @@ Route::middleware(['auth'])->group(function () {
         '/participantes',
         [ParticipanteController::class, 'index']
     )->name('participantes.index');
+
+    Route::post(
+        '/participantes/{evento}/{pessoa}',
+        [EventoController::class, 'confirm']
+    )->name('participantes.confirm');
 
     Route::get(
         '/trabalhadores',

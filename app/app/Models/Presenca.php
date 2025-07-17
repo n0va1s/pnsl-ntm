@@ -12,17 +12,12 @@ class Presenca extends Model
     protected $table = 'presenca';
     public $timestamps = false;
     protected $fillable = [
-        'idt_pessoa',
-        'idt_evento',
+        'idt_participante',
         'dat_presenca',
         'ind_presente'
     ];
     public function participante()
     {
-        return $this->belongsTo(Participante::class, 'idt_pessoa', 'idt_pessoa');
-    }
-    public function evento()
-    {
-        return $this->belongsTo(Evento::class, 'idt_evento', 'idt_evento');
+        return $this->belongsTo(Participante::class, 'idt_participante', 'idt_participante');
     }
 }

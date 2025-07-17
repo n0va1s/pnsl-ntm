@@ -61,12 +61,6 @@
                                                 <span>Recomendado</span>
                                             </div>
                                         @endif
-                                        @if ($trabalhador->ind_primeira_vez)
-                                            <div class="flex items-center gap-2">
-                                                <x-heroicon-o-sparkles class="w-5 h-5 text-indigo-500" />
-                                                <span>Primeira Vez</span>
-                                            </div>
-                                        @endif
                                     </div>
                                 @endif
                             </div>

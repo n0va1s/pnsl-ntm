@@ -53,7 +53,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
             @forelse ($eventos as $evento)
                 <div
-                    class="bg-white dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-zinc-700 p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    class="flex flex-col justify-between h-full min-h-[200px] bg-white dark:bg-zinc-800 rounded-xl p-4 border border-gray-200 dark:border-zinc-700 shadow-sm">
+
                     <div class="flex justify-between items-start mb-2">
                         <div>
                             <h2 class="text-lg font-bold text-gray-800 dark:text-white">{{ $evento->des_evento }}</h2>
@@ -62,6 +63,10 @@
                         <div>
                             @php
                                 $sigla = $evento->movimento->des_sigla;
+
+                                $confirmado = in_array($evento->idt_evento, $participacoes);
+
+                                $feito = in_array($evento->idt_evento, $eventosFeitos);
 
                                 $rotaFichas = match ($sigla) {
                                     'ECC' => route('fichas-ecc.index', ['evento' => $evento->idt_evento]),
@@ -91,107 +96,144 @@
                         <time
                             datetime="{{ $evento->dat_termino->toDateString() }}">{{ $evento->getDataTerminoFormatada() }}</time>
                     </div>
-                    {{-- @if (Auth::user() && Auth::user()->isAdmin()) --}}
-                    @if (
-                        !$evento->ind_pos_encontro &&
-                            ($evento->fichas_count || $evento->trabalhadores_count || $evento->participantes_count))
-                        <div class="flex w-full gap-x-2 mb-4 text-sm text-white"
-                            title="Fichas cadastradas para o evento">
-                            {{-- Fichas --}}
-                            <div
-                                class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->fichas_count ? 'bg-green-600 rounded-l-md' : 'invisible' }}">
-                                @if ($evento->fichas_count)
-                                    <a href="{{ $rotaFichas }}">
-                                        <x-heroicon-o-document-text class="w-4 h-4" />
-                                        {{ $evento->fichas_count }}
-                                    </a>
-                                @endif
-                            </div>
+                    @if (Auth::user() && Auth::user()->isAdmin())
+                        @if (
+                            !$evento->ind_pos_encontro &&
+                                ($evento->fichas_count || $evento->trabalhadores_count || $evento->participantes_count))
+                            <div class="flex w-full gap-x-2 mb-4 text-sm text-white"
+                                title="Fichas cadastradas para o evento">
+                                {{-- Fichas --}}
+                                <div
+                                    class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->fichas_count ? 'bg-green-600 rounded-l-md' : 'invisible' }}">
+                                    @if ($evento->fichas_count)
+                                        <a href="{{ $rotaFichas }}">
+                                            <x-heroicon-o-document-text class="w-4 h-4" />
+                                            {{ $evento->fichas_count }}
+                                        </a>
+                                    @endif
+                                </div>
 
-                            {{-- Candidatos --}}
-                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600' : 'invisible' }}"
-                                title="Pessoas querendo trabalhar no evento">
-                                @if ($evento->trabalhadores_count)
-                                    <a href="{{ route('trabalhadores.index', ['evento' => $evento->idt_evento]) }}">
-                                        <x-heroicon-o-hand-thumb-up class="w-4 h-4" />
-                                        {{ $evento->trabalhadores_count }}
-                                    </a>
-                                @endif
-                            </div>
+                                {{-- Candidatos --}}
+                                <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600' : 'invisible' }}"
+                                    title="Pessoas querendo trabalhar no evento">
+                                    @if ($evento->trabalhadores_count)
+                                        <a
+                                            href="{{ route('trabalhadores.index', ['evento' => $evento->idt_evento]) }}">
+                                            <x-heroicon-o-hand-thumb-up class="w-4 h-4" />
+                                            {{ $evento->trabalhadores_count }}
+                                        </a>
+                                    @endif
+                                </div>
 
-                            {{-- Participantes --}}
-                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->participantes_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
-                                title="Pessoas aprovadas para o evento">
-                                @if ($evento->participantes_count)
-                                    <a href="{{ route('participantes.index', ['evento' => $evento->idt_evento]) }}">
-                                        <x-heroicon-o-user-group class="w-4 h-4" />
-                                        {{ $evento->participantes_count }}
-                                    </a>
-                                @endif
-                            </div>
+                                {{-- Participantes --}}
+                                <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->participantes_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
+                                    title="Pessoas aprovadas para o evento">
+                                    @if ($evento->participantes_count)
+                                        <a
+                                            href="{{ route('participantes.index', ['evento' => $evento->idt_evento]) }}">
+                                            <x-heroicon-o-user-group class="w-4 h-4" />
+                                            {{ $evento->participantes_count }}
+                                        </a>
+                                    @endif
+                                </div>
 
-                            {{-- Voluntarios --}}
-                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->voluntarios_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
-                                title="Pessoas que sugeriram equipes para trabalhar">
-                                @if ($evento->voluntarios_count)
-                                    <a href="{{ route('montagem.list', ['evento' => $evento->idt_evento]) }}">
-                                        <x-heroicon-o-hand-raised class="w-4 h-4" />
-                                        {{ $evento->voluntarios_count }}
-                                    </a>
-                                @endif
-                            </div>
+                                {{-- Voluntarios --}}
+                                <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->voluntarios_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
+                                    title="Pessoas que sugeriram equipes para trabalhar">
+                                    @if ($evento->voluntarios_count)
+                                        <a href="{{ route('montagem.list', ['evento' => $evento->idt_evento]) }}">
+                                            <x-heroicon-o-hand-raised class="w-4 h-4" />
+                                            {{ $evento->voluntarios_count }}
+                                        </a>
+                                    @endif
+                                </div>
 
-                            {{-- Trabalhadores --}}
-                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
-                                title="Voluntários já confirmados em uma equipe">
-                                @if ($evento->trabalhadores_count)
-                                    <a href="{{ route('trabalhadores.index', ['evento' => $evento->idt_evento]) }}">
-                                        <x-heroicon-o-briefcase class="w-4 h-4" />
-                                        {{ $evento->trabalhadores_count }}
-                                    </a>
-                                @endif
-                            </div>
+                                {{-- Trabalhadores --}}
+                                <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
+                                    title="Voluntários já confirmados em uma equipe">
+                                    @if ($evento->trabalhadores_count)
+                                        <a
+                                            href="{{ route('trabalhadores.index', ['evento' => $evento->idt_evento]) }}">
+                                            <x-heroicon-o-briefcase class="w-4 h-4" />
+                                            {{ $evento->trabalhadores_count }}
+                                        </a>
+                                    @endif
+                                </div>
 
-                            {{-- Quadrante --}}
-                            <div class="flex items-center justify-center gap-1 w-1/3 py-1 bg-green-600 rounded-r-md"
-                                title="Veja o quadrante do evento">
-                                @if ($evento->trabalhadores_count)
-                                    <a href="{{ route('quadrante.list', ['evento' => $evento->idt_evento]) }}">
-                                        <x-heroicon-o-clipboard class="w-4 h-4" />
-                                        {{ $evento->trabalhadores_count }}
-                                    </a>
-                                @endif
+                                {{-- Quadrante --}}
+                                <div class="flex items-center justify-center gap-1 w-1/3 py-1 bg-green-600 rounded-r-md"
+                                    title="Veja o quadrante do evento">
+                                    @if ($evento->trabalhadores_count)
+                                        <a href="{{ route('quadrante.list', ['evento' => $evento->idt_evento]) }}">
+                                            <x-heroicon-o-clipboard class="w-4 h-4" />
+                                            {{ $evento->trabalhadores_count }}
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
+                        @endif
+                        <div class="flex gap-0 mt-4 border-t pt-3">
+                            <a href="{{ route('eventos.edit', $evento) }}"
+                                class="flex items-center justify-center w-1/2 text-sm font-semibold text-blue-600 hover:text-white hover:bg-blue-600 px-3 py-2 rounded-bl-lg transition-colors">
+                                <x-heroicon-o-pencil-square class="w-5 h-5 mr-1" />
+                                Editar
+                            </a>
+
+                            <form method="POST" action="{{ route('eventos.destroy', $evento) }}"
+                                onsubmit="return confirm('Tem certeza que deseja excluir este evento?');"
+                                class="w-1/2">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="flex items-center justify-center w-full text-sm font-semibold text-red-600 hover:text-white hover:bg-red-600 px-3 py-2 rounded-br-lg transition-colors">
+                                    <x-heroicon-o-trash class="w-5 h-5 mr-1" />
+                                    Excluir
+                                </button>
+                            </form>
                         </div>
-                    @endif
-                    <div class="flex gap-0 mt-4 border-t pt-3">
-                        <a href="{{ route('eventos.edit', $evento) }}"
-                            class="flex items-center justify-center w-1/2 text-sm font-semibold text-blue-600 hover:text-white hover:bg-blue-600 px-3 py-2 rounded-bl-lg transition-colors">
-                            <x-heroicon-o-pencil-square class="w-5 h-5 mr-1" />
-                            Editar
-                        </a>
+                    @else
+                        @if (!$evento->ind_pos_encontro)
+                            <div class="mt-4">
+                                @if ($feito)
+                                    <div
+                                        class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-gray-300 text-gray-700 text-sm font-semibold cursor-default">
+                                        <x-heroicon-o-check-circle class="w-5 h-5" />
+                                        Feito
+                                    </div>
+                                @else
+                                    <a href="{{ route('trabalhadores.create', ['evento' => $evento->idt_evento]) }}"
+                                        class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150"
+                                        title="Quero trabalhar neste evento">
+                                        <x-heroicon-o-hand-raised class="w-5 h-5" />
+                                        Quero trabalhar
+                                    </a>
+                                @endif
+                            </div>
+                        @else
+                            <div class="mt-4">
+                                @if ($confirmado)
+                                    <div
+                                        class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-gray-300 text-gray-700 text-sm font-semibold cursor-default">
+                                        <x-heroicon-o-check-circle class="w-5 h-5" />
+                                        Confirmado
+                                    </div>
+                                @else
+                                    <form method="POST"
+                                        action="{{ route('participantes.confirm', ['evento' => $evento->idt_evento, 'pessoa' => $pessoa->idt_pessoa]) }}"
+                                        onsubmit="return confirm('Confirmação a participação no nosso evento?');"
+                                        class="w-full">
+                                        @csrf
 
-                        <form method="POST" action="{{ route('eventos.destroy', $evento) }}"
-                            onsubmit="return confirm('Tem certeza que deseja excluir este evento?');" class="w-1/2">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="flex items-center justify-center w-full text-sm font-semibold text-red-600 hover:text-white hover:bg-red-600 px-3 py-2 rounded-br-lg transition-colors">
-                                <x-heroicon-o-trash class="w-5 h-5 mr-1" />
-                                Excluir
-                            </button>
-                        </form>
-                    </div>
-                    {{-- @else --}}
-                    @if (!$evento->ind_pos_encontro)
-                        <a href="{{ route('trabalhadores.create', ['evento' => $evento->idt_evento]) }}"
-                            class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150"
-                            title="Quero trabalhar neste evento">
-                            <x-heroicon-o-hand-raised class="w-5 h-5" />
-                            Quero trabalhar
-                        </a>
+                                        <button type="submit" title="Tô dentro!"
+                                            class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150">
+                                            <x-heroicon-o-check-circle class="w-5 h-5" />
+                                            Eu vou
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        @endif
                     @endif
-                    {{-- @endif --}}
                 </div>
             @empty
                 <div class="col-span-full text-center text-gray-500 dark:text-gray-300">
