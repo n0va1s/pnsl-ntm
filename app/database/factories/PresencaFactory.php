@@ -18,9 +18,9 @@ class PresencaFactory extends Factory
     public function definition(): array
     {
         return [
-            'ind_par' => Participante::inRandomOrder()->first()->idt_participante ?? Participante::factory(),
-            'dat_presenca' => $this->faker->dateTimeBetween('-3 day', 'now')->format('d/m/Y'),
-            'inc_presenca' => $this->faker->boolean(80), // 80% chance de presença
+            'idt_participante' => Participante::inRandomOrder()->first()->idt_participante ?? Participante::factory(),
+            'dat_presenca' => $this->faker->dateTimeBetween('-15 days', 'now')->format('Y-m-d'),
+            'ind_presente' => $this->faker->boolean(80), // 80% chance de presença
         ];
     }
 }

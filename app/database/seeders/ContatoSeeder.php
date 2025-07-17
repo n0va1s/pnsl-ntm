@@ -4,18 +4,15 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Evento;
-use App\Models\Presenca;
-use app\Models\Participante;
-use Carbon\CarbonPeriod;
+use App\Models\Contato;
 
-class PresencaSeeder extends Seeder
+class ContatoSeeder extends Seeder
 {
     use WithoutModelEvents;
 
     public function run(): void
     {
-        Presenca::factory()->count(10)->create();
+        Contato::factory()->count(100)->create();
 
     }
 }

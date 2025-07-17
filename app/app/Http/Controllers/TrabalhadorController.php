@@ -29,7 +29,7 @@ class TrabalhadorController extends Controller
             $evento = Evento::find($eventoId);
         }
 
-        $trabalhadores = Trabalhador::with(['pessoa', 'evento'])
+        $trabalhadores = Trabalhador::with(['pessoa', 'evento', 'equipe'])
             ->when($search, function ($query, $search) {
                 return $query->where('nom_pessoa', 'like', "%{$search}%")
                     ->orWhere('nom_apelido', 'like', "%{$search}%");
@@ -52,7 +52,8 @@ class TrabalhadorController extends Controller
             $evento = Evento::find($eventoId);
         }
 
-        $equipes  = TipoEquipe::select('idt_equipe', 'des_grupo')->get();
+        $equipes  = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
+            ->select('idt_equipe', 'des_grupo')->get();
         return view('trabalhador.form', compact('equipes', 'evento'));
     }
 

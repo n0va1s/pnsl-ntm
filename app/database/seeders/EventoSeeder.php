@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Evento;
-use App\Models\TipoMovimento;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

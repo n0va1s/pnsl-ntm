@@ -13,26 +13,31 @@
         </a>
         <flux:navlist variant="outline">
             <flux:navlist.group :heading="__('Platform')" class="grid">
-                <flux:navlist.item icon="home" :href="route('dashboard')"
-                    :current="request()->routeIs('dashboard')" wire:navigate>
+                <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
+                    wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="cog" :href="route('configuracoes.index')"
-                    :current="request()->routeIs('configuracoes.index')" wire:navigate>
-                    {{ __('Configurações') }}
-                </flux:navlist.item>
-                <flux:navlist.item icon="phone" :href="route('contatos.index')"
-                    :current="request()->routeIs('contatos.index')" wire:navigate>
-                    {{ __('Contatos') }}
-                </flux:navlist.item>
+                @if (Auth::user() && Auth::user()->isAdmin())
+                    <flux:navlist.item icon="cog" :href="route('configuracoes.index')"
+                        :current="request()->routeIs('configuracoes.index')" wire:navigate>
+                        {{ __('Configurações') }}
+                    </flux:navlist.item>
+
+                    <flux:navlist.item icon="phone" :href="route('contatos.index')"
+                        :current="request()->routeIs('contatos.index')" wire:navigate>
+                        {{ __('Contatos') }}
+                    </flux:navlist.item>
+                @endif
                 <flux:navlist.item icon="calendar" :href="route('eventos.index')"
                     :current="request()->routeIs('eventos.index')" wire:navigate>
                     {{ __('Eventos') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="user" :href="route('pessoas.index')"
-                    :current="request()->routeIs('pessoas.index')" wire:navigate>
-                    {{ __('Pessoas') }}
-                </flux:navlist.item>
+                @if (Auth::user() && Auth::user()->isAdmin())
+                    <flux:navlist.item icon="user" :href="route('pessoas.index')"
+                        :current="request()->routeIs('pessoas.index')" wire:navigate>
+                        {{ __('Pessoas') }}
+                    </flux:navlist.item>
+                @endif
             </flux:navlist.group>
         </flux:navlist>
         <flux:spacer />
