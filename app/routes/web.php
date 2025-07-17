@@ -13,6 +13,7 @@ use App\Http\Controllers\{
     TipoResponsavelController,
     TipoSituacaoController,
     TrabalhadorController,
+    AniversarioController,
 };
 
 
@@ -100,6 +101,12 @@ Route::middleware(['auth'])->group(function () {
         ->name('fichas-vem.approve');
     Route::get('fichas-ecc/approve/{id}', [FichaEccController::class, 'approve'])
         ->name('fichas-ecc.approve');
+
+
+    Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
+    Route::post('/aniversario', [AniversarioController::class, 'store'])->name('aniversario.store');
+
+
     Route::resources([
         'eventos' => EventoController::class,
         'fichas-vem' => FichaVemController::class,
