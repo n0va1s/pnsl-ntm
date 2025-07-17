@@ -7,6 +7,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Pessoa;
 use App\Models\Evento;
 use App\Models\Participante;
+use App\Models\Presenca;
 use App\Models\TipoEquipe;
 use App\Models\Trabalhador;
 use App\Models\Voluntario;
@@ -28,6 +29,7 @@ class EnvolvidoSeeder extends Seeder
             ]);
         }
         Participante::factory()->count(20)->create();
+        Presenca::factory()->count(20)->create();
         Voluntario::factory()->count(30)->create();
         Trabalhador::factory()->count(20)->create();
     }

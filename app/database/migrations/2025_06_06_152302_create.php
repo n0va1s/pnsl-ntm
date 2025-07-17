@@ -150,7 +150,8 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->string('tip_cor_troca', 10)->nullable();
             $table->timestamps();
-            //$table->primary(['idt_pessoa', 'idt_evento']);
+
+            $table->unique(['idt_pessoa', 'idt_evento'], 'unique_participante_per_evento');
         });
 
         // Tabela Presenca (Frequencia dos participantes nos eventos)
@@ -161,7 +162,8 @@ return new class extends Migration
             $table->date('dat_presenca');
             $table->boolean('ind_presente')->default(false); // se o participante estava presente nesse dia
             $table->timestamps();
-            $table->primary(['idt_participante', 'dat_presenca']);
+
+            $table->unique(['idt_participante', 'dat_presenca'], 'unique_presenca_por_participante');
         });
 
         // Tabela Voluntario indica as equipes que a pessoas quer trabalhar
@@ -196,6 +198,7 @@ return new class extends Migration
             $table->boolean('ind_camiseta_pediu')->default(false);
             $table->boolean('ind_camiseta_pagou')->default(false);
             $table->timestamps();
+            $table->unique(['idt_pessoa', 'idt_evento', 'idt_equipe'], 'unique_trabalhador');
         });
 
         // Tabela Ficha com os dados básicos do participante
@@ -274,7 +277,8 @@ return new class extends Migration
                 ->constrained('tipo_restricao', 'idt_restricao');
             $table->text('txt_complemento')->nullable();
             $table->timestamps();
-            $table->primary(['idt_ficha', 'idt_restricao']);
+
+            $table->unique(['idt_ficha', 'idt_restricao'], 'unique_ficha_saude');
         });
 
         // Tabela Ficha_Analise é o histórico da ficha ex: ficha 14 cadastrada, ficha 14 aprovada
@@ -286,7 +290,8 @@ return new class extends Migration
                 ->constrained('tipo_situacao', 'idt_situacao');
             $table->text('txt_analise')->nullable();
             $table->timestamps();
-            $table->primary(['idt_ficha', 'idt_situacao']);
+
+            $table->unique(['idt_ficha', 'idt_situacao'], 'unique_ficha_situacao');
         });
 
 

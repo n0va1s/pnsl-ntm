@@ -66,6 +66,8 @@
 
                                 $confirmado = in_array($evento->idt_evento, $participacoes);
 
+                                $feito = in_array($evento->idt_evento, $eventosFeitos);
+
                                 $rotaFichas = match ($sigla) {
                                     'ECC' => route('fichas-ecc.index', ['evento' => $evento->idt_evento]),
                                     'VEM' => route('fichas-vem.index', ['evento' => $evento->idt_evento]),
@@ -192,12 +194,20 @@
                     @else
                         @if (!$evento->ind_pos_encontro)
                             <div class="mt-4">
-                                <a href="{{ route('trabalhadores.create', ['evento' => $evento->idt_evento]) }}"
-                                    class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150"
-                                    title="Quero trabalhar neste evento">
-                                    <x-heroicon-o-hand-raised class="w-5 h-5" />
-                                    Quero trabalhar
-                                </a>
+                                @if ($feito)
+                                    <div
+                                        class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-gray-300 text-gray-700 text-sm font-semibold cursor-default">
+                                        <x-heroicon-o-check-circle class="w-5 h-5" />
+                                        Feito
+                                    </div>
+                                @else
+                                    <a href="{{ route('trabalhadores.create', ['evento' => $evento->idt_evento]) }}"
+                                        class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150"
+                                        title="Quero trabalhar neste evento">
+                                        <x-heroicon-o-hand-raised class="w-5 h-5" />
+                                        Quero trabalhar
+                                    </a>
+                                @endif
                             </div>
                         @else
                             <div class="mt-4">

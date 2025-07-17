@@ -13,6 +13,20 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    const ROLE_USER = 'user';
+    const ROLE_ADMIN = 'admin';
+    const ROLE_COORDENADOR = 'coord';
+
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function isCoordenador(): bool
+    {
+        return $this->role === self::ROLE_COORDENADOR;
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -57,10 +71,5 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
     }
 }

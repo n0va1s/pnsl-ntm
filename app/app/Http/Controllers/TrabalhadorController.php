@@ -25,7 +25,7 @@ class TrabalhadorController extends Controller
             $evento = Evento::find($eventoId);
         }
 
-        $trabalhadores = Trabalhador::with(['pessoa', 'evento'])
+        $trabalhadores = Trabalhador::with(['pessoa', 'evento', 'equipe'])
             ->when($search, function ($query, $search) {
                 return $query->where('nom_pessoa', 'like', "%{$search}%")
                     ->orWhere('nom_apelido', 'like', "%{$search}%");

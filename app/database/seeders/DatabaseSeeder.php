@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             PessoaSeeder::class,
             FichaSeeder::class,
             EnvolvidoSeeder::class,
+            ContatoSeeder::class,
         ]);
     }
 }

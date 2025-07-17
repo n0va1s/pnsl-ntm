@@ -8,6 +8,7 @@ use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\TipoMovimento;
 use App\Models\User;
+use App\Models\Voluntario;
 use App\Services\UserService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -24,14 +25,16 @@ class EventoController extends Controller
     {
         $search = $request->get('search');
 
-        $participacoes = [];
-
         //TODO: substituir pela app() instance
         $pessoa = UserService::createPessoaFromLoggedUser();
 
         // Buscar os eventos ja inscritos da pessoa
         if ($pessoa) {
             $participacoes = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+                ->pluck('idt_evento')
+                ->toArray();
+
+            $eventosFeitos = Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
                 ->pluck('idt_evento')
                 ->toArray();
         }
@@ -55,7 +58,8 @@ class EventoController extends Controller
                 'eventos',
                 'search',
                 'pessoa',
-                'participacoes'
+                'participacoes',
+                'eventosFeitos'
             )
         );
     }
