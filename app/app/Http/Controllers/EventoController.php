@@ -106,6 +106,7 @@ class EventoController extends Controller
     public function edit(Evento $evento): View
     {
         $movimentos = TipoMovimento::all();
+        $evento->load('foto'); // Carrega a foto associada ao evento, se existir
         return view('evento.form', compact('evento', 'movimentos'));
     }
 
@@ -115,6 +116,18 @@ class EventoController extends Controller
     public function update(EventoRequest $request, Evento $evento): RedirectResponse
     {
         $evento->update($request->validated());
+
+        // Foto
+        if ($request->hasFile('med_foto')) {
+            $arquivo = $request->file('med_foto');
+            $caminho = $arquivo->store('fotos/evento/', 'public'); // pasta 'storage/app/public/fotos'
+
+            if ($evento->foto) {
+                $evento->foto()->update(['med_foto' => $caminho]);
+            } else {
+                $evento->foto()->create(['med_foto' => $caminho]);
+            }
+        }
 
         return redirect()
             ->route('eventos.index')

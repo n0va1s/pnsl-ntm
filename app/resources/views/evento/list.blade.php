@@ -113,21 +113,9 @@
                                     @endif
                                 </div>
 
-                                {{-- Candidatos --}}
-                                <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600' : 'invisible' }}"
-                                    title="Pessoas querendo trabalhar no evento">
-                                    @if ($evento->trabalhadores_count)
-                                        <a
-                                            href="{{ route('trabalhadores.index', ['evento' => $evento->idt_evento]) }}">
-                                            <x-heroicon-o-hand-thumb-up class="w-4 h-4" />
-                                            {{ $evento->trabalhadores_count }}
-                                        </a>
-                                    @endif
-                                </div>
-
                                 {{-- Participantes --}}
                                 <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->participantes_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
-                                    title="Pessoas aprovadas para o evento">
+                                    title="Participantes do evento">
                                     @if ($evento->participantes_count)
                                         <a
                                             href="{{ route('participantes.index', ['evento' => $evento->idt_evento]) }}">
@@ -139,7 +127,7 @@
 
                                 {{-- Voluntarios --}}
                                 <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->voluntarios_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
-                                    title="Pessoas que sugeriram equipes para trabalhar">
+                                    title="Voluntários querendo trabalhar">
                                     @if ($evento->voluntarios_count)
                                         <a href="{{ route('montagem.list', ['evento' => $evento->idt_evento]) }}">
                                             <x-heroicon-o-hand-raised class="w-4 h-4" />
@@ -150,7 +138,7 @@
 
                                 {{-- Trabalhadores --}}
                                 <div class="flex items-center justify-center gap-1 w-1/3 py-1 {{ $evento->trabalhadores_count ? 'bg-green-600 rounded-r-md' : 'invisible' }}"
-                                    title="Voluntários já confirmados em uma equipe">
+                                    title="Trabalhadores confirmados">
                                     @if ($evento->trabalhadores_count)
                                         <a
                                             href="{{ route('trabalhadores.index', ['evento' => $evento->idt_evento]) }}">
@@ -160,9 +148,20 @@
                                     @endif
                                 </div>
 
+                                {{-- Foto Oficial --}}
+                                <div class="flex items-center justify-center gap-1 w-1/3 py-1 bg-green-600 rounded-r-md"
+                                    title="Foto oficial do evento">
+                                    @if ($evento->foto)
+                                        <a href="{{ route('eventos.edit', ['evento' => $evento->idt_evento]) }}">
+                                            <x-heroicon-o-camera class="w-4 h-4" />
+                                            {{ $evento->foto ? '1' : '0' }}
+                                        </a>
+                                    @endif
+                                </div>
+
                                 {{-- Quadrante --}}
                                 <div class="flex items-center justify-center gap-1 w-1/3 py-1 bg-green-600 rounded-r-md"
-                                    title="Veja o quadrante do evento">
+                                    title="Quadrante do evento">
                                     @if ($evento->trabalhadores_count)
                                         <a href="{{ route('quadrante.list', ['evento' => $evento->idt_evento]) }}">
                                             <x-heroicon-o-clipboard class="w-4 h-4" />

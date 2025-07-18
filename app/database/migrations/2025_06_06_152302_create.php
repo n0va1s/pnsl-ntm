@@ -61,21 +61,23 @@ return new class extends Migration
             $table->string('num_evento', 5)->nullable();
             $table->date('dat_inicio');
             $table->date('dat_termino')->nullable();
+            $table->string('val_camiseta', 10)->nullable(); // valor da camiseta
             $table->string('val_trabalhador', 10)->nullable(); // contribuição do trabalhador
             $table->string('val_venista', 10)->nullable(); // contribuição do venista (participante)
-            $table->string('val_camiseta', 10)->nullable(); // valor da camiseta
+            $table->string('val_entrada', 10)->nullable(); // entrada no pos-encontro
             $table->boolean('ind_pos_encontro')->default(false);
             $table->timestamps();
         });
 
-        // Tabela Habilidade ex: toca violao, sabe cantar, edicao de video
-        // Vamos validar com um Google Forms antes de implementar
-        Schema::create('habilidade', function (Blueprint $table) {
-            $table->id('idt_habilidade');
-            $table->foreignId('idt_equipe')
-                ->constrained('tipo_equipe', 'idt_equipe');
-            $table->string('des_habilidade', 255);
+        // Tabela Evento_Foto ex: foto do evento 22 tirada durante o evento
+        Schema::create('evento_foto', function (Blueprint $table) {
+            $table->foreignId('idt_evento')
+                ->constrained('evento', 'idt_evento')
+                ->onDelete('cascade');
+            $table->string('med_foto'); //armazenar no filesystem
             $table->timestamps();
+
+            $table->primary(['idt_evento']);
         });
 
         // Tabela Pessoa dados básicos das pessoas
@@ -105,7 +107,6 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->string('med_foto'); //armazenar no filesystem
             $table->timestamps();
-            $table->softDeletes();
 
             $table->primary(['idt_pessoa']);
         });
@@ -123,20 +124,6 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->primary(['idt_pessoa', 'idt_restricao']);
-        });
-
-        // Tabela Pessoa_Habilidade ex: pessoa 33 sabe cantar e recortar papel
-        // Vamos validar com um Google Forms antes de implementar
-        Schema::create('pessoa_habilidade', function (Blueprint $table) {
-            $table->foreignId('idt_pessoa')
-                ->constrained('pessoa', 'idt_pessoa')
-                ->onDelete('cascade');
-            $table->foreignId('idt_habilidade')
-                ->constrained('habilidade', 'idt_habilidade');
-            $table->integer('num_escala'); // zero a cinco quanto a pessoa sabe
-            $table->text('txt_complemento');
-            $table->timestamps();
-            $table->primary(['idt_pessoa', 'idt_habilidade']);
         });
 
         // Tabela Participante indica todos o encontro que a pessoa fez
@@ -326,11 +313,9 @@ return new class extends Migration
         Schema::dropIfExists('trabalhador');
         Schema::dropIfExists('voluntario');
         Schema::dropIfExists('participante');
-        Schema::dropIfExists('pessoa_habilidade');
         Schema::dropIfExists('pessoa_foto');
         Schema::dropIfExists('pessoa_saude');
         Schema::dropIfExists('pessoa');
-        Schema::dropIfExists('habilidade');
         Schema::dropIfExists('evento');
         Schema::dropIfExists('tipo_movimento');
         Schema::dropIfExists('tipo_equipe');
