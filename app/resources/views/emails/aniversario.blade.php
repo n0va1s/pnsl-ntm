@@ -1,15 +1,15 @@
-{{-- <x-mail::message>
-# Introduction
+@php
+    use Illuminate\Support\Str;
 
-The body of your message.
+    $nome = $nome ?? ($fromName ??'Amigo(a)');
 
-<x-mail::button :url="''">
-Button Text
-</x-mail::button>
+    $markdown = file_get_contents(resource_path('views/emails/aniversario.md'));
 
-Thanks,<br>
-{{ config('app.name') }}
-</x-mail::message> --}}
+    $markdown = str_replace('{{ $nome }}', $nome, $markdown);
+    $html = Str::markdown($markdown);
 
-  <h1>Página de Aniversário</h1>
-  <p>Conteúdo da página de aniversário.</p>
+@endphp
+
+{!! $html !!}
+
+

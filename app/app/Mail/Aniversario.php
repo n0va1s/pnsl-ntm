@@ -18,7 +18,7 @@ class Aniversario extends Mailable
      */
     public function __construct(public readonly array $data)
     {
-        
+
     }
 
     /**
@@ -54,6 +54,9 @@ class Aniversario extends Mailable
     public function build()
     {
         return $this->view('emails.aniversario')
-            ->with(['nome' => $this->data['fromName']]);
+            ->with([
+                'fromName' => $this->data['fromName'],
+                'nome' => $this->data['nome']
+            ]);
     }
 }

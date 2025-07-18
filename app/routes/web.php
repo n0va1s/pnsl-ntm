@@ -113,7 +113,6 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
-    Route::post('/aniversario', [AniversarioController::class, 'store'])->name('aniversario.store');
 
 
     Route::resources([

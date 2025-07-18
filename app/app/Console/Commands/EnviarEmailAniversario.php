@@ -31,7 +31,10 @@ class EnviarEmailAniversario extends Command
             }
             // dd($pessoa->eml_pessoa, $pessoa->nom_pessoa);
             $this->info("Tentando enviar e-mail para {$pessoa->nom_pessoa} ({$pessoa->eml_pessoa})");
-            Mail::to($pessoa->eml_pessoa)->send(new Aniversario(['fromName' => $pessoa->nom_pessoa]));
+            Mail::to($pessoa->eml_pessoa)->send(new Aniversario([
+                'fromName' => $pessoa->nom_pessoa,
+                'nome' => $pessoa->nom_pessoa
+            ]));
             $this->info("E-mail de aniversário enviado para {$pessoa->nom_pessoa} ({$pessoa->eml_pessoa})");
 
 
