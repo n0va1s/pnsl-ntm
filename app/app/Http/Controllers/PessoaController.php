@@ -52,20 +52,20 @@ class PessoaController extends Controller
         // Pega o ID do usuário conforme o email informado no cadastro da pessoa
         $data = $request->validated();
         $user = UserService::getUsuarioByEmail($request->input('eml_pessoa'));
-        if($user) {
+        if ($user) {
             $data['idt_usuario'] = $user->id;
-        }        
+        }
         $pessoa = Pessoa::create($data);
 
         // Foto
-        if ($request->hasFile('url_foto')) {
-            $arquivo = $request->file('url_foto');
-            $caminho = $arquivo->store('fotos', 'public'); // pasta 'storage/app/public/fotos'
+        if ($request->hasFile('med_foto')) {
+            $arquivo = $request->file('med_foto');
+            $caminho = $arquivo->store('fotos/pessoa/', 'public'); // pasta 'storage/app/public/fotos'
 
             if ($pessoa->foto) {
-                $pessoa->foto()->update(['url_foto' => $caminho]);
+                $pessoa->foto()->update(['med_foto' => $caminho]);
             } else {
-                $pessoa->foto()->create(['url_foto' => $caminho]);
+                $pessoa->foto()->create(['med_foto' => $caminho]);
             }
         }
 
@@ -111,7 +111,7 @@ class PessoaController extends Controller
         $pessoa = Pessoa::with(['foto', 'usuario', 'saude'])->findOrFail($id);
         $user = UserService::getUsuarioByEmail($request->input('eml_pessoa'));
         $data = $request->validated();
-        if($user) {
+        if ($user) {
             $data['idt_usuario'] = $user->id;
         }
         $pessoa->update($data);

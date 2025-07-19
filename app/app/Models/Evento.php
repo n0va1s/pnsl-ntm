@@ -18,9 +18,10 @@ class Evento extends Model
         'num_evento',
         'dat_inicio',
         'dat_termino',
+        'val_camiseta',
         'val_trabalhador',
         'val_venista',
-        'val_camiseta',
+        'val_entrada',
         'ind_pos_encontro',
     ];
 
@@ -54,6 +55,11 @@ class Evento extends Model
     public function trabalhadores()
     {
         return $this->hasMany(Trabalhador::class, 'idt_evento');
+    }
+
+    public function foto()
+    {
+        return $this->hasOne(EventoFoto::class, 'idt_evento');
     }
 
     /**

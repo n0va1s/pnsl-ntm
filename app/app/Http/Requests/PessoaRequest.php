@@ -25,7 +25,7 @@ class PessoaRequest extends FormRequest
             'ind_toca_violao' => ['boolean'],
             'ind_consentimento' => ['boolean'],
             'ind_restricao' => ['boolean'],
-            'url_foto' => ['nullable', 'image', 'max:2048'], // até 2MB
+            'med_foto' => ['nullable', 'image', 'max:2048'], // até 2MB
         ];
     }
 

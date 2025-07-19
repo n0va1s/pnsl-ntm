@@ -12,7 +12,7 @@
                     </div>
                     <p class="text-4xl font-bold text-gray-900 dark:text-white">{{ $qtdEventosAtivos }}</p>
                     <div class="flex items-center justify-center text-sm text-green-600 dark:text-green-400 gap-1">
-                        <span class="text-gray-500 dark:text-gray-400">eventos ativos</span>
+                        <span class="text-gray-500 dark:text-gray-400">eventos próximos</span>
                     </div>
                 </div>
             </div>
@@ -74,19 +74,32 @@
                 {{-- Lista de eventos --}}
                 <ul class="space-y-4">
                     @forelse ($proximoseventos as $evento)
+                        @php
+                            $sigla = $evento->movimento?->des_sigla;
+                            $badgeClasses = match ($sigla) {
+                                'VEM' => 'bg-blue-100 text-blue-700',
+                                'Segue-Me' => 'bg-orange-100 text-orange-700',
+                                'ECC' => 'bg-green-100 text-green-700',
+                                default => 'bg-gray-100 text-gray-600',
+                            };
+                        @endphp
                         <li
                             class="flex items-start gap-4 p-4 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
                             <x-heroicon-o-calendar class="w-6 h-6 text-blue-500 mt-1" />
+                            <div class="flex-1 flex flex-col w-full">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-base font-medium text-gray-900 dark:text-white">
+                                        {{ $evento->des_evento }}
+                                    </h3>
 
-                            <div class="flex flex-col">
-                                <h3 class="text-base font-medium text-gray-900 dark:text-white">
-                                    {{ $evento->des_evento }}
-                                </h3>
+                                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeClasses }}">
+                                        {{ $sigla }}
+                                    </span>
+                                </div>
+
+                                {{-- Informações adicionais --}}
                                 <span class="text-sm text-gray-600 dark:text-gray-300">
-                                    {{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('d \d\e F \d\e Y') }}
-                                </span>
-                                <span class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $evento->movimento?->des_sigla }}
+                                    {{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('d/m/Y') }}
                                 </span>
                             </div>
                         </li>
@@ -108,6 +121,15 @@
                 {{-- Lista de eventos --}}
                 <ul class="space-y-4">
                     @forelse ($fichasrecentes as $ficha)
+                        @php
+                            $sigla = $ficha->evento->movimento?->des_sigla;
+                            $badgeClasses = match ($sigla) {
+                                'VEM' => 'bg-blue-100 text-blue-700',
+                                'Segue-Me' => 'bg-orange-100 text-orange-700',
+                                'ECC' => 'bg-green-100 text-green-700',
+                                default => 'bg-gray-100 text-gray-600',
+                            };
+                        @endphp
                         <li
                             class="flex items-start gap-4 p-4 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
 
@@ -120,16 +142,6 @@
                                     <h3 class="text-base font-medium text-gray-900 dark:text-white">
                                         {{ $ficha->nom_candidato }}
                                     </h3>
-
-                                    @php
-                                        $sigla = $ficha->evento->movimento?->des_sigla;
-                                        $badgeClasses = match ($sigla) {
-                                            'VEM' => 'bg-blue-100 text-blue-700',
-                                            'Segue-Me' => 'bg-orange-100 text-orange-700',
-                                            'ECC' => 'bg-green-100 text-green-700',
-                                            default => 'bg-gray-100 text-gray-600',
-                                        };
-                                    @endphp
 
                                     <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeClasses }}">
                                         {{ $sigla }}

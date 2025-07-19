@@ -27,6 +27,11 @@ class EventoRequest extends FormRequest
             'num_evento' => 'nullable|string|max:5',
             'dat_inicio' => 'required|date',
             'dat_termino' => 'nullable|date|after_or_equal:dat_inicio',
+            'val_trabalhador' => 'nullable|numeric',
+            'val_venista' => 'nullable|numeric',
+            'val_camiseta' => 'nullable|numeric',
+            'val_entrada' => 'nullable|numeric',
+            'med_foto' => ['nullable', 'image', 'max:2048'],
             'ind_pos_encontro' => 'required|boolean',
         ];
     }
