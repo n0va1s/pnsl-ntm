@@ -27,6 +27,14 @@
                 </p>
             @endif
         </div>
+        <div class="flex justify-end mt-4">
+            <a href="{{ route('eventos.index') }}"
+                class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                aria-label="Voltar para a lista de eventos">
+                <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
+                Eventos
+            </a>
+        </div>
 
         {{-- Cards de Voluntários --}}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
@@ -98,15 +106,17 @@
 
                 </div>
             @empty
-                 <div class="col-span-full">
-        <div class="flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-800 rounded-xl shadow border border-dashed border-gray-300 dark:border-zinc-600">
-            <x-heroicon-o-user-group class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
-            <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Nenhum voluntário(a) encontrado(a)</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Quando houver voluntários cadastrados, eles aparecerão aqui.
-            </p>
-        </div>
-    </div>
+                <div class="col-span-full">
+                    <div
+                        class="flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-800 rounded-xl shadow border border-dashed border-gray-300 dark:border-zinc-600">
+                        <x-heroicon-o-hand-raised class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
+                        <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Nenhum voluntário(a)
+                            encontrado(a)</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Quando houver voluntários cadastrados, eles aparecerão aqui.
+                        </p>
+                    </div>
+                </div>
             @endforelse
         </div>
 
