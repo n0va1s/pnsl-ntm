@@ -32,4 +32,13 @@ class ParticipanteController extends Controller
 
         return view('participante.list', compact('participantes', 'search', 'evento'));
     }
+
+    public function change(Request $request)
+    {
+        foreach ($request->input('trocas', []) as $participanteId => $novaCor) {
+            Participante::where('idt_participante', $participanteId)->update(['tip_cor_troca' => $novaCor]);
+        }
+
+        return redirect()->back()->with('success', 'Trocas atualizadas com sucesso.');
+    }
 }
