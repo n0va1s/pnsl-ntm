@@ -14,6 +14,7 @@ use App\Http\Controllers\{
     TipoResponsavelController,
     TipoSituacaoController,
     TrabalhadorController,
+    AniversarioController,
 };
 
 
@@ -59,6 +60,11 @@ Route::middleware(['auth'])->group(function () {
         '/participantes',
         [ParticipanteController::class, 'index']
     )->name('participantes.index');
+
+    Route::post(
+        '/participantes',
+        [ParticipanteController::class, 'change']
+    )->name('participantes.change');
 
     Route::post(
         '/participantes/{evento}/{pessoa}',
@@ -109,6 +115,11 @@ Route::middleware(['auth'])->group(function () {
         ->name('fichas-vem.approve');
     Route::get('fichas-ecc/approve/{id}', [FichaEccController::class, 'approve'])
         ->name('fichas-ecc.approve');
+
+
+    Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
+
+
     Route::resources([
         'eventos' => EventoController::class,
         'fichas-vem' => FichaVemController::class,

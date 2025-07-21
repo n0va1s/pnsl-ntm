@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 class TrabalhadorController extends Controller
 {
     public function index(Request $request): View
@@ -63,25 +66,23 @@ class TrabalhadorController extends Controller
             'idt_evento.required' => 'O evento é obrigatório.',
         ]);
 
-        // Corrigindo o acesso ao usuário autenticado
-        $pessoa = PessoaService::criarPessoaAPartirDoUsuario(auth()->guard()->user());
-        $eventoId = $request->input('idt_evento');
-        $equipesSelecionadas = collect($request->input('equipes', []))
-            ->filter(fn($item) => isset($item['selecionado']) && $item['selecionado']);
+        $pessoa = Auth::user()->pessoa;
 
+        $validated = $request->validate([
+            'nom_completo' => 'required|string|max:255',
+            'num_telefone' => 'required|string|max:20',
+            'des_habilidades' => 'nullable|string|max:1000',
+            'bol_primeira_vez' => 'nullable|boolean',
+        ]);
 
-        if ($equipesSelecionadas->count() > 3) {
-            return back()->withErrors(['equipes' => 'Selecione no máximo 3 equipes.'])->withInput();
-        }
+        $trabalhador = Trabalhador::create([
+            'idt_pessoa' => $pessoa->idt_pessoa,
+            'bol_primeira_vez' => $validated['bol_primeira_vez'] ?? false,
+            'idt_evento' => $request->input('idt_evento'),
+            'idt_equipe' => $request->input('equipes')[0], // Seleciona a primeira equipe do array
 
-        foreach ($equipesSelecionadas as $idt_equipe => $dados) {
-            Voluntario::create([
-                'idt_pessoa'     => $pessoa->idt_pessoa,
-                'idt_evento'     => $eventoId,
-                'idt_equipe'     => $idt_equipe,
-                'txt_habilidade' => $dados['habilidade'] ?? null,
-            ]);
-        }
+            // dd('Chegou até aqui - trabalhador criado', $validated, $request->all());
+        ]);
 
         return redirect()
             ->route('eventos.index')
@@ -206,11 +207,26 @@ class TrabalhadorController extends Controller
             ->where('idt_pessoa', $dados['idt_pessoa'])
             ->first();
 
-        $trabalhador->ind_avaliacao = true;
-        $trabalhador->update($dados);
+        if (!$trabalhador) {
+            return redirect()->back()->with('error', 'Trabalhador não encontrado.');
+        }
 
-        return redirect()
-            ->route('quadrante.list', ['evento' => $dados['idt_evento']])
-            ->with('success', 'Avaliação realizada. Valeu!');
+        // Atualiza os campos booleanos, se existirem
+        $trabalhador->ind_recomendado = $dados['ind_recomendado'] ?? false;
+        $trabalhador->ind_lideranca = $dados['ind_lideranca'] ?? false;
+        $trabalhador->ind_destaque = $dados['ind_destaque'] ?? false;
+        $trabalhador->ind_camiseta_pediu = $dados['ind_camiseta_pediu'] ?? false;
+        $trabalhador->ind_camiseta_pagou = $dados['ind_camiseta_pagou'] ?? false;
+
+        $trabalhador->save();
+
+        return redirect()->route('trabalhadores.index')
+            ->with('success', 'Trabalhador atualizado com sucesso!');
+    }
+
+    // Remover trabalhador (não implementado)
+    public function destroy(string $id)
+    {
+        //
     }
 }

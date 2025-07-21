@@ -16,15 +16,16 @@ class EventoFactory extends Factory
         $dataTermino = (clone $dataInicio)->modify('+3 days');
 
         return [
-            'idt_movimento' => $this->faker->numberBetween(1,3),
+            'idt_movimento' => $this->faker->numberBetween(1, 3),
             'des_evento' => $this->faker->words(2, true) . ' VEM',
             'num_evento' => $this->faker->numberBetween(1, 99),
             'dat_inicio' => $dataInicio->format('Y-m-d'),
             'dat_termino' => $dataTermino->format('Y-m-d'),
-            'val_trabalhador' => $this->faker->randomFloat(2, 45),
-            'val_venista' => $this->faker->randomFloat(2, 50),
-            'val_camiseta' => $this->faker->randomFloat(2, 40),
-            'ind_pos_encontro' => $this->faker->boolean(30),
+            'val_camiseta' => $this->faker->randomNumber(2, 40),
+            'val_trabalhador' => $this->faker->randomNumber(2, 45),
+            'val_venista' => $this->faker->randomNumber(2, 50),
+            'val_entrada' => $this->faker->randomNumber(2, 50),
+            'ind_pos_encontro' => $this->faker->boolean(50),
         ];
     }
 }

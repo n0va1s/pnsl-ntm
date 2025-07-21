@@ -174,28 +174,25 @@
                 <!-- Foto -->
                 <div class="flex items-start gap-6">
                     <div class="flex-1">
-                        <label for="url_foto" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label for="med_foto" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Foto para o Carômetro
                         </label>
-                        <input type="file" id="url_foto" name="url_foto" accept="image/*"
+                        <input type="file" id="med_foto" name="med_foto" accept="image/*"
                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300 dark:hover:file:bg-blue-800
-                            @error('url_foto') border-red-500 @enderror" />
-                        @error('url_foto')
+                            @error('med_foto') border-red-500 @enderror" />
+                        @error('med_foto')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Imagem até 2MB nos formatos JPG, PNG
                             ou WEBP</p>
                     </div>
 
-                    <div
-                        class="w-32 h-32 rounded overflow-hidden border dark:border-zinc-600 flex items-center justify-center bg-gray-50 dark:bg-zinc-700">
-                        @if ($pessoa->foto && $pessoa->foto->url_foto)
-                            <img src="{{ asset('storage/' . $pessoa->foto->url_foto) }}" alt="Foto da Pessoa"
-                                class="object-cover w-full h-full">
-                        @else
-                            <span class="text-sm text-gray-400 dark:text-gray-500">Sem imagem</span>
-                        @endif
-                    </div>
+                    @if (isset($pessoa) && $pessoa->foto)
+                        <div class="mb-4">
+                            <img src="{{ asset('storage/' . $pessoa->foto->med_foto) }}" alt="Foto do evento"
+                                class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600">
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Checkboxes -->
