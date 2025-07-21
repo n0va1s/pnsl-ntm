@@ -66,7 +66,7 @@ class TrabalhadorController extends Controller
             'idt_evento.required' => 'O evento é obrigatório.',
         ]);
 
-        $pessoa = Auth::user()->pessoa;
+        $pessoa = PessoaService::criarPessoaAPartirDoUsuario(auth()->guard()->user());
 
         $validated = $request->validate([
             'nom_completo' => 'required|string|max:255',
