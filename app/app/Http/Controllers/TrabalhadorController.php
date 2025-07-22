@@ -10,7 +10,6 @@ use App\Models\Voluntario;
 use App\Services\PessoaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
@@ -67,7 +66,7 @@ class TrabalhadorController extends Controller
             'idt_evento.required' => 'O evento é obrigatório.',
         ]);
 
-        $pessoa = Auth::user()->pessoa;
+        $pessoa = PessoaService::criarPessoaAPartirDoUsuario(auth()->guard()->user());
 
         $validated = $request->validate([
             'nom_completo' => 'required|string|max:255',
@@ -203,12 +202,9 @@ class TrabalhadorController extends Controller
             'idt_evento.required' => 'O evento é obrigatório.',
         ]);
 
-
-        // Corrigindo variáveis e lógica
-        // Busca o trabalhador pelo identificador único (pessoa, equipe, evento)
-        $trabalhador = Trabalhador::where('idt_pessoa', $dados['idt_pessoa'])
+        $trabalhador = Trabalhador::where('idt_evento', $dados['idt_evento'])
             ->where('idt_equipe', $dados['idt_equipe'])
-            ->where('idt_evento', $dados['idt_evento'])
+            ->where('idt_pessoa', $dados['idt_pessoa'])
             ->first();
 
         if (!$trabalhador) {
