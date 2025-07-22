@@ -155,19 +155,19 @@
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 
                             @error('tip_genero') border-red-500 @enderror">
                             <option value="">Selecione o gênero</option>
-                            <option value="m"
+                            <option value="M"
                                 {{ old('tip_genero', $pessoa->tip_genero) == 'M' ? 'selected' : '' }}>Masculino
                             </option>
-                            <option value="f"
+                            <option value="F"
                                 {{ old('tip_genero', $pessoa->tip_genero) == 'F' ? 'selected' : '' }}>Feminino</option>
-                            <option value="n"
+                            <option value="O"
                                 {{ old('tip_genero', $pessoa->tip_genero) == 'O' ? 'selected' : '' }}>Não informado
                             </option>
                         </select>
                         @error('tip_genero')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Identidade de gênero</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Sexo da pessoa</p>
                     </div>
                 </div>
 
@@ -183,13 +183,14 @@
                         @error('med_foto')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Imagem até 2MB nos formatos JPG, PNG
-                            ou WEBP</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Imagem até 2MB nos formatos JPG, JPEG,
+                            PNG</p>
                     </div>
 
                     @if (isset($pessoa) && $pessoa->foto)
                         <div class="mb-4">
-                            <img src="{{ asset('storage/' . $pessoa->foto->med_foto) }}" alt="Foto do evento"
+                            <img src="{{ asset('storage/fotos/pessoa/' . $pessoa->foto->med_foto) }}"
+                                alt="Foto da pessoa"
                                 class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600">
                         </div>
                     @endif
