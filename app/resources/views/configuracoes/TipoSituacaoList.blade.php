@@ -2,24 +2,9 @@
     <section class="p-6 w-full max-w-[80vw] ml-auto">
 
         {{-- Alerta de Sucesso ou Erro --}}
-        @if (session('success') || session('error'))
-            <div
-                x-data="{ show: true }"
-                x-init="setTimeout(() => show = false, 3000)"
-                x-show="show"
-                class="fixed top-6 left-1/2 z-50 px-4 py-3 rounded-md text-white font-semibold shadow-lg flex items-center gap-2
-                    {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}"
-                role="alert"
-                aria-live="assertive">
-                @if (session('success'))
-                    <x-heroicon-o-check-circle class="w-6 h-6 text-white" />
-                    <span>{{ session('success') }}</span>
-                @else
-                    <x-heroicon-o-x-circle class="w-6 h-6 text-white" />
-                    <span>{{ session('error') }}</span>
-                @endif
-            </div>
-        @endif
+        <div>
+            <x-session-alert/>
+        </div>
 
         <h1 id="titulo-pagina" class="text-2xl font-bold mb-4">Lista de Tipos de Situação</h1>
 
