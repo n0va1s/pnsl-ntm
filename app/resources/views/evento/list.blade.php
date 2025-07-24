@@ -63,10 +63,10 @@
                         <div>
                             @php
                                 $sigla = $evento->movimento->des_sigla;
+                                
+                                $confirmado = in_array($evento->idt_evento, $posEncontrosInscritos);
 
-                                $confirmado = in_array($evento->idt_evento, $participacoes);
-
-                                $feito = in_array($evento->idt_evento, $eventosFeitos);
+                                $feito = in_array($evento->idt_evento, $eventosInscritos);
 
                                 $rotaFichas = match ($sigla) {
                                     'ECC' => route('fichas-ecc.index', ['evento' => $evento->idt_evento]),

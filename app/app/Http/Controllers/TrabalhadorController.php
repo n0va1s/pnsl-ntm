@@ -3,21 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Evento;
-use App\Models\Pessoa;
 use App\Models\TipoEquipe;
 use App\Models\Trabalhador;
 use App\Models\Voluntario;
-use App\Services\PessoaService;
+use App\Services\UserService;
+use App\Services\VoluntarioService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
-
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class TrabalhadorController extends Controller
 {
+    protected $voluntarioService;
+
+    public function __construct(VoluntarioService $voluntarioService)
+    {
+        $this->voluntarioService = $voluntarioService;
+    }
+
     public function index(Request $request): View
     {
         $search = $request->get('search');
@@ -58,39 +64,73 @@ class TrabalhadorController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'equipes' => 'required|array|min:3',
+        // 1. Validação
+        $dados = $request->validate([
             'idt_evento' => 'required|exists:evento,idt_evento',
+            'equipes' => 'required|array', // 'equipes' deve ser um array
+            'equipes.*.selecionado' => 'nullable|in:1',
+            'equipes.*.habilidade' => 'nullable|string|max:500',
         ], [
-            'equipes.min' => 'Selecione ao menos 3 equipes.',
             'idt_evento.required' => 'O evento é obrigatório.',
+            'idt_evento.exists' => 'O evento selecionado não é válido.',
+            'equipes.required' => 'Selecione ao menos uma equipe para se voluntariar.',
+            'equipes.array' => 'As equipes devem ser fornecidas em um formato válido.',
+            'equipes.*.selecionado.in' => 'O valor de seleção para a equipe não é válido.',
+            'equipes.*.habilidade.string' => 'A habilidade deve ser um texto.',
+            'equipes.*.habilidade.max' => 'A habilidade deve ter no máximo :max caracteres.',
         ]);
 
-        $pessoa = PessoaService::criarPessoaAPartirDoUsuario(auth()->guard()->user());
+        try {
+            $pessoa = UserService::createPessoaFromLoggedUser();
 
-        $validated = $request->validate([
-            'nom_completo' => 'required|string|max:255',
-            'num_telefone' => 'required|string|max:20',
-            'des_habilidades' => 'nullable|string|max:1000',
-            'bol_primeira_vez' => 'nullable|boolean',
-        ]);
+            // 2. Delegar a lógica de negócio para o serviço
+            $this->voluntarioService->candidatura(
+                $dados['equipes'],
+                $dados['idt_evento'],
+                $pessoa
+            );
 
-        $trabalhador = Trabalhador::create([
-            'idt_pessoa' => $pessoa->idt_pessoa,
-            'bol_primeira_vez' => $validated['bol_primeira_vez'] ?? false,
-            'idt_evento' => $request->input('idt_evento'),
-            'idt_equipe' => $request->input('equipes')[0], // Seleciona a primeira equipe do array
+            return redirect()
+                ->route('eventos.index')
+                ->with('success', 'Suas candidaturas foram enviadas com sucesso! Entraremos em contato em breve.');
+        } catch (ValidationException $e) {
+            // Propaga os erros de validação do serviço para o Laravel
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            Log::error('Erro ao candidatar voluntário: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocorreu um erro ao registrar suas candidaturas. Por favor, tente novamente.')->withInput();
+        }
 
-            // dd('Chegou até aqui - trabalhador criado', $validated, $request->all());
-        ]);
+        // 4. Salvar os voluntários para cada equipe selecionada
+        // Apaga o voluntario anterior para o evento
+        try {
+            // Remove voluntários anteriores para o mesmo evento
+            Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
+                ->where('idt_evento', $dados['idt_evento'])
+                ->delete();
 
+            foreach ($equipesSelecionadas as $equipeId => $habilidade) {
+                Voluntario::create([
+                    'idt_pessoa' => $pessoa->idt_pessoa,
+                    'idt_evento' => $dados['idt_evento'],
+                    'idt_equipe' => $equipeId,
+                    'txt_habilidade' => $habilidade,
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log do erro para depuração
+            Log::error('Erro ao salvar voluntário: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Ocorreu um erro ao registrar suas candidaturas. Por favor, tente novamente.')->withInput();
+        }
+
+        // 5. Redirecionar com mensagem de sucesso
         return redirect()
             ->route('eventos.index')
-            ->with('success', 'Recebemos seu pedido e entraremos em contato.');
+            ->with('success', 'Suas candidaturas foram enviadas com sucesso! Entraremos em contato em breve.');
     }
 
-    //Lista de voluntarios para indicacao da equipe definitiva
-    public function mount(Request $request)
+    //Lista de voluntarios para indicacao das equipes que ele(a) querem trabalhar
+    public function mount(Request $request): View
     {
         $eventoId = $request->get('evento');
 
@@ -111,9 +151,9 @@ class TrabalhadorController extends Controller
 
     // Confirma a equipe que o voluntario vai trabalhar
     // indica tambem se a pessoa e o coordenador ou a primeira vez
-    public function confirm(Request $request)
+    public function confirm(Request $request): RedirectResponse
     {
-        $request->validate([
+        $dados = $request->validate([
             'idt_voluntario' => 'required|exists:voluntario,idt_voluntario',
             'idt_equipe' => 'required|exists:tipo_equipe,idt_equipe',
             'ind_coordenador' => 'nullable|boolean',
@@ -123,26 +163,26 @@ class TrabalhadorController extends Controller
             'idt_equipe.required' => 'A equipe é obrigatória.',
         ]);
 
-        $voluntario = Voluntario::find($request->input('idt_voluntario'));
+        try {
+            // 2. Delegar a lógica de negócio para o serviço
+            $this->voluntarioService->confirmacao(
+                $dados['idt_voluntario'],
+                $dados['idt_equipe'],
+                $dados['ind_coordenador'] ?? false,
+                $dados['ind_primeira_vez'] ?? false
+            );
 
-        if (!$voluntario) {
+            // 3. Obter o idt_evento para o redirecionamento
+            $voluntario = Voluntario::find($dados['idt_voluntario']);
+            $idt_evento = $voluntario ? $voluntario->idt_evento : null;
+
             return redirect()
-                ->back()
-                ->with('error', 'Voluntário não encontrado.');
+                ->route('montagem.confirm', ['evento' => $idt_evento])
+                ->with('success', 'Trabalhador confirmado e voluntário atualizado com sucesso!');
+        } catch (\Exception $e) {
+            Log::error('Erro ao confirmar trabalhador: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', $e->getMessage() ?: 'Ocorreu um erro ao confirmar o trabalhador. Por favor, tente novamente.');
         }
-
-        Trabalhador::updateOrCreate([
-            'idt_pessoa' => $voluntario->idt_pessoa,
-            'idt_evento' => $voluntario->idt_evento,
-            'idt_equipe' => $voluntario->idt_equipe,
-            'idt_voluntario' => $voluntario->idt_voluntario,
-            'ind_coordenador' => $request->get('ind_coordenador'),
-            'ind_primeira_vez' => $request->get('ind_primeira_vez'),
-        ]);
-
-        return redirect()
-            ->back()
-            ->with('success', 'Trabalhador confirmado.');
     }
 
     // Gera o quadrante dos trabalhadores do evento
@@ -225,7 +265,7 @@ class TrabalhadorController extends Controller
     }
 
     // Remover trabalhador (não implementado)
-    public function destroy(string $id)
+    public function destroy($id)
     {
         //
     }
