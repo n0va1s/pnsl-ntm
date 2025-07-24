@@ -12,38 +12,54 @@ class VoluntarioService
 {
     public function candidatura(array $equipesData, int $eventoId, Pessoa $pessoa): void
     {
-        // Lógica de validação personalizada (mínimo de 3 selecionadas e habilidade preenchida)
-        $selectedTeams = [];
-        foreach ($equipesData as $equipeId => $equipeData) {
-            if (isset($equipeData['selecionado']) && $equipeData['selecionado'] === '1') {
-                if (empty($equipeData['habilidade'])) {
+
+        $equipes = [];
+        foreach ($equipesData as $id => $texto) {
+            if (isset($texto['selecionado']) && $texto['selecionado'] === '1') {
+                $habilidade = $texto['habilidade'] ?? '';
+
+                if (empty($habilidade)) {
                     throw ValidationException::withMessages([
-                        'equipes.' . $equipeId . '.habilidade' => 'A descrição da habilidade é obrigatória para equipes selecionadas.',
+                        'equipes' => 'A descrição da habilidade é obrigatória para equipes selecionadas.',
+                    ]);
+                } elseif (strlen($habilidade) <= 5) {
+                    throw ValidationException::withMessages([
+                        'equipes' => 'A habilidade deve ter mais de 5 caracteres.',
+                    ]);
+                } elseif (preg_match('/(.)\1{4,}/', $habilidade)) { //obrigado gemini
+                    throw ValidationException::withMessages([
+                        'equipes' => 'A habilidade não pode conter sequências de caracteres repetidos (ex: "aaaaa" ou ".....").',
                     ]);
                 }
-                $selectedTeams[$equipeId] = $equipeData['habilidade'];
+                $equipes[$id] = $habilidade;
             }
         }
-
-        if (count($selectedTeams) < 3) {
+        $qtd = count($equipes);
+        if ($qtd < 1 || $qtd > 3) {
+            $message = '';
+            if ($qtd < 1) {
+                $message = 'Você deve selecionar ao menos 1 equipe.';
+            } elseif ($qtd > 3) {
+                $message = 'Você pode selecionar no máximo 3 equipes.';
+            }
             throw ValidationException::withMessages([
-                'equipes' => 'Selecione ao menos 3 equipes para se voluntariar.',
+                'equipes' => $message,
             ]);
         }
 
-        DB::transaction(function () use ($selectedTeams, $eventoId, $pessoa) {
+        DB::transaction(function () use ($equipes, $eventoId, $pessoa) {
             // Limpa candidaturas anteriores da pessoa para este evento, se necessário
             Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
                 ->where('idt_evento', $eventoId)
                 ->delete();
 
             // Salvar os voluntários para cada equipe selecionada
-            foreach ($selectedTeams as $equipeId => $habilidade) {
+            foreach ($equipes as $equipeId => $habilidade) {
                 Voluntario::create([
                     'idt_pessoa' => $pessoa->idt_pessoa,
                     'idt_evento' => $eventoId,
                     'idt_equipe' => $equipeId,
-                    'txt_habilidade' => $habilidade, // Usando txt_habilidade agora
+                    'txt_habilidade' => $habilidade,
                 ]);
             }
         });

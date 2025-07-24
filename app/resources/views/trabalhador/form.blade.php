@@ -1,5 +1,20 @@
 <x-layouts.app :title="'Trabalhador'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
+        {{-- Flash messages --}}
+        @if (session('success') || session('error'))
+            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
+                class="mb-4 px-4 py-3 rounded-md text-white font-semibold flex items-center gap-2
+                    {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}"
+                role="alert">
+                @if (session('success'))
+                    <x-heroicon-o-check-circle class="w-6 h-6 text-white" />
+                    <span>{{ session('success') }}</span>
+                @else
+                    <x-heroicon-o-x-circle class="w-6 h-6 text-white" />
+                    <span>{{ session('error') }}</span>
+                @endif
+            </div>
+        @endif
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Quero trabalhar</h1>
             @if ($evento?->exists)
@@ -28,7 +43,9 @@
 
                 <div class="bg-gray-50 dark:bg-zinc-700 rounded-md p-4">
                     <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">Escolha até 3 equipes</h3>
-
+                    @error('equipes')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         @foreach ($equipes as $equipe)
                             <div class="space-y-2">

@@ -64,10 +64,9 @@ class TrabalhadorController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validação
         $dados = $request->validate([
             'idt_evento' => 'required|exists:evento,idt_evento',
-            'equipes' => 'required|array', // 'equipes' deve ser um array
+            'equipes' => 'required|array',
             'equipes.*.selecionado' => 'nullable|in:1',
             'equipes.*.habilidade' => 'nullable|string|max:500',
         ], [
@@ -83,18 +82,16 @@ class TrabalhadorController extends Controller
         try {
             $pessoa = UserService::createPessoaFromLoggedUser();
 
-            // 2. Delegar a lógica de negócio para o serviço
             $this->voluntarioService->candidatura(
                 $dados['equipes'],
                 $dados['idt_evento'],
                 $pessoa
             );
-
+            
             return redirect()
                 ->route('eventos.index')
                 ->with('success', 'Suas candidaturas foram enviadas com sucesso! Entraremos em contato em breve.');
         } catch (ValidationException $e) {
-            // Propaga os erros de validação do serviço para o Laravel
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             Log::error('Erro ao candidatar voluntário: ' . $e->getMessage(), ['exception' => $e]);
@@ -104,7 +101,7 @@ class TrabalhadorController extends Controller
         // 4. Salvar os voluntários para cada equipe selecionada
         // Apaga o voluntario anterior para o evento
         try {
-            // Remove voluntários anteriores para o mesmo evento
+            // Remove pedidos anteriores para o mesmo evento da mesma pessoa
             Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
                 ->where('idt_evento', $dados['idt_evento'])
                 ->delete();
@@ -118,12 +115,10 @@ class TrabalhadorController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            // Log do erro para depuração
             Log::error('Erro ao salvar voluntário: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Ocorreu um erro ao registrar suas candidaturas. Por favor, tente novamente.')->withInput();
         }
 
-        // 5. Redirecionar com mensagem de sucesso
         return redirect()
             ->route('eventos.index')
             ->with('success', 'Suas candidaturas foram enviadas com sucesso! Entraremos em contato em breve.');
