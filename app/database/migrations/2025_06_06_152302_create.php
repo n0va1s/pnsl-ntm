@@ -159,6 +159,7 @@ return new class extends Migration
             $table->foreignId('idt_pessoa')->constrained('pessoa', 'idt_pessoa');
             $table->foreignId('idt_evento')->constrained('evento', 'idt_evento');
             $table->foreignId('idt_equipe')->constrained('tipo_equipe', 'idt_equipe');
+            $table->foreignId('idt_trabalhador')->nullable()->constrained('trabalhador', 'idt_trabalhador')->nullOnDelete();
             $table->text('txt_habilidade')->nullable(); // quais as suas habilidades para esta equipe
             $table->timestamps();
         });
@@ -175,7 +176,6 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->foreignId('idt_equipe')
                 ->constrained('tipo_equipe', 'idt_equipe');
-            $table->foreignId('idt_voluntario')->nullable()->constrained('voluntario', 'idt_voluntario')->nullOnDelete();
             $table->boolean('ind_coordenador')->default(false); // foi a coordenadora da equipe
             $table->boolean('ind_primeira_vez')->default(false); // primeira vez no encontro
             $table->boolean('ind_recomendado')->default(false); // recomenda trabalhar novamente?

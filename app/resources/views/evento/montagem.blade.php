@@ -41,10 +41,29 @@
                     <div>
                         <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Equipes que a pessoa gostaria de
                             trabalhar:</p>
-                        <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-400">
-                            @foreach ($voluntario->equipes as $equipe)
-                                <li>{{ $equipe->des_grupo }}</li>
-                            @endforeach
+                        <ul class="list-none pl-0 text-sm">
+                            @forelse ($voluntario->equipes as $equipe_detalhe)
+                                {{-- Renomeado para maior clareza --}}
+                                <li
+                                    class="mb-3 p-3 bg-gray-50 dark:bg-zinc-700 rounded-md shadow-sm border border-gray-200 dark:border-zinc-600">
+                                    <p class="font-semibold text-gray-800 dark:text-gray-100">
+                                        {{ $equipe_detalhe->des_grupo }} {{-- Acessa diretamente a descrição do grupo --}}
+                                    </p>
+                                    @if ($equipe_detalhe->txt_habilidade)
+                                        {{-- Verifica a habilidade do objeto detalhado --}}
+                                        <p class="mt-1 text-gray-600 dark:text-gray-300 italic">
+                                            "{{ $equipe_detalhe->txt_habilidade }}"
+                                        </p>
+                                    @else
+                                        <p class="mt-1 text-gray-500 dark:text-gray-400">
+                                            Nenhuma habilidade específica informada para esta equipe.
+                                        </p>
+                                    @endif
+                                </li>
+                            @empty
+                                <li class="text-gray-500 dark:text-gray-400">Nenhuma equipe de preferência informada.
+                                </li>
+                            @endforelse
                         </ul>
                     </div>
 

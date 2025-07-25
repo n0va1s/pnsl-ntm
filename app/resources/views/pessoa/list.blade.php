@@ -51,11 +51,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($pessoas as $pessoa)
+                        @foreach ($pessoas as $pessoa)
                             <tr class="border-t dark:border-zinc-600 dark:hover:bg-zinc-800">
                                 <td class="p-3">
-                                    @if ($pessoa->foto && $pessoa->foto->url_foto)
-                                        <img src="{{ asset('storage/' . $pessoa->foto->url_foto) }}"
+                                    @if ($pessoa->foto && $pessoa->foto->med_foto)
+                                        <img src="{{ asset('storage/' . $pessoa->foto->med_foto) }}"
                                             alt="Foto de {{ $pessoa->nom_pessoa }}"
                                             class="w-10 h-10 rounded-full object-cover border border-gray-300 dark:border-zinc-600 shadow-sm">
                                     @else
@@ -91,7 +91,7 @@
                                     </form>
                                 </td>
                             </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             @else

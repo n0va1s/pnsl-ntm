@@ -6,7 +6,6 @@ use App\Models\Trabalhador;
 use App\Models\Pessoa;
 use App\Models\Evento;
 use App\Models\TipoEquipe;
-use App\Models\Voluntario;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TrabalhadorFactory extends Factory
@@ -19,7 +18,6 @@ class TrabalhadorFactory extends Factory
             'idt_pessoa' => Pessoa::inRandomOrder()->first()->idt_pessoa ?? Pessoa::factory(),
             'idt_evento' => Evento::inRandomOrder()->first()->idt_evento ?? Evento::factory(),
             'idt_equipe' => TipoEquipe::inRandomOrder()->first()->idt_equipe ?? TipoEquipe::factory(),
-            'idt_voluntario' => Voluntario::inRandomOrder()->first()->idt_volutnario ?? null,
             'ind_coordenador' => $this->faker->boolean(20),
             'ind_primeira_vez' => $this->faker->boolean(50),
             'ind_avaliacao' => $this->faker->boolean(30),

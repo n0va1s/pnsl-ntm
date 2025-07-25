@@ -117,14 +117,14 @@ class PessoaController extends Controller
         $pessoa->update($data);
 
         // Foto
-        if ($request->hasFile('url_foto')) {
-            $arquivo = $request->file('url_foto');
-            $caminho = $arquivo->store('fotos', 'public'); // pasta 'storage/app/public/fotos'
+        if ($request->hasFile('med_foto')) {
+            $arquivo = $request->file('med_foto');
+            $caminho = $arquivo->store('fotos/pessoa/', 'public'); // pasta 'storage/app/public/fotos/pessoa/'
 
             if ($pessoa->foto) {
-                $pessoa->foto()->update(['url_foto' => $caminho]);
+                $pessoa->foto()->update(['med_foto' => $caminho]);
             } else {
-                $pessoa->foto()->create(['url_foto' => $caminho]);
+                $pessoa->foto()->create(['med_foto' => $caminho]);
             }
         }
 
