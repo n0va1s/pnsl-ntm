@@ -15,6 +15,7 @@ use App\Http\Controllers\{
     TipoSituacaoController,
     TrabalhadorController,
     AniversarioController,
+    PerfilUsuarioController,
 };
 
 
@@ -119,6 +120,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
 
+    Route::post('/perfilusuario', [PerfilUsuarioController::class, 'store'])->name('perfilusuario.store');
+
+    Route::post('/configuracoes/perfilusuario/change', [PerfilUsuarioController::class, 'change'])->name('perfilusuario.change');
+
 
     Route::resources([
         'eventos' => EventoController::class,
@@ -128,6 +133,7 @@ Route::middleware(['auth'])->group(function () {
         'tiporesponsavel' => TipoResponsavelController::class,
         'tiposituacao' => TipoSituacaoController::class,
         'pessoas' => PessoaController::class,
+        'perfilusuario' => PerfilUsuarioController::class,
     ]);
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
