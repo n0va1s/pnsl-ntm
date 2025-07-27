@@ -29,7 +29,7 @@
                         {{ __('Contatos') }}
                     </flux:navlist.item>
                 @endif
-                <flux:navlist.item icon="home" :href="route('timeline.index')"
+                <flux:navlist.item icon="clock" :href="route('timeline.index')"
                     :current="request()->routeIs('timeline.index')" wire:navigate>
                     {{ __('Linha do Tempo') }}
                 </flux:navlist.item>

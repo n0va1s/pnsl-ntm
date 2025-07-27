@@ -126,8 +126,16 @@
                         </div>
                     </div>
                 @empty
-                    <p class="text-gray-600 dark:text-gray-400 text-center">Nenhum evento encontrado para esta linha do
-                        tempo.</p>
+                    <div class="col-span-full">
+                        <div
+                            class="flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-800 rounded-xl shadow border border-dashed border-gray-300 dark:border-zinc-600">
+                            <x-heroicon-o-calendar class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
+                            <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Nenhum evento encontrado</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                Quando você participar de eventos, eles aparecerão aqui.
+                            </p>
+                        </div>
+                    </div>
                 @endforelse
             </div>
         </div>
