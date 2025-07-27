@@ -7,7 +7,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Card 1 -->
-            <a href="{{ route('tiposmovimentos.index') }}"
+            <a href="{{ route('movimento.index') }}"
                 class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
                 <div class="flex flex-col items-center justify-center h-full">
                     <x-heroicon-o-flag class="w-12 h-12 text-blue-600 mb-4" />
@@ -18,7 +18,7 @@
             </a>
 
             <!-- Card 2 -->
-            <a href="{{ route('tiporesponsavel.index') }}"
+            <a href="{{ route('responsavel.index') }}"
                 class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
                 <div class="flex flex-col items-center justify-center h-full">
                     <x-heroicon-o-user-group class="w-12 h-12 text-green-600 mb-4" />
@@ -51,7 +51,7 @@
             </a>
 
             <!-- Card 5 -->
-            <a href="{{ route('tiposituacao.index') }}"
+            <a href="{{ route('situacao.index') }}"
                 class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
                 <div class="flex flex-col items-center justify-center h-full">
                     <x-heroicon-o-clipboard-document-check class="w-12 h-12 text-yellow-600 mb-4" />
@@ -62,7 +62,7 @@
             </a>
 
             <!-- Card 6 -->
-            <a href="{{ route('perfis.index') }}"
+            <a href="{{ route('role.index') }}"
                 class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
                 <div class="flex flex-col items-center justify-center h-full">
                     <x-heroicon-o-user class="w-12 h-12 text-sky-400 mb-4" />

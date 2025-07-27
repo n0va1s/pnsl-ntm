@@ -6,7 +6,7 @@
         </div>
 
         <div class="flex justify-end mt-4">
-            <a href="{{ route('tiposmovimentos.index') }}"
+            <a href="{{ route('movimento.index') }}"
                 class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
                 aria-label="Voltar para a lista de movimentos">
                 <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
@@ -20,7 +20,7 @@
             </h2>
 
             <form method="POST"
-                action="{{ $tipo->exists ? route('tiposmovimentos.update', $tipo) : route('tiposmovimentos.store') }}"
+                action="{{ $tipo->exists ? route('movimento.update', $tipo) : route('movimento.store') }}"
                 class="space-y-6">
                 @csrf
 
@@ -78,7 +78,7 @@
                         Salvar
                     </button>
 
-                    <a href="{{ route('tiposmovimentos.index') }}"
+                    <a href="{{ route('movimento.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 focus:ring-2 rounded-md focus:ring-gray-500 focus:outline-none text-gray-800"
                         aria-label="Cancelar a operação">
                         <x-heroicon-o-x-mark class="w-5 h-5 mr-2" />

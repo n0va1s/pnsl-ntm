@@ -124,18 +124,18 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
 
+    Route::get('/configuracoes/role', [RoleController::class, 'index'])->name('role.index');
     Route::post('/configuracoes/role', [RoleController::class, 'store'])->name('role.store');
     Route::post('/configuracoes/role/change', [RoleController::class, 'change'])->name('role.change');
 
     Route::resources([
         'eventos' => EventoController::class,
-        'fichas-vem' => FichaVemController::class,
-        'fichas-ecc' => FichaEccController::class,
-        'tiposmovimentos' => TipoMovimentoController::class,
-        'tiporesponsavel' => TipoResponsavelController::class,
-        'tiposituacao' => TipoSituacaoController::class,
         'pessoas' => PessoaController::class,
-        'perfis' => RoleController::class,
+        '/fichas/vem' => FichaVemController::class,
+        '/fichas/ecc' => FichaEccController::class,
+        '/configuracoes/movimento' => TipoMovimentoController::class,
+        '/configuracoes/responsavel' => TipoResponsavelController::class,
+        '/configuracoes/situacao' => TipoSituacaoController::class,
     ]);
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

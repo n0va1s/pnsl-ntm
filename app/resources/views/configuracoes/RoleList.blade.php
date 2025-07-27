@@ -1,7 +1,7 @@
 <x-layouts.app :title="'Perfil Usuario'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Perfil Usuario</h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Perfil</h1>
             <p class="text-gray-600 dark:text-gray-300 text-sm">
                 Defina as permissões de acesso do usuário selecionando o perfil desejado para cada pessoa na lista
                 abaixo.
