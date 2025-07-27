@@ -7,9 +7,11 @@ use App\Models\Evento;
 use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\TipoMovimento;
-use App\Models\User;
+use App\Models\Trabalhador;
 use App\Models\Voluntario;
+use App\Services\EventoService;
 use App\Services\UserService;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +21,15 @@ use Illuminate\View\View;
 
 class EventoController extends Controller
 {
+
+    protected $service;
+
+    // Injeção de dependência do EventoService
+    public function __construct(EventoService $eventoService)
+    {
+        $this->service = $eventoService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -156,6 +167,20 @@ class EventoController extends Controller
             ->route('eventos.index')
             ->with('success', 'Sua participação  foi confirmada. Até lá!');
     }
+
+    public function timeline(): View
+    {
+        // Obtém a pessoa do usuário logado usando seu UserService existente
+        $pessoa = UserService::createPessoaFromLoggedUser(); // Assumindo que este método existe e retorna uma instância de Pessoa
+
+        $timeline = $this->service->getEventosTimeline($pessoa);
+        $pontuacaoTotal = $this->service->calcularPontuacao($pessoa);
+        $posicaoNoRanking = $this->service->calcularRanking($pessoa);
+
+        // Passa os dados para a view
+        return view('evento.linhadotempo', compact('timeline', 'pontuacaoTotal', 'posicaoNoRanking', 'pessoa'));
+    }
+
 
     /**
      * Remove the specified resource from storage.

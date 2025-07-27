@@ -41,9 +41,14 @@ class PessoaController extends Controller
             'txt_restricao'
         )->get();
 
+        $pessoasDisponiveis = Pessoa::whereNull('idt_parceiro')
+            ->orderBy('nom_pessoa')
+            ->get();
+
         return view('pessoa.form', [
             'pessoa' => $pessoa,
             'restricoes' => $restricoes,
+            'pessoasDisponiveis' => $pessoasDisponiveis,
         ]);
     }
 
@@ -66,6 +71,15 @@ class PessoaController extends Controller
                 $pessoa->foto()->update(['med_foto' => $caminho]);
             } else {
                 $pessoa->foto()->create(['med_foto' => $caminho]);
+            }
+        }
+
+        // Parceiro
+        if ($request->input('idt_parceiro')) {
+            $parceiro = Pessoa::find($request->input('idt_parceiro'));
+            if ($parceiro) {
+                $parceiro->idt_parceiro = $pessoa->idt_pessoa; // O parceiro aponta para esta pessoa
+                $parceiro->save();
             }
         }
 
@@ -100,9 +114,18 @@ class PessoaController extends Controller
             'txt_restricao'
         )->get();
 
+        $pessoasDisponiveis = Pessoa::whereNull('idt_parceiro')
+            ->when($pessoa->idt_parceiro, function ($query) use ($pessoa) {
+                $query->orWhere('idt_pessoa', $pessoa->idt_parceiro);
+            })
+            ->where('idt_pessoa', '!=', $pessoa->idt_pessoa) // Não pode ser parceira de si mesma
+            ->orderBy('nom_pessoa')
+            ->get();
+
         return view('pessoa.form', [
             'pessoa' => $pessoa,
             'restricoes' => $restricoes,
+            'pessoasDisponiveis' => $pessoasDisponiveis,
         ]);
     }
 
@@ -128,6 +151,14 @@ class PessoaController extends Controller
             }
         }
 
+        // Parceiro
+        if ($request->input('idt_parceiro')) {
+            $parceiro = Pessoa::find($request->input('idt_parceiro'));
+            if ($parceiro) {
+                $parceiro->idt_parceiro = $pessoa->idt_pessoa; // O parceiro aponta para esta pessoa
+                $parceiro->save();
+            }
+        }
 
         // Saude
         $pessoa->saude()->delete();

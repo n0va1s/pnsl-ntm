@@ -169,6 +169,28 @@
                         @enderror
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Sexo da pessoa</p>
                     </div>
+
+                    <!-- Parceiro -->
+                    <div>
+                        <label for="idt_parceiro" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Parceiro(a) <span class="text-red-600">*</span>
+                        </label>
+                        <select id="idt_parceiro" name="idt_parceiro"
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                            @error('idt_parceiro') border-red-500 @enderror">
+                            <option value="">Selecione o parceiro(a)</option>
+                            @foreach ($pessoasDisponiveis as $pessoa)
+                                <option value="{{ $pessoa->id }}"
+                                    {{ old('idt_parceiro', $pessoa->idt_parceiro) == $pessoa->id ? 'selected' : '' }}>
+                                    {{ $pessoa->nom_pessoa }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('idt_parceiro')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Sexo da pessoa</p>
+                    </div>
                 </div>
 
                 <!-- Foto -->

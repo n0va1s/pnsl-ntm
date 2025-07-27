@@ -14,6 +14,7 @@ class PessoaFactory extends Factory
     {
         return [
             'idt_usuario' => User::inRandomOrder()->first()->id,
+            'idt_parceiro' => null,
             'nom_pessoa' => $this->faker->name(),
             'nom_apelido' => $this->faker->lastName(),
             'tip_genero' => $this->faker->randomElement(['M', 'F']), // Masculino, Feminino

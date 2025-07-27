@@ -12,8 +12,7 @@ class Trabalhador extends Model
 
     protected $table = 'trabalhador';
     protected $primaryKey = 'idt_trabalhador';
-    public $timestamps = false;
-    public $incrementing = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_pessoa',

@@ -13,11 +13,12 @@
         </a>
         <flux:navlist variant="outline">
             <flux:navlist.group :heading="__('Platform')" class="grid">
-                <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-                    wire:navigate>
-                    {{ __('Dashboard') }}
-                </flux:navlist.item>
                 @if (Auth::user() && Auth::user()->isAdmin())
+                    <flux:navlist.item icon="home" :href="route('dashboard')"
+                        :current="request()->routeIs('dashboard')" wire:navigate>
+                        {{ __('Dashboard') }}
+                    </flux:navlist.item>
+
                     <flux:navlist.item icon="cog" :href="route('configuracoes.index')"
                         :current="request()->routeIs('configuracoes.index')" wire:navigate>
                         {{ __('Configurações') }}
@@ -28,6 +29,10 @@
                         {{ __('Contatos') }}
                     </flux:navlist.item>
                 @endif
+                <flux:navlist.item icon="home" :href="route('timeline.index')"
+                    :current="request()->routeIs('timeline.index')" wire:navigate>
+                    {{ __('Linha do Tempo') }}
+                </flux:navlist.item>
                 <flux:navlist.item icon="calendar" :href="route('eventos.index')"
                     :current="request()->routeIs('eventos.index')" wire:navigate>
                     {{ __('Eventos') }}

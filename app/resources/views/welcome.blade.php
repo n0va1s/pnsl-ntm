@@ -164,27 +164,41 @@
             <div class="md:col-span-3">
                 <section class="max-w-3xl mx-auto mt-24 px-4">
                     <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Próximos Eventos</h2>
+                    {{-- Lista de eventos --}}
                     <ul class="space-y-4">
                         @forelse ($proximoseventos as $evento)
+                            @php
+                                $sigla = $evento->movimento?->des_sigla;
+                                $badgeClasses = match ($sigla) {
+                                    'VEM' => 'bg-blue-100 text-blue-700',
+                                    'Segue-Me' => 'bg-orange-100 text-orange-700',
+                                    'ECC' => 'bg-green-100 text-green-700',
+                                    default => 'bg-gray-100 text-gray-600',
+                                };
+                            @endphp
                             <li
-                                class="flex items-start gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-                                <svg class="w-6 h-6 mt-1" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
-                                        {{ $evento->des_evento }}</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">
-                                        {{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('d \d\e F \d\e Y') }}
-                                    </p>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">
-                                        {{ $evento->movimento?->des_sigla }}</p>
+                                class="flex items-start gap-4 p-4 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+                                <x-heroicon-o-calendar class="w-6 h-6 text-blue-500 mt-1" />
+                                <div class="flex-1 flex flex-col w-full">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-base font-medium text-gray-900 dark:text-white">
+                                            {{ $evento->des_evento }}
+                                        </h3>
+
+                                        <span
+                                            class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeClasses }}">
+                                            {{ $sigla }}
+                                        </span>
+                                    </div>
+
+                                    {{-- Informações adicionais --}}
+                                    <span class="text-sm text-gray-600 dark:text-gray-300">
+                                        {{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('d/m/Y') }}
+                                    </span>
                                 </div>
                             </li>
                         @empty
-                            <li class="text-gray-600 dark:text-gray-300">Nenhum evento encontrado</li>
+                            <li class="text-gray-600 dark:text-gray-300">Nenhum evento encontrado.</li>
                         @endforelse
                     </ul>
                 </section>

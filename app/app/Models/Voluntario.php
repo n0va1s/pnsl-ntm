@@ -11,7 +11,7 @@ class Voluntario extends Model
 
     protected $table = 'voluntario';
     protected $primaryKey = 'idt_voluntario';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_pessoa',

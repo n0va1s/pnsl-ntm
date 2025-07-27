@@ -10,6 +10,7 @@ class Participante extends Model
     use HasFactory;
 
     protected $table = 'participante';
+    protected $primaryKey = 'idt_participante';
     public $timestamps = true;
 
     protected $fillable = [

@@ -40,6 +40,11 @@ Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Route::get(
+        '/timeline',
+        [EventoController::class, 'timeline']
+    )->name('timeline.index');
+
+    Route::get(
         '/dashboard',
         [DashboardController::class, 'index']
     )->name('dashboard');

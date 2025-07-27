@@ -87,7 +87,7 @@ class TrabalhadorController extends Controller
                 $dados['idt_evento'],
                 $pessoa
             );
-            
+
             return redirect()
                 ->route('eventos.index')
                 ->with('success', 'Suas candidaturas foram enviadas com sucesso! Entraremos em contato em breve.');
@@ -172,8 +172,8 @@ class TrabalhadorController extends Controller
             $idt_evento = $voluntario ? $voluntario->idt_evento : null;
 
             return redirect()
-                ->route('montagem.confirm', ['evento' => $idt_evento])
-                ->with('success', 'Trabalhador confirmado e voluntário atualizado com sucesso!');
+                ->route('eventos.index')
+                ->with('success', 'Trabalhador confirmado com sucesso!');
         } catch (\Exception $e) {
             Log::error('Erro ao confirmar trabalhador: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', $e->getMessage() ?: 'Ocorreu um erro ao confirmar o trabalhador. Por favor, tente novamente.');

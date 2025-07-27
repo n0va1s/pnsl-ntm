@@ -83,7 +83,6 @@ class VoluntarioService
                 'ind_primeira_vez' => $isPrimeiraVez,
             ]);
 
-            // Atualizar voluntário
             $voluntario->update([
                 'idt_trabalhador' => $trabalhador->idt_trabalhador
             ]);
