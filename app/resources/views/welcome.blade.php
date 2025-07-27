@@ -71,7 +71,7 @@
                         <h3 class="text-xl font-bold text-blue-600 dark:text-blue-400">VEM</h3>
                         <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Adolescentes com Cristo</p>
                     </div>
-                    <a href="{{ route('fichas-vem.create') }}"
+                    <a href="{{ route('vem.create') }}"
                         class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition">
                         Cadastrar Ficha VEM
                     </a>
@@ -97,7 +97,7 @@
                         <h3 class="text-xl font-bold text-green-600 dark:text-green-400">ECC</h3>
                         <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Casais com Cristo</p>
                     </div>
-                    <a href="{{ route('fichas-ecc.create') }}"
+                    <a href="{{ route('ecc.create') }}"
                         class="mt-4 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md transition">
                         Cadastrar Ficha ECC
                     </a>

@@ -1,7 +1,7 @@
 <x-layouts.app :title="'Evento'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
         <div>
-            <x-session-alert/>
+            <x-session-alert />
         </div>
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Eventos</h1>
@@ -52,14 +52,14 @@
                         <div>
                             @php
                                 $sigla = $evento->movimento->des_sigla;
-                                
+
                                 $confirmado = in_array($evento->idt_evento, $posEncontrosInscritos);
 
                                 $feito = in_array($evento->idt_evento, $eventosInscritos);
 
                                 $rotaFichas = match ($sigla) {
-                                    'ECC' => route('fichas-ecc.index', ['evento' => $evento->idt_evento]),
-                                    'VEM' => route('fichas-vem.index', ['evento' => $evento->idt_evento]),
+                                    'ECC' => route('ecc.index', ['evento' => $evento->idt_evento]),
+                                    'VEM' => route('vem.index', ['evento' => $evento->idt_evento]),
                                     'Segue-Me' => '#',
                                     default => '#',
                                 };

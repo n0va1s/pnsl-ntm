@@ -117,10 +117,10 @@ Route::middleware(['auth'])->group(function () {
         [TrabalhadorController::class, 'generate']
     )->name('quadrante.list');
 
-    Route::get('fichas-vem/approve/{id}', [FichaVemController::class, 'approve'])
-        ->name('fichas-vem.approve');
-    Route::get('fichas-ecc/approve/{id}', [FichaEccController::class, 'approve'])
-        ->name('fichas-ecc.approve');
+    Route::get('fichas/vem/approve/{id}', [FichaVemController::class, 'approve'])
+        ->name('vem.approve');
+    Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
+        ->name('ecc.approve');
 
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
 

@@ -87,7 +87,7 @@ class FichaVemController extends Controller
             }
         }
 
-        return redirect()->route('fichas-vem.index')->with('success', 'Ficha cadastrada com sucesso!');
+        return redirect()->route('vem.index')->with('success', 'Ficha cadastrada com sucesso!');
     }
 
     /**
@@ -174,14 +174,14 @@ class FichaVemController extends Controller
             }
         }
 
-        return redirect()->route('fichas-vem.index')->with('success', 'Ficha atualizada com sucesso!');
+        return redirect()->route('vem.index')->with('success', 'Ficha atualizada com sucesso!');
     }
 
     public function approve($id)
     {
         FichaService::atualizarAprovacaoFicha($id);
 
-        return redirect()->route('fichas-vem.index')->with('success', 'Aprovação atualizada com sucesso!');
+        return redirect()->route('vem.index')->with('success', 'Aprovação atualizada com sucesso!');
     }
 
     /**
@@ -195,18 +195,18 @@ class FichaVemController extends Controller
             Ficha::find($id)->delete();
 
             return redirect()
-                ->route('fichas-vem.index')
+                ->route('vem.index')
                 ->with('success', 'Ficha excluída com sucesso!');
         } catch (QueryException $e) {
             if ($e->getCode() === '23000') {
                 return redirect()
-                    ->route('fichas-vem.index')
+                    ->route('vem.index')
                     ->with('error', 'Não é possível excluir esta ficha. È preciso apagar os dados associados.');
             }
 
             // Se for outro erro de banco
             return redirect()
-                ->route('fichas-vem.index')
+                ->route('vem.index')
                 ->with('error', 'Erro ao tentar excluir a ficha.');
         }
     }
