@@ -184,9 +184,7 @@ class TrabalhadorController extends Controller
     public function generate(Request $request)
     {
         $eventoId = $request->get('evento');
-
         $evento = Evento::find($eventoId);
-
         $trabalhadoresPorEquipe = collect();
 
         if ($evento) {
@@ -255,7 +253,8 @@ class TrabalhadorController extends Controller
 
         $trabalhador->save();
 
-        return redirect()->route('trabalhadores.index')
+        return redirect()
+            ->route('trabalhadores.index', ['evento' => $dados['idt_evento']])
             ->with('success', 'Trabalhador atualizado com sucesso!');
     }
 
