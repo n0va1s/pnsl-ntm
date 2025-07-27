@@ -217,7 +217,7 @@ class TrabalhadorController extends Controller
             ->where('idt_pessoa', $request->get('pessoa'))
             ->first();
 
-        return view('trabalhador.avaliacao', compact('trabalhador'));
+        return view('evento.avaliacao', compact('trabalhador'));
     }
 
     public function send(Request $request)

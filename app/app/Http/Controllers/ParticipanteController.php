@@ -30,7 +30,7 @@ class ParticipanteController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('participante.list', compact('participantes', 'search', 'evento'));
+        return view('evento.participante', compact('participantes', 'search', 'evento'));
     }
 
     public function change(Request $request)
