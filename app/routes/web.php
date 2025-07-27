@@ -15,7 +15,7 @@ use App\Http\Controllers\{
     TipoSituacaoController,
     TrabalhadorController,
     AniversarioController,
-    PerfilUsuarioController,
+    RoleController,
 };
 
 
@@ -122,13 +122,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('fichas-ecc/approve/{id}', [FichaEccController::class, 'approve'])
         ->name('fichas-ecc.approve');
 
-
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
 
-    Route::post('/perfilusuario', [PerfilUsuarioController::class, 'store'])->name('perfilusuario.store');
-
-    Route::post('/configuracoes/perfilusuario/change', [PerfilUsuarioController::class, 'change'])->name('perfilusuario.change');
-
+    Route::post('/configuracoes/role', [RoleController::class, 'store'])->name('role.store');
+    Route::post('/configuracoes/role/change', [RoleController::class, 'change'])->name('role.change');
 
     Route::resources([
         'eventos' => EventoController::class,
@@ -138,7 +135,7 @@ Route::middleware(['auth'])->group(function () {
         'tiporesponsavel' => TipoResponsavelController::class,
         'tiposituacao' => TipoSituacaoController::class,
         'pessoas' => PessoaController::class,
-        'perfilusuario' => PerfilUsuarioController::class,
+        'perfis' => RoleController::class,
     ]);
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
