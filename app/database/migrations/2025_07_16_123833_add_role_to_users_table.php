@@ -22,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Feito na migration que cria a tabela users
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('idt_movimento');
+            $table->dropColumn('role');
+        });
     }
 };

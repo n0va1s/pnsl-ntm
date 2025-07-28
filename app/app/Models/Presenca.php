@@ -10,7 +10,9 @@ class Presenca extends Model
     use HasFactory;
 
     protected $table = 'presenca';
-    public $timestamps = false;
+    protected $primaryKey = 'idt_presenca';
+    public $timestamps = true;
+
     protected $fillable = [
         'idt_participante',
         'dat_presenca',

@@ -11,7 +11,7 @@ class PessoaSaude extends Model
     use HasFactory;
 
     protected $table = 'pessoa_saude';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'idt_pessoa',

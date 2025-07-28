@@ -15,7 +15,7 @@ class TrabalhadorFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_pessoa' => Pessoa::inRandomOrder()->first()->idt_pessoa ?? Pessoa::factory(),
+            'idt_pessoa' => Pessoa::inRandomOrder()->first()->idt_pessoa,
             'idt_evento' => Evento::inRandomOrder()->first()->idt_evento ?? Evento::factory(),
             'idt_equipe' => TipoEquipe::inRandomOrder()->first()->idt_equipe ?? TipoEquipe::factory(),
             'ind_coordenador' => $this->faker->boolean(20),

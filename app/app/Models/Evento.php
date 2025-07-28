@@ -11,6 +11,7 @@ class Evento extends Model
 
     protected $table = 'evento';
     protected $primaryKey = 'idt_evento';
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_movimento',

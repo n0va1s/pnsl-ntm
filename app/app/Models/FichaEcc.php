@@ -10,7 +10,7 @@ class FichaEcc extends Model
     use HasFactory;
 
     protected $table = 'ficha_ecc';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'idt_ficha',

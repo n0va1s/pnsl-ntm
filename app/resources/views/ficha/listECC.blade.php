@@ -2,20 +2,9 @@
     <section class="p-6 w-full max-w-[80vw] ml-auto">
 
         {{-- Alerta de sucesso/erro --}}
-        @if (session('success') || session('error'))
-            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
-                class="mb-4 px-4 py-3 rounded-md text-white font-semibold flex items-center gap-2
-                {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}"
-                role="alert">
-                @if (session('success'))
-                    <x-heroicon-o-check-circle class="w-6 h-6 text-white" />
-                    <span>{{ session('success') }}</span>
-                @else
-                    <x-heroicon-o-x-circle class="w-6 h-6 text-white" />
-                    <span>{{ session('error') }}</span>
-                @endif
-            </div>
-        @endif
+        <div>
+            <x-session-alert />
+        </div>
 
         {{-- Título e subtítulo --}}
         <div class="mb-6">
@@ -30,8 +19,7 @@
         {{-- Filtro e ações --}}
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             {{-- Busca --}}
-            <form method="GET" action="{{ route('fichas-ecc.index') }}"
-                class="flex items-center gap-2 w-full max-w-md">
+            <form method="GET" action="{{ route('ecc.index') }}" class="flex items-center gap-2 w-full max-w-md">
                 <input type="text" name="search" id="search" value="{{ $search }}"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Buscar por nome ou apelido" />
@@ -43,7 +31,7 @@
                 </button>
 
                 @if ($search)
-                    <a href="{{ route('fichas-ecc.index') }}"
+                    <a href="{{ route('ecc.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md">
                         <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
                         Limpar
@@ -53,7 +41,7 @@
 
             {{-- Botões --}}
             <div class="flex items-center gap-2 self-end sm:self-auto">
-                <a href="{{ route('fichas-ecc.create') }}"
+                <a href="{{ route('ecc.create') }}"
                     class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     <x-heroicon-s-plus class="w-5 h-5 mr-2" />
                     Nova Ficha
@@ -102,12 +90,12 @@
                                     @endif
                                 </td>
                                 <td class="p-3 flex justify-end items-center gap-2">
-                                    <a href="{{ route('fichas-ecc.edit', $ficha) }}"
+                                    <a href="{{ route('ecc.edit', $ficha) }}"
                                         class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 px-2 py-1 rounded-md">
                                         <x-heroicon-o-pencil-square class="w-5 h-5" />
                                         <span class="sr-only sm:not-sr-only">Editar</span>
                                     </a>
-                                    <form method="POST" action="{{ route('fichas-ecc.destroy', $ficha) }}"
+                                    <form method="POST" action="{{ route('ecc.destroy', $ficha) }}"
                                         onsubmit="return confirm('Tem certeza que deseja excluir esta ficha?');">
                                         @csrf
                                         @method('DELETE')

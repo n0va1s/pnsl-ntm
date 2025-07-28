@@ -87,7 +87,7 @@ class TrabalhadorController extends Controller
                 $dados['idt_evento'],
                 $pessoa
             );
-            
+
             return redirect()
                 ->route('eventos.index')
                 ->with('success', 'Suas candidaturas foram enviadas com sucesso! Entraremos em contato em breve.');
@@ -172,8 +172,8 @@ class TrabalhadorController extends Controller
             $idt_evento = $voluntario ? $voluntario->idt_evento : null;
 
             return redirect()
-                ->route('montagem.confirm', ['evento' => $idt_evento])
-                ->with('success', 'Trabalhador confirmado e voluntário atualizado com sucesso!');
+                ->route('eventos.index')
+                ->with('success', 'Trabalhador confirmado com sucesso!');
         } catch (\Exception $e) {
             Log::error('Erro ao confirmar trabalhador: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', $e->getMessage() ?: 'Ocorreu um erro ao confirmar o trabalhador. Por favor, tente novamente.');
@@ -184,9 +184,7 @@ class TrabalhadorController extends Controller
     public function generate(Request $request)
     {
         $eventoId = $request->get('evento');
-
         $evento = Evento::find($eventoId);
-
         $trabalhadoresPorEquipe = collect();
 
         if ($evento) {
@@ -217,7 +215,7 @@ class TrabalhadorController extends Controller
             ->where('idt_pessoa', $request->get('pessoa'))
             ->first();
 
-        return view('trabalhador.avaliacao', compact('trabalhador'));
+        return view('evento.avaliacao', compact('trabalhador'));
     }
 
     public function send(Request $request)
@@ -255,7 +253,8 @@ class TrabalhadorController extends Controller
 
         $trabalhador->save();
 
-        return redirect()->route('trabalhadores.index')
+        return redirect()
+            ->route('trabalhadores.index', ['evento' => $dados['idt_evento']])
             ->with('success', 'Trabalhador atualizado com sucesso!');
     }
 

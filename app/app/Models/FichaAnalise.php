@@ -10,8 +10,7 @@ class FichaAnalise extends Model
     use HasFactory;
 
     protected $table = 'ficha_analise';
-    public $timestamps = true;
-
+    public $timestamps = false;
 
     protected $fillable = [
         'idt_ficha',

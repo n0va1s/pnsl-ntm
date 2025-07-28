@@ -1,19 +1,8 @@
 <x-layouts.app :title="'Pessoa'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
-        @if (session('success') || session('error'))
-            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
-                class="mb-4 px-4 py-3 rounded-md text-white font-semibold flex items-center gap-2
-        {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}"
-                role="alert">
-                @if (session('success'))
-                    <x-heroicon-o-check-circle class="w-6 h-6 text-white" />
-                    <span>{{ session('success') }}</span>
-                @else
-                    <x-heroicon-o-x-circle class="w-6 h-6 text-white" />
-                    <span>{{ session('error') }}</span>
-                @endif
-            </div>
-        @endif
+        <div>
+            <x-session-alert />
+        </div>
 
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Lista de Pessoas</h1>
@@ -57,7 +46,7 @@
                             <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Nome</th>
                             <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Apelido</th>
                             <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Telefone</th>
-                            <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Usuário</th>
+                            <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Casal</th>
                             <th class="p-3 font-semibold text-gray-900 dark:text-gray-100 text-center">Ações</th>
                         </tr>
                     </thead>
@@ -82,7 +71,7 @@
                                 <td class="p-3 text-gray-700 dark:text-gray-300">{{ $pessoa->tel_pessoa }}</td>
 
                                 <td class="p-3 text-gray-700 dark:text-gray-300">
-                                    {{ $pessoa->usuario->name ?? 'Não vinculado' }}
+                                    {{ $pessoa->parceiro ? 'Sim' : 'Não' }}
                                 </td>
                                 <td class="p-3 flex items-center gap-2 justify-center">
                                     <a href="{{ route('pessoas.edit', $pessoa) }}"

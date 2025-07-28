@@ -1,19 +1,8 @@
 <x-layouts.app :title="'Contato'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
-        @if (session('success') || session('error'))
-            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
-                class="mb-4 px-4 py-3 rounded-md text-white font-semibold flex items-center gap-2
-        {{ session('success') ? 'bg-green-600' : 'bg-red-600' }}"
-                role="alert">
-                @if (session('success'))
-                    <x-heroicon-o-check-circle class="w-6 h-6 text-white" />
-                    <span>{{ session('success') }}</span>
-                @else
-                    <x-heroicon-o-x-circle class="w-6 h-6 text-white" />
-                    <span>{{ session('error') }}</span>
-                @endif
-            </div>
-        @endif
+        <div>
+            <x-session-alert/>
+        </div>
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Contatos</h1>
             <p class="text-gray-700 mt-1 dark:text-gray-400">Gerencie os contatos recebidos.</p>
@@ -64,7 +53,7 @@
                             <td class="p-3 text-gray-900 dark:text-gray-300">{{ $contato->nom_contato }}</td>
                             <td class="p-3 text-gray-700 dark:text-gray-300">{{ $contato->eml_contato }}</td>
                             <td class="p-3 text-gray-700 dark:text-gray-300">{{ $contato->tel_contato }}</td>
-                            <td class="p-3 text-gray-700 dark:text-gray-300">{{ $contato->txt_mensagem }}</td>
+                            <td class="p-3 text-gray-700 max-w-xs dark:text-gray-300">{{ $contato->txt_mensagem }}</td>
                             <td class="p-3">
                                 @php
                                     $sig_movimento = $contato->movimento->des_sigla;
@@ -95,7 +84,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="inline-flex items-center gap-1 text-red-600 hover:text-red-800 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 px-2 py-1 rounded-md cursor-pointer">
+                                        class="inline-flex items-center gap-1 text-red-600 items-center hover:text-red-800 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 px-2 py-1 rounded-md cursor-pointer">
                                         <x-heroicon-o-trash class="w-5 h-5" />
                                         <span class="sr-only sm:not-sr-only">Excluir</span>
                                     </button>

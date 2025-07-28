@@ -12,6 +12,7 @@ class Contato extends Model
 
     protected $table = 'contato';
     protected $primaryKey = 'idt_contato';
+    public $timestamps = true;
 
     protected $fillable = [
         'nom_contato',
