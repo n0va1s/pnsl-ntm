@@ -4,7 +4,7 @@
         {{-- Linha 1 - 4 colunas --}}
         <div class="grid gap-4 md:grid-cols-4">
             <div
-                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
                 <div class="text-center space-y-3">
                     <div class="flex items-center justify-center gap-2">
                         <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300">Total de Eventos</h3>
@@ -18,7 +18,7 @@
             </div>
 
             <div
-                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
                 <div class="text-center space-y-3">
                     <div class="flex items-center justify-center gap-2">
                         <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300">Total de Fichas</h3>
@@ -32,7 +32,7 @@
             </div>
 
             <div
-                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
                 <div class="text-center space-y-3">
                     <div class="flex items-center justify-center gap-2">
                         <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300">Total de Participantes</h3>
@@ -46,7 +46,7 @@
             </div>
 
             <div
-                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
                 <div class="text-center space-y-3">
                     <div class="flex items-center justify-center gap-2">
                         <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300">Total de Trabalhadores</h3>
@@ -62,7 +62,7 @@
 
         {{-- Linha 2 - 2 colunas --}}
         <div class="grid gap-4 md:grid-cols-2">
-            <div class="rounded-xl bg-white p-6 shadow-sm border border-neutral-200 dark:border-neutral-700">
+            <div class="rounded-xl bg-white p-6 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
                 {{-- Cabeçalho --}}
                 <header class="flex items-center justify-between mb-6">
                     <div class="flex items-center gap-2">
@@ -80,7 +80,7 @@
                                 'VEM' => 'bg-blue-100 text-blue-700',
                                 'Segue-Me' => 'bg-orange-100 text-orange-700',
                                 'ECC' => 'bg-green-100 text-green-700',
-                                default => 'bg-gray-100 text-gray-600',
+                                default => 'bg-gray-100 text-gray-600 ',
                             };
                         @endphp
                         <li
@@ -109,7 +109,7 @@
                 </ul>
             </div>
 
-            <div class="rounded-xl bg-white p-6 shadow-sm border border-neutral-200 dark:border-neutral-700">
+            <div class="rounded-xl bg-white p-6 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
                 {{-- Cabeçalho --}}
                 <header class="flex items-center justify-between mb-6">
                     <div class="flex items-center gap-2">
