@@ -21,7 +21,7 @@ class PerfilUsuarioController extends Controller
             foreach ($request->input('role', []) as $userId => $role) {
                 User::where('id', $userId)->update(['role' => $role]);
             }
-            return redirect()->back()->with('success', 'Perfis atualizados com sucesso!');
+            return redirect()->route('dashboard')->with('success', 'Perfis atualizados com sucesso!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Erro ao atualizar perfis: ' . $e->getMessage());
         }
