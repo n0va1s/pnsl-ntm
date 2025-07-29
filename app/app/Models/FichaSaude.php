@@ -10,7 +10,7 @@ class FichaSaude extends Model
     use HasFactory;
 
     protected $table = 'ficha_saude';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'idt_ficha',

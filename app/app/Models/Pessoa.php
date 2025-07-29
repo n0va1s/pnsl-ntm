@@ -15,6 +15,7 @@ class Pessoa extends Model
 
     protected $fillable = [
         'idt_usuario',
+        'idt_parceiro',
         'nom_pessoa',
         'nom_apelido',
         'tel_pessoa',
@@ -65,9 +66,41 @@ class Pessoa extends Model
         return $this->hasMany(Voluntario::class, 'idt_pessoa');
     }
 
+    // Relationship to partner
+    public function parceiro()
+    {
+        // One person has one partner (self-referencing one-to-one)
+        return $this->belongsTo(Pessoa::class, 'idt_parceiro', 'idt_pessoa');
+    }
+
+    public function setParceiro(Pessoa $umaSoCarne)
+    {
+        if ($umaSoCarne && $this->idt_pessoa === $umaSoCarne->idt_pessoa) {
+            throw new \InvalidArgumentException("Uma pessoa não pode ser parceira de si mesma.");
+        }
+
+        $this->idt_parceiro = $umaSoCarne ? $umaSoCarne->idt_pessoa : null;
+        $this->save();
+
+        if ($umaSoCarne) {
+            $umaSoCarne->idt_parceiro = $this->idt_pessoa;
+            $umaSoCarne->save();
+        }
+    }
+
+    public function removeParceiro()
+    {
+        if ($this->parceiro) {
+            $umaSoCarne = $this->parceiro;
+            $umaSoCarne->idt_parceiro = null;
+            $umaSoCarne->save();
+        }
+        $this->idt_parceiro = null;
+        $this->save();
+    }
+
     public function getDataNascimentoFormatada()
     {
-
         return $this->dat_nascimento
             ? $this->dat_nascimento->format('Y-m-d')
             : null;

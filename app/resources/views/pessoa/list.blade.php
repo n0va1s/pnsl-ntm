@@ -1,7 +1,7 @@
 <x-layouts.app :title="'Pessoa'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
         <div>
-            <x-session-alert/>
+            <x-session-alert />
         </div>
 
         <div class="mb-6">
@@ -46,7 +46,7 @@
                             <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Nome</th>
                             <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Apelido</th>
                             <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Telefone</th>
-                            <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Usuário</th>
+                            <th class="p-3 font-semibold text-gray-900 dark:text-gray-100">Casal</th>
                             <th class="p-3 font-semibold text-gray-900 dark:text-gray-100 text-center">Ações</th>
                         </tr>
                     </thead>
@@ -71,7 +71,7 @@
                                 <td class="p-3 text-gray-700 dark:text-gray-300">{{ $pessoa->tel_pessoa }}</td>
 
                                 <td class="p-3 text-gray-700 dark:text-gray-300">
-                                    {{ $pessoa->usuario->name ?? 'Não vinculado' }}
+                                    {{ $pessoa->parceiro ? 'Sim' : 'Não' }}
                                 </td>
                                 <td class="p-3 flex items-center gap-2 justify-center">
                                     <a href="{{ route('pessoas.edit', $pessoa) }}"

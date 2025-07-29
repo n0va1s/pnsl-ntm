@@ -75,7 +75,6 @@ return new class extends Migration
                 ->constrained('evento', 'idt_evento')
                 ->onDelete('cascade');
             $table->string('med_foto'); //armazenar no filesystem
-            $table->timestamps();
 
             $table->primary(['idt_evento']);
         });
@@ -106,7 +105,6 @@ return new class extends Migration
                 ->constrained('pessoa', 'idt_pessoa')
                 ->onDelete('cascade');
             $table->string('med_foto'); //armazenar no filesystem
-            $table->timestamps();
 
             $table->primary(['idt_pessoa']);
         });
@@ -120,7 +118,6 @@ return new class extends Migration
                 ->constrained('tipo_restricao', 'idt_restricao');
             $table->boolean('ind_remedio_regular')->default(false);
             $table->text('txt_complemento')->nullable();
-            $table->timestamps();
             $table->softDeletes();
 
             $table->primary(['idt_pessoa', 'idt_restricao']);
@@ -143,6 +140,7 @@ return new class extends Migration
 
         // Tabela Presenca (Frequencia dos participantes nos eventos)
         Schema::create('presenca', function (Blueprint $table) {
+            $table->id('idt_presenca');
             $table->foreignId('idt_participante')
                 ->constrained('participante', 'idt_participante')
                 ->onDelete('cascade');
@@ -228,7 +226,7 @@ return new class extends Migration
             $table->string('tel_pai', 15)->nullable();
             $table->string('nom_mae', 150)->nullable();
             $table->string('tel_mae', 15)->nullable();
-            $table->timestamps();
+
             $table->primary(['idt_ficha']);
         });
 
@@ -242,7 +240,7 @@ return new class extends Migration
             $table->string('tel_conjuge', 15);
             $table->date('dat_nascimento_conjuge');
             $table->string('tam_camiseta_conjuge', 2);
-            $table->timestamps();
+
             $table->primary(['idt_ficha']);
         });
 
@@ -251,7 +249,7 @@ return new class extends Migration
             $table->foreignId('idt_ficha')
                 ->constrained('ficha', 'idt_ficha')
                 ->onDelete('cascade');
-            $table->timestamps();
+
             $table->primary(['idt_ficha']);
         });
 
@@ -263,7 +261,6 @@ return new class extends Migration
             $table->foreignId('idt_restricao')
                 ->constrained('tipo_restricao', 'idt_restricao');
             $table->text('txt_complemento')->nullable();
-            $table->timestamps();
 
             $table->unique(['idt_ficha', 'idt_restricao'], 'unique_ficha_saude');
         });
@@ -276,7 +273,6 @@ return new class extends Migration
             $table->foreignId('idt_situacao')
                 ->constrained('tipo_situacao', 'idt_situacao');
             $table->text('txt_analise')->nullable();
-            $table->timestamps();
 
             $table->unique(['idt_ficha', 'idt_situacao'], 'unique_ficha_situacao');
         });

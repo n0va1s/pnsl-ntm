@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 
-class PerfilUsuarioController extends Controller
+class RoleController extends Controller
 {
     public function index()
     {
         $perfis = User::all();
-        return view('configuracoes.PerfilUsuarioList', compact('perfis'));
+        return view('configuracoes.RoleList', compact('perfis'));
     }
 
 

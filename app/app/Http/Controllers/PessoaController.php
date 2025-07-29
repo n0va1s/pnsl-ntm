@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PessoaRequest;
 use App\Models\Pessoa;
 use App\Models\TipoRestricao;
-use App\Models\User;
 use App\Services\UserService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +17,7 @@ class PessoaController extends Controller
     {
         $search = $request->get('search');
 
-        $pessoas = Pessoa::with(['foto', 'usuario', 'saude'])
+        $pessoas = Pessoa::with(['foto', 'usuario', 'saude', 'parceiro'])
             ->when($search, function ($query, $search) {
                 return $query->where('nom_pessoa', 'like', "%{$search}%")
                     ->orWhere('nom_apelido', 'like', "%{$search}%");
@@ -41,9 +39,14 @@ class PessoaController extends Controller
             'txt_restricao'
         )->get();
 
+        $pessoasDisponiveis = Pessoa::whereNull('idt_parceiro')
+            ->orderBy('nom_pessoa')
+            ->get();
+
         return view('pessoa.form', [
             'pessoa' => $pessoa,
             'restricoes' => $restricoes,
+            'pessoasDisponiveis' => $pessoasDisponiveis,
         ]);
     }
 
@@ -60,13 +63,24 @@ class PessoaController extends Controller
         // Foto
         if ($request->hasFile('med_foto')) {
             $arquivo = $request->file('med_foto');
-            $caminho = $arquivo->store('fotos/pessoa/', 'public'); // pasta 'storage/app/public/fotos'
+            $caminho = $arquivo->store('fotos/pessoa', 'public'); // pasta 'storage/app/public/fotos/pessoa/'
 
             if ($pessoa->foto) {
                 $pessoa->foto()->update(['med_foto' => $caminho]);
             } else {
                 $pessoa->foto()->create(['med_foto' => $caminho]);
             }
+        }
+
+        // Parceiro
+        if ($request->input('idt_parceiro')) {
+            //$parceiro = Pessoa::find($request->input('idt_parceiro'));
+            $pessoa->idt_parceiro = $request->input('idt_parceiro');
+            $pessoa->save();
+            //if ($parceiro) {
+            //$parceiro->idt_parceiro = $pessoa->idt_pessoa; // O parceiro aponta para esta pessoa
+            //$parceiro->save();
+            //}
         }
 
         // Saude
@@ -100,9 +114,18 @@ class PessoaController extends Controller
             'txt_restricao'
         )->get();
 
+        $pessoasDisponiveis = Pessoa::whereNull('idt_parceiro')
+            ->when($pessoa->idt_parceiro, function ($query) use ($pessoa) {
+                $query->orWhere('idt_pessoa', $pessoa->idt_parceiro);
+            })
+            ->where('idt_pessoa', '!=', $pessoa->idt_pessoa) // Não pode ser parceira de si mesma
+            ->orderBy('nom_pessoa')
+            ->get();
+
         return view('pessoa.form', [
             'pessoa' => $pessoa,
             'restricoes' => $restricoes,
+            'pessoasDisponiveis' => $pessoasDisponiveis,
         ]);
     }
 
@@ -128,6 +151,16 @@ class PessoaController extends Controller
             }
         }
 
+        // Parceiro
+        if ($request->input('idt_parceiro')) {
+            //$parceiro = Pessoa::find($request->input('idt_parceiro'));
+            $pessoa->idt_parceiro = $request->input('idt_parceiro');
+            $pessoa->save();
+            //if ($parceiro) {
+            //$parceiro->idt_parceiro = $pessoa->idt_pessoa; // O parceiro aponta para esta pessoa
+            //$parceiro->save();
+            //}
+        }
 
         // Saude
         $pessoa->saude()->delete();

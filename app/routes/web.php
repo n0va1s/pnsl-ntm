@@ -15,7 +15,7 @@ use App\Http\Controllers\{
     TipoSituacaoController,
     TrabalhadorController,
     AniversarioController,
-    PerfilUsuarioController,
+    RoleController,
 };
 
 
@@ -38,6 +38,11 @@ Route::post(
 // Area Administrativa
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
+
+    Route::get(
+        '/timeline',
+        [EventoController::class, 'timeline']
+    )->name('timeline.index');
 
     Route::get(
         '/dashboard',
@@ -112,28 +117,25 @@ Route::middleware(['auth'])->group(function () {
         [TrabalhadorController::class, 'generate']
     )->name('quadrante.list');
 
-    Route::get('fichas-vem/approve/{id}', [FichaVemController::class, 'approve'])
-        ->name('fichas-vem.approve');
-    Route::get('fichas-ecc/approve/{id}', [FichaEccController::class, 'approve'])
-        ->name('fichas-ecc.approve');
-
+    Route::get('fichas/vem/approve/{id}', [FichaVemController::class, 'approve'])
+        ->name('vem.approve');
+    Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
+        ->name('ecc.approve');
 
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
 
-    Route::post('/perfilusuario', [PerfilUsuarioController::class, 'store'])->name('perfilusuario.store');
-
-    Route::post('/configuracoes/perfilusuario/change', [PerfilUsuarioController::class, 'change'])->name('perfilusuario.change');
-
+    Route::get('/configuracoes/role', [RoleController::class, 'index'])->name('role.index');
+    Route::post('/configuracoes/role', [RoleController::class, 'store'])->name('role.store');
+    Route::post('/configuracoes/role/change', [RoleController::class, 'change'])->name('role.change');
 
     Route::resources([
         'eventos' => EventoController::class,
-        'fichas-vem' => FichaVemController::class,
-        'fichas-ecc' => FichaEccController::class,
-        'tiposmovimentos' => TipoMovimentoController::class,
-        'tiporesponsavel' => TipoResponsavelController::class,
-        'tiposituacao' => TipoSituacaoController::class,
         'pessoas' => PessoaController::class,
-        'perfilusuario' => PerfilUsuarioController::class,
+        '/fichas/vem' => FichaVemController::class,
+        '/fichas/ecc' => FichaEccController::class,
+        '/configuracoes/movimento' => TipoMovimentoController::class,
+        '/configuracoes/responsavel' => TipoResponsavelController::class,
+        '/configuracoes/situacao' => TipoSituacaoController::class,
     ]);
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

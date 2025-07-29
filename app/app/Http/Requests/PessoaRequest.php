@@ -26,6 +26,7 @@ class PessoaRequest extends FormRequest
             'ind_consentimento' => ['boolean'],
             'ind_restricao' => ['boolean'],
             'med_foto' => ['nullable', 'image', 'max:2048'], // até 2MB
+            'idt_parceiro' => ['nullable', 'exists:pessoa,idt_pessoa'],
         ];
     }
 

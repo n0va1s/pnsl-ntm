@@ -169,6 +169,28 @@
                         @enderror
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Sexo da pessoa</p>
                     </div>
+
+                    <!-- Parceiro -->
+                    <div>
+                        <label for="idt_parceiro" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Parceiro(a) <span class="text-red-600">*</span>
+                        </label>
+                        <select id="idt_parceiro" name="idt_parceiro"
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 
+        @error('idt_parceiro') border-red-500 @enderror">
+                            <option value="">Selecione o parceiro(a)</option>
+                            @foreach ($pessoasDisponiveis as $disponivel)
+                                <option value="{{ $disponivel->idt_pessoa }}"
+                                    {{ old('idt_parceiro', $pessoa->idt_parceiro) == $disponivel->idt_pessoa ? 'selected' : '' }}>
+                                    {{ $disponivel->nom_pessoa }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('idt_parceiro')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">A pessoa da sua vida</p>
+                    </div>
                 </div>
 
                 <!-- Foto -->
@@ -189,8 +211,8 @@
 
                     @if (isset($pessoa) && $pessoa->foto)
                         <div class="mb-4">
-                            <img src="{{ asset('storage/fotos/pessoa/' . $pessoa->foto->med_foto) }}"
-                                alt="Foto da pessoa"
+                            <img src="{{ asset('storage/' . $pessoa->foto->med_foto) }}"
+                                alt="Foto de {{ $pessoa->nom_pessoa }}"
                                 class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600">
                         </div>
                     @endif
