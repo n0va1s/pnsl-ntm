@@ -77,28 +77,6 @@
         </div>
 
 
-        {{-- Botão de alternância de tema siples, colocar como balão flutuante futuramente --}}
-
-        {{-- <div class="flex items-center justify-center my-4">
-            <button
-            x-data="{ dark: $flux.appearance === 'dark' }"
-            @click="dark = !dark; $flux.appearance = dark ? 'dark' : 'light'"
-            :aria-pressed="dark"
-            type="button"
-            class="flex items-center gap-2 rounded-full p-2 transition-colors duration-200 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
-            >
-            <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.07l-.71.71M21 12h-1M4 12H3m16.66 5.66l-.71-.71M4.05 4.93l-.71-.71M12 5a7 7 0 100 14 7 7 0 000-14z" />
-            </svg>
-            <svg x-show="dark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-800 dark:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
-            </svg>
-            <span class="sr-only">
-                {{ __('Toggle dark mode') }}
-            </span>
-            </button>
-        </div> --}}
-
         <!-- Desktop User Menu -->
         <flux:dropdown class="hidden lg:block" position="bottom" align="start">
             <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
