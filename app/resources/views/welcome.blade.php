@@ -135,7 +135,7 @@
                         <h3 class="text-xl font-bold text-orange-600 dark:text-orange-400">Segue-Me</h3>
                         <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Jovens com Cristo</p>
                     </div>
-                    <a href=""
+                    <a href="{{ route('sgm.create') }}"
                         class="mt-4 inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-md transition">
                         Cadastrar Ficha Segue-Me
                     </a>
