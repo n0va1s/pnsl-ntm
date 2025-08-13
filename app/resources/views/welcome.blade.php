@@ -19,8 +19,8 @@
     <main class="flex-1 px-6 py-12 max-w-7xl mx-auto space-y-20">
         <header class="bg-white dark:bg-gray-900 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-                <h1 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                    NTM - Não Tenhais Medo
+                <h1 class="flex text-lg font-semibold text-gray-800 dark:text-gray-100 items-center">
+                   <x-app-logo />
                 </h1>
                 <div class="space-x-4">
                     <a href="/dashboard"
@@ -51,43 +51,63 @@
                 </p>
             </div>
             <div>
-            <div class="relative w-full max-w-2xl mx-auto overflow-hidden" id="carousel"">
-                <div id="carouselSlides" class="flex transition-transform duration-500 ">
-                    <img src="https://i.imgur.com/yXiQHE9.jpeg" class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img rounded-2xl" alt="Imagem 1">
-                    <img src="https://i.imgur.com/FdbulA4.jpeg" class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img rounded-2xl" alt="Imagem 2">
-                    <img src="https://i.imgur.com/piduEFx.jpeg" class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img rounded-2xl" alt="Imagem 3">
+            <div class="relative w-full max-w-2xl mx-auto overflow-hidden rounded-2xl" id="carousel">
+                <div id="carouselSlides" class="flex transition-transform duration-500">
+                    <img src="https://i.imgur.com/yXiQHE9.jpeg" class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img " alt="Imagem 1">
+                    <img src="https://i.imgur.com/FdbulA4.jpeg" class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img " alt="Imagem 2">
+                    <img src="https://i.imgur.com/piduEFx.jpeg" class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img " alt="Imagem 3">
                 </div>
 
+                <!-- Dots navigation -->
+                <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+                    <button onclick="showSlide(0)" class="w-3 h-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-blue-600" id="dot-0"></button>
+                    <button onclick="showSlide(1)" class="w-3 h-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-blue-600" id="dot-1"></button>
+                    <button onclick="showSlide(2)" class="w-3 h-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-blue-600" id="dot-2"></button>
+                </div>
 
-            <button onclick="prevSlide()"
-                class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-opacity-50 text-white p-3 text-2xl z-10 hover: transition cursor-pointer"
-                onmouseover="this.querySelector('svg').style.transform='scale(1.4)'"
-                onmouseout="this.querySelector('svg').style.transform='scale(1)'">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 19l-7-7 7-7" />
-                </svg>
-            </button>
+                <button onclick="prevSlide()"
+                    class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-opacity-50 text-white p-3 text-2xl z-10 hover: transition cursor-pointer"
+                    onmouseover="this.querySelector('svg').style.transform='scale(1.4)'"
+                    onmouseout="this.querySelector('svg').style.transform='scale(1)'">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
 
-            <button onclick="nextSlide()"
-                class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-opacity-50 text-white p-3 text-2xl z-10 hover:bg-opacity-70 transition cursor-pointer
-                onmouseover="this.querySelector('svg').style.transform='scale(1.4)'"
-                onmouseout="this.querySelector('svg').style.transform='scale(1)'">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 5l7 7-7 7" />
-            </button>
-
-</div>
+                <button onclick="nextSlide()"
+                    class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-opacity-50 text-white p-3 text-2xl z-10 hover:bg-opacity-70 transition cursor-pointer"
+                    onmouseover="this.querySelector('svg').style.transform='scale(1.4)'"
+                    onmouseout="this.querySelector('svg').style.transform='scale(1)'">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
 
             <script>
                 let index = 0;
                 const slides = document.getElementById('carouselSlides');
                 const totalSlides = slides.querySelectorAll('.carousel-img').length;
+                const dots = Array.from({length: totalSlides}, (_, i) => document.getElementById(`dot-${i}`));
+
+                function updateDots() {
+                    dots.forEach((dot, i) => {
+                        if (i === index) {
+                            dot.classList.add('bg-blue-600');
+                            dot.classList.remove('bg-gray-300');
+                        } else {
+                            dot.classList.add('bg-gray-300');
+                            dot.classList.remove('bg-blue-600');
+                        }
+                    });
+                }
 
                 function showSlide(i) {
                     index = (i + totalSlides) % totalSlides;
                     slides.style.transform = `translateX(-${index * 100}%)`;
+                    updateDots();
                 }
 
                 function nextSlide() {
@@ -117,8 +137,12 @@
 
                 <!-- Card VEM -->
                 <div
-                    class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col justify-between shadow-sm">
+                    class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col justify-between shadow-sm dark:bg-gray-800">
                     <div>
+                        <img
+                        src="https://i.imgur.com/JmjVysp.png"
+                        class="w-full h-64 md:h-30 object-cover flex-shrink-0 rounded-2xl"
+                        alt="Imagem 1">
                         <h3 class="text-xl font-bold text-blue-600 dark:text-blue-400">VEM</h3>
                         <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Adolescentes com Cristo</p>
                     </div>
@@ -130,8 +154,12 @@
 
                 <!-- Card Segue-Me -->
                 <div
-                    class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col justify-between shadow-sm">
+                    class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col justify-between shadow-sm dark:bg-gray-800">
                     <div>
+                         <img
+                        src="https://i.imgur.com/U3FfnPu.png"
+                        class="w-full h-64 md:h-30 object-contain flex-shrink-0 rounded-2xl"
+                        alt="Imagem 1">
                         <h3 class="text-xl font-bold text-orange-600 dark:text-orange-400">Segue-Me</h3>
                         <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Jovens com Cristo</p>
                     </div>
@@ -143,8 +171,12 @@
 
                 <!-- Card ECC -->
                 <div
-                    class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col justify-between shadow-sm">
+                    class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col justify-between shadow-sm dark:bg-gray-800">
                     <div>
+                         <img
+                        src="https://i.imgur.com/aaifcaH.png"
+                        class="w-full h-64 md:h-30 object-contain flex-shrink-0 rounded-2xl"
+                        alt="Imagem 1">
                         <h3 class="text-xl font-bold text-green-600 dark:text-green-400">ECC</h3>
                         <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Casais com Cristo</p>
                     </div>
@@ -391,6 +423,8 @@
             </a>
 
         </div>
+
+
     </footer>
 
 </body>
