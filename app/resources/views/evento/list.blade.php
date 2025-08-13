@@ -166,8 +166,15 @@
                             </form>
                         </div>
                     @else
+                        <a href="{{ route('trabalhadores.create', ['evento' => $evento->idt_evento]) }}"
+                                        class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-blue-500 text-white text-sm font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 tra    nsition duration-150"
+                                        title="Quero trabalhar neste evento">
+                                        <x-heroicon-o-information-circle class="w-6 h-6" />
+                                        Mais informações
+                        </a>
                         @if ($evento->ind_pos_encontro)
                             <div class="mt-4">
+
                                 @if ($confirmado)
                                     <div
                                         class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-gray-300 text-gray-700 text-sm font-semibold cursor-default">
