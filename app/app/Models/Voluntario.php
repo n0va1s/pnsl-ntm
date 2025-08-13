@@ -11,13 +11,14 @@ class Voluntario extends Model
 
     protected $table = 'voluntario';
     protected $primaryKey = 'idt_voluntario';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_pessoa',
         'idt_evento',
         'idt_equipe',
-        'txt_candidatura',
+        'idt_trabalhador', // para saber quem ja foi confirmado como trabalhador
+        'txt_habilidade',
     ];
 
     public function pessoa()
@@ -37,17 +38,35 @@ class Voluntario extends Model
 
     public static function listarAgrupadoPorPessoa(int $idt_evento)
     {
-        return self::with(['pessoa', 'equipe'])
-            ->where('idt_evento', $idt_evento)
-            ->get()
-            ->groupBy('idt_pessoa')
-            ->map(function ($registros) {
-                $primeiro = $registros->first();
+        // A ideia é selecionar as pessoas que são voluntárias para o evento
+        // e ainda não foram confirmadas como trabalhadores.
+        // Depois, carregar as equipes e habilidades diretamente para cada pessoa.
 
+        return Pessoa::with([
+            'voluntarios' => function ($query) use ($idt_evento) {
+                $query->where('idt_evento', $idt_evento)
+                    ->whereNull('idt_trabalhador')
+                    ->with('equipe')
+                    ->select('idt_pessoa', 'idt_equipe', 'txt_habilidade', 'idt_voluntario');
+            }
+        ])
+            ->whereHas('voluntarios', function ($query) use ($idt_evento) {
+                $query->where('idt_evento', $idt_evento)
+                    ->whereNull('idt_trabalhador');
+            })
+            ->get()
+            ->map(function ($pessoa) {
+                // Transforma o objeto Pessoa para o formato desejado, agrupando as equipes
                 return (object) [
-                    'idt_voluntario' => $primeiro->idt_voluntario,
-                    'pessoa' => $primeiro->pessoa,
-                    'equipes' => $registros->map(fn($v) => $v->equipe)->unique('idt_equipe'),
+                    'idt_voluntario' => $pessoa->voluntarios->first()->idt_voluntario ?? null, // Pega o ID do primeiro voluntário para a pessoa
+                    'pessoa' => $pessoa,
+                    'equipes' => $pessoa->voluntarios->map(function ($voluntario) {
+                        return (object) [
+                            'idt_equipe' => $voluntario->equipe->idt_equipe,
+                            'des_grupo' => $voluntario->equipe->des_grupo,
+                            'txt_habilidade' => $voluntario->txt_habilidade,
+                        ];
+                    })->unique('idt_equipe')->values(),
                 ];
             })
             ->values();

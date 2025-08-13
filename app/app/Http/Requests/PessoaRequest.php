@@ -21,11 +21,12 @@ class PessoaRequest extends FormRequest
             'des_endereco' => ['nullable', 'string', 'min:10', 'max:255'],
             'eml_pessoa' => ['required', 'email', 'max:255'],
             'tam_camiseta' => ['required', 'string', 'in:PP,P,M,G,GG,EG'],
-            'tip_genero' => ['required', 'string', 'in:m,f,n'], // m=masculino, f=feminino, n=não informado
+            'tip_genero' => ['required', 'string', 'in:M,F,O'], // m=masculino, f=feminino, n=não informado
             'ind_toca_violao' => ['boolean'],
             'ind_consentimento' => ['boolean'],
             'ind_restricao' => ['boolean'],
             'med_foto' => ['nullable', 'image', 'max:2048'], // até 2MB
+            'idt_parceiro' => ['nullable', 'exists:pessoa,idt_pessoa'],
         ];
     }
 

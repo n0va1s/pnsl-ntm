@@ -5,7 +5,7 @@
             <p class="text-gray-700 mt-1">Cadastre uma nova ficha para um dos nossos eventos próximos</p>
         </div>
         <div class="flex justify-end mt-4">
-            <a href="{{ route('fichas-vem.index') }}"
+            <a href="{{ route('vem.index') }}"
                 class="inline-flex items-center px-4 py-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
                 aria-label="Voltar para a lista de fichas">
                 <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
@@ -13,8 +13,7 @@
             </a>
         </div>
         <form method="POST" x-data="{ bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }} }"
-            action="{{ $ficha->exists ? route('fichas-vem.update', $ficha) : route('fichas-vem.store') }}"
-            class="space-y-8">
+            action="{{ $ficha->exists ? route('vem.update', $ficha) : route('vem.store') }}" class="space-y-8">
             @csrf
             @if ($ficha->exists)
                 @method('PUT')
@@ -511,7 +510,7 @@
                     Salvar
                 </button>
                 @if ($ficha->exists)
-                    <a href="{{ route('fichas-vem.approve', $ficha->idt_ficha) }}"
+                    <a href="{{ route('vem.approve', $ficha->idt_ficha) }}"
                         class="inline-flex items-center px-4 py-2 bg-{{ $ficha->ind_aprovado ? 'red-500 hover:bg-red-600' : 'green-500 hover:bg-green-600' }} text-white font-medium rounded-md shadow-sm transition duration-150 ease-in-out">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">

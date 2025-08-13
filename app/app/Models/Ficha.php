@@ -70,6 +70,11 @@ class Ficha extends Model
         return $this->hasOne(FichaEcc::class, 'idt_ficha');
     }
 
+    public function fichaSGM()
+    {
+        return $this->hasOne(FichaSGM::class, 'idt_ficha');
+    }
+
     public function fichaSaude()
     {
         return $this->hasMany(FichaSaude::class, 'idt_ficha');

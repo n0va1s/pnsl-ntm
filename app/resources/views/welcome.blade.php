@@ -50,11 +50,62 @@
                     Francisco para encorajar os jovens de todo o mundo para que não tenham medo de buscar a Cristo.
                 </p>
             </div>
-            <div class="md:w-1/2 flex justify-center md:justify-end h-72 md:h-auto">
-                <img src="https://www.vaticannews.va/content/dam/vaticannews/multimedia/2023/07/28/PORTUGAL-JMJ.jpg/_jcr_content/renditions/cq5dam.thumbnail.cropped.1500.844.jpeg"
-                    alt="Jovem na Jornada Mundial da Juventude"
-                    class="rounded-xl shadow-lg w-full h-72 md:h-full object-cover border border-gray-200 dark:border-gray-700">
-            </div>
+            <div>
+            <div class="relative w-full max-w-2xl mx-auto overflow-hidden" id="carousel"">
+                <div id="carouselSlides" class="flex transition-transform duration-500 ">
+                    <img src="https://i.imgur.com/yXiQHE9.jpeg" class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img rounded-2xl" alt="Imagem 1">
+                    <img src="https://i.imgur.com/FdbulA4.jpeg" class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img rounded-2xl" alt="Imagem 2">
+                    <img src="https://i.imgur.com/piduEFx.jpeg" class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img rounded-2xl" alt="Imagem 3">
+                </div>
+
+
+            <button onclick="prevSlide()"
+                class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-opacity-50 text-white p-3 text-2xl z-10 hover: transition cursor-pointer"
+                onmouseover="this.querySelector('svg').style.transform='scale(1.4)'"
+                onmouseout="this.querySelector('svg').style.transform='scale(1)'">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
+            <button onclick="nextSlide()"
+                class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-opacity-50 text-white p-3 text-2xl z-10 hover:bg-opacity-70 transition cursor-pointer
+                onmouseover="this.querySelector('svg').style.transform='scale(1.4)'"
+                onmouseout="this.querySelector('svg').style.transform='scale(1)'">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5l7 7-7 7" />
+            </button>
+
+</div>
+
+            <script>
+                let index = 0;
+                const slides = document.getElementById('carouselSlides');
+                const totalSlides = slides.querySelectorAll('.carousel-img').length;
+
+                function showSlide(i) {
+                    index = (i + totalSlides) % totalSlides;
+                    slides.style.transform = `translateX(-${index * 100}%)`;
+                }
+
+                function nextSlide() {
+                    showSlide(index + 1);
+                }
+
+                function prevSlide() {
+                    showSlide(index - 1);
+                }
+
+                setInterval(() => {
+                    nextSlide();
+                }, 7000);
+
+                showSlide(index);
+            </script>
+
+
         </section>
 
         <!-- Seção: Movimentos -->
@@ -71,7 +122,7 @@
                         <h3 class="text-xl font-bold text-blue-600 dark:text-blue-400">VEM</h3>
                         <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Adolescentes com Cristo</p>
                     </div>
-                    <a href="{{ route('fichas-vem.create') }}"
+                    <a href="{{ route('vem.create') }}"
                         class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition">
                         Cadastrar Ficha VEM
                     </a>
@@ -84,7 +135,7 @@
                         <h3 class="text-xl font-bold text-orange-600 dark:text-orange-400">Segue-Me</h3>
                         <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Jovens com Cristo</p>
                     </div>
-                    <a href=""
+                    <a href="{{ route('sgm.create') }}"
                         class="mt-4 inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-md transition">
                         Cadastrar Ficha Segue-Me
                     </a>
@@ -97,7 +148,7 @@
                         <h3 class="text-xl font-bold text-green-600 dark:text-green-400">ECC</h3>
                         <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Casais com Cristo</p>
                     </div>
-                    <a href="{{ route('fichas-ecc.create') }}"
+                    <a href="{{ route('ecc.create') }}"
                         class="mt-4 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md transition">
                         Cadastrar Ficha ECC
                     </a>
@@ -109,34 +160,44 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto my-16 px-4">
             <!-- FAQ VEM -->
             <section class="max-w-full bg-blue-50 dark:bg-blue-900 rounded-xl p-6 shadow">
-                <h4 class="font-bold text-blue-600 mb-8">Perguntas Frequentes - VEM</h4>
+                <h4 class="font-bold text-blue-600 mb-8 dark:text-blue-400">Perguntas Frequentes - VEM</h4>
                 <div class="space-y-4">
                     <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                        <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium">
+                        <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                             Quem pode participar do VEM?
                             <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <p class="mt-2 text-gray-700 dark:text-gray-100">Jovens solteiros entre 11 e 15 anos que
+                        <p class="mt-2 text-gray-700 dark:text-gray-100">Jovens solteiros entre 12 e 15 anos que
                             desejam iniciar sua caminhada cristã.</p>
+                    </details>
+                    <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                        <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                            Quanto tempo acontece o VEM?
+                            <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <p class="mt-2 text-gray-700 dark:text-gray-100">O VEM é um movimento que acontece há mais de 30 anos.</p>
                     </details>
                 </div>
             </section>
             <!-- FAQ Segue-Me -->
             <section class="max-w-full bg-orange-50 dark:bg-orange-900 rounded-xl p-6 shadow">
-                <h4 class="font-bold text-orange-600 mb-8">Perguntas Frequentes - Segue-Me</h4>
+                <h4 class="font-bold text-orange-600 mb-8 dark:text-orange-400">Perguntas Frequentes - Segue-Me</h4>
                 <div class="space-y-4">
                     <details class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-800">
-                        <summary class="flex justify-between items-center cursor-pointer text-orange-700 font-medium">
+                        <summary class="flex justify-between items-center cursor-pointer text-orange-700 font-medium dark:text-orange-400">
                             Quem pode participar do Segue-Me?
                             <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <p class="mt-2 text-gray-700 dark:text-gray-100">Jovens solteiros entre 17 e 30 anos que
+                        <p clas="mt-2 text-gray-700 dark:text-gray-100">Jovens solteiros entre 17 e 30 anos que
                             desejam aprofundar sua caminhada cristã.</p>
                     </details>
                 </div>
@@ -144,10 +205,10 @@
 
             <!-- FAQ Segue-Me -->
             <section class="max-w-full bg-green-50 dark:bg-green-900 rounded-xl p-6 shadow">
-                <h4 class="font-bold text-green-600 mb-8">Perguntas Frequentes - ECC</h4>
+                <h4 class="font-bold text-green-600 mb-8 dark:text-green-200">Perguntas Frequentes - ECC</h4>
                 <div class="space-y-4">
                     <details class="group border border-green-200 rounded-lg p-4 bg-white dark:bg-green-800">
-                        <summary class="flex justify-between items-center cursor-pointer text-green-700 font-medium">
+                        <summary class="flex justify-between items-center cursor-pointer text-green-700 font-medium dark:text-green-600">
                             Quem pode participar do ECC?
                             <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-green-600"
                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -164,27 +225,41 @@
             <div class="md:col-span-3">
                 <section class="max-w-3xl mx-auto mt-24 px-4">
                     <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Próximos Eventos</h2>
+                    {{-- Lista de eventos --}}
                     <ul class="space-y-4">
                         @forelse ($proximoseventos as $evento)
+                            @php
+                                $sigla = $evento->movimento?->des_sigla;
+                                $badgeClasses = match ($sigla) {
+                                    'VEM' => 'bg-blue-100 text-blue-700',
+                                    'Segue-Me' => 'bg-orange-100 text-orange-700',
+                                    'ECC' => 'bg-green-100 text-green-700',
+                                    default => 'bg-gray-100 text-gray-600',
+                                };
+                            @endphp
                             <li
-                                class="flex items-start gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-                                <svg class="w-6 h-6 mt-1" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
-                                        {{ $evento->des_evento }}</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">
-                                        {{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('d \d\e F \d\e Y') }}
-                                    </p>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">
-                                        {{ $evento->movimento?->des_sigla }}</p>
+                                class="flex items-start gap-4 p-4 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+                                <x-heroicon-o-calendar class="w-6 h-6 text-blue-500 mt-1" />
+                                <div class="flex-1 flex flex-col w-full">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-base font-medium text-gray-900 dark:text-white">
+                                            {{ $evento->des_evento }}
+                                        </h3>
+
+                                        <span
+                                            class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeClasses }}">
+                                            {{ $sigla }}
+                                        </span>
+                                    </div>
+
+                                    {{-- Informações adicionais --}}
+                                    <span class="text-sm text-gray-600 dark:text-gray-300">
+                                        {{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('d/m/Y') }}
+                                    </span>
                                 </div>
                             </li>
                         @empty
-                            <li class="text-gray-600 dark:text-gray-300">Nenhum evento encontrado</li>
+                            <li class="text-gray-600 dark:text-gray-300">Nenhum evento encontrado.</li>
                         @endforelse
                     </ul>
                 </section>
@@ -208,11 +283,13 @@
 
                         <!-- Nome -->
                         <div>
-                            <label for="nom_contato"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome *</label>
+                            <label for="nom_contato" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Nome <span class="text-red-600 dark:text-red-400">*</span>
+                            </label>
                             <input type="text" name="nom_contato" id="nom_contato" required
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         </div>
+
 
                         <!-- Email -->
                         <div>
@@ -225,7 +302,8 @@
                         <!-- Telefone -->
                         <div>
                             <label for="tel_contato"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Telefone *</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Telefone <span class="text-red-600 dark:text-red-400">*</span>
+                            </label>
                             <input type="tel" name="tel_contato" id="tel_contato" required
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         </div>
@@ -233,9 +311,10 @@
                         <!-- Movimento -->
                         <div>
                             <label for="idt_movimento"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Movimento *</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Movimento <span class="text-red-600 dark:text-red-400">*</span>
+                            </label>
                             <select name="idt_movimento" id="idt_movimento" required
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-100">
                                 <option value="">Selecione um movimento</option>
                                 @foreach ($movimentos as $movimento)
                                     <option value="{{ $movimento->idt_movimento }}">{{ $movimento->des_sigla }}
@@ -247,7 +326,8 @@
                         <!-- Mensagem -->
                         <div>
                             <label for="txt_mensagem"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mensagem *</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mensagem <span class="text-red-600 dark:text-red-400">*</span>
+                            </label>
                             <textarea name="txt_mensagem" id="txt_mensagem" rows="4" required
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
                         </div>

@@ -10,10 +10,7 @@ class TipoSituacao extends Model
     use HasFactory;
 
     protected $table = 'tipo_situacao';
-
     protected $primaryKey = 'idt_situacao';
-
-    public $timestamps = false;
 
     const CADASTRADA = 1;
 

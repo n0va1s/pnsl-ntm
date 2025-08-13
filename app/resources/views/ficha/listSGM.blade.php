@@ -1,14 +1,13 @@
-<x-layouts.app :title="'Ficha do ECC'">
+<x-layouts.app :title="'Ficha do Segue-me'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
 
         {{-- Alerta de sucesso/erro --}}
         <div>
             <x-session-alert />
         </div>
-
         {{-- Título e subtítulo --}}
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Fichas do ECC</h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Fichas do Segue-me</h1>
             @if ($evento?->exists)
                 <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
                     Evento: <strong>{{ $evento->des_evento }}</strong>
@@ -19,7 +18,7 @@
         {{-- Filtro e ações --}}
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             {{-- Busca --}}
-            <form method="GET" action="{{ route('ecc.index') }}" class="flex items-center gap-2 w-full max-w-md">
+            <form method="GET" action="{{ route('sgm.index') }}" class="flex items-center gap-2 w-full max-w-md">
                 <input type="text" name="search" id="search" value="{{ $search }}"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Buscar por nome ou apelido" />
@@ -31,7 +30,7 @@
                 </button>
 
                 @if ($search)
-                    <a href="{{ route('ecc.index') }}"
+                    <a href="{{ route('sgm.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md">
                         <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
                         Limpar
@@ -41,7 +40,7 @@
 
             {{-- Botões --}}
             <div class="flex items-center gap-2 self-end sm:self-auto">
-                <a href="{{ route('ecc.create') }}"
+                <a href="{{ route('sgm.create') }}"
                     class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     <x-heroicon-s-plus class="w-5 h-5 mr-2" />
                     Nova Ficha
@@ -90,12 +89,12 @@
                                     @endif
                                 </td>
                                 <td class="p-3 flex justify-end items-center gap-2">
-                                    <a href="{{ route('ecc.edit', $ficha) }}"
+                                    <a href="{{ route('sgm.edit', $ficha) }}"
                                         class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 px-2 py-1 rounded-md">
                                         <x-heroicon-o-pencil-square class="w-5 h-5" />
                                         <span class="sr-only sm:not-sr-only">Editar</span>
                                     </a>
-                                    <form method="POST" action="{{ route('ecc.destroy', $ficha) }}"
+                                    <form method="POST" action="{{ route('sgm.destroy', $ficha) }}"
                                         onsubmit="return confirm('Tem certeza que deseja excluir esta ficha?');">
                                         @csrf
                                         @method('DELETE')
@@ -116,7 +115,7 @@
                     <div
                         class="flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-800 rounded-xl shadow border border-dashed border-gray-300 dark:border-zinc-600">
                         <x-heroicon-o-document-text class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
-                        <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Nenhuma ficha do ECC encontrada
+                        <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Nenhuma ficha do VEM encontrada
                         </p>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             Quando houver fichas cadastradas, elas aparecerão aqui.
@@ -131,3 +130,4 @@
         </div>
     </section>
 </x-layouts.app>
+

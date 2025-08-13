@@ -5,12 +5,12 @@
             <p class="text-gray-700 mt-1">Cadastre um novo evento ou atividade de pós-encontro</p>
         </div>
         <div class="flex justify-end mt-4">
-            <a href="{{ route('eventos.index') }}"
-                class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                aria-label="Voltar para a lista de eventos">
+            <div class="flex justify-end mt-4">
+            <x-botao-navegar href="{{ route('eventos.index') }}" aria-label="Voltar para a lista de eventos">
                 <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
                 Eventos
-            </a>
+            </x-botao-navegar>
+        </div>
         </div>
         <div class="mb-6 bg-white dark:bg-zinc-800 rounded-md shadow p-6">
             <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100">

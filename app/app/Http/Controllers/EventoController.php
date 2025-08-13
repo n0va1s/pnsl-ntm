@@ -7,17 +7,29 @@ use App\Models\Evento;
 use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\TipoMovimento;
-use App\Models\User;
+use App\Models\Trabalhador;
 use App\Models\Voluntario;
+use App\Services\EventoService;
 use App\Services\UserService;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class EventoController extends Controller
 {
+
+    protected $service;
+
+    // Injeção de dependência do EventoService
+    public function __construct(EventoService $eventoService)
+    {
+        $this->service = $eventoService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -25,16 +37,20 @@ class EventoController extends Controller
     {
         $search = $request->get('search');
 
-        //TODO: substituir pela app() instance
+        // Obter ou criar a pessoa vinculada ao usuário logado
+        // A linha "TODO: substituir pela app() instance" está OK,
         $pessoa = UserService::createPessoaFromLoggedUser();
 
-        // Buscar os eventos ja inscritos da pessoa
+        $posEncontrosInscritos = [];
+        $eventosInscritos = [];
+
         if ($pessoa) {
-            $participacoes = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+            $posEncontrosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
                 ->pluck('idt_evento')
                 ->toArray();
 
-            $eventosFeitos = Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
+            // Esta parte já está correta, busca os IDs dos eventos que a pessoa se voluntariou
+            $eventosInscritos = Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
                 ->pluck('idt_evento')
                 ->toArray();
         }
@@ -42,10 +58,14 @@ class EventoController extends Controller
         $eventos = Evento::with(['movimento'])
             ->withCount([
                 'fichas',
-                'voluntarios',
+                'voluntarios as voluntarios_count' => function ($query) {
+                    $query->select(DB::raw('count(DISTINCT idt_pessoa)')) // idt_pessoa idt_evento idt_equipe
+                        ->whereNull('idt_trabalhador'); // voluntario ainda nao confirmados como trabalhador
+                },
                 'trabalhadores',
                 'participantes'
-            ])->when($search, function ($query, $search) {
+            ])
+            ->when($search, function ($query, $search) {
                 return $query->search($search);
             })
             ->orderBy('created_at', 'desc')
@@ -58,8 +78,8 @@ class EventoController extends Controller
                 'eventos',
                 'search',
                 'pessoa',
-                'participacoes',
-                'eventosFeitos'
+                'posEncontrosInscritos',
+                'eventosInscritos'
             )
         );
     }
@@ -134,6 +154,7 @@ class EventoController extends Controller
             ->with('success', 'Evento atualizado com sucesso!');
     }
 
+    // Confirmar a participacao de uma pessoa em um evento
     public function confirm(Evento $evento, Pessoa $pessoa): RedirectResponse
     {
 
@@ -146,6 +167,20 @@ class EventoController extends Controller
             ->route('eventos.index')
             ->with('success', 'Sua participação  foi confirmada. Até lá!');
     }
+
+    public function timeline(): View
+    {
+        // Obtém a pessoa do usuário logado usando seu UserService existente
+        $pessoa = UserService::createPessoaFromLoggedUser(); // Assumindo que este método existe e retorna uma instância de Pessoa
+
+        $timeline = $this->service->getEventosTimeline($pessoa);
+        $pontuacaoTotal = $this->service->calcularPontuacao($pessoa);
+        $posicaoNoRanking = $this->service->calcularRanking($pessoa);
+
+        // Passa os dados para a view
+        return view('evento.linhadotempo', compact('timeline', 'pontuacaoTotal', 'posicaoNoRanking', 'pessoa'));
+    }
+
 
     /**
      * Remove the specified resource from storage.
