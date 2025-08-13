@@ -7,6 +7,7 @@ use App\Http\Controllers\{
     EventoController,
     FichaVemController,
     FichaEccController,
+    FichaSGMController,
     HomeController,
     ParticipanteController,
     PessoaController,
@@ -121,6 +122,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('vem.approve');
     Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
         ->name('ecc.approve');
+    Route::get('fichas/ecc/approve/{id}', [FichaSGMController::class, 'approve'])
+        ->name('sgm.approve');
 
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
 
@@ -133,6 +136,7 @@ Route::middleware(['auth'])->group(function () {
         'pessoas' => PessoaController::class,
         '/fichas/vem' => FichaVemController::class,
         '/fichas/ecc' => FichaEccController::class,
+        '/fichas/sgm' => FichaSGMController::class,
         '/configuracoes/movimento' => TipoMovimentoController::class,
         '/configuracoes/responsavel' => TipoResponsavelController::class,
         '/configuracoes/situacao' => TipoSituacaoController::class,
