@@ -23,7 +23,8 @@ class EventoRequest extends FormRequest
     {
         return [
             'idt_movimento' => 'required|exists:tipo_movimento,idt_movimento',
-            'des_evento' => 'required|string|max:255',
+            'des_evento' => 'required|string|max:50',
+            'inf_evento' => 'nullable|string|max:500',
             'num_evento' => 'nullable|string|max:5',
             'dat_inicio' => 'required|date',
             'dat_termino' => 'nullable|date|after_or_equal:dat_inicio',
@@ -47,6 +48,7 @@ class EventoRequest extends FormRequest
             'idt_movimento.required' => 'O movimento é obrigatório.',
             'des_evento.required' => 'A descrição do evento é obrigatória.',
             'des_evento.max' => 'A descrição do evento não pode ter mais de 255 caracteres.',
+            'inf_evento.max' => 'A informação do evento não pode ter mais de 500 caracteres.',
             'num_evento.string' => 'O número do evento deve ser um texto.',
             'num_evento.max' => 'O número do evento não pode ter mais de 5 caracteres.',
             'dat_inicio.required' => 'A data de início é obrigatória',
@@ -66,6 +68,7 @@ class EventoRequest extends FormRequest
     {
         return [
             'des_evento' => 'descrição do evento',
+            'inf_evento' => 'informação do evento',
             'num_evento' => 'número do evento',
             'dat_inicio' => 'data de início',
             'dat_termino' => 'data de término',

@@ -57,7 +57,8 @@ return new class extends Migration
             $table->id('idt_evento');
             $table->foreignId('idt_movimento')
                 ->constrained('tipo_movimento', 'idt_movimento');
-            $table->string('des_evento', 255);
+            $table->string('des_evento', 50);
+            $table->string('inf_evento', 500)->nullable();
             $table->string('num_evento', 5)->nullable();
             $table->date('dat_inicio');
             $table->date('dat_termino')->nullable();
