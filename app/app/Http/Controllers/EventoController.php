@@ -120,6 +120,27 @@ class EventoController extends Controller
         return view('evento.form', compact('evento'));
     }
 
+    public function info(Evento $evento)
+    {
+        $pessoa = UserService::createPessoaFromLoggedUser();
+
+        $posEncontrosInscritos = [];
+        $eventosInscritos = [];
+
+        if ($pessoa) {
+            $posEncontrosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+                ->pluck('idt_evento')
+                ->toArray();
+
+            // Esta parte já está correta, busca os IDs dos eventos que a pessoa se voluntariou
+            $eventosInscritos = Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
+                ->pluck('idt_evento')
+                ->toArray();
+        }
+
+        return view('evento.info', compact('evento', 'pessoa', 'posEncontrosInscritos', 'eventosInscritos'));
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

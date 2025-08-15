@@ -16,6 +16,7 @@ class Evento extends Model
     protected $fillable = [
         'idt_movimento',
         'des_evento',
+        'inf_evento',
         'num_evento',
         'dat_inicio',
         'dat_termino',
