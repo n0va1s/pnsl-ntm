@@ -1,5 +1,6 @@
 <x-layouts.app :title="'Informações do Evento'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
+
         <div class=" flex mb-6 gap-4 items-center ">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Informações do Evento</h1>
             <div>
@@ -29,16 +30,17 @@
             </span>
             </div>
         </div>
-
-        <!-- Botão para voltar à lista de eventos -->
-        <div class="flex justify-end mt-4">
+        <div class="flex justify-end mt-4 mb-6">
             <x-botao-navegar href="{{ route('eventos.index') }}" aria-label="Voltar para a lista de eventos">
                 <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
                 Eventos
             </x-botao-navegar>
         </div>
+    
 
-        <div class="mb-6 bg-white dark:bg-zinc-800 rounded-md shadow p-6">
+        <!-- Botão para voltar à lista de eventos -->
+
+        <div class="mb-6 bg-white dark:bg-zinc-700 rounded-md shadow p-6">
             <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100">
                 <i class="bi bi-info-circle text-blue-600 text-2xl"></i> Detalhes do Evento
             </h2>
@@ -49,7 +51,7 @@
                             Nome do Evento
                         </label>
                         <div
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
+                            class="w-full rounded-md dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 text-2xl">
                             {{ $evento->des_evento }}
                         </div>
                 </div>
@@ -59,7 +61,7 @@
                     </label>
 
                     <div
-                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
+                        class="w-full rounded-md  dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 text-2xl">
                         {{ $evento->num_evento }}
                     </div>
                 </div>
@@ -79,7 +81,7 @@
                     <label for="dat_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Data de Início do Evento
                     </label>
-                    <div class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
+                    <div class="w-full rounded-md dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 text-2xl">
                         {{ \Carbon\Carbon::parse($evento->dat_inicio)->format('d/m/Y') }}
                     </div>
                 </div>
@@ -87,7 +89,7 @@
                     <label for="dat_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Data de Término do Evento
                     </label>
-                    <div class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
+                    <div class="w-full rounded-md  dark:border-zinc-400 px-3 py-2 text-gray-900 dark:text-gray-100 text-2xl">
                         {{ \Carbon\Carbon::parse($evento->dat_termino)->format('d/m/Y') }}
                     </div>
                 </div>
