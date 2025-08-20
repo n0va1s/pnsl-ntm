@@ -7,7 +7,6 @@ use App\Models\TipoMovimento;
 use App\Http\Requests\EventoRequest;
 use App\Models\Participante;
 use App\Models\Pessoa;
-use App\Models\Voluntario;
 use App\Services\EventoService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -49,12 +48,13 @@ class EventoController extends Controller
 
         $posEncontrosInscritos = [];
         $eventosInscritos = [];
+        $desafiosInscritos = [];
 
         // Verifica se o usuário está logado para popular as listas de eventos inscritos
         if ($pessoa) {
             $posEncontrosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
                 ->whereHas('evento', function ($query) {
-                    $query->where('ind_pos_encontro', true);
+                    $query->where('tip_encontro', 'P');
                 })
                 ->get()
                 ->pluck('idt_evento')
@@ -62,7 +62,15 @@ class EventoController extends Controller
 
             $eventosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
                 ->whereHas('evento', function ($query) {
-                    $query->where('ind_pos_encontro', false);
+                    $query->where('tip_encontro', 'E');
+                })
+                ->get()
+                ->pluck('idt_evento')
+                ->toArray();
+
+            $desafiosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+                ->whereHas('evento', function ($query) {
+                    $query->where('tip_encontro', 'D');
                 })
                 ->get()
                 ->pluck('idt_evento')
@@ -75,9 +83,16 @@ class EventoController extends Controller
             $query->search($search);
         }
 
-        $eventos = $query->paginate(10);
+        $eventos = $query->paginate(12);
 
-        return view('evento.list', compact('eventos', 'search', 'posEncontrosInscritos', 'eventosInscritos', 'pessoa'));
+        return view('evento.list', compact(
+            'eventos',
+            'search',
+            'posEncontrosInscritos',
+            'eventosInscritos',
+            'desafiosInscritos',
+            'pessoa'
+        ));
     }
 
     /**

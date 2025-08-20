@@ -21,7 +21,7 @@ class EventoService
      */
     public function getEventosTimeline(Pessoa $pessoa): array
     {
-        $trabalhadorEntries = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
+        $trabalhadorEventos = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
             ->whereHas('evento', fn($query) => $query->whereNotNull('dat_inicio'))
             ->with(['evento.movimento', 'equipe'])
             ->get()
@@ -37,7 +37,7 @@ class EventoService
                 ],
             ]);
 
-        $participanteEntries = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+        $participanteEventos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
             ->whereHas('evento', fn($query) => $query->whereNotNull('dat_inicio'))
             ->with('evento.movimento')
             ->get()
@@ -49,7 +49,7 @@ class EventoService
                 'details' => [],
             ]);
 
-        $allEntries = $trabalhadorEntries->concat($participanteEntries)->sortByDesc('date');
+        $allEntries = $trabalhadorEventos->concat($participanteEventos)->sortByDesc('date');
 
         return $this->agruparEventosPorDecadaEAno($allEntries);
     }
@@ -62,46 +62,57 @@ class EventoService
      */
     public function calcularPontuacao(Pessoa $pessoa): int
     {
-        $trabalhadorEvents = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
-            ->whereHas('evento', fn($q) => $q->whereNotNull('dat_inicio'))
+        $trabalhadorEventos = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->whereHas('evento', fn($q) => $q->where('tip_evento', 'E'))
             ->with('evento')
             ->get();
 
-        $participanteEvents = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
-            ->whereHas('evento', fn($q) => $q->whereNotNull('dat_inicio'))
+        $participanteEventos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->whereHas('evento', fn($q) => $q->where('tip_evento', 'P'))
             ->with('evento')
             ->get();
 
-        $allEvents = $trabalhadorEvents->map(fn($entry) => [
+        $desafioEventos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->whereHas('evento', fn($q) => $q->where('tip_evento', 'D'))
+            ->with('evento')
+            ->get();
+
+        $todosEventos = $trabalhadorEventos->map(fn($entry) => [
             'type' => 'Trabalhador',
             'date' => Carbon::parse($entry->evento->dat_inicio),
             'is_coordenador' => (bool)$entry->ind_coordenador,
-        ])->concat($participanteEvents->map(fn($entry) => [
+        ])->concat($participanteEventos->map(fn($entry) => [
             'type' => 'Participante',
+            'date' => Carbon::parse($entry->evento->dat_inicio),
+            'is_coordenador' => false,
+        ]))->concat($desafioEventos->map(fn($entry) => [
+            'type' => 'Desafio',
             'date' => Carbon::parse($entry->evento->dat_inicio),
             'is_coordenador' => false,
         ]));
 
-        $sortedEvents = $allEvents->sortBy('date');
-        $score = 0;
-        $isFirstEventOverall = true;
+        $ordenados = $todosEventos->sortBy('date');
+        $pontuacao = 0;
+        $isPrimeiraVez = true;
 
-        foreach ($sortedEvents as $eventData) {
-            if ($isFirstEventOverall) {
-                $score += 10;
-                $isFirstEventOverall = false;
+        foreach ($ordenados as $evento) {
+            if ($isPrimeiraVez) {
+                $pontuacao += 5;
+                $isPrimeiraVez = false;
             }
 
-            if ($eventData['type'] === 'Participante') {
-                $score += 1;
-            } elseif ($eventData['type'] === 'Trabalhador') {
-                $score += 2;
-                if ($eventData['is_coordenador']) {
-                    $score += 1;
+            if ($evento['type'] === 'Participante') {
+                $pontuacao += 1;
+            } elseif ($evento['type'] === 'Trabalhador') {
+                $pontuacao += 2;
+                if ($evento['is_coordenador']) {
+                    $pontuacao += 5;
                 }
+            } elseif ($evento['type'] === 'Desafio') {
+                $pontuacao += 3;
             }
         }
-        return $score;
+        return $pontuacao;
     }
 
     /**
@@ -113,26 +124,26 @@ class EventoService
     public function calcularRanking(Pessoa $currentPessoa): int|string
     {
         $allPeople = Pessoa::all();
-        $personScores = [];
+        $personpontuacaos = [];
 
         foreach ($allPeople as $person) {
-            $personScores[$person->idt_pessoa] = $this->calcularPontuacao($person);
+            $personpontuacaos[$person->idt_pessoa] = $this->calcularPontuacao($person);
         }
 
-        arsort($personScores);
+        arsort($personpontuacaos);
         $rank = 1;
-        $previousScore = null;
+        $previouspontuacao = null;
         $currentRankPosition = 0;
 
-        foreach ($personScores as $pessoaId => $score) {
+        foreach ($personpontuacaos as $pessoaId => $pontuacao) {
             $currentRankPosition++;
-            if ($previousScore !== $score) {
+            if ($previouspontuacao !== $pontuacao) {
                 $rank = $currentRankPosition;
             }
             if ($pessoaId === $currentPessoa->idt_pessoa) {
                 return $rank;
             }
-            $previousScore = $score;
+            $previouspontuacao = $pontuacao;
         }
         return 'N/A';
     }

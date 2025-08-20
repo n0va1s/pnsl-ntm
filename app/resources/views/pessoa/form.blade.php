@@ -173,7 +173,7 @@
                     <!-- Parceiro -->
                     <div>
                         <label for="idt_parceiro" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Parceiro(a) <span class="text-red-600">*</span>
+                            Parceiro(a)
                         </label>
                         <select id="idt_parceiro" name="idt_parceiro"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 

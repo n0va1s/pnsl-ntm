@@ -29,8 +29,6 @@
                     </a>
                 @endif
             </form>
-
-
             <a href="{{ route('eventos.create') }}"
                 class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
                 aria-label="Novo Evento">
@@ -42,7 +40,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
             @forelse ($eventos as $evento)
                 <div
-                    class="flex flex-col justify-between h-full min-h-[200px] bg-white dark:bg-zinc-800 rounded-xl p-4 border border-gray-200 dark:border-zinc-700 shadow-sm">
+                    class="flex flex-col justify-between h-full min-h-[200px] dark:bg-zinc-800 rounded-xl p-4 border border-gray-200 dark:border-zinc-700 shadow-sm  {{ $evento->tip_evento == 'D' ? 'bg-yellow-200' : 'bg-white' }}">
 
                     <div class="flex justify-between items-start mb-2">
                         <div>
@@ -57,6 +55,8 @@
 
                                 $feito = in_array($evento->idt_evento, $eventosInscritos);
 
+                                $desafiado = in_array($evento->idt_evento, $desafiosInscritos);
+
                                 $rotaFichas = match ($sigla) {
                                     'ECC' => route('ecc.index', ['evento' => $evento->idt_evento]),
                                     'VEM' => route('vem.index', ['evento' => $evento->idt_evento]),
@@ -68,6 +68,12 @@
                                     'ECC' => 'bg-lime-400 text-green-800',
                                     'Segue-Me' => 'bg-orange-300 text-red-800',
                                     default => 'bg-sky-400 text-blue-800',
+                                };
+
+                                $tipos = match ($evento->tip_evento) {
+                                    'E' => 'Encontro Anual',
+                                    'P' => 'Pós-Encontro',
+                                    'D' => 'Desafio',
                                 };
                             @endphp
                             <span
@@ -85,8 +91,21 @@
                         <time
                             datetime="{{ $evento->dat_termino->toDateString() }}">{{ $evento->getDataTerminoFormatada() }}</time>
                     </div>
+
+                    <div class="mb-3 text-sm text-gray-700 dark:text-gray-300">
+                        <span class="font-semibold">Tipo: {{ $tipos }}</span><br>
+                    </div>
                     @if (Auth::user() && Auth::user()->isAdmin())
-                        @if ($evento->ind_pos_encontro)
+                        {{-- Pós-encontro ou desafio --}}
+                        @if ($evento->tip_evento == 'P')
+                            <div class="flex justify-center w-full mb-4 text-xs text-white">
+                                <div class="flex flex-col items-center justify-center w-14 py-1 bg-green-600 rounded-md"
+                                    title="Participantes">
+                                    <x-heroicon-o-user-group class="w-4 h-4 mb-0.5" />
+                                    <span>{{ $evento->participantes_count ?? 0 }}</span>
+                                </div>
+                            </div>
+                        @elseif ($evento->tip_evento == 'D')
                             <div class="flex justify-center w-full mb-4 text-xs text-white">
                                 <div class="flex flex-col items-center justify-center w-14 py-1 bg-green-600 rounded-md"
                                     title="Participantes">
@@ -166,7 +185,7 @@
                             </form>
                         </div>
                     @else
-                        @if ($evento->ind_pos_encontro)
+                        @if ($evento->tip_evento == 'P')
                             <div class="mt-4">
                                 @if ($confirmado)
                                     <div
@@ -185,6 +204,29 @@
                                             class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150">
                                             <x-heroicon-o-check-circle class="w-5 h-5" />
                                             Eu vou
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        @elseif ($evento->tip_evento == 'D')
+                            <div class="mt-4">
+                                @if ($desafiado)
+                                    <div
+                                        class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-gray-300 text-gray-700 text-sm font-semibold cursor-default">
+                                        <x-heroicon-o-check-circle class="w-5 h-5" />
+                                        Pontuado
+                                    </div>
+                                @else
+                                    <form method="POST"
+                                        action="{{ route('participantes.confirm', ['evento' => $evento->idt_evento, 'pessoa' => $pessoa->idt_pessoa]) }}"
+                                        onsubmit="return confirm('Confirmação a participação no nosso desafio?');"
+                                        class="w-full">
+                                        @csrf
+
+                                        <button type="submit" title="Quero Participar"
+                                            class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 text-white text-sm font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150">
+                                            <x-heroicon-o-check-circle class="w-5 h-5" />
+                                            Tô dentro
                                         </button>
                                     </form>
                                 @endif
