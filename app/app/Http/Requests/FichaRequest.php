@@ -22,7 +22,7 @@ class FichaRequest extends FormRequest
             'tel_candidato' => 'nullable|string|max:20',
             'eml_candidato' => 'required|email|max:255',
             'des_endereco' => 'nullable|string|max:255',
-            'tam_camiseta' => 'required|string|max:2',
+            'tam_camiseta' => 'required|string|max:3',
             'tip_como_soube' => 'nullable|string|max:3',
             'ind_catolico' => 'nullable|boolean',
             'ind_toca_instrumento' => 'nullable|boolean',

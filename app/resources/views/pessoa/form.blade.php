@@ -276,8 +276,8 @@
                                 Alimentares</h3>
                             <div class="space-y-4">
                                 @php
-                                    $restricoesSelecionadas = $pessoa->saude->pluck('idt_restricao')->toArray();
-                                    $complementos = $pessoa->saude
+                                    $restricoesSelecionadas = $pessoa->restricoes->pluck('idt_restricao')->toArray();
+                                    $complementos = $pessoa->restricoes
                                         ->pluck('txt_complemento', 'idt_restricao')
                                         ->toArray();
                                 @endphp

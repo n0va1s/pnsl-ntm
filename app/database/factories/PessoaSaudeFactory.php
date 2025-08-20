@@ -14,8 +14,8 @@ class PessoaSaudeFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_pessoa' => Pessoa::inRandomOrder()->first()->id ?? Pessoa::factory(),
-            'idt_restricao' => TipoRestricao::inRandomOrder()->first()->idt_restricao,
+            'idt_pessoa' => Pessoa::factory(),
+            'idt_restricao' => TipoRestricao::inRandomOrder()->first()->idt_restricao ?? TipoRestricao::factory(),
             'ind_remedio_regular' => $this->faker->boolean(),
             'txt_complemento' => $this->faker->optional()->sentence,
         ];

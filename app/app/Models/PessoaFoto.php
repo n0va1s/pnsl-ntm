@@ -12,7 +12,7 @@ class PessoaFoto extends Model
 
     protected $table = 'pessoa_foto';
     protected $primaryKey = 'idt_pessoa';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_pessoa',

@@ -11,6 +11,9 @@
 |
 */
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
@@ -41,7 +44,66 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+// Cleanup após cada teste (opcional)
+afterEach(function () {
+    // Limpa cache se necessário
+    Cache::flush();
+});
+
+function createUser(): \App\Models\User
 {
-    // ..
+    return \App\Models\User::factory()->create();
+}
+
+function createMovimentos(): void
+{
+    \App\Models\TipoMovimento::firstOrCreate([
+        'des_sigla' => 'ECC',
+        'nom_movimento' => 'Encontro de Casais com Cristo',
+        'dat_inicio' => '1980-01-01'
+    ]);
+
+    \App\Models\TipoMovimento::firstOrCreate([
+        'des_sigla' => 'VEM',
+        'nom_movimento' => 'Encontro de Adolescentes com Cristo',
+        'dat_inicio' => '2000-07-01'
+    ]);
+
+    \App\Models\TipoMovimento::firstOrCreate([
+        'des_sigla' => 'Segue-Me',
+        'nom_movimento' => 'Encontro de Jovens com Cristo',
+        'dat_inicio' => '1990-12-31'
+    ]);
+
+    $tipoMovimento = \App\Models\TipoMovimento::all()->first()->idt_movimento;
+
+    $equipes = [
+        ['des_grupo' => 'Alimentação', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Bandinha', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Coordenação Geral', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Emaús', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Limpeza', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Oração', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Recepção', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Reportagem', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Sala', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Secretaria', 'idt_movimento' => $tipoMovimento],
+        ['des_grupo' => 'Vendinha', 'idt_movimento' => $tipoMovimento],
+    ];
+
+    DB::table('tipo_equipe')->insertOrIgnore($equipes);
+}
+
+function createEvento(): \App\Models\Evento
+{
+    return \App\Models\Evento::factory()->create([
+        'idt_movimento' => \App\Models\TipoMovimento::all()->first()->idt_movimento,
+    ]);
+}
+
+function createPessoa(): \App\Models\Pessoa
+{
+    return \App\Models\Pessoa::factory()->create([
+        'idt_parceiro' => null,
+    ]);
 }

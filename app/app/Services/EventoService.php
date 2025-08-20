@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Models\Evento;
 use App\Models\Pessoa;
 use App\Models\Trabalhador;
 use App\Models\Participante;
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class EventoService
 {
@@ -18,50 +21,36 @@ class EventoService
      */
     public function getEventosTimeline(Pessoa $pessoa): array
     {
-        // Buscar e mapear entradas como Trabalhador
         $trabalhadorEntries = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->whereHas('evento', fn($query) => $query->whereNotNull('dat_inicio'))
             ->with(['evento.movimento', 'equipe'])
             ->get()
-            ->map(function ($entry) {
-                $eventDate = $entry->evento->dat_inicio ?? null;
-                if (!$eventDate) {
-                    return null;
-                }
-                return [
-                    'id' => 'trab-' . $entry->idt_trabalhador, // Adiciona um ID único para cada entrada
-                    'type' => 'Trabalhador',
-                    'date' => Carbon::parse($eventDate),
-                    'event' => $entry->evento,
-                    'details' => [
-                        'equipe' => $entry->equipe->des_grupo ?? 'N/A',
-                        'coordenador' => (bool)$entry->ind_coordenador, // Garante booleano
-                        'primeira_vez' => (bool)$entry->ind_primeira_vez, // Garante booleano
-                    ],
-                ];
-            })->filter();
+            ->map(fn($entry) => [
+                'id' => 'trab-' . $entry->idt_trabalhador,
+                'type' => 'Trabalhador',
+                'date' => Carbon::parse($entry->evento->dat_inicio),
+                'event' => $entry->evento,
+                'details' => [
+                    'equipe' => $entry->equipe->des_grupo ?? 'N/A',
+                    'coordenador' => (bool)$entry->ind_coordenador,
+                    'primeira_vez' => (bool)$entry->ind_primeira_vez,
+                ],
+            ]);
 
-        // Buscar e mapear entradas como Participante
         $participanteEntries = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->whereHas('evento', fn($query) => $query->whereNotNull('dat_inicio'))
             ->with('evento.movimento')
             ->get()
-            ->map(function ($entry) {
-                $eventDate = $entry->evento->dat_inicio ?? null;
-                if (!$eventDate) {
-                    return null;
-                }
-                return [
-                    'id' => 'part-' . $entry->idt_participante, // Adiciona um ID único para cada entrada
-                    'type' => 'Participante',
-                    'date' => Carbon::parse($eventDate),
-                    'event' => $entry->evento,
-                    'details' => [],
-                ];
-            })->filter();
+            ->map(fn($entry) => [
+                'id' => 'part-' . $entry->idt_participante,
+                'type' => 'Participante',
+                'date' => Carbon::parse($entry->evento->dat_inicio),
+                'event' => $entry->evento,
+                'details' => [],
+            ]);
 
-        // Combinar e Ordenar todas as entradas cronologicamente
-        $allEntries = $trabalhadorEntries->concat($participanteEntries)->sortBy('date');
+        $allEntries = $trabalhadorEntries->concat($participanteEntries)->sortByDesc('date');
 
-        // Agrupar por Década e Ano
         return $this->agruparEventosPorDecadaEAno($allEntries);
     }
 
@@ -73,105 +62,79 @@ class EventoService
      */
     public function calcularPontuacao(Pessoa $pessoa): int
     {
-        $score = 0;
-
-        // Pegar todos os eventos da pessoa (Trabalhador e Participante)
         $trabalhadorEvents = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->whereHas('evento', fn($q) => $q->whereNotNull('dat_inicio'))
             ->with('evento')
             ->get();
+
         $participanteEvents = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->whereHas('evento', fn($q) => $q->whereNotNull('dat_inicio'))
             ->with('evento')
             ->get();
 
-        $allEvents = collect();
+        $allEvents = $trabalhadorEvents->map(fn($entry) => [
+            'type' => 'Trabalhador',
+            'date' => Carbon::parse($entry->evento->dat_inicio),
+            'is_coordenador' => (bool)$entry->ind_coordenador,
+        ])->concat($participanteEvents->map(fn($entry) => [
+            'type' => 'Participante',
+            'date' => Carbon::parse($entry->evento->dat_inicio),
+            'is_coordenador' => false,
+        ]));
 
-        // Normaliza e adiciona eventos de Trabalhador
-        foreach ($trabalhadorEvents as $entry) {
-            if ($entry->evento && $entry->evento->dat_inicio) {
-                $allEvents->push([
-                    'type' => 'Trabalhador',
-                    'date' => Carbon::parse($entry->evento->dat_inicio),
-                    'is_coordenador' => (bool)$entry->ind_coordenador,
-                ]);
-            }
-        }
-
-        // Normaliza e adiciona eventos de Participante
-        foreach ($participanteEvents as $entry) {
-            if ($entry->evento && $entry->evento->dat_inicio) {
-                $allEvents->push([
-                    'type' => 'Participante',
-                    'date' => Carbon::parse($entry->evento->dat_inicio),
-                    'is_coordenador' => false, // Participantes não são coordenadores para pontuação
-                ]);
-            }
-        }
-
-        // Ordena os eventos cronologicamente para identificar o primeiro
-        $sortedEvents = $allEvents->sortBy('date')->values();
-
-        $isFirstEventOverall = true; // Flag para o bônus do primeiro evento
+        $sortedEvents = $allEvents->sortBy('date');
+        $score = 0;
+        $isFirstEventOverall = true;
 
         foreach ($sortedEvents as $eventData) {
-            // Regra do bônus de 10 pontos para o primeiro evento da pessoa
             if ($isFirstEventOverall) {
                 $score += 10;
-                $isFirstEventOverall = false; // Garante que o bônus é aplicado apenas uma vez
+                $isFirstEventOverall = false;
             }
 
-            // Regras de pontuação base
             if ($eventData['type'] === 'Participante') {
-                $score += 1; // 1 ponto por participação
+                $score += 1;
             } elseif ($eventData['type'] === 'Trabalhador') {
-                $score += 2; // 2 pontos por trabalhar
+                $score += 2;
                 if ($eventData['is_coordenador']) {
-                    $score += 1; // +1 ponto se for coordenador (total de 3)
+                    $score += 1;
                 }
             }
         }
-
         return $score;
     }
 
     /**
      * Calcula a posição no ranking de uma pessoa.
-     * ATENÇÃO: Este método pode ser custoso para muitas pessoas.
-     * Considere otimizações (caching, coluna de score no DB, jobs) em produção.
      *
      * @param Pessoa $currentPessoa
      * @return int|string
      */
     public function calcularRanking(Pessoa $currentPessoa): int|string
     {
-        $allPeople = Pessoa::all(); // Busca todas as pessoas
-
+        $allPeople = Pessoa::all();
         $personScores = [];
+
         foreach ($allPeople as $person) {
-            // Reutiliza o método calcularPontuacao para cada pessoa
             $personScores[$person->idt_pessoa] = $this->calcularPontuacao($person);
         }
 
-        // Ordena as pontuações em ordem decrescente (do maior para o menor)
         arsort($personScores);
-
         $rank = 1;
         $previousScore = null;
         $currentRankPosition = 0;
 
         foreach ($personScores as $pessoaId => $score) {
             $currentRankPosition++;
-            // Se a pontuação atual é diferente da anterior, atualiza o rank
             if ($previousScore !== $score) {
                 $rank = $currentRankPosition;
             }
-            // Se encontrou a pessoa atual, retorna o rank
             if ($pessoaId === $currentPessoa->idt_pessoa) {
                 return $rank;
             }
             $previousScore = $score;
         }
-
-        return 'N/A'; // Caso a pessoa não seja encontrada (improvável)
+        return 'N/A';
     }
 
     /**
@@ -183,29 +146,92 @@ class EventoService
     private function agruparEventosPorDecadaEAno(Collection $allEntries): array
     {
         return $allEntries
-            ->groupBy(function ($entry) {
-                return $entry['date']->year;
-            })
+            ->groupBy(fn($entry) => $entry['date']->year)
             ->sortKeysDesc()
-            ->map(function ($yearEntries, $year) {
-                return [
-                    'year' => $year,
-                    'events' => $yearEntries->values()->all(),
-                ];
-            })
-            ->groupBy(function ($yearData) {
-                $year = $yearData['year'];
-                $decade = floor($year / 10) * 10;
-                return $decade . 's';
-            })
+            ->map(fn($yearEntries, $year) => [
+                'year' => $year,
+                'events' => $yearEntries->values()->all(),
+            ])
+            ->groupBy(fn($yearData) => floor($yearData['year'] / 10) * 10 . 's')
             ->sortKeysDesc()
-            ->map(function ($decadeYears, $decade) {
-                return [
-                    'decade' => $decade,
-                    'years' => $decadeYears->values()->all(),
-                ];
-            })
+            ->map(fn($decadeYears, $decade) => [
+                'decade' => $decade,
+                'years' => $decadeYears->values()->all(),
+            ])
             ->values()
             ->all();
+    }
+
+    /**
+     * Lida com o upload da foto do evento, excluindo a antiga se houver.
+     *
+     * @param Evento $evento O modelo do evento ao qual a foto está associada.
+     * @param UploadedFile|null $file O arquivo da foto.
+     * @return void
+     */
+    public function fotoUpload(Evento $evento, ?UploadedFile $file = null): void
+    {
+        DB::beginTransaction();
+        try {
+            if ($file) {
+                $evento->load('foto');
+                if ($evento->foto) {
+                    $evento->foto->delete();
+                }
+
+                $caminho = $file->store('fotos/evento', 'public');
+                $evento->foto()->create(['med_foto' => $caminho]);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Exclui um evento e sua foto associada de forma segura.
+     *
+     * @param Evento $evento
+     * @return void
+     */
+    public function excluirEventoComFoto(Evento $evento): void
+    {
+        DB::beginTransaction();
+        try {
+            $foto = $evento->foto;
+            $evento->delete();
+
+            if ($foto) {
+                $foto->delete();
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Confirma a participação de uma pessoa em um evento.
+     *
+     * @param Evento $evento
+     * @param Pessoa $pessoa
+     * @return void
+     */
+    public function confirmarParticipacao(Evento $evento, Pessoa $pessoa): void
+    {
+        Participante::create([
+            'idt_evento' => $evento->idt_evento,
+            'idt_pessoa' => $pessoa->idt_pessoa,
+        ]);
+    }
+
+    public function getEventosInscritos(Pessoa $pessoa): Collection
+    {
+        return Evento::whereHas('participantes', function ($query) use ($pessoa) {
+            $query->where('idt_pessoa', $pessoa->idt_pessoa);
+        })->with('movimento')->get();
     }
 }

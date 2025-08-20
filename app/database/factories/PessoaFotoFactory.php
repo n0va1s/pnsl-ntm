@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\Pessoa;
 use App\Models\PessoaFoto;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class PessoaFotoFactory extends Factory
 {
@@ -12,9 +14,11 @@ class PessoaFotoFactory extends Factory
 
     public function definition(): array
     {
+        Storage::fake('public');
+
         return [
-            'idt_pessoa' => Pessoa::inRandomOrder()->first()->id ?? Pessoa::factory(),
-            'med_foto' => 'fotos/participante/' . $this->faker->uuid . '.jpg', // caminho fictício
+            'idt_pessoa' => Pessoa::factory(),
+            'med_foto' => UploadedFile::fake()->image('foto.jpg')->store('fotos/pessoa', 'public'),
         ];
     }
 }

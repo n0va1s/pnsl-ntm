@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pessoa extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'pessoa';
     protected $primaryKey = 'idt_pessoa';
@@ -43,20 +44,20 @@ class Pessoa extends Model
 
     public function foto()
     {
-        return $this->hasOne(PessoaFoto::class, 'idt_pessoa');
+        return $this->hasOne(PessoaFoto::class, 'idt_pessoa', 'idt_pessoa');
     }
 
-    public function saude()
+    public function restricoes()
     {
-        return $this->hasMany(PessoaSaude::class, 'idt_pessoa');
+        return $this->hasMany(PessoaSaude::class, 'idt_pessoa', 'idt_pessoa');
     }
 
-    public function participante()
+    public function participantes()
     {
         return $this->hasMany(Participante::class, 'idt_pessoa');
     }
 
-    public function trabalhador()
+    public function trabalhadores()
     {
         return $this->hasMany(Trabalhador::class, 'idt_pessoa');
     }
@@ -66,10 +67,8 @@ class Pessoa extends Model
         return $this->hasMany(Voluntario::class, 'idt_pessoa');
     }
 
-    // Relationship to partner
     public function parceiro()
     {
-        // One person has one partner (self-referencing one-to-one)
         return $this->belongsTo(Pessoa::class, 'idt_parceiro', 'idt_pessoa');
     }
 
