@@ -60,7 +60,7 @@
                                 $rotaFichas = match ($sigla) {
                                     'ECC' => route('ecc.index', ['evento' => $evento->idt_evento]),
                                     'VEM' => route('vem.index', ['evento' => $evento->idt_evento]),
-                                    'Segue-Me' => '#',
+                                    'Segue-Me' => route('sgm.index', ['evento' => $evento->idt_evento]),
                                     default => '#',
                                 };
 

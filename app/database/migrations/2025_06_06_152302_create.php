@@ -257,7 +257,13 @@ return new class extends Migration
             $table->foreignId('idt_ficha')
                 ->constrained('ficha', 'idt_ficha')
                 ->onDelete('cascade');
-
+            $table->foreignId('idt_falar_com')
+                ->constrained('tipo_responsavel', 'idt_responsavel');
+            $table->string('des_mora_quem', 255);
+            $table->string('nom_pai', 150)->nullable();
+            $table->string('tel_pai', 15)->nullable();
+            $table->string('nom_mae', 150)->nullable();
+            $table->string('tel_mae', 15)->nullable();
             $table->primary(['idt_ficha']);
         });
 
