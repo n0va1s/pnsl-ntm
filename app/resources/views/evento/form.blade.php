@@ -157,15 +157,15 @@
                         <select name="tip_evento" id="tip_evento" required x-bind:disabled="bloqueado"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('tip_evento') border-red-500 @enderror">
-                            <option value="">Selecione o gênero</option>
+                            <option value="">Selecione o tipo</option>
                             <option value="E"
-                                {{ old('tip_evento', $evento->tip_evento) == 'M' ? 'selected' : '' }}>Encontro Anual
+                                {{ old('tip_evento', $evento->tip_evento) == 'E' ? 'selected' : '' }}>Encontro Anual
                             </option>
                             <option value="P"
-                                {{ old('tip_evento', $evento->tip_evento) == 'F' ? 'selected' : '' }}>Pós-Encontro
+                                {{ old('tip_evento', $evento->tip_evento) == 'P' ? 'selected' : '' }}>Pós-Encontro
                             </option>
                             <option value="D"
-                                {{ old('tip_evento', $evento->tip_evento) == 'O' ? 'selected' : '' }}>Desafio</option>
+                                {{ old('tip_evento', $evento->tip_evento) == 'D' ? 'selected' : '' }}>Desafio</option>
                         </select>
                         @error('tip_evento')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
