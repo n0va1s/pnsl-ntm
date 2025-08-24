@@ -13,12 +13,12 @@ class PessoaFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_usuario' => User::inRandomOrder()->first()->id,
+            'idt_usuario' => User::factory(),
             'idt_parceiro' => null,
             'nom_pessoa' => $this->faker->name(),
             'nom_apelido' => $this->faker->lastName(),
-            'tip_genero' => $this->faker->randomElement(['M', 'F']), // Masculino, Feminino
-            'tel_pessoa' => $this->faker->phoneNumber(),
+            'tip_genero' => $this->faker->randomElement(['M', 'F']),
+            'tel_pessoa' => $this->faker->numerify('(##) #####-####'),
             'eml_pessoa' => $this->faker->unique()->safeEmail(),
             'des_endereco' => $this->faker->address(),
             'dat_nascimento' => $this->faker->date('Y-m-d', '-20 years'),

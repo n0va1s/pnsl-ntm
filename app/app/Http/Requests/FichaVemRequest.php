@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FichaVemRequest extends FormRequest
+class FichaVemRequest extends FichaRequest
 {
     public function authorize(): bool
     {
@@ -13,7 +13,7 @@ class FichaVemRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        return array_merge(parent::rules(), [
             'idt_falar_com'    => 'required|exists:tipo_responsavel,idt_responsavel',
             'des_onde_estuda'  => 'required|string|max:255',
             'des_mora_quem'    => 'required|string|max:255',
@@ -21,7 +21,7 @@ class FichaVemRequest extends FormRequest
             'tel_pai'          => 'nullable|string|max:15',
             'nom_mae'          => 'nullable|string|max:150',
             'tel_mae'          => 'nullable|string|max:15',
-        ];
+        ]);
     }
 
     public function messages(): array

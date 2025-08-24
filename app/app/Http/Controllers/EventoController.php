@@ -2,122 +2,151 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\EventoRequest;
 use App\Models\Evento;
+use App\Models\TipoMovimento;
+use App\Http\Requests\EventoRequest;
 use App\Models\Participante;
 use App\Models\Pessoa;
-use App\Models\TipoMovimento;
-use App\Models\Trabalhador;
-use App\Models\Voluntario;
 use App\Services\EventoService;
 use App\Services\UserService;
-use Carbon\Carbon;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class EventoController extends Controller
 {
+    protected $eventoService;
+    protected $userService;
 
-    protected $service;
-
-    // Injeção de dependência do EventoService
-    public function __construct(EventoService $eventoService)
+    /**
+     * Injeção de dependência do EventoService e UserService no construtor.
+     *
+     * @param EventoService $eventoService
+     * @param UserService $userService
+     */
+    public function __construct(EventoService $eventoService, UserService $userService)
     {
-        $this->service = $eventoService;
+        $this->eventoService = $eventoService;
+        $this->userService = $userService;
     }
 
     /**
-     * Display a listing of the resource.
+     * Exibe a página de listagem de eventos.
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $search = $request->get('search');
+        $search = trim($request->input('search', ''));
 
-        // Obter ou criar a pessoa vinculada ao usuário logado
-        // A linha "TODO: substituir pela app() instance" está OK,
-        $pessoa = UserService::createPessoaFromLoggedUser();
+        $pessoa = Auth::check() ? $this->userService->createPessoaFromLoggedUser() : null;
 
         $posEncontrosInscritos = [];
         $eventosInscritos = [];
+        $desafiosInscritos = [];
 
+        // Verifica se o usuário está logado para popular as listas de eventos inscritos
         if ($pessoa) {
             $posEncontrosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+                ->whereHas('evento', function ($query) {
+                    $query->where('tip_encontro', 'P');
+                })
+                ->get()
                 ->pluck('idt_evento')
                 ->toArray();
 
-            // Esta parte já está correta, busca os IDs dos eventos que a pessoa se voluntariou
-            $eventosInscritos = Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
+            $eventosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+                ->whereHas('evento', function ($query) {
+                    $query->where('tip_encontro', 'E');
+                })
+                ->get()
+                ->pluck('idt_evento')
+                ->toArray();
+
+            $desafiosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+                ->whereHas('evento', function ($query) {
+                    $query->where('tip_encontro', 'D');
+                })
+                ->get()
                 ->pluck('idt_evento')
                 ->toArray();
         }
 
-        $eventos = Evento::with(['movimento'])
-            ->withCount([
-                'fichas',
-                'voluntarios as voluntarios_count' => function ($query) {
-                    $query->select(DB::raw('count(DISTINCT idt_pessoa)')) // idt_pessoa idt_evento idt_equipe
-                        ->whereNull('idt_trabalhador'); // voluntario ainda nao confirmados como trabalhador
-                },
-                'trabalhadores',
-                'participantes'
-            ])
-            ->when($search, function ($query, $search) {
-                return $query->search($search);
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->withQueryString();
+        $query = Evento::with(['movimento', 'foto'])->orderBy('dat_inicio', 'desc');
 
-        return view(
-            'evento.list',
-            compact(
-                'eventos',
-                'search',
-                'pessoa',
-                'posEncontrosInscritos',
-                'eventosInscritos'
-            )
-        );
+        if ($search) {
+            $query->search($search);
+        }
+
+        $eventos = $query->paginate(12);
+
+        return view('evento.list', compact(
+            'eventos',
+            'search',
+            'posEncontrosInscritos',
+            'eventosInscritos',
+            'desafiosInscritos',
+            'pessoa'
+        ));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Exibe o formulário para criar um novo evento.
+     *
+     * @return \Illuminate\View\View
      */
     public function create(): View
     {
         $movimentos = TipoMovimento::all();
-        return view(
-            'evento.form',
-            [
-                'evento' => new Evento,
-                'movimentos' => $movimentos
-            ]
-        );
+        $evento = new Evento();
+
+        return view('evento.form', compact('movimentos', 'evento'));
     }
 
-
     /**
-     * Store a newly created resource in storage.
+     * Armazena um novo evento no banco de dados.
+     *
+     * @param EventoRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(EventoRequest $request): RedirectResponse
     {
-        Evento::create($request->validated());
+        try {
+            DB::beginTransaction();
+            $data = $request->validated();
+            $evento = Evento::create($data);
+            $this->eventoService->fotoUpload($evento, $request->file('med_foto'));
+            DB::commit();
 
-        return redirect()
-            ->route('eventos.index')
-            ->with('success', 'Evento criado com sucesso!');
+            return redirect()
+                ->route('eventos.index')
+                ->with('success', 'Evento criado com sucesso!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao criar evento: ' . $e->getMessage(), ['exception' => $e]);
+
+            return redirect()
+                ->route('eventos.index')
+                ->with('error', 'Erro ao criar evento. Por favor, tente novamente.');
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Exibe o formulário para editar um evento.
+     *
+     * @param Evento $evento
+     * @return \Illuminate\View\View
      */
-    public function show(Evento $evento): View
+    public function edit(Evento $evento): View
     {
-        return view('evento.form', compact('evento'));
+        $movimentos = TipoMovimento::all();
+
+        return view('evento.form', compact('movimentos', 'evento'));
     }
 
     public function info(Evento $evento)
@@ -142,43 +171,68 @@ class EventoController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Evento $evento): View
-    {
-        $movimentos = TipoMovimento::all();
-        $evento->load('foto'); // Carrega a foto associada ao evento, se existir
-        return view('evento.form', compact('evento', 'movimentos'));
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Atualiza o evento no banco de dados.
+     *
+     * @param EventoRequest $request
+     * @param Evento $evento
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(EventoRequest $request, Evento $evento): RedirectResponse
     {
-        $evento->update($request->validated());
+        try {
+            DB::beginTransaction();
+            $data = $request->validated();
+            $evento->update($data);
+            $this->eventoService->fotoUpload($evento, $request->file('med_foto'));
+            DB::commit();
 
-        // Foto
-        if ($request->hasFile('med_foto')) {
-            $arquivo = $request->file('med_foto');
-            $caminho = $arquivo->store('fotos/evento/', 'public'); // pasta 'storage/app/public/fotos'
+            return redirect()
+                ->route('eventos.index')
+                ->with('success', 'Evento atualizado com sucesso!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao atualizar evento: ' . $e->getMessage(), ['exception' => $e]);
 
-            if ($evento->foto) {
-                $evento->foto()->update(['med_foto' => $caminho]);
-            } else {
-                $evento->foto()->create(['med_foto' => $caminho]);
-            }
+            return redirect()
+                ->route('eventos.index')
+                ->with('error', 'Erro ao atualizar evento. Por favor, tente novamente.');
         }
-
-        return redirect()
-            ->route('eventos.index')
-            ->with('success', 'Evento atualizado com sucesso!');
     }
 
-    // Confirmar a participacao de uma pessoa em um evento
+    /**
+     * Remove o evento do banco de dados.
+     *
+     * @param Evento $evento
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(Evento $evento)
+    {
+        try {
+            $this->eventoService->excluirEventoComFoto($evento);
+
+            return redirect()->route('eventos.index')
+                ->with('success', 'Evento excluído com sucesso!');
+        } catch (QueryException $e) {
+
+            if ($e->getCode() === '23000') {
+                return redirect()->route('eventos.index')
+                    ->with('error', 'Não é possível excluir o evento, pois ele possui participantes vinculados.');
+            }
+
+            return redirect()->route('eventos.index')
+                ->with('error', 'Ocorreu um erro de banco de dados ao excluir o evento.');
+        }
+    }
+
+    /**
+     * Confirma a participação de uma pessoa em um evento.
+     *
+     * @param Evento $evento
+     * @param Pessoa $pessoa
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function confirm(Evento $evento, Pessoa $pessoa): RedirectResponse
     {
-
         Participante::create([
             'idt_evento' => $evento->idt_evento,
             'idt_pessoa' => $pessoa->idt_pessoa,
@@ -186,52 +240,22 @@ class EventoController extends Controller
 
         return redirect()
             ->route('eventos.index')
-            ->with('success', 'Sua participação  foi confirmada. Até lá!');
+            ->with('success', 'Sua participação foi confirmada. Até lá!');
     }
-
-    public function timeline(): View
-    {
-        // Obtém a pessoa do usuário logado usando seu UserService existente
-        $pessoa = UserService::createPessoaFromLoggedUser(); // Assumindo que este método existe e retorna uma instância de Pessoa
-
-        $timeline = $this->service->getEventosTimeline($pessoa);
-        $pontuacaoTotal = $this->service->calcularPontuacao($pessoa);
-        $posicaoNoRanking = $this->service->calcularRanking($pessoa);
-
-        // Passa os dados para a view
-        return view('evento.linhadotempo', compact('timeline', 'pontuacaoTotal', 'posicaoNoRanking', 'pessoa'));
-    }
-
 
     /**
-     * Remove the specified resource from storage.
+     * Exibe a linha do tempo de eventos de uma pessoa.
+     *
+     * @return \Illuminate\View\View
      */
-    public function destroy(Evento $evento): RedirectResponse
+    public function timeline(): View
     {
-        try {
-            $evento->delete();
+        $pessoa = $this->userService->createPessoaFromLoggedUser();
 
-            return redirect()
-                ->route('eventos.index')
-                ->with('success', 'Evento excluído com sucesso!');
-        } catch (QueryException $e) {
-            Log::error('Erro ao excluir evento:', [
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
-            ]);
-            if ($e->getCode() === '23000') {
-                return redirect()
-                    ->route('eventos.index')
-                    ->with('error', 'Não é possível excluir este evento. Ele está associado a fichas ou participantes.');
-            } elseif ($e->getCode() === '42000') {
-                return redirect()
-                    ->route('eventos.index')
-                    ->with('error', 'Erro de sintaxe na consulta SQL.');
-            }
+        $timeline = $this->eventoService->getEventosTimeline($pessoa);
+        $pontuacaoTotal = $this->eventoService->calcularPontuacao($pessoa);
+        $posicaoNoRanking = $this->eventoService->calcularRanking($pessoa);
 
-            return redirect()
-                ->route('eventos.index')
-                ->with('error', 'Erro ao tentar excluir o evento.');
-        }
+        return view('evento.linhadotempo', compact('timeline', 'pontuacaoTotal', 'posicaoNoRanking', 'pessoa'));
     }
 }

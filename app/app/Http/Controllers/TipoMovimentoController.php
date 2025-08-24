@@ -31,7 +31,7 @@ class TipoMovimentoController extends Controller
 
         TipoMovimento::create($validated);
 
-        return redirect()->route('tiposmovimentos.index')
+        return redirect()->route('movimento.index')
             ->with('success', 'Movimento criado com sucesso!');
     }
 
@@ -47,7 +47,7 @@ class TipoMovimentoController extends Controller
         $tipo = TipoMovimento::findOrFail($id);
         $tipo->update($validated);
 
-        return redirect()->route('tiposmovimentos.index')
+        return redirect()->route('movimento.index')
             ->with('success', 'Movimento atualizado com sucesso!');
     }
 
@@ -57,10 +57,10 @@ class TipoMovimentoController extends Controller
 
         try {
             $tipo->delete();
-            return redirect()->route('tiposmovimentos.index')
+            return redirect()->route('movimento.index')
                 ->with('success', 'Movimento excluído com sucesso!');
         } catch (\Throwable $e) {
-            return redirect()->route('tiposmovimentos.index')
+            return redirect()->route('movimento.index')
                 ->with('error', 'Erro ao excluir o movimento. Verifique se há vínculos.');
         }
     }

@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Evento;
-use App\Models\TipoMovimento;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EventoFactory extends Factory
@@ -17,7 +16,7 @@ class EventoFactory extends Factory
 
         return [
             'idt_movimento' => $this->faker->numberBetween(1, 3),
-            'des_evento' => $this->faker->words(2, true) . ' VEM',
+            'des_evento' => $this->faker->words(2, true),
             'inf_evento' => $this->faker->paragraphs(2, true),
             'num_evento' => $this->faker->numberBetween(1, 99),
             'dat_inicio' => $dataInicio->format('Y-m-d'),
@@ -26,7 +25,7 @@ class EventoFactory extends Factory
             'val_trabalhador' => $this->faker->randomNumber(2, 45),
             'val_venista' => $this->faker->randomNumber(2, 50),
             'val_entrada' => $this->faker->randomNumber(2, 50),
-            'ind_pos_encontro' => $this->faker->boolean(50),
+            'tip_evento' => $this->faker->randomElement(['E', 'P', 'D']),
         ];
     }
 }

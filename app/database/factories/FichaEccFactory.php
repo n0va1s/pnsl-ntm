@@ -12,12 +12,11 @@ class FichaEccFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_ficha' => Ficha::factory(),
-            'nom_conjuge' => $this->faker->name(),
-            'nom_apelido_conjuge' => $this->faker->optional()->firstName(),
-            'tel_conjuge' => $this->faker->numerify('###########'),
+            'idt_ficha'              => Ficha::factory(),
+            'nom_conjuge'            => $this->faker->name(),
+            'tel_conjuge'            => $this->faker->numerify('###########'),
             'dat_nascimento_conjuge' => $this->faker->date('Y-m-d', '-18 years'),
-            'tam_camiseta_conjuge' => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
+            'tam_camiseta_conjuge'   => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
         ];
     }
 }

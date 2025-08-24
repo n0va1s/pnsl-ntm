@@ -14,10 +14,9 @@ class TipoSituacaoController extends Controller
     ];
 
     public function index()
-    {
-        {
-        $situacoes = \App\Models\TipoSituacao::all();
-        return view('configuracoes.TipoSituacaoList', compact('situacoes'));
+    { {
+            $situacoes = \App\Models\TipoSituacao::all();
+            return view('configuracoes.TipoSituacaoList', compact('situacoes'));
         }
     }
 
@@ -40,16 +39,8 @@ class TipoSituacaoController extends Controller
 
         TipoSituacao::create($validated);
 
-        return redirect()->route('tiposituacao.index')
+        return redirect()->route('situacao.index')
             ->with('success', 'Tipo de situação adicionado com sucesso!');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**
@@ -71,7 +62,7 @@ class TipoSituacaoController extends Controller
         $situacao = TipoSituacao::findOrFail($id);
         $situacao->update($validated);
 
-        return redirect()->route('tiposituacao.index')
+        return redirect()->route('situacao.index')
             ->with('success', 'Tipo de situação atualizado com sucesso!');
     }
 
@@ -80,14 +71,14 @@ class TipoSituacaoController extends Controller
      */
     public function destroy(string $id)
     {
-    $situacao = TipoSituacao::findOrFail($id);
+        $situacao = TipoSituacao::findOrFail($id);
 
         try {
             $situacao->delete();
-            return redirect()->route('tiposituacao.index')
+            return redirect()->route('situacao.index')
                 ->with('success', 'Tipo de situação excluído com sucesso!');
         } catch (\Exception $e) {
-            return redirect()->route('tiposituacao.index')
+            return redirect()->route('situacao.index')
                 ->with('error', 'Erro ao excluir tipo de situação: ' . $e->getMessage());
         }
     }

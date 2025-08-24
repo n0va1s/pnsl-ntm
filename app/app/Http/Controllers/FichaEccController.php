@@ -63,24 +63,46 @@ class FichaEccController extends Controller
      * Armazenar nova ficha (com dados opcionais de vem/ecc).
      */
     public function store(
-        FichaRequest  $fichaRequest,
         FichaEccRequest $eccRequest
     ) {
-        $data = $fichaRequest->validated();
+        $data = $eccRequest->validated();
+
+        $data['tip_genero'] = $eccRequest->input('tip_genero', 'M');
+        $data['tel_candidato'] = $eccRequest->input('tel_candidato');
+        $data['eml_candidato'] = $eccRequest->input('eml_candidato');
+
+        // Defaults
+        $data['tam_camiseta'] = $eccRequest->input('tam_camiseta', 'M');
+        $data['tip_como_soube'] = $eccRequest->input('tip_como_soube', null);
+        $data['ind_catolico'] = false;
+        $data['ind_toca_instrumento'] = false;
+        $data['ind_consentimento'] = false;
+        $data['ind_aprovado'] = false;
+        $data['ind_restricao'] = false;
+        $data['txt_observacao'] = null;
+
         $ficha = Ficha::create($data);
 
         // Cria FichaEcc se enviado
-        if ($fichaRequest->filled('nom_conjuge')) {
+        if ($eccRequest->filled('nom_conjuge')) {
+
             $eccData = $eccRequest->validated();
+            $eccData = $eccRequest->only([
+                'nom_conjuge',
+                'nom_apelido_conjuge',
+                'tel_conjuge',
+                'dat_nascimento_conjuge',
+                'tam_camiseta_conjuge'
+            ]);
             $ficha->fichaEcc()->create($eccData);
         }
 
-        if ($fichaRequest->filled('restricoes')) {
-            foreach ($fichaRequest->restricoes as $idt_restricao => $value) {
+        if ($eccRequest->filled('restricoes')) {
+            foreach ($eccRequest->restricoes as $idt_restricao => $value) {
                 if ($value) {
                     $ficha->fichaSaude()->create([
                         'idt_restricao' => $idt_restricao,
-                        'txt_complemento' => $fichaRequest->input("complementos.$idt_restricao"),
+                        'txt_complemento' => $eccRequest->input("complementos.$idt_restricao"),
                     ]);
                 }
             }
@@ -117,20 +139,34 @@ class FichaEccController extends Controller
         ]));
     }
 
-    public function update(
-        FichaRequest $fichaRequest,
-        FichaEccRequest $eccRequest,
-        $id
-    ) {
+    public function update(FichaEccRequest $eccRequest, $id)
+    {
         $ficha = Ficha::with(['fichaEcc', 'fichaSaude', 'analises'])->findOrFail($id);
 
-        $fichaData = $fichaRequest->validated();
+        $data = $eccRequest->validated();
+
+        $fichaData = collect($data)->only([
+            'nom_candidato',
+            'eml_candidato',
+            'nom_apelido',
+            'dat_nascimento',
+            'tip_genero',
+            'tam_camiseta',
+            'ind_consentimento',
+            'ind_restricao',
+        ])->toArray();
+
         $ficha->update($fichaData);
 
-        // Nao usei o UpdateOrCreate porque a chave e composta
-        // Verificamos se o registro existe para decidir a operacao (update or create)
-        if ($fichaRequest->filled('nom_conjuge')) {
-            $eccData = $eccRequest->validated();
+        $eccData = collect($data)->only([
+            'nom_conjuge',
+            'nom_apelido_conjuge',
+            'tel_conjuge',
+            'dat_nascimento_conjuge',
+            'tam_camiseta_conjuge',
+        ])->toArray();
+
+        if (!empty($eccData)) {
             $eccData['idt_ficha'] = $ficha->idt_ficha;
 
             if ($ficha->fichaEcc) {
@@ -140,37 +176,20 @@ class FichaEccController extends Controller
             }
         }
 
-        if ($fichaRequest->filled('idt_situacao')) {
-            $situacao = $fichaRequest->input('idt_situacao');
+        if ($eccRequest->filled('idt_situacao')) {
+            $situacao = $eccRequest->input('idt_situacao');
             $analise = $ficha->analises()->where('idt_situacao', $situacao)->first();
-            // A ficha ja tem a situacao
+
             if ($analise) {
-                $analise->update([
-                    'txt_analise' => $fichaRequest->input('txt_analise')
-                ]);
+                $analise->update(['txt_analise' => $eccRequest->input('txt_analise')]);
             } else {
                 $ficha->analises()->create([
                     'idt_situacao' => $situacao,
-                    'txt_analise' => $fichaRequest->input('txt_analise')
+                    'txt_analise' => $eccRequest->input('txt_analise')
                 ]);
             }
         }
-
-        $ficha->fichaSaude()->delete();
-        // filled() avalia se o campo existe no request e nao se foi marcado ou desmarcado
-        // por isso estou testando diretamente o campo
-        if ($fichaRequest->input('ind_restricao') == 1) {
-            foreach ($fichaRequest->input('restricoes', []) as $idt_restricao => $value) {
-                if ($value) {
-                    $ficha->fichaSaude()->create([
-                        'idt_restricao' => $idt_restricao,
-                        'txt_complemento' => $fichaRequest->input("complementos.$idt_restricao"),
-                    ]);
-                }
-            }
-        }
-
-        return redirect()->route('ecc.index')->with('success', 'Ficha atualizada com sucesso!');
+        return redirect()->route('ecc.index')->with('success', 'Ficha ECC atualizada com sucesso.');
     }
 
     public function approve($id)

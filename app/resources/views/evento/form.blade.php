@@ -6,11 +6,11 @@
         </div>
         <div class="flex justify-end mt-4">
             <div class="flex justify-end mt-4">
-            <x-botao-navegar href="{{ route('eventos.index') }}" aria-label="Voltar para a lista de eventos">
-                <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
-                Eventos
-            </x-botao-navegar>
-        </div>
+                <x-botao-navegar href="{{ route('eventos.index') }}" aria-label="Voltar para a lista de eventos">
+                    <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
+                    Eventos
+                </x-botao-navegar>
+            </div>
         </div>
         <div class="mb-6 bg-white dark:bg-zinc-800 rounded-md shadow p-6">
             <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100">
@@ -151,7 +151,6 @@
                         </p>
                     </div>
 
-
                     <!-- Informações do Evento -->
                     <div class="lg:col-span-2">
                         <label for="inf_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -170,25 +169,29 @@
                         </p>
                     </div>
 
-                    <!-- Checkbox Pós Encontro -->
-                    <div class="mb-6">
-                        <input type="checkbox" id="ind_pos_encontro" name="ind_pos_encontro" value="1"
-                            aria-describedby="ind_pos_encontro_help ind_pos_encontro_error"
-                            {{ old('ind_pos_encontro', $evento->ind_pos_encontro) ? 'checked' : '' }}
-                            class="w-5 h-5 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2" />
-                        <label for="ind_pos_encontro"
-                            class="font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
-                            Pós Encontro
+                    <div class="mt-6">
+                        <label for="tip_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Tipo <span class="text-red-600">*</span>
                         </label>
-                        @error('ind_pos_encontro')
-                            <p id="ind_pos_encontro_error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <select name="tip_evento" id="tip_evento" required x-bind:disabled="bloqueado"
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
+                            @error('tip_evento') border-red-500 @enderror">
+                            <option value="">Selecione o tipo</option>
+                            <option value="E"
+                                {{ old('tip_evento', $evento->tip_evento) == 'E' ? 'selected' : '' }}>Encontro Anual
+                            </option>
+                            <option value="P"
+                                {{ old('tip_evento', $evento->tip_evento) == 'P' ? 'selected' : '' }}>Pós-Encontro
+                            </option>
+                            <option value="D"
+                                {{ old('tip_evento', $evento->tip_evento) == 'D' ? 'selected' : '' }}>Desafio</option>
+                        </select>
+                        @error('tip_evento')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
-                        <p id="ind_pos_encontro_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            Marque se este evento é um pós encontro
-                        </p>
                     </div>
 
-                    @if ($evento->ind_pos_encontro)
+                    @if ($evento->tip_evento == 'P')
                         <div class="mb-6">
                             <label for="val_entrada" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 R$ Entrada

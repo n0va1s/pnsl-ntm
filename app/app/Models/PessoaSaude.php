@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PessoaSaude extends Model
 {
     use HasFactory;
 
     protected $table = 'pessoa_saude';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_pessoa',

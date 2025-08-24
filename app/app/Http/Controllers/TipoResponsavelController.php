@@ -41,7 +41,7 @@ class TipoResponsavelController extends Controller
 
         TipoResponsavel::create($validated);
 
-        return redirect()->route('tiporesponsavel.index')
+        return redirect()->route('responsavel.index')
             ->with('success', 'Tipo de responsável adicionado com sucesso!');
     }
 
@@ -71,7 +71,7 @@ class TipoResponsavelController extends Controller
         $responsavel = TipoResponsavel::findOrFail($id);
         $responsavel->update($validated);
 
-        return redirect()->route('tiporesponsavel.index')
+        return redirect()->route('responsavel.index')
             ->with('success', 'Tipo de responsável atualizado com sucesso!');
     }
 
@@ -84,10 +84,10 @@ class TipoResponsavelController extends Controller
 
         try {
             $responsavel->delete();
-            return redirect()->route('tiporesponsavel.index')
+            return redirect()->route('responsavel.index')
                 ->with('success', 'Tipo de responsável excluído com sucesso!');
         } catch (\Exception $e) {
-            return redirect()->route('tiporesponsavel.index')
+            return redirect()->route('responsavel.index')
                 ->with('error', 'Erro ao excluir tipo de responsável: ' . $e->getMessage());
         }
     }

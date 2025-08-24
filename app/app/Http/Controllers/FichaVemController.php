@@ -64,24 +64,55 @@ class FichaVemController extends Controller
      * Armazenar nova ficha (com dados opcionais de vem/ecc).
      */
     public function store(
-        FichaRequest  $fichaRequest,
         FichaVemRequest $vemRequest
     ) {
-        $data = $fichaRequest->validated();
+        $data = $vemRequest->only([
+            'idt_evento',
+            'nom_candidato',
+            'nom_apelido',
+            'dat_nascimento',
+            'des_endereco',
+        ]);
+
+        // Map request para os nomes corretos do schema
+        $data['tip_genero'] = $vemRequest->input('tip_genero', 'M');
+        $data['tel_candidato'] = $vemRequest->input('tel_candidato');
+        $data['eml_candidato'] = $vemRequest->input('eml_candidato', null);
+
+        // Campos obrigatórios com defaults
+        $data['tam_camiseta'] = $vemRequest->input('tam_camiseta', 'M');
+        $data['tip_como_soube'] = $vemRequest->input('tip_como_soube', null);
+        $data['ind_catolico'] = false;
+        $data['ind_toca_instrumento'] = false;
+        $data['ind_consentimento'] = false;
+        $data['ind_aprovado'] = false;
+        $data['ind_restricao'] = false;
+        $data['txt_observacao'] = null;
+
         $ficha = Ficha::create($data);
 
-        // Cria FichaVem se enviado
-        if ($fichaRequest->filled('nom_mae')) {
+        if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai')) {
+
             $vemData = $vemRequest->validated();
+            $vemData = $vemRequest->only([
+                'idt_falar_com',
+                'des_onde_estuda',
+                'des_mora_quem',
+                'nom_pai',
+                'tel_pai',
+                'nom_mae',
+                'tel_mae'
+            ]);
+
             $ficha->fichaVem()->create($vemData);
         }
 
-        if ($fichaRequest->filled('restricoes')) {
-            foreach ($fichaRequest->restricoes as $idt_restricao => $value) {
+        if ($vemRequest->filled('restricoes')) {
+            foreach ($vemRequest->restricoes as $idt_restricao => $value) {
                 if ($value) {
                     $ficha->fichaSaude()->create([
                         'idt_restricao' => $idt_restricao,
-                        'txt_complemento' => $fichaRequest->input("complementos.$idt_restricao"),
+                        'txt_complemento' => $vemRequest->input("complementos.$idt_restricao"),
                     ]);
                 }
             }
@@ -122,40 +153,39 @@ class FichaVemController extends Controller
      * Atualizar ficha do VEM.
      */
     public function update(
-        FichaRequest $fichaRequest,
         FichaVemRequest $vemRequest,
         $id
     ) {
         $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises'])->findOrFail($id);
 
-        $fichaData = $fichaRequest->validated();
-        $ficha->update($fichaData);
+        $vemData = $vemRequest->validated();
+        $ficha->update($vemData);
 
         // Nao usei o UpdateOrCreate porque a chave e composta
         // Verificamos se o registro existe para decidir a operacao (update or create)
-        if ($fichaRequest->filled('nom_mae') || $fichaRequest->filled('nom_pai')) {
+        if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai')) {
             $vemData = $vemRequest->validated();
             $vemData['idt_ficha'] = $ficha->idt_ficha;
 
             if ($ficha->fichaVem) {
-                $ficha->fichaVem()->update($vemData);
+                $ficha->fichaVem->update($vemData);
             } else {
                 $ficha->fichaVem()->create($vemData);
             }
         }
 
-        if ($fichaRequest->filled('idt_situacao')) {
-            $situacao = $fichaRequest->input('idt_situacao');
+        if ($vemRequest->filled('idt_situacao')) {
+            $situacao = $vemRequest->input('idt_situacao');
             $analise = $ficha->analises()->where('idt_situacao', $situacao)->first();
             // A ficha ja tem a situacao
             if ($analise) {
                 $analise->update([
-                    'txt_analise' => $fichaRequest->input('txt_analise')
+                    'txt_analise' => $vemRequest->input('txt_analise')
                 ]);
             } else {
                 $ficha->analises()->create([
                     'idt_situacao' => $situacao,
-                    'txt_analise' => $fichaRequest->input('txt_analise')
+                    'txt_analise' => $vemRequest->input('txt_analise')
                 ]);
             }
         }
@@ -163,12 +193,12 @@ class FichaVemController extends Controller
         $ficha->fichaSaude()->delete();
         // filled() avalia se o campo existe no request e nao se foi marcado ou desmarcado
         // por isso estou testando diretamente o campo
-        if ($fichaRequest->input('ind_restricao') == 1) {
-            foreach ($fichaRequest->input('restricoes', []) as $idt_restricao => $value) {
+        if ($vemRequest->input('ind_restricao') == 1) {
+            foreach ($vemRequest->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
                     $ficha->fichaSaude()->create([
                         'idt_restricao' => $idt_restricao,
-                        'txt_complemento' => $fichaRequest->input("complementos.$idt_restricao"),
+                        'txt_complemento' => $vemRequest->input("complementos.$idt_restricao"),
                     ]);
                 }
             }

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id('idt_situacao');
             $table->string('des_situacao', 255);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Tabela Tipo_Responsavel ex: avê, avó, pai, mae, padrinho, madrinha
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->id('idt_responsavel');
             $table->string('des_responsavel', 255);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Tabela Tipo_Restricao ex: alergia a ovo, intolerancia remedio
@@ -31,6 +33,7 @@ return new class extends Migration
             $table->string('des_restricao', 255);
             $table->string('tip_restricao', 3); // alergia, intolerância, PNE
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Tabela Tipo_Movimento ex: ECC, Segue-Me, VEM
@@ -40,6 +43,7 @@ return new class extends Migration
             $table->string('des_sigla', 10);
             $table->date('dat_inicio');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Tabela Tipo_Equipe ex: bandinha, reportagem, oracao
@@ -50,6 +54,7 @@ return new class extends Migration
             $table->string('des_grupo', 255);
             $table->text('txt_documento')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Tabela Evento ex: XXX VEM,
@@ -62,12 +67,13 @@ return new class extends Migration
             $table->string('num_evento', 5)->nullable();
             $table->date('dat_inicio');
             $table->date('dat_termino')->nullable();
-            $table->string('val_camiseta', 10)->nullable(); // valor da camiseta
-            $table->string('val_trabalhador', 10)->nullable(); // contribuição do trabalhador
-            $table->string('val_venista', 10)->nullable(); // contribuição do venista (participante)
-            $table->string('val_entrada', 10)->nullable(); // entrada no pos-encontro
-            $table->boolean('ind_pos_encontro')->default(false);
+            $table->decimal('val_camiseta', 8, 2)->nullable(); // valor da camiseta
+            $table->decimal('val_trabalhador', 8, 2)->nullable(); // contribuição do trabalhador
+            $table->decimal('val_venista', 8, 2)->nullable(); // contribuição do venista (participante)
+            $table->decimal('val_entrada', 8, 2)->nullable(); // entrada no pos-encontro
+            $table->string('tip_evento', 1); // E - Encontro, P - Pós-Encontro, D - Desafio
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Tabela Evento_Foto ex: foto do evento 22 tirada durante o evento
@@ -76,7 +82,7 @@ return new class extends Migration
                 ->constrained('evento', 'idt_evento')
                 ->onDelete('cascade');
             $table->string('med_foto'); //armazenar no filesystem
-
+            $table->timestamps();
             $table->primary(['idt_evento']);
         });
 
@@ -92,12 +98,13 @@ return new class extends Migration
             $table->date('dat_nascimento');
             $table->string('des_endereco', 255)->nullable();
             $table->string('eml_pessoa', 255);
-            $table->string('tam_camiseta', 2)->nullable();
+            $table->string('tam_camiseta', 3)->nullable();
             $table->string('tip_genero', 1)->nullable();
             $table->boolean('ind_toca_violao')->default(false);
             $table->boolean('ind_consentimento')->default(false);
             $table->boolean('ind_restricao')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Tabela Pessoa_Foto ex: foto da pessoa 22 tirada durante o evento
@@ -106,6 +113,7 @@ return new class extends Migration
                 ->constrained('pessoa', 'idt_pessoa')
                 ->onDelete('cascade');
             $table->string('med_foto'); //armazenar no filesystem
+            $table->timestamps();
 
             $table->primary(['idt_pessoa']);
         });
@@ -119,7 +127,7 @@ return new class extends Migration
                 ->constrained('tipo_restricao', 'idt_restricao');
             $table->boolean('ind_remedio_regular')->default(false);
             $table->text('txt_complemento')->nullable();
-            $table->softDeletes();
+            $table->timestamps();
 
             $table->primary(['idt_pessoa', 'idt_restricao']);
         });
@@ -152,17 +160,6 @@ return new class extends Migration
             $table->unique(['idt_participante', 'dat_presenca'], 'unique_presenca_por_participante');
         });
 
-        // Tabela Voluntario indica as equipes que a pessoas quer trabalhar
-        Schema::create('voluntario', function (Blueprint $table) {
-            $table->id('idt_voluntario');
-            $table->foreignId('idt_pessoa')->constrained('pessoa', 'idt_pessoa');
-            $table->foreignId('idt_evento')->constrained('evento', 'idt_evento');
-            $table->foreignId('idt_equipe')->constrained('tipo_equipe', 'idt_equipe');
-            $table->foreignId('idt_trabalhador')->nullable()->constrained('trabalhador', 'idt_trabalhador')->nullOnDelete();
-            $table->text('txt_habilidade')->nullable(); // quais as suas habilidades para esta equipe
-            $table->timestamps();
-        });
-
         // Tabela Trabalhador indica os encontros que a pessoa trabalhou ou coordenou
         // Nao ha necessidade do trabalhador ter indicado as equipes que quer trabalhar
         Schema::create('trabalhador', function (Blueprint $table) {
@@ -187,6 +184,17 @@ return new class extends Migration
             $table->unique(['idt_pessoa', 'idt_evento', 'idt_equipe'], 'unique_trabalhador');
         });
 
+        // Tabela Voluntario indica as equipes que a pessoas quer trabalhar
+        Schema::create('voluntario', function (Blueprint $table) {
+            $table->id('idt_voluntario');
+            $table->foreignId('idt_pessoa')->constrained('pessoa', 'idt_pessoa');
+            $table->foreignId('idt_evento')->constrained('evento', 'idt_evento');
+            $table->foreignId('idt_equipe')->constrained('tipo_equipe', 'idt_equipe');
+            $table->foreignId('idt_trabalhador')->nullable()->constrained('trabalhador', 'idt_trabalhador')->nullOnDelete();
+            $table->text('txt_habilidade')->nullable(); // quais as suas habilidades para esta equipe
+            $table->timestamps();
+        });
+
         // Tabela Ficha com os dados básicos do participante
         // devem ser informacoes comuns aos movimentos
         Schema::create('ficha', function (Blueprint $table) {
@@ -202,7 +210,7 @@ return new class extends Migration
             $table->string('tel_candidato', 20)->nullable();
             $table->string('eml_candidato', 255);
             $table->string('des_endereco', 255)->nullable();
-            $table->string('tam_camiseta', 2);
+            $table->string('tam_camiseta', 3);
             $table->string('tip_como_soube', 3)->nullable(); //indicacao, padre
             $table->boolean('ind_catolico')->default(false); //candidato catolico
             $table->boolean('ind_toca_instrumento')->default(false); //toca algum instrumento
@@ -240,7 +248,7 @@ return new class extends Migration
             $table->string('nom_apelido_conjuge', 50)->nullable();
             $table->string('tel_conjuge', 15);
             $table->date('dat_nascimento_conjuge');
-            $table->string('tam_camiseta_conjuge', 2);
+            $table->string('tam_camiseta_conjuge', 3);
 
             $table->primary(['idt_ficha']);
         });
@@ -274,14 +282,13 @@ return new class extends Migration
 
         // Tabela Ficha_Analise é o histórico da ficha ex: ficha 14 cadastrada, ficha 14 aprovada
         Schema::create('ficha_analise', function (Blueprint $table) {
+            $table->id('idt_analise');
             $table->foreignId('idt_ficha')
                 ->constrained('ficha', 'idt_ficha')
                 ->onDelete('cascade');
             $table->foreignId('idt_situacao')
                 ->constrained('tipo_situacao', 'idt_situacao');
             $table->text('txt_analise')->nullable();
-
-            $table->unique(['idt_ficha', 'idt_situacao'], 'unique_ficha_situacao');
         });
 
 
@@ -313,15 +320,16 @@ return new class extends Migration
         Schema::dropIfExists('ficha_ecc');
         Schema::dropIfExists('ficha_vem');
         Schema::dropIfExists('ficha');
-        Schema::dropIfExists('trabalhador');
         Schema::dropIfExists('voluntario');
+        Schema::dropIfExists('trabalhador');
         Schema::dropIfExists('participante');
         Schema::dropIfExists('pessoa_foto');
         Schema::dropIfExists('pessoa_saude');
         Schema::dropIfExists('pessoa');
+        Schema::dropIfExists('evento_foto');
         Schema::dropIfExists('evento');
-        Schema::dropIfExists('tipo_movimento');
         Schema::dropIfExists('tipo_equipe');
+        Schema::dropIfExists('tipo_movimento');
         Schema::dropIfExists('tipo_restricao');
         Schema::dropIfExists('tipo_responsavel');
         Schema::dropIfExists('tipo_situacao');

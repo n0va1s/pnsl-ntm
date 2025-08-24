@@ -41,11 +41,7 @@ class DatabaseSeeder extends Seeder
         User::factory(10)->create();
 
         $this->call([
-            TipoRestricaoSeeder::class,
-            TipoSituacaoSeeder::class,
-            TipoResponsavelSeeder::class,
-            TipoMovimentoSeeder::class,
-            TipoEquipeSeeder::class,
+            DominiosSeeder::class,
             EventoSeeder::class,
             PessoaSeeder::class,
             FichaSeeder::class,

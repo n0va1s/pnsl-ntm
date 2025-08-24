@@ -17,7 +17,7 @@ class PessoaController extends Controller
     {
         $search = $request->get('search');
 
-        $pessoas = Pessoa::with(['foto', 'usuario', 'saude', 'parceiro'])
+        $pessoas = Pessoa::with(['foto', 'usuario', 'restricoes', 'parceiro'])
             ->when($search, function ($query, $search) {
                 return $query->where('nom_pessoa', 'like', "%{$search}%")
                     ->orWhere('nom_apelido', 'like', "%{$search}%");
@@ -74,20 +74,15 @@ class PessoaController extends Controller
 
         // Parceiro
         if ($request->input('idt_parceiro')) {
-            //$parceiro = Pessoa::find($request->input('idt_parceiro'));
             $pessoa->idt_parceiro = $request->input('idt_parceiro');
             $pessoa->save();
-            //if ($parceiro) {
-            //$parceiro->idt_parceiro = $pessoa->idt_pessoa; // O parceiro aponta para esta pessoa
-            //$parceiro->save();
-            //}
         }
 
         // Saude
         if ($request->input('ind_restricao') == 1) {
             foreach ($request->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
-                    $pessoa->saude()->create([
+                    $pessoa->restricoes()->create([
                         'idt_restricao' => $idt_restricao,
                         'txt_complemento' => $request->input("complementos.$idt_restricao"),
                     ]);
@@ -98,15 +93,10 @@ class PessoaController extends Controller
         return redirect()->route('pessoas.index')->with('success', 'Pessoa criada com sucesso.');
     }
 
-    public function show($id): View
-    {
-        $pessoa = Pessoa::with(['foto', 'usuario', 'saude'])->find($id);
-        return view('pessoa.form', compact('pessoa'));
-    }
-
     public function edit($id): View
     {
-        $pessoa = Pessoa::with(['foto', 'usuario', 'saude'])->find($id);
+        $pessoa = Pessoa::with(['foto', 'usuario', 'restricoes'])->findOrFail($id);
+
         $restricoes = TipoRestricao::select(
             'idt_restricao',
             'tip_restricao',
@@ -131,7 +121,7 @@ class PessoaController extends Controller
 
     public function update(PessoaRequest $request, $id): RedirectResponse
     {
-        $pessoa = Pessoa::with(['foto', 'usuario', 'saude'])->findOrFail($id);
+        $pessoa = Pessoa::with(['foto', 'usuario', 'restricoes'])->findOrFail($id);
         $user = UserService::getUsuarioByEmail($request->input('eml_pessoa'));
         $data = $request->validated();
         if ($user) {
@@ -153,28 +143,22 @@ class PessoaController extends Controller
 
         // Parceiro
         if ($request->input('idt_parceiro')) {
-            //$parceiro = Pessoa::find($request->input('idt_parceiro'));
             $pessoa->idt_parceiro = $request->input('idt_parceiro');
             $pessoa->save();
-            //if ($parceiro) {
-            //$parceiro->idt_parceiro = $pessoa->idt_pessoa; // O parceiro aponta para esta pessoa
-            //$parceiro->save();
-            //}
         }
 
         // Saude
-        $pessoa->saude()->delete();
+        $pessoa->restricoes()->delete();
         if ($request->input('ind_restricao') == 1) {
             foreach ($request->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
-                    $pessoa->saude()->create([
+                    $pessoa->restricoes()->create([
                         'idt_restricao' => $idt_restricao,
                         'txt_complemento' => $request->input("complementos.$idt_restricao"),
                     ]);
                 }
             }
         }
-
         return redirect()->route('pessoas.index')->with('success', 'Pessoa atualizada com sucesso.');
     }
 
@@ -182,7 +166,7 @@ class PessoaController extends Controller
     {
         try {
             // Cascade
-            Pessoa::find($id)->delete();
+            Pessoa::findOrFail($id)->delete();
 
             return redirect()
                 ->route('pessoas.index')

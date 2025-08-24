@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,6 +28,18 @@ class Contato extends Model
         'idt_contato' => 'integer',
         'dat_contato' => 'date',
     ];
+
+    /**
+     * Scope para realizar a busca por nome de contato.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $search
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSearch(Builder $query, string $search): Builder
+    {
+        return $query->where('nom_contato', 'like', "%{$search}%");
+    }
 
     /**
      * Relacionamento: Contato pertence a um Movimento
