@@ -118,6 +118,9 @@ Route::middleware(['auth'])->group(function () {
         [TrabalhadorController::class, 'generate']
     )->name('quadrante.list');
 
+    Route::get('/eventos/{evento}/info', [EventoController::class, 'info'])
+        ->name('evento.info');
+
     Route::get('fichas/vem/approve/{id}', [FichaVemController::class, 'approve'])
         ->name('vem.approve');
     Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
