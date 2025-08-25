@@ -71,6 +71,7 @@ return new class extends Migration
             $table->decimal('val_venista', 8, 2)->nullable(); // contribuição do venista (participante)
             $table->decimal('val_entrada', 8, 2)->nullable(); // entrada no pos-encontro
             $table->string('tip_evento', 1); // E - Encontro, P - Pós-Encontro, D - Desafio
+            $table->text('txt_informacao')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

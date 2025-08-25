@@ -33,8 +33,9 @@ class EventoRequest extends FormRequest
             'val_venista' => 'nullable|numeric|min:0',
             'val_camiseta' => 'nullable|numeric|min:0',
             'val_entrada' => 'nullable|numeric|min:0',
-            'med_foto' => ['nullable', 'image', 'max:2048'],
+            'med_foto' => 'nullable|image|max:2048',
             'tip_evento' => 'required|string|max:1',
+            'txt_informacao' => 'nullable|string|max:3000',
         ];
     }
 

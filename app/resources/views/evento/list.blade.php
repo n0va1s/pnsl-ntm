@@ -83,13 +83,30 @@
                         </div>
                     </div>
 
-                    <div class="mb-3 text-sm text-gray-700 dark:text-gray-300">
-                        <span class="font-semibold">Período:</span><br>
-                        <time
-                            datetime="{{ $evento->dat_inicio->toDateString() }}">{{ $evento->getDataInicioFormatada() }}</time>
-                        <span class="text-gray-400"> até </span>
-                        <time
-                            datetime="{{ $evento->dat_termino->toDateString() }}">{{ $evento->getDataTerminoFormatada() }}</time>
+                    <div class="mb-3 text-sm text-gray-700 dark:text-gray-300 flex items-center justify-between"
+                        @if (!empty($evento->txt_informacao)) x-data="{ showInfo: false }" @endif>
+                        <div>
+                            <span class="font-semibold">Período:</span><br>
+                            <time
+                                datetime="{{ $evento->dat_inicio->toDateString() }}">{{ $evento->getDataInicioFormatada() }}</time>
+                            <span class="text-gray-400"> até </span>
+                            <time
+                                datetime="{{ $evento->dat_termino->toDateString() }}">{{ $evento->getDataTerminoFormatada() }}</time>
+                        </div>
+                        @if (!empty($evento->txt_informacao))
+                            <div class="relative flex items-center">
+                                <button type="button" @click="showInfo = !showInfo" class="focus:outline-none">
+                                    <x-heroicon-o-information-circle class="w-10 h-10 text-blue-500 cursor-pointer ml-2"
+                                        aria-label="icone-informacao" />
+                                </button>
+                                <div x-show="showInfo" @click.away="showInfo = false"
+                                    class="absolute right-0 z-20 mt-2 w-64 p-4 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 rounded shadow text-gray-800 dark:text-gray-100 text-sm"
+                                    x-transition>
+                                    <span class="font-semibold block mb-1">Informações:</span>
+                                    <span>{{ $evento->txt_informacao }}</span>
+                                </div>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="mb-3 text-sm text-gray-700 dark:text-gray-300">

@@ -87,8 +87,7 @@
                             Descrição do Evento <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="des_evento" name="des_evento" maxlength="255"
-                            value="{{ old('des_evento', $evento->des_evento ?? '') }}"
-                            placeholder="Digite a descrição completa do evento"
+                            value="{{ old('des_evento', $evento->des_evento ?? '') }}" placeholder="Ex: VEM 2025"
                             aria-describedby="des_evento_help des_evento_error"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('des_evento') border-red-500 @enderror" />
@@ -251,6 +250,17 @@
                             </div>
                         </div>
                     @endif
+                </div>
+                <div class="w-full">
+                    <label for="txt_informacao" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Outras Informações
+                    </label>
+                    <textarea id="txt_informacao" name="txt_informacao" rows="4"
+                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('txt_observacao') border-red-500 @enderror"
+                        placeholder="Digite aqui outras informações relevantes...">{{ old('txt_observacao', $evento->txt_observacao ?? '') }}</textarea>
+                    @error('txt_informacao')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Buttons -->

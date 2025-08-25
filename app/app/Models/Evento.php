@@ -26,6 +26,7 @@ class Evento extends Model
         'val_venista',
         'val_entrada',
         'tip_evento',
+        'txt_informacao',
     ];
 
     protected $casts = [

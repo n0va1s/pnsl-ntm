@@ -25,6 +25,7 @@ class EventoFactory extends Factory
             'val_venista' => $this->faker->randomNumber(2, 50),
             'val_entrada' => $this->faker->randomNumber(2, 50),
             'tip_evento' => $this->faker->randomElement(['E', 'P', 'D']),
+            'txt_informacao' => $this->faker->optional()->paragraph(),
         ];
     }
 }

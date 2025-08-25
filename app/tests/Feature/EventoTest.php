@@ -137,106 +137,181 @@ describe('EventoService - Timeline', function () {
     });
 });
 
-describe('EventoService - Pontuação', function () {
-    test('calcula pontuação zero para pessoa sem eventos', function () {
-        $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
+test('calcula pontuação correta para primeiro evento', function () {
+    $evento = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-01-15',
+            'tip_evento' => 'P'
+        ]
+    );
+    Participante::factory()->create([
+        'idt_pessoa' => $this->pessoa->idt_pessoa,
+        'idt_evento' => $evento->idt_evento
+    ]);
 
-        expect($pontuacao)->toBe(0);
-    });
+    $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
 
-    test('calcula pontuação correta para primeiro evento', function () {
-        $evento = Evento::factory()->create(['dat_inicio' => '2023-01-15']);
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento->idt_evento]);
-
-        $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
-
-        expect($pontuacao)->toBe(11); // 10 (primeiro evento) + 1 (participante)
-    });
-
-    test('calcula pontuação correta para trabalhador coordenador', function () {
-        $evento = Evento::factory()->create(['dat_inicio' => '2023-01-15']);
-        Trabalhador::factory()->create([
-            'idt_pessoa' => $this->pessoa->idt_pessoa,
-            'idt_evento' => $evento->idt_evento,
-            'ind_coordenador' => true
-        ]);
-
-        $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
-
-        expect($pontuacao)->toBe(13); // 10 (primeiro) + 2 (trabalhador) + 1 (coordenador)
-    });
-
-    test('calcula pontuação correta para múltiplos eventos', function () {
-        $evento1 = Evento::factory()->create(['dat_inicio' => '2023-01-15']);
-        $evento2 = Evento::factory()->create(['dat_inicio' => '2023-06-20']);
-
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento1->idt_evento]);
-        Trabalhador::factory()->create([
-            'idt_pessoa' => $this->pessoa->idt_pessoa,
-            'idt_evento' => $evento2->idt_evento,
-            'ind_coordenador' => false
-        ]);
-
-        $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
-
-        expect($pontuacao)->toBe(13); // 10 (primeiro) + 1 (participante) + 2 (trabalhador)
-    });
-
-    test('não adiciona bônus de primeiro evento para eventos subsequentes', function () {
-        $evento1 = Evento::factory()->create(['dat_inicio' => '2023-01-15']);
-        $evento2 = Evento::factory()->create(['dat_inicio' => '2023-06-20']);
-
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento1->idt_evento]);
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2->idt_evento]);
-
-        $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
-
-        expect($pontuacao)->toBe(12); // 10 (primeiro) + 1 + 1 (dois participantes)
-    });
+    // 5 (primeiro evento) + 1 (participante) = 6
+    expect($pontuacao)->toBe(6);
 });
 
-describe('EventoService - Ranking', function () {
-    test('retorna ranking correto para uma pessoa', function () {
-        $pessoa2 = Pessoa::factory()->create();
+test('calcula pontuação correta para trabalhador coordenador', function () {
+    $evento = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-01-15',
+            'tip_evento' => 'A'
+        ]
+    );
+    Trabalhador::factory()->create([
+        'idt_pessoa' => $this->pessoa->idt_pessoa,
+        'idt_evento' => $evento->idt_evento,
+        'ind_coordenador' => true
+    ]);
 
-        // Pessoa 1 com mais pontos
-        $evento1 = Evento::factory()->create(['dat_inicio' => '2023-01-15']);
-        Trabalhador::factory()->create([
-            'idt_pessoa' => $this->pessoa->idt_pessoa,
-            'idt_evento' => $evento1->idt_evento,
-            'ind_coordenador' => true
-        ]);
+    $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
 
-        // Pessoa 2 com menos pontos
-        $evento2 = Evento::factory()->create(['dat_inicio' => '2023-06-20']);
-        Participante::factory()->create(['idt_pessoa' => $pessoa2->idt_pessoa, 'idt_evento' => $evento2->idt_evento]);
+    // 5 (primeiro evento) + 2 (trabalhador) + 2 (coordenador) = 9
+    expect($pontuacao)->toBe(9);
+});
 
-        $ranking = $this->eventoService->calcularRanking($this->pessoa);
+test('calcula pontuação correta para múltiplos eventos', function () {
+    $evento1 = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-01-15',
+            'tip_evento' => 'P'
 
-        expect($ranking)->toBe(1);
-    });
+        ]
+    );
+    $evento2 = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-06-20',
+            'tip_evento' => 'A'
+        ]
+    );
 
-    test('lida com empates no ranking corretamente', function () {
-        $pessoa2 = Pessoa::factory()->create();
+    Participante::factory()->create([
+        'idt_pessoa' => $this->pessoa->idt_pessoa,
+        'idt_evento' => $evento1->idt_evento
+    ]);
+    Trabalhador::factory()->create([
+        'idt_pessoa' => $this->pessoa->idt_pessoa,
+        'idt_evento' => $evento2->idt_evento,
+        'ind_coordenador' => false
+    ]);
 
-        // Ambas as pessoas com mesma pontuação
-        $evento1 = Evento::factory()->create(['dat_inicio' => '2023-01-15']);
-        $evento2 = Evento::factory()->create(['dat_inicio' => '2023-06-20']);
+    $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
 
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento1->idt_evento]);
-        Participante::factory()->create(['idt_pessoa' => $pessoa2->idt_pessoa, 'idt_evento' => $evento2->idt_evento]);
+    // 5 (primeiro evento) + 1 (participante) + 2 (trabalhador) = 8
+    expect($pontuacao)->toBe(8);
+});
 
-        $ranking1 = $this->eventoService->calcularRanking($this->pessoa);
-        $ranking2 = $this->eventoService->calcularRanking($pessoa2);
+test('não adiciona bônus de primeiro evento para eventos subsequentes', function () {
+    $evento1 = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-01-15',
+            'tip_evento' => 'P'
+        ]
+    );
+    $evento2 = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-06-20',
+            'tip_evento' => 'P'
+        ]
+    );
 
-        expect($ranking1)->toBe(1)
-            ->and($ranking2)->toBe(1);
-    });
+    Participante::factory()->create([
+        'idt_pessoa' => $this->pessoa->idt_pessoa,
+        'idt_evento' => $evento1->idt_evento
+    ]);
+    Participante::factory()->create([
+        'idt_pessoa' => $this->pessoa->idt_pessoa,
+        'idt_evento' => $evento2->idt_evento
+    ]);
+
+    $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
+
+    // 5 (primeiro evento) + 1 + 1 (participações) = 7
+    expect($pontuacao)->toBe(7);
+});
+
+test('lida com empates no ranking corretamente', function () {
+    $pessoa2 = Pessoa::factory()->create();
+
+    // Ambas com 2 eventos Participante (pontuação 7 cada)
+    $evento1 = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-01-15',
+            'tip_evento' => 'P'
+        ]
+    );
+    $evento2 = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-06-20',
+            'tip_evento' => 'P'
+        ]
+    );
+
+    Participante::factory()->create([
+        'idt_pessoa' => $this->pessoa->idt_pessoa,
+        'idt_evento' => $evento1->idt_evento
+    ]);
+    Participante::factory()->create([
+        'idt_pessoa' => $pessoa2->idt_pessoa,
+        'idt_evento' => $evento2->idt_evento
+    ]);
+
+    $ranking1 = $this->eventoService->calcularRanking($this->pessoa);
+    $ranking2 = $this->eventoService->calcularRanking($pessoa2);
+
+    // Ambos devem ter mesma posição: 1
+    expect($ranking1)->toBe(1)
+        ->and($ranking2)->toBe(1);
+});
+
+test('ranking reflete pontuação corretamente', function () {
+    $pessoa2 = Pessoa::factory()->create();
+
+    $evento1 = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-01-15',
+            'tip_evento' => 'P'
+        ]
+    );
+    $evento2 = Evento::factory()->create(
+        [
+            'dat_inicio' => '2023-06-20',
+            'tip_evento' => 'A'
+        ]
+    );
+
+    // Pessoa 1: participante e primeiro evento → 6 pontos
+    Participante::factory()->create([
+        'idt_pessoa' => $this->pessoa->idt_pessoa,
+        'idt_evento' => $evento1->idt_evento
+    ]);
+
+    // Pessoa 2: trabalhador coordenador no primeiro evento → 9 pontos
+    Trabalhador::factory()->create([
+        'idt_pessoa' => $pessoa2->idt_pessoa,
+        'idt_evento' => $evento2->idt_evento,
+        'ind_coordenador' => true
+    ]);
+
+    $ranking1 = $this->eventoService->calcularRanking($this->pessoa);
+    $ranking2 = $this->eventoService->calcularRanking($pessoa2);
+
+    expect($ranking2)->toBe(1) // maior pontuação → primeiro
+        ->and($ranking1)->toBe(2); // menor pontuação → segundo
 });
 
 describe('EventoService - Upload de Foto', function () {
     test('faz upload de foto corretamente', function () {
-        $evento = Evento::factory()->create();
+        $evento = Evento::factory()->create(
+            [
+                'dat_inicio' => '2023-07-01',
+                'tip_evento' => 'A'
+            ]
+        );
         $file = UploadedFile::fake()->image('evento.jpg');
 
         $this->eventoService->fotoUpload($evento, $file);
@@ -247,7 +322,12 @@ describe('EventoService - Upload de Foto', function () {
     });
 
     test('substitui foto existente ao fazer novo upload', function () {
-        $evento = Evento::factory()->create();
+        $evento = Evento::factory()->create(
+            [
+                'dat_inicio' => '2023-12-01',
+                'tip_evento' => 'A'
+            ]
+        );
         $evento->foto()->create(['med_foto' => 'fotos/evento/antiga.jpg']);
 
         $file = UploadedFile::fake()->image('nova.jpg');
@@ -258,7 +338,12 @@ describe('EventoService - Upload de Foto', function () {
     });
 
     test('não faz nada quando arquivo é null', function () {
-        $evento = Evento::factory()->create();
+        $evento = Evento::factory()->create(
+            [
+                'dat_inicio' => '2023-12-31',
+                'tip_evento' => 'A'
+            ]
+        );
         $fotoOriginal = $evento->foto;
 
         $this->eventoService->fotoUpload($evento, null);
@@ -269,7 +354,12 @@ describe('EventoService - Upload de Foto', function () {
 
 describe('EventoService - Exclusão', function () {
     test('exclui evento sem foto corretamente', function () {
-        $evento = Evento::factory()->create();
+        $evento = Evento::factory()->create(
+            [
+                'dat_inicio' => '2024-01-01',
+                'tip_evento' => 'A'
+            ]
+        );
 
         $this->eventoService->excluirEventoComFoto($evento);
 
@@ -277,7 +367,12 @@ describe('EventoService - Exclusão', function () {
     });
 
     test('exclui evento com foto corretamente', function () {
-        $evento = Evento::factory()->create();
+        $evento = Evento::factory()->create(
+            [
+                'dat_inicio' => '2024-02-01',
+                'tip_evento' => 'A'
+            ]
+        );
         $evento->foto()->create(['med_foto' => 'fotos/evento/teste.jpg']);
 
         $this->eventoService->excluirEventoComFoto($evento);
@@ -288,7 +383,12 @@ describe('EventoService - Exclusão', function () {
 
 describe('EventoService - Participação', function () {
     test('confirma participação corretamente', function () {
-        $evento = Evento::factory()->create();
+        $evento = Evento::factory()->create(
+            [
+                'dat_inicio' => '2024-03-01',
+                'tip_evento' => 'P'
+            ]
+        );
 
         $this->eventoService->confirmarParticipacao($evento, $this->pessoa);
 
@@ -298,9 +398,25 @@ describe('EventoService - Participação', function () {
     });
 
     test('retorna eventos inscritos corretamente', function () {
-        $evento1 = Evento::factory()->create();
-        $evento2 = Evento::factory()->create();
-        $evento3 = Evento::factory()->create(); // Não inscrito
+        $evento1 = Evento::factory()->create(
+            [
+                'dat_inicio' => '2024-04-01',
+                'tip_evento' => 'P'
+            ]
+        );
+        $evento2 = Evento::factory()->create(
+            [
+                'dat_inicio' => '2024-05-01',
+                'tip_evento' => 'P'
+            ]
+        );
+        // Não inscrito
+        $evento3 = Evento::factory()->create(
+            [
+                'dat_inicio' => '2024-06-01',
+                'tip_evento' => 'P'
+            ]
+        );
 
         Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento1->idt_evento]);
         Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2->idt_evento]);
@@ -324,6 +440,21 @@ describe('EventoController - Index', function () {
             ->assertViewIs('evento.list')
             ->assertViewHas('eventos')
             ->assertViewHas('pessoa');
+    });
+
+    test('exibe o ícone e o texto de informações quando txt_informacao está preenchido', function () {
+        $movimento = TipoMovimento::factory()->create();
+        $evento = Evento::factory()->create([
+            'idt_movimento' => $movimento->idt_movimento,
+            'txt_informacao' => 'Informação extra do evento',
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->get(route('eventos.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('icone-informacao');
+        $response->assertSee('Informação extra do evento');
     });
 
     test('exibe listagem de eventos para usuário não autenticado', function () {
@@ -421,7 +552,7 @@ describe('EventoController - Store', function () {
             'val_trabalhador' => 50.00,
             'val_venista' => 30.00,
             'val_entrada' => 15.00,
-            'tip_evento' => 'E'
+            'tip_evento' => 'A'
         ];
 
         $response = $this->post(route('eventos.store'), $dadosEvento);
@@ -445,7 +576,7 @@ describe('EventoController - Store', function () {
             'dat_inicio' => '2024-01-15',
             'dat_termino' => '2024-01-17',
             'med_foto' => UploadedFile::fake()->image('evento.jpg'),
-            'tip_evento' => 'E'
+            'tip_evento' => 'A'
         ];
 
         $response = $this->post(route('eventos.store'), $dadosEvento);
@@ -676,6 +807,7 @@ describe('Evento Model', function () {
             'val_venista',
             'val_entrada',
             'tip_evento',
+            'txt_informacao',
         ];
 
         expect((new Evento())->getFillable())->toBe($fillable);

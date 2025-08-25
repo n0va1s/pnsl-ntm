@@ -122,7 +122,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('vem.approve');
     Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
         ->name('ecc.approve');
-    Route::get('fichas/ecc/approve/{id}', [FichaSGMController::class, 'approve'])
+    Route::get('fichas/sgm/approve/{id}', [FichaSGMController::class, 'approve'])
         ->name('sgm.approve');
 
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');

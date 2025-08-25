@@ -136,6 +136,13 @@ class EventoController extends Controller
         }
     }
 
+    public function show(Evento $evento): View
+    {
+        $movimentos = TipoMovimento::all();
+
+        return view('evento.form', compact('movimentos', 'evento'));
+    }
+
     /**
      * Exibe o formulário para editar um evento.
      *

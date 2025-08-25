@@ -63,7 +63,7 @@ class EventoService
     public function calcularPontuacao(Pessoa $pessoa): int
     {
         $trabalhadorEventos = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
-            ->whereHas('evento', fn($q) => $q->where('tip_evento', 'E'))
+            ->whereHas('evento', fn($q) => $q->where('tip_evento', 'A'))
             ->with('evento')
             ->get();
 
@@ -93,27 +93,31 @@ class EventoService
 
         $ordenados = $todosEventos->sortBy('date');
         $pontuacao = 0;
-        $isPrimeiraVez = true;
+        $primeiro = true;
 
         foreach ($ordenados as $evento) {
-            if ($isPrimeiraVez) {
+            // Bônus do primeiro evento
+            if ($primeiro) {
                 $pontuacao += 5;
-                $isPrimeiraVez = false;
+                $primeiro = false;
             }
 
+            // Pontos por tipo
             if ($evento['type'] === 'Participante') {
                 $pontuacao += 1;
             } elseif ($evento['type'] === 'Trabalhador') {
                 $pontuacao += 2;
                 if ($evento['is_coordenador']) {
-                    $pontuacao += 5;
+                    $pontuacao += 2; // coordenador ganha extra
                 }
             } elseif ($evento['type'] === 'Desafio') {
                 $pontuacao += 3;
             }
         }
+
         return $pontuacao;
     }
+
 
     /**
      * Calcula a posição no ranking de uma pessoa.
@@ -123,27 +127,27 @@ class EventoService
      */
     public function calcularRanking(Pessoa $currentPessoa): int|string
     {
-        $allPeople = Pessoa::all();
-        $personpontuacaos = [];
+        $pessoas = Pessoa::all();
+        $arrPessoaPontos = [];
 
-        foreach ($allPeople as $person) {
-            $personpontuacaos[$person->idt_pessoa] = $this->calcularPontuacao($person);
+        foreach ($pessoas as $pessoa) {
+            $arrPessoaPontos[$pessoa->idt_pessoa] = $this->calcularPontuacao($pessoa);
         }
 
-        arsort($personpontuacaos);
+        arsort($arrPessoaPontos);
         $rank = 1;
-        $previouspontuacao = null;
-        $currentRankPosition = 0;
+        $pontuacaoAnterior = null;
+        $posicaoAtual = 0;
 
-        foreach ($personpontuacaos as $pessoaId => $pontuacao) {
-            $currentRankPosition++;
-            if ($previouspontuacao !== $pontuacao) {
-                $rank = $currentRankPosition;
+        foreach ($arrPessoaPontos as $pessoaId => $pontuacao) {
+            $posicaoAtual++;
+            if ($pontuacaoAnterior !== $pontuacao) {
+                $rank = $posicaoAtual;
             }
             if ($pessoaId === $currentPessoa->idt_pessoa) {
                 return $rank;
             }
-            $previouspontuacao = $pontuacao;
+            $pontuacaoAnterior = $pontuacao;
         }
         return 'N/A';
     }
