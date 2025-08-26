@@ -202,6 +202,12 @@
                             </form>
                         </div>
                     @else
+                        <a href="{{ route('evento.info', ['evento' => $evento->idt_evento]) }}"
+                                        class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-blue-500 text-white text-sm font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 tra    nsition duration-150"
+                                        title="Quero trabalhar neste evento">
+                                        <x-heroicon-o-information-circle class="w-6 h-6" />
+                                        Mais informações
+                        </a>
                         @if ($evento->tip_evento == 'P')
                             <div class="mt-4">
                                 @if ($confirmado)
