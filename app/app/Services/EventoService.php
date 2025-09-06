@@ -243,10 +243,23 @@ class EventoService
         ]);
     }
 
-    public function getEventosInscritos(Pessoa $pessoa): Collection
+    // Pós-encontros e desafios
+    public function getEventosInscritos(Pessoa $pessoa): array
     {
         return Evento::whereHas('participantes', function ($query) use ($pessoa) {
             $query->where('idt_pessoa', $pessoa->idt_pessoa);
-        })->with('movimento')->get();
+        })
+            ->pluck('idt_evento')
+            ->toArray();
+    }
+
+    // Encontros anuais
+    public function getEncontrosInscritos(Pessoa $pessoa): array
+    {
+        return Evento::whereHas('trabalhadores', function ($query) use ($pessoa) {
+            $query->where('idt_pessoa', $pessoa->idt_pessoa);
+        })
+            ->pluck('idt_evento')
+            ->toArray();
     }
 }

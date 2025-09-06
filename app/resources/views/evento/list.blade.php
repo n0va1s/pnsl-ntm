@@ -49,13 +49,19 @@
                         </div>
                         <div>
                             @php
+                                $tipos = match ($evento->tip_evento) {
+                                    'E' => 'Encontro Anual',
+                                    'P' => 'Pós-Encontro',
+                                    'D' => 'Desafio',
+                                };
+
+                                if ($evento->tip_evento == 'E') {
+                                    $inscrito = in_array($evento->idt_evento, $encontrosInscritos);
+                                } else {
+                                    $inscrito = in_array($evento->idt_evento, $eventosInscritos);
+                                }
+
                                 $sigla = $evento->movimento->des_sigla;
-
-                                $confirmado = in_array($evento->idt_evento, $posEncontrosInscritos);
-
-                                $feito = in_array($evento->idt_evento, $eventosInscritos);
-
-                                $desafiado = in_array($evento->idt_evento, $desafiosInscritos);
 
                                 $rotaFichas = match ($sigla) {
                                     'ECC' => route('ecc.index', ['evento' => $evento->idt_evento]),
@@ -70,11 +76,6 @@
                                     default => 'bg-sky-400 text-blue-800',
                                 };
 
-                                $tipos = match ($evento->tip_evento) {
-                                    'E' => 'Encontro Anual',
-                                    'P' => 'Pós-Encontro',
-                                    'D' => 'Desafio',
-                                };
                             @endphp
                             <span
                                 class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ $badgeClasses }}">
@@ -204,7 +205,7 @@
                     @else
                         @if ($evento->tip_evento == 'P')
                             <div class="mt-4">
-                                @if ($confirmado)
+                                @if ($inscrito)
                                     <div
                                         class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-gray-300 text-gray-700 text-sm font-semibold cursor-default">
                                         <x-heroicon-o-check-circle class="w-5 h-5" />
@@ -227,7 +228,7 @@
                             </div>
                         @elseif ($evento->tip_evento == 'D')
                             <div class="mt-4">
-                                @if ($desafiado)
+                                @if ($inscrito)
                                     <div
                                         class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-gray-300 text-gray-700 text-sm font-semibold cursor-default">
                                         <x-heroicon-o-check-circle class="w-5 h-5" />
@@ -250,7 +251,7 @@
                             </div>
                         @else
                             <div class="mt-4">
-                                @if ($feito)
+                                @if ($inscrito)
                                     <div
                                         class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-gray-300 text-gray-700 text-sm font-semibold cursor-default">
                                         <x-heroicon-o-check-circle class="w-5 h-5" />

@@ -7,6 +7,7 @@ use App\Models\TipoMovimento;
 use App\Http\Requests\EventoRequest;
 use App\Models\Participante;
 use App\Models\Pessoa;
+use App\Models\Trabalhador;
 use App\Services\EventoService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -46,38 +47,37 @@ class EventoController extends Controller
 
         $pessoa = Auth::check() ? $this->userService->createPessoaFromLoggedUser() : null;
 
-        $posEncontrosInscritos = [];
         $eventosInscritos = [];
-        $desafiosInscritos = [];
+        $encontrosInscritos = [];
 
         // Verifica se o usuário está logado para popular as listas de eventos inscritos
         if ($pessoa) {
-            $posEncontrosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
-                ->whereHas('evento', function ($query) {
-                    $query->where('tip_encontro', 'P');
-                })
-                ->get()
-                ->pluck('idt_evento')
-                ->toArray();
 
-            $eventosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
-                ->whereHas('evento', function ($query) {
-                    $query->where('tip_encontro', 'E');
-                })
-                ->get()
-                ->pluck('idt_evento')
-                ->toArray();
+            // Pos-entrontros e desafios
+            $eventosInscritos = $this->eventoService->getEventosInscritos($pessoa);
 
-            $desafiosInscritos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
-                ->whereHas('evento', function ($query) {
-                    $query->where('tip_encontro', 'D');
-                })
-                ->get()
-                ->pluck('idt_evento')
-                ->toArray();
+            // Encontros anuais
+            $encontrosInscritos = $this->eventoService->getEncontrosInscritos($pessoa);
         }
 
-        $query = Evento::with(['movimento', 'foto'])->orderBy('dat_inicio', 'desc');
+        $query = Evento::with(['movimento', 'foto'])
+            ->withCount([
+                // Participantes únicos
+                'participantes as participantes_count' => function ($q) {
+                    $q->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
+                },
+                // Voluntários únicos
+                'voluntarios as voluntarios_count' => function ($q) {
+                    $q->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
+                },
+                // Trabalhadores únicos
+                'trabalhadores as trabalhadores_count' => function ($q) {
+                    $q->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
+                },
+                // Fichas pode continuar normal (se não precisar ser distinto)
+                'fichas',
+            ])
+            ->orderBy('dat_inicio', 'desc');
 
         if ($search) {
             $query->search($search);
@@ -88,9 +88,8 @@ class EventoController extends Controller
         return view('evento.list', compact(
             'eventos',
             'search',
-            'posEncontrosInscritos',
             'eventosInscritos',
-            'desafiosInscritos',
+            'encontrosInscritos',
             'pessoa'
         ));
     }
@@ -226,7 +225,7 @@ class EventoController extends Controller
 
         return redirect()
             ->route('eventos.index')
-            ->with('success', 'Sua participação foi confirmada. Até lá!');
+            ->with('success', 'Sua participação foi confirmada!');
     }
 
     /**
