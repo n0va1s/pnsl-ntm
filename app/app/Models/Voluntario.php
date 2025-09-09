@@ -42,25 +42,18 @@ class Voluntario extends Model
         // e ainda não foram confirmadas como trabalhadores.
         // Depois, carregar as equipes e habilidades diretamente para cada pessoa.
 
-        return Pessoa::with([
-            'voluntarios' => function ($query) use ($idt_evento) {
-                $query->where('idt_evento', $idt_evento)
-                    ->whereNull('idt_trabalhador')
-                    ->with('equipe')
-                    ->select('idt_pessoa', 'idt_equipe', 'txt_habilidade', 'idt_voluntario');
-            }
-        ])
-            ->whereHas('voluntarios', function ($query) use ($idt_evento) {
-                $query->where('idt_evento', $idt_evento)
-                    ->whereNull('idt_trabalhador');
-            })
+        return self::where('idt_evento', $idt_evento)
+            ->whereNull('idt_trabalhador')
+            ->with(['pessoa', 'equipe'])
             ->get()
-            ->map(function ($pessoa) {
-                // Transforma o objeto Pessoa para o formato desejado, agrupando as equipes
+            ->groupBy('idt_pessoa') // agrupa todos os voluntários por pessoa
+            ->map(function ($voluntarios) {
+                $pessoa = $voluntarios->first()->pessoa;
+
                 return (object) [
-                    'idt_voluntario' => $pessoa->voluntarios->first()->idt_voluntario ?? null, // Pega o ID do primeiro voluntário para a pessoa
+                    'idt_voluntario' => $voluntarios->first()->idt_voluntario, // pode ser qualquer um, já que todos são da mesma pessoa
                     'pessoa' => $pessoa,
-                    'equipes' => $pessoa->voluntarios->map(function ($voluntario) {
+                    'equipes' => $voluntarios->map(function ($voluntario) {
                         return (object) [
                             'idt_equipe' => $voluntario->equipe->idt_equipe,
                             'des_grupo' => $voluntario->equipe->des_grupo,

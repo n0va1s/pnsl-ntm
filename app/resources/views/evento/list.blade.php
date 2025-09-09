@@ -29,12 +29,14 @@
                     </a>
                 @endif
             </form>
-            <a href="{{ route('eventos.create') }}"
-                class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                aria-label="Novo Evento">
-                <x-heroicon-s-plus class="w-5 h-5 mr-2" />
-                Novo
-            </a>
+            @if (Auth::user()->isAdmin())
+                <a href="{{ route('eventos.create') }}"
+                    class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    aria-label="Novo Evento">
+                    <x-heroicon-s-plus class="w-5 h-5 mr-2" />
+                    Novo
+                </a>
+            @endif
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">

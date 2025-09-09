@@ -64,6 +64,9 @@
                     Salvar
                 </button>
             </div>
+
+            <div class="mt-6">
+                {{ $perfis->links() }}
             </div>
     </section>
 </x-layouts.app>

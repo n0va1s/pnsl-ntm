@@ -10,20 +10,22 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $perfis = User::all();
+        $perfis = User::orderBy('name', 'asc')->paginate(10);
         return view('configuracoes.RoleList', compact('perfis'));
     }
 
 
     public function change(Request $request)
     {
-        try {
-            foreach ($request->input('role', []) as $userId => $role) {
-                User::where('id', $userId)->update(['role' => $role]);
-            }
-            return redirect()->route('eventos.index')->with('success', 'Perfis atualizados com sucesso!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erro ao atualizar perfis: ' . $e->getMessage());
+        $request->validate([
+            'role' => 'required|array',
+            'role.*' => 'in:admin,coord,user',
+        ]);
+
+        foreach ($request->input('role', []) as $userId => $role) {
+            User::where('id', $userId)->update(['role' => $role]);
         }
+
+        return redirect()->route('eventos.index')->with('success', 'Perfis atualizados com sucesso!');
     }
 }

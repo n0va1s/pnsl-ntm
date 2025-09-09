@@ -34,7 +34,12 @@ Route::post(
     [HomeController::class, 'contato']
 )->name('home.contato');
 
-
+Route::get('/vem', [HomeController::class, 'fichaVem'])
+    ->name('home.ficha.vem');
+Route::get('/ecc', [HomeController::class, 'fichaEcc'])
+    ->name('home.ficha.ecc');
+Route::get('/sgm', [HomeController::class, 'fichaSgm'])
+    ->name('home.ficha.sgm');
 
 // Area Administrativa
 Route::middleware(['auth'])->group(function () {
@@ -54,6 +59,13 @@ Route::middleware(['auth'])->group(function () {
         '/configuracoes',
         [ConfiguracoesController::class, 'index']
     )->name('configuracoes.index');
+
+    Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
+
+    Route::get('/configuracoes/role', [RoleController::class, 'index'])->name('role.index');
+    Route::post('/configuracoes/role', [RoleController::class, 'store'])->name('role.store');
+    Route::post('/configuracoes/role/change', [RoleController::class, 'change'])->name('role.change');
+
     Route::get(
         '/contatos',
         [ContatoController::class, 'index']
@@ -124,12 +136,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('ecc.approve');
     Route::get('fichas/sgm/approve/{id}', [FichaSGMController::class, 'approve'])
         ->name('sgm.approve');
-
-    Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
-
-    Route::get('/configuracoes/role', [RoleController::class, 'index'])->name('role.index');
-    Route::post('/configuracoes/role', [RoleController::class, 'store'])->name('role.store');
-    Route::post('/configuracoes/role/change', [RoleController::class, 'change'])->name('role.change');
 
     Route::resources([
         'eventos' => EventoController::class,

@@ -158,26 +158,16 @@ class TrabalhadorController extends Controller
             'idt_equipe.required' => 'A equipe é obrigatória.',
         ]);
 
-        try {
-            // 2. Delegar a lógica de negócio para o serviço
-            $this->voluntarioService->confirmacao(
-                $dados['idt_voluntario'],
-                $dados['idt_equipe'],
-                $dados['ind_coordenador'] ?? false,
-                $dados['ind_primeira_vez'] ?? false
-            );
+        $voluntario = $this->voluntarioService->confirmacao(
+            $dados['idt_voluntario'],
+            $dados['idt_equipe'],
+            $dados['ind_coordenador'] ?? false,
+            $dados['ind_primeira_vez'] ?? false
+        );
 
-            // 3. Obter o idt_evento para o redirecionamento
-            $voluntario = Voluntario::find($dados['idt_voluntario']);
-            $idt_evento = $voluntario ? $voluntario->idt_evento : null;
-
-            return redirect()
-                ->route('eventos.index')
-                ->with('success', 'Trabalhador confirmado com sucesso!');
-        } catch (\Exception $e) {
-            Log::error('Erro ao confirmar trabalhador: ' . $e->getMessage(), ['exception' => $e]);
-            return back()->with('error', $e->getMessage() ?: 'Ocorreu um erro ao confirmar o trabalhador. Por favor, tente novamente.');
-        }
+        return redirect()
+            ->route('eventos.index', ['evento' => $voluntario->idt_evento])
+            ->with('success', 'Trabalhador confirmado com sucesso!');
     }
 
     // Gera o quadrante dos trabalhadores do evento
@@ -207,6 +197,7 @@ class TrabalhadorController extends Controller
         ]);
     }
 
+    // Avaliacao do trabalhador apos o evento
     public function review(Request $request)
     {
         $trabalhador = Trabalhador::with(['pessoa', 'evento', 'equipe'])
@@ -218,12 +209,11 @@ class TrabalhadorController extends Controller
         return view('evento.avaliacao', compact('trabalhador'));
     }
 
+    // Salva a avaliacao do trabalhador
     public function send(Request $request)
     {
         $dados = $request->validate([
-            'idt_pessoa' => 'required',
-            'idt_equipe' => 'required',
-            'idt_evento' => 'required',
+            'idt_trabalhador' => 'required',
             'ind_recomendado'  => 'nullable|boolean',
             'ind_lideranca'  => 'nullable|boolean',
             'ind_destaque'  => 'nullable|boolean',
@@ -231,31 +221,23 @@ class TrabalhadorController extends Controller
             'ind_camiseta_pagou'  => 'nullable|boolean',
         ], [
             'idt_trabalhador.required' => 'O trabalhador é obrigatório.',
-            'idt_equipe.required' => 'A equipe é obrigatória.',
-            'idt_evento.required' => 'O evento é obrigatório.',
         ]);
 
-        $trabalhador = Trabalhador::where('idt_evento', $dados['idt_evento'])
-            ->where('idt_equipe', $dados['idt_equipe'])
-            ->where('idt_pessoa', $dados['idt_pessoa'])
-            ->first();
-
-        if (!$trabalhador) {
-            return redirect()->back()->with('error', 'Trabalhador não encontrado.');
-        }
+        $trabalhador = Trabalhador::find($dados['idt_trabalhador']);
 
         // Atualiza os campos booleanos, se existirem
-        $trabalhador->ind_recomendado = $dados['ind_recomendado'] ?? false;
-        $trabalhador->ind_lideranca = $dados['ind_lideranca'] ?? false;
-        $trabalhador->ind_destaque = $dados['ind_destaque'] ?? false;
-        $trabalhador->ind_camiseta_pediu = $dados['ind_camiseta_pediu'] ?? false;
-        $trabalhador->ind_camiseta_pagou = $dados['ind_camiseta_pagou'] ?? false;
+        $trabalhador->fill([
+            'ind_recomendado' => $dados['ind_recomendado'] ?? false,
+            'ind_lideranca' => $dados['ind_lideranca'] ?? false,
+            'ind_destaque' => $dados['ind_destaque'] ?? false,
+            'ind_camiseta_pediu' => $dados['ind_camiseta_pediu'] ?? false,
+            'ind_camiseta_pagou' => $dados['ind_camiseta_pagou'] ?? false,
+            'ind_avaliado' => true,
+        ]);
 
         $trabalhador->save();
 
-        return redirect()
-            ->route('trabalhadores.index', ['evento' => $dados['idt_evento']])
-            ->with('success', 'Trabalhador atualizado com sucesso!');
+        return redirect()->route('quadrante.list', ['evento' => $trabalhador->idt_evento]);
     }
 
     // Remover trabalhador (não implementado)

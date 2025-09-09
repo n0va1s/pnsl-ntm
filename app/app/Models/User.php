@@ -27,6 +27,11 @@ class User extends Authenticatable
         return $this->role === self::ROLE_COORDENADOR;
     }
 
+    public function pessoa()
+    {
+        return $this->hasOne(Pessoa::class, 'idt_usuario', 'id');
+    }
+
     /**
      * The attributes that are mass assignable.
      *

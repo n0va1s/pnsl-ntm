@@ -65,15 +65,21 @@ class VoluntarioService
         });
     }
 
-    public function confirmacao(int $voluntarioId, int $equipeId, bool $isCoordenador = false, bool $isPrimeiraVez = false): void
-    {
+    public function confirmacao(
+        int $voluntarioId,
+        int $equipeId,
+        bool $isCoordenador = false,
+        bool $isPrimeiraVez = false
+    ): Voluntario {
         $voluntario = Voluntario::find($voluntarioId);
 
-        if (!$voluntario) {
-            throw new \Exception('Voluntário não encontrado para confirmação.');
-        }
+        DB::transaction(function () use (
+            $voluntario,
+            $equipeId,
+            $isCoordenador,
+            $isPrimeiraVez
+        ) {
 
-        DB::transaction(function () use ($voluntario, $equipeId, $isCoordenador, $isPrimeiraVez) {
             $trabalhador = Trabalhador::updateOrCreate([
                 'idt_pessoa' => $voluntario->idt_pessoa,
                 'idt_evento' => $voluntario->idt_evento,
@@ -83,9 +89,14 @@ class VoluntarioService
                 'ind_primeira_vez' => $isPrimeiraVez,
             ]);
 
-            $voluntario->update([
-                'idt_trabalhador' => $trabalhador->idt_trabalhador
-            ]);
+            // Atualiza todos as equipes que o voluntário se inscreveu para este evento
+            Voluntario::where('idt_pessoa', $voluntario->idt_pessoa)
+                ->where('idt_evento', $voluntario->idt_evento)
+                ->update([
+                    'idt_trabalhador' => $trabalhador->idt_trabalhador
+                ]);
         });
+
+        return $voluntario;
     }
 }

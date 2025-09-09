@@ -1,17 +1,19 @@
-<x-layouts.app :title="'Ficha do VEM'">
+<x-layouts.public :title="'Ficha do VEM'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900">Ficha do VEM</h1>
             <p class="text-gray-700 mt-1">Cadastre uma nova ficha para um dos nossos eventos próximos</p>
         </div>
-        <div class="flex justify-end mt-4">
-            <a href="{{ route('vem.index') }}"
-                class="inline-flex items-center px-4 py-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                aria-label="Voltar para a lista de fichas">
-                <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
-                Fichas
-            </a>
-        </div>
+        @if (Auth::user())
+            <div class="flex justify-end mt-4">
+                <a href="{{ route('vem.index') }}"
+                    class="inline-flex items-center px-4 py-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    aria-label="Voltar para a lista de fichas">
+                    <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
+                    Fichas
+                </a>
+            </div>
+        @endif
         <form method="POST" x-data="{ bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }} }"
             action="{{ $ficha->exists ? route('vem.update', $ficha) : route('vem.store') }}" class="space-y-8">
             @csrf
@@ -530,4 +532,4 @@
             </div>
         </form>
     </section>
-</x-layouts.app>
+</x-layouts.public>

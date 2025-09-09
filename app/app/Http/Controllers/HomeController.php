@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Contato;
 use App\Models\Evento;
+use App\Models\Ficha;
+use App\Models\FichaVem;
 use App\Models\TipoMovimento;
+use App\Services\FichaService;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -39,5 +42,29 @@ class HomeController extends Controller
 
         Contato::create($data);
         return redirect()->route('home')->with('message', 'Recebemos seu contato. Em breve retornaremos!');
+    }
+
+    public function fichaVem()
+    {
+        $ficha = new Ficha();
+        $ficha->idt_movimento = TipoMovimento::VEM;
+
+        return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
+            'ficha' => $ficha,
+            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
+            'movimentopadrao' => TipoMovimento::VEM,
+        ]));
+
+        return view('ficha.formVEM', compact('ficha'));
+    }
+
+    public function fichaEcc()
+    {
+        return view('ficha.formECC');
+    }
+
+    public function fichaSgm()
+    {
+        return view('ficha.formSGM');
     }
 }

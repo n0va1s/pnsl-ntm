@@ -62,19 +62,17 @@ class EventoController extends Controller
 
         $query = Evento::with(['movimento', 'foto'])
             ->withCount([
-                // Participantes únicos
                 'participantes as participantes_count' => function ($q) {
                     $q->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
                 },
-                // Voluntários únicos
                 'voluntarios as voluntarios_count' => function ($q) {
-                    $q->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
+                    $q->whereNull('idt_trabalhador')
+                        ->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
                 },
-                // Trabalhadores únicos
-                'trabalhadores as trabalhadores_count' => function ($q) {
-                    $q->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
+                'voluntarios as trabalhadores_count' => function ($q) {
+                    $q->whereNotNull('idt_trabalhador')
+                        ->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
                 },
-                // Fichas pode continuar normal (se não precisar ser distinto)
                 'fichas',
             ])
             ->orderBy('dat_inicio', 'desc');

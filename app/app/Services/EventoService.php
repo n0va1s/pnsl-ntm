@@ -256,7 +256,7 @@ class EventoService
     // Encontros anuais
     public function getEncontrosInscritos(Pessoa $pessoa): array
     {
-        return Evento::whereHas('trabalhadores', function ($query) use ($pessoa) {
+        return Evento::whereHas('voluntarios', function ($query) use ($pessoa) {
             $query->where('idt_pessoa', $pessoa->idt_pessoa);
         })
             ->pluck('idt_evento')

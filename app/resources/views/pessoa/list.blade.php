@@ -27,7 +27,6 @@
                     </a>
                 @endif
             </form>
-
             <div class="flex justify-end mb-4">
                 <a href="{{ route('pessoas.create') }}"
                     class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none">

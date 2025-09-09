@@ -12,13 +12,16 @@
             <x-app-logo />
         </a>
         <flux:navlist variant="outline">
-            <flux:navlist.group :heading="__('Platform')" class="grid">
+            <flux:navlist.group :heading="__('Acesse')" class="grid">
+                <flux:navlist.item icon="home" :href="route('home')" :current="request()->routeIs('home')"
+                    wire:navigate>
+                    {{ __('Início') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="bookmark" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
+                    wire:navigate>
+                    {{ __('Painel') }}
+                </flux:navlist.item>
                 @if (Auth::user() && Auth::user()->isAdmin())
-                    <flux:navlist.item icon="home" :href="route('dashboard')"
-                        :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
-                    </flux:navlist.item>
-
                     <flux:navlist.item icon="cog" :href="route('configuracoes.index')"
                         :current="request()->routeIs('configuracoes.index')" wire:navigate>
                         {{ __('Configurações') }}
@@ -36,6 +39,11 @@
                 <flux:navlist.item icon="calendar" :href="route('eventos.index')"
                     :current="request()->routeIs('eventos.index')" wire:navigate>
                     {{ __('Eventos') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="user"
+                    :href="route('pessoas.edit', ['pessoa' => Auth::user()->pessoa->idt_pessoa])"
+                    :current="request()->routeIs('pessoas.edit')" wire:navigate>
+                    {{ __('Meus Dados') }}
                 </flux:navlist.item>
                 @if (Auth::user() && Auth::user()->isAdmin())
                     <flux:navlist.item icon="user" :href="route('pessoas.index')"

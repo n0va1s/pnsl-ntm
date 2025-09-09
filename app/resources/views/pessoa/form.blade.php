@@ -7,16 +7,16 @@
                 {{ $pessoa->exists ? 'Edite os dados da pessoa' : 'Cadastre uma nova pessoa com dados básicos e restrições de saúde' }}
             </p>
         </div>
-
-        <div class="flex justify-end mt-4">
-            <a href="{{ route('pessoas.index') }}"
-                class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                aria-label="Voltar para a lista de pessoas">
-                <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
-                Pessoas
-            </a>
-        </div>
-
+        @if (Auth::user()->isAdmin())
+            <div class="flex justify-end mt-4">
+                <a href="{{ route('pessoas.index') }}"
+                    class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    aria-label="Voltar para a lista de pessoas">
+                    <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
+                    Pessoas
+                </a>
+            </div>
+        @endif
         <div class="mb-6 bg-white dark:bg-zinc-800 rounded-md shadow p-6">
             <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100">
                 <x-heroicon-o-user-plus class="text-blue-600 w-6 h-6" /> Dados da Pessoa
