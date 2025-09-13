@@ -398,34 +398,34 @@ describe('EventoService - Participação', function () {
     });
 
     test('retorna eventos inscritos corretamente', function () {
-        $evento1 = Evento::factory()->create(
-            [
-                'dat_inicio' => '2024-04-01',
-                'tip_evento' => 'P'
-            ]
-        );
-        $evento2 = Evento::factory()->create(
-            [
-                'dat_inicio' => '2024-05-01',
-                'tip_evento' => 'P'
-            ]
-        );
-        // Não inscrito
-        $evento3 = Evento::factory()->create(
-            [
-                'dat_inicio' => '2024-06-01',
-                'tip_evento' => 'P'
-            ]
-        );
+        $evento1 = Evento::factory()->create([
+            'dat_inicio' => '2024-04-01',
+            'tip_evento' => 'P'
+        ]);
 
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento1->idt_evento]);
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2->idt_evento]);
+        $evento2 = Evento::factory()->create([
+            'dat_inicio' => '2024-05-01',
+            'tip_evento' => 'P'
+        ]);
+
+        // Não inscrito
+        $evento3 = Evento::factory()->create([
+            'dat_inicio' => '2024-06-01',
+            'tip_evento' => 'P'
+        ]);
+
+        Participante::factory()->create(
+            ['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento1->idt_evento]
+        );
+        Participante::factory()->create(
+            ['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2->idt_evento]
+        );
 
         $eventosInscritos = $this->eventoService->getEventosInscritos($this->pessoa);
 
         expect($eventosInscritos)->toHaveCount(2)
-            ->and($eventosInscritos->pluck('idt_evento')->toArray())->toContain($evento1->idt_evento, $evento2->idt_evento)
-            ->and($eventosInscritos->pluck('idt_evento')->toArray())->not->toContain($evento3->idt_evento);
+            ->and($eventosInscritos)->toContain($evento1->idt_evento, $evento2->idt_evento)
+            ->and($eventosInscritos)->not->toContain($evento3->idt_evento);
     });
 });
 

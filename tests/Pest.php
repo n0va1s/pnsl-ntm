@@ -52,7 +52,10 @@ afterEach(function () {
 
 function createUser(): \App\Models\User
 {
-    return \App\Models\User::factory()->create();
+    $user = \App\Models\User::factory()->create();
+    \App\Models\Pessoa::factory()->for($user, 'usuario')->create();
+
+    return $user;
 }
 
 function createMovimentos(): void

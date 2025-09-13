@@ -39,7 +39,7 @@ class Pessoa extends Model
 
     public function usuario()
     {
-        return $this->hasOne(User::class, 'id', 'idt_usuario');
+        return $this->belongsTo(User::class, 'idt_usuario', 'id');
     }
 
     public function foto()

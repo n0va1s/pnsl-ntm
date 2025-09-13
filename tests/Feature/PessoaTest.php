@@ -3,28 +3,28 @@
 use App\Models\Pessoa;
 use App\Models\PessoaSaude;
 use App\Models\TipoRestricao;
-use App\Models\User;
 use App\Services\UserService;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
 
 use function Pest\Laravel\{get, post, put, delete};
 
-// Usa a trait RefreshDatabase para garantir que o banco de dados seja limpo entre os testes.
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+
+    // Criar usuário e logar
+    $this->user = createUser();
     $this->actingAs($this->user);
 
-    // Cria os dados de referência para os testes de saúde
+    // Cria os dados de referência para os dados de saúde
     TipoRestricao::factory()->count(2)->create();
 
     // Mock do UserService para evitar chamadas reais
     $this->mock(UserService::class, function (MockInterface $mock) {
-        $mock->shouldReceive('getUsuarioByEmail')->andReturn(null);
+        $mock->shouldReceive('getUsuarioByEmail')->andReturn($this->user);
     });
 });
 
@@ -65,7 +65,7 @@ test('a busca por nome ou apelido funciona corretamente', function () {
         'dat_nascimento' => '1992-08-20', // qualquer data válida
     ]);
 
-    $response = get(route('pessoas.index', ['search' => 'Joao']));
+    $response = $this->actingAs($this->user)->get(route('pessoas.index', ['search' => 'Joao']));
 
     $response->assertStatus(200)
         ->assertSee('Joao da Silva')
@@ -79,7 +79,7 @@ test('a busca por nome ou apelido funciona corretamente', function () {
 */
 
 test('a pagina de criacao esta acessivel', function () {
-    get(route('pessoas.create'))
+    $this->actingAs($this->user)->get(route('pessoas.create'))
         ->assertStatus(200)
         ->assertViewIs('pessoa.form')
         ->assertViewHas('restricoes')
@@ -89,7 +89,7 @@ test('a pagina de criacao esta acessivel', function () {
 test('pode criar uma nova pessoa com sucesso', function () {
     $data = Pessoa::factory()->make()->toArray();
 
-    post(route('pessoas.store'), $data)
+    $this->actingAs($this->user)->post(route('pessoas.store'), $data)
         ->assertRedirect(route('pessoas.index'))
         ->assertSessionHas('success', 'Pessoa criada com sucesso.');
 
@@ -108,7 +108,7 @@ test('pode criar pessoa com restricoes de saude e foto', function () {
     $data['complementos'] = [$restricao->idt_restricao => $complemento];
     $data['med_foto'] = UploadedFile::fake()->image('foto_perfil.jpg');
 
-    post(route('pessoas.store'), $data)
+    $this->actingAs($this->user)->post(route('pessoas.store'), $data)
         ->assertRedirect(route('pessoas.index'))
         ->assertSessionHas('success', 'Pessoa criada com sucesso.');
 
@@ -136,7 +136,7 @@ test('pode criar uma pessoa com parceiro', function () {
     $parceiro = Pessoa::factory()->create();
     $data = Pessoa::factory()->make(['idt_parceiro' => $parceiro->idt_pessoa])->toArray();
 
-    post(route('pessoas.store'), $data)
+    $this->actingAs($this->user)->post(route('pessoas.store'), $data)
         ->assertRedirect(route('pessoas.index'))
         ->assertSessionHas('success', 'Pessoa criada com sucesso.');
 
@@ -152,7 +152,7 @@ test('pode criar uma pessoa com parceiro', function () {
 test('nao pode criar uma pessoa com dados invalidos', function () {
     $data = ['nom_pessoa' => '', 'eml_pessoa' => 'nao-e-email']; // Dados inválidos
 
-    post(route('pessoas.store'), $data)
+    $this->actingAs($this->user)->post(route('pessoas.store'), $data)
         ->assertSessionHasErrors(['nom_pessoa', 'eml_pessoa']);
 });
 
@@ -165,14 +165,14 @@ test('nao pode criar uma pessoa com dados invalidos', function () {
 test('a pagina de visualizacao e edicao esta acessivel', function () {
     $pessoa = Pessoa::factory()->create();
 
-    get(route('pessoas.edit', $pessoa->idt_pessoa))
+    $this->actingAs($this->user)->get(route('pessoas.edit', $pessoa->idt_pessoa))
         ->assertStatus(200)
         ->assertViewIs('pessoa.form')
         ->assertSee($pessoa->nom_pessoa);
 });
 
 test('retorna 404 para show/edit de pessoa inexistente', function () {
-    get(route('pessoas.edit', 999))->assertStatus(404);
+    $this->actingAs($this->user)->get(route('pessoas.edit', 999))->assertStatus(404);
 });
 
 /*
@@ -185,7 +185,7 @@ test('pode atualizar uma pessoa existente com sucesso', function () {
     $pessoa = Pessoa::factory()->create();
     $novosDados = ['nom_pessoa' => 'Pessoa Atualizada'];
 
-    put(route('pessoas.update', $pessoa->idt_pessoa), array_merge($pessoa->toArray(), $novosDados))
+    $this->actingAs($this->user)->put(route('pessoas.update', $pessoa->idt_pessoa), array_merge($pessoa->toArray(), $novosDados))
         ->assertRedirect(route('pessoas.index'))
         ->assertSessionHas('success', 'Pessoa atualizada com sucesso.');
 
@@ -210,7 +210,7 @@ test('pode atualizar pessoa com novas restricoes de saude', function () {
     ];
 
     // Envia a requisição de update
-    put(route('pessoas.update', $pessoa->idt_pessoa), array_merge($pessoa->toArray(), $dadosUpdate))
+    $this->actingAs($this->user)->put(route('pessoas.update', $pessoa->idt_pessoa), array_merge($pessoa->toArray(), $dadosUpdate))
         ->assertRedirect(route('pessoas.index'))
         ->assertSessionHas('success', 'Pessoa atualizada com sucesso.');
 
@@ -237,7 +237,7 @@ test('pode atualizar pessoa com novas restricoes de saude', function () {
 test('pode excluir uma pessoa com sucesso', function () {
     $pessoa = Pessoa::factory()->create();
 
-    delete(route('pessoas.destroy', $pessoa->idt_pessoa))
+    $this->actingAs($this->user)->delete(route('pessoas.destroy', $pessoa->idt_pessoa))
         ->assertRedirect(route('pessoas.index'))
         ->assertSessionHas('success', 'Pessoa excluída com sucesso!');
 
