@@ -118,7 +118,7 @@ class FichaVemController extends Controller
             }
         }
 
-        return redirect()->route('vem.index')->with('success', 'Ficha cadastrada com sucesso!');
+        return redirect()->route('home')->with('success', 'Ficha cadastrada com sucesso!');
     }
 
     /**

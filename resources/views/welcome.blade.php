@@ -1,4 +1,7 @@
 <x-layouts.public :title="'Não Tenhais Medo'">
+    <div>
+        <x-session-alert />
+    </div>
     <!-- Seção: Sistema de Gestão -->
     <section
         class="flex flex-col md:flex-row items-center justify-center text-center md:text-left space-y-6 md:space-y-0 md:space-x-10">
