@@ -71,7 +71,7 @@ describe('Cadastro de Ficha VEM', function () {
         ];
         $this->actingAs($this->user)
             ->post(route('vem.store'), $fichaData)
-            ->assertRedirect(route('vem.index'))
+            ->assertRedirect(route('home'))
             ->assertSessionHas('success', 'Ficha cadastrada com sucesso!');
 
         $this->assertDatabaseHas('ficha', [
@@ -105,7 +105,7 @@ describe('Cadastro de Ficha VEM', function () {
 
         $this->actingAs($this->user)
             ->post(route('vem.store'), $fichaData)
-            ->assertRedirect(route('vem.index'));
+            ->assertRedirect(route('home'));
 
         $ficha = Ficha::where('eml_candidato', 'maria@email.com')->first();
 
@@ -144,7 +144,7 @@ describe('Cadastro de Ficha VEM', function () {
 
         $this->actingAs($this->user)
             ->post(route('vem.store'), $fichaData)
-            ->assertRedirect(route('vem.index'));
+            ->assertRedirect(route('home'));
 
         $ficha = Ficha::where('eml_candidato', 'pedro@email.com')->first();
 
