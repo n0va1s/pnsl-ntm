@@ -27,25 +27,37 @@ class TrabalhadorController extends Controller
     public function index(Request $request): View
     {
         $search = $request->get('search');
-        $eventoId = $request->get('evento');
+        $idt_evento = $request->get('evento');
+        $idt_equipe = $request->get('equipe');
 
         $evento = null;
-        if ($eventoId) {
-            $evento = Evento::find($eventoId);
+        if ($idt_evento) {
+            $evento = Evento::find($idt_evento);
         }
+
+        $equipes  = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
+            ->select('idt_equipe', 'des_grupo')->get();
 
         $trabalhadores = Trabalhador::with(['pessoa', 'evento', 'equipe'])
             ->when($search, function ($query, $search) {
-                return $query->where('nom_pessoa', 'like', "%{$search}%")
-                    ->orWhere('nom_apelido', 'like', "%{$search}%");
-            })->when($eventoId, function ($query, $eventoId) {
-                return $query->where('idt_evento', $eventoId);
-            })
+                return $query->whereHas('pessoa', function ($q) use ($search) {
+                    $q->where('nom_pessoa', 'like', "%{$search}%")
+                        ->orWhere('nom_apelido', 'like', "%{$search}%");
+                });
+            })->when($idt_equipe, function ($query, $idt_equipe) {
+                return $query->where('idt_equipe', $idt_equipe);
+            })->evento($idt_evento)
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
 
-        return view('trabalhador.list', compact('trabalhadores', 'search', 'evento'));
+        return view('trabalhador.list', compact(
+            'trabalhadores',
+            'search',
+            'evento',
+            'equipes',
+            'idt_equipe'
+        ));
     }
 
     public function create(Request $request): View

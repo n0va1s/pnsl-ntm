@@ -159,7 +159,7 @@ class PessoaController extends Controller
                 }
             }
         }
-        return redirect()->route('pessoas.index')->with('success', 'Pessoa atualizada com sucesso.');
+        return redirect()->route('dashboard')->with('success', 'Pessoa atualizada com sucesso.');
     }
 
     public function destroy($id): RedirectResponse

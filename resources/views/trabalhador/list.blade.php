@@ -11,16 +11,33 @@
         <div class="flex justify-between items-center mb-4">
             <form method="GET" action="{{ route('trabalhadores.index') }}"
                 class="flex items-center gap-2 w-full max-w-md">
-                <input type="text" name="search" id="search" value="{{ $search }}"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Buscar por nome ou apelido" />
+                <input type="hidden" name="evento" value="{{ $evento->idt_evento }}">
+                <div>
+                    <label for="search" class="sr-only">Buscar</label>
+                    <input type="text" name="search" id="search" value="{{ $search }}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Buscar por nome ou apelido" />
+                </div>
+                <div>
+                    <label for="equipe" class="sr-only">Equipes</label>
+                    <select id="equipe" name="equipe"
+                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Equipe</option>
+                        @foreach ($equipes as $equipe)
+                            <option value="{{ $equipe->idt_equipe }}"
+                                {{ old('idt_equipe', $idt_equipe) == $equipe->idt_equipe ? 'selected' : '' }}>
+                                {{ $equipe->des_grupo }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <button type="submit"
                     class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                     <x-heroicon-c-arrow-long-right class="w-5 h-5 mr-2" />
                     Buscar
                 </button>
-                @if ($search)
-                    <a href="{{ route('trabalhadores.index') }}"
+
+                @if ($search || $equipe)
+                    <a href="{{ route('trabalhadores.index', ['evento' => $evento]) }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400">
                         <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
                         Limpar
@@ -69,7 +86,8 @@
 
                                 <td class="p-3 text-gray-900 dark:text-gray-200">{{ $trabalhador->pessoa->nom_pessoa }}
                                 </td>
-                                <td class="p-3 text-gray-900 dark:text-gray-200">{{ $trabalhador->pessoa->nom_apelido }}
+                                <td class="p-3 text-gray-900 dark:text-gray-200">
+                                    {{ $trabalhador->pessoa->nom_apelido }}
                                 </td>
                                 <td class="p-3 text-gray-700 dark:text-gray-300">{{ $trabalhador->pessoa->tel_pessoa }}
                                 </td>

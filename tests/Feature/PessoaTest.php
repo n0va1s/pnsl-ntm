@@ -186,7 +186,7 @@ test('pode atualizar uma pessoa existente com sucesso', function () {
     $novosDados = ['nom_pessoa' => 'Pessoa Atualizada'];
 
     $this->actingAs($this->user)->put(route('pessoas.update', $pessoa->idt_pessoa), array_merge($pessoa->toArray(), $novosDados))
-        ->assertRedirect(route('pessoas.index'))
+        ->assertRedirect(route('dashboard'))
         ->assertSessionHas('success', 'Pessoa atualizada com sucesso.');
 
     $this->assertDatabaseHas('pessoa', $novosDados);
@@ -211,7 +211,7 @@ test('pode atualizar pessoa com novas restricoes de saude', function () {
 
     // Envia a requisição de update
     $this->actingAs($this->user)->put(route('pessoas.update', $pessoa->idt_pessoa), array_merge($pessoa->toArray(), $dadosUpdate))
-        ->assertRedirect(route('pessoas.index'))
+        ->assertRedirect(route('dashboard'))
         ->assertSessionHas('success', 'Pessoa atualizada com sucesso.');
 
     // Confirma que a restrição antiga não existe mais

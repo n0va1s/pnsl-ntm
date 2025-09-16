@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -59,5 +60,17 @@ class Trabalhador extends Model
     public function equipe()
     {
         return $this->belongsTo(TipoEquipe::class, 'idt_equipe');
+    }
+
+    /**
+     * Scope para retornar os trabalhadores de um evento específico
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int|null  $idt_evento
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeEvento(Builder $query, ?int $idt_evento): Builder
+    {
+        return $query->where('idt_evento', $idt_evento);
     }
 }

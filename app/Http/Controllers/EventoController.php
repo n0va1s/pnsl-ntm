@@ -44,6 +44,7 @@ class EventoController extends Controller
     public function index(Request $request): View
     {
         $search = trim($request->input('search', ''));
+        $idt_movimento = $request->input('idt_movimento');
 
         $pessoa = Auth::check() ? $this->userService->createPessoaFromLoggedUser() : null;
 
@@ -74,21 +75,26 @@ class EventoController extends Controller
                         ->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
                 },
                 'fichas',
-            ])
-            ->orderBy('dat_inicio', 'desc');
+            ])->when($search, function ($query, $search) {
+                return $query->search($search);
+            })->when($idt_movimento, function ($query, $idt_movimento) {
+                return $query->movimento($idt_movimento);
+            })->orderBy('dat_inicio', 'desc');
 
-        if ($search) {
-            $query->search($search);
-        }
+        $movimentos = TipoMovimento::select('idt_movimento', 'nom_movimento', 'des_sigla')
+            ->orderBy('des_movimento')
+            ->get();
 
         $eventos = $query->paginate(12);
 
         return view('evento.list', compact(
             'eventos',
             'search',
+            'idt_movimento',
             'eventosInscritos',
             'encontrosInscritos',
-            'pessoa'
+            'pessoa',
+            'movimentos'
         ));
     }
 

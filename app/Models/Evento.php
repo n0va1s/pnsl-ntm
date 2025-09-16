@@ -101,17 +101,32 @@ class Evento extends Model
         return $query;
     }
 
+    /**
+     * Scope para buscar eventos por ID de movimento.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int|null  $idt_movimento
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeMovimento(Builder $query, ?int $idt_movimento)
+    {
+        if ($idt_movimento) {
+            return $query->where('idt_movimento', $idt_movimento);
+        }
+        return $query;
+    }
+
     public function getDataInicioFormatada()
     {
         return $this->dat_inicio
-            ? $this->dat_inicio->format('Y-m-d')
+            ? $this->dat_inicio->format('d/m/Y')
             : null;
     }
 
     public function getDataTerminoFormatada()
     {
         return $this->dat_termino
-            ? $this->dat_termino->format('Y-m-d')
+            ? $this->dat_termino->format('d/m/Y')
             : null;
     }
 }

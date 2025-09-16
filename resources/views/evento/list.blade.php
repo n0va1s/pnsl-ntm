@@ -10,17 +10,31 @@
 
         <div class="flex justify-between items-center mb-4">
             <form method="GET" action="{{ route('eventos.index') }}" class="flex items-center gap-2 w-full max-w-md">
-                <label for="search" class="sr-only">Buscar</label>
-                <input type="text" name="search" id="search" value="{{ $search }}"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Buscar por descrição ou número" />
+                <div>
+                    <label for="search" class="sr-only">Buscar</label>
+                    <input type="text" name="search" id="search" value="{{ $search }}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Buscar por descrição ou número" />
+                </div>
+                <div>
+                    <label for="idt_movimento" class="sr-only">Movimentos</label>
+                    <select id="idt_movimento" name="idt_movimento"
+                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Movimento</option>
+                        @foreach ($movimentos as $movimento)
+                            <option value="{{ $movimento->idt_movimento }}"
+                                {{ old('idt_movimento', $idt_movimento) == $movimento->idt_movimento ? 'selected' : '' }}>
+                                {{ $movimento->des_sigla }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <button type="submit"
                     class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     aria-label="Cadastrar um novo evento">
                     <x-heroicon-c-arrow-long-right class="w-5 h-5 mr-2" />
                     Buscar
                 </button>
-                @if ($search)
+                @if ($search || $idt_movimento)
                     <a href="{{ route('eventos.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:outline-none"
                         aria-label="Limpar a busca">
