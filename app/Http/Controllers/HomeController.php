@@ -48,10 +48,11 @@ class HomeController extends Controller
     {
         $ficha = new Ficha();
         $ficha->idt_movimento = TipoMovimento::VEM;
+        $eventos = Evento::getByTipo(TipoMovimento::VEM, 'E', 3);
 
         return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
+            'eventos' => $eventos,
             'movimentopadrao' => TipoMovimento::VEM,
         ]));
 

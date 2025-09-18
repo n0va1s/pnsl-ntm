@@ -3,7 +3,7 @@
 
         {{-- Flash messages --}}
         <div>
-            <x-session-alert/>
+            <x-session-alert />
         </div>
 
         {{-- Título --}}
@@ -31,6 +31,18 @@
                 <div class="bg-white dark:bg-zinc-800 rounded-xl p-5 shadow border space-y-4">
 
                     {{-- Nome e Apelido --}}
+                    <div class="flex items-center justify-center">
+                        @if ($voluntario->pessoa->foto && $voluntario->pessoa->foto->med_foto)
+                            <img src="{{ asset('storage/' . $voluntario->pessoa->foto->med_foto) }}"
+                                alt="Foto de {{ $voluntario->pessoa->nom_pessoa }}"
+                                class="w-24 h-24 rounded-full object-cover border border-gray-300 dark:border-zinc-600 shadow-sm">
+                        @else
+                            <div
+                                class="w-24 h-24 rounded-full bg-gray-200 dark:bg-zinc-700 flex items-center justify-center text-gray-400">
+                                <x-heroicon-o-user class="w-24 h-24" />
+                            </div>
+                        @endif
+                    </div>
                     <div>
                         <h2 class="text-xl font-bold text-gray-800 dark:text-white">
                             {{ $voluntario->pessoa->nom_pessoa }}</h2>
@@ -39,8 +51,7 @@
 
                     {{-- Equipes que a pessoa marcou --}}
                     <div>
-                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Equipes que a pessoa gostaria de
-                            trabalhar:</p>
+                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Equipes sugeridas:</p>
                         <ul class="list-none pl-0 text-sm">
                             @forelse ($voluntario->equipes as $equipe_detalhe)
                                 {{-- Renomeado para maior clareza --}}

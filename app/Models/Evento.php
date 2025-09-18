@@ -116,6 +116,22 @@ class Evento extends Model
         return $query;
     }
 
+    /**
+     * Retorna collection de eventos por tipo de movimento e tipo de evento
+     *
+     * @param  int  $tipMovimento // Constantes da classe TipoMovimento
+     * @param  string  $tipEvento // E - evento anual, P - pós-encontro, D - desafio
+     * @return int|null $limite // quantidade de linha retornadas
+     */
+    public static function getByTipo(int $tipMovimento, string $tipEvento, ?int $limite)
+    {
+        if ($limite) {
+            return Evento::where('idt_movimento', $tipMovimento)->where('tip_evento', $tipEvento)->orderBy('dat_inicio', 'asc')->limit($limite)->get();
+        } else {
+            return Evento::where('idt_movimento', $tipMovimento)->where('tip_evento', $tipEvento)->orderBy('dat_inicio', 'asc')->get();
+        }
+    }
+
     public function getDataInicioFormatada()
     {
         return $this->dat_inicio

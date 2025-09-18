@@ -43,11 +43,13 @@ class FichaSGMController extends Controller
         return view('ficha.listSGM', compact('fichas', 'search', 'evento'));
     }
 
-    public function create() {
+    public function create()
+    {
         $ficha = new Ficha();
+        $eventos = Evento::getByTipo(TipoMovimento::ECC, 'E', 3);
         return view('ficha.formSGM', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::SegueMe)->get(),
+            'eventos' => $eventos,
             'movimentopadrao' => TipoMovimento::SegueMe,
         ]));
     }
@@ -61,7 +63,7 @@ class FichaSGMController extends Controller
 
         // Cria FichaSgm se enviado
 
-        if($fichaRequest->filled('nom_mae')) {
+        if ($fichaRequest->filled('nom_mae')) {
             $sgmData = $sgmRequest->validated();
             $ficha->fichaSGM()->create($sgmData);
         }
@@ -80,7 +82,8 @@ class FichaSGMController extends Controller
         return redirect()->route('ficha.listSGM', ['evento' => $ficha->idt_evento]);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'analises.situacao'])->find($id);
 
         return view('ficha.formSGM', array_merge(FichaService::dadosFixosFicha($ficha), [
@@ -90,7 +93,8 @@ class FichaSGMController extends Controller
         ]));
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'analises.situacao'])->find($id);
 
         return view('ficha.formSGM', array_merge(FichaService::dadosFixosFicha($ficha), [
@@ -111,7 +115,7 @@ class FichaSGMController extends Controller
         $ficha->update($fichaData);
 
 
-        if($fichaRequest->filled('nom_mae') || $fichaRequest->filled('nom_pai')) {
+        if ($fichaRequest->filled('nom_mae') || $fichaRequest->filled('nom_pai')) {
             $sgmData = $sgmRequest->validated();
             $sgmData['idt_ficha'] = $ficha->idt_ficha;
 
@@ -126,7 +130,7 @@ class FichaSGMController extends Controller
             $situacao = $fichaRequest->input('idt_situacao');
             $analise = $ficha->analises()->where('idt_situacao', $situacao)->first();
             // A ficha ja tem a situacao
-            if($analise) {
+            if ($analise) {
                 $analise->update([
                     'txt_analise' => $fichaRequest->input('txt_analise')
                 ]);
@@ -167,13 +171,13 @@ class FichaSGMController extends Controller
             Ficha::find($id)->delete();
 
             return redirect()
-               ->route('sgm.index')
-               ->with('success', 'Ficha excluída com sucesso!');
+                ->route('sgm.index')
+                ->with('success', 'Ficha excluída com sucesso!');
         } catch (QueryException $e) {
-            if ($e->getCode() === '23000'){
+            if ($e->getCode() === '23000') {
                 return redirect()
-                   ->route('sgm.index')
-                   ->with('error', 'Não é possível excluir esta ficha. É preciso apagar os dados associados.');
+                    ->route('sgm.index')
+                    ->with('error', 'Não é possível excluir esta ficha. É preciso apagar os dados associados.');
             }
 
             return redirect()
@@ -181,6 +185,4 @@ class FichaSGMController extends Controller
                 ->with('error', 'Erro ao tentar excluir a ficha.');
         }
     }
- }
-
-
+}

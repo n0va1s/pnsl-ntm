@@ -52,9 +52,10 @@ class FichaEccController extends Controller
     public function create()
     {
         $ficha = new Ficha();
+        $eventos = Evento::getByTipo(TipoMovimento::ECC, 'E', 3);
         return view('ficha.formECC', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
+            'eventos' => $eventos,
             'movimentopadrao' => TipoMovimento::ECC,
         ]));
     }

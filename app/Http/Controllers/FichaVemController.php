@@ -53,9 +53,10 @@ class FichaVemController extends Controller
     public function create()
     {
         $ficha = new Ficha();
+        $eventos = Evento::getByTipo(TipoMovimento::VEM, 'E', 3);
         return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
+            'eventos' => $eventos,
             'movimentopadrao' => TipoMovimento::VEM,
         ]));
     }
