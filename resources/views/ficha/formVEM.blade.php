@@ -14,7 +14,7 @@
                 </a>
             </div>
         @endif
-        @if (eventos->count() > 0)
+        @if ($eventos->count() > 0)
             <form method="POST" x-data="{ bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }} }"
                 action="{{ $ficha->exists ? route('vem.update', $ficha) : route('vem.store') }}" class="space-y-8">
                 @csrf
