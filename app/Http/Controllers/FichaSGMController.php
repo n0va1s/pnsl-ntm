@@ -46,7 +46,7 @@ class FichaSGMController extends Controller
     public function create()
     {
         $ficha = new Ficha();
-        $eventos = Evento::getByTipo(TipoMovimento::ECC, 'E', 3);
+        $eventos = Evento::getByTipo(TipoMovimento::SegueMe, 'E', 3);
         return view('ficha.formSGM', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => $eventos,

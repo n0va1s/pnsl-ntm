@@ -521,7 +521,7 @@
         @else
             <div class="col-span-full">
                 <div
-                    class="flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-800 rounded-xl shadow border border-dashed border-gray-300 dark:border-zinc-600">
+                    class="flex flex-col items-center justify-center text-center p-10 mt-4 bg-white dark:bg-zinc-800 rounded-xl shadow border border-dashed border-gray-300 dark:border-zinc-600">
                     <x-heroicon-o-user-group class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
                     <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Nenhum evento disponível no momento
                         encontrado</p>
