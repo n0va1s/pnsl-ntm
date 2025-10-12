@@ -8,16 +8,35 @@ use App\Models\Evento;
 use App\Models\Ficha;
 use App\Models\TipoMovimento;
 use App\Services\FichaService;
+use App\Traits\LogContext;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class FichaSGMController extends Controller
 {
+    use LogContext;
+
+    protected $fichaService;
+
+    public function __construct(FichaService $fichaService)
+    {
+        $this->fichaService = $fichaService;
+    }
+
     public function index(Request $request)
     {
+        $start = microtime(true);
+        $context = $this->getLogContext($request);
+
         $search = $request->get('search');
         $eventoId = $request->get('evento');
         $evento = null;
+
+        Log::info('Requisição de listagem de fichas SGM iniciada', array_merge($context, [
+            'search_term' => $search,
+            'evento_filtro' => $eventoId,
+        ]));
 
         if ($eventoId) {
             $evento = Evento::find($eventoId);
@@ -40,14 +59,25 @@ class FichaSGMController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        $duration = round((microtime(true) - $start) * 1000, 2);
+
+        Log::notice('Listagem de fichas SGM concluída com sucesso', array_merge($context, [
+            'total_fichas' => $fichas->total(),
+            'duration_ms' => $duration,
+        ]));
+
         return view('ficha.listSGM', compact('fichas', 'search', 'evento'));
     }
 
     public function create()
     {
+        $context = $this->getLogContext(request());
+
+        Log::info('Acesso ao formulário de criação de ficha SGM', $context);
+
         $ficha = new Ficha();
         $eventos = Evento::getByTipo(TipoMovimento::SegueMe, 'E', 3);
-        return view('ficha.formSGM', array_merge(FichaService::dadosFixosFicha($ficha), [
+        return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => $eventos,
             'movimentopadrao' => TipoMovimento::SegueMe,
@@ -58,10 +88,16 @@ class FichaSGMController extends Controller
         FichaRequest $fichaRequest,
         FichaSGMRequest $sgmRequest
     ) {
+        $start = microtime(true);
+        $context = $this->getLogContext($fichaRequest);
+
+        Log::info('Tentativa de criação de ficha SGM', array_merge($context, [
+            'candidato' => $fichaRequest->input('nom_candidato'),
+            'evento_id' => $fichaRequest->input('idt_evento'),
+        ]));
+
         $data = $fichaRequest->validated();
         $ficha = Ficha::create($data);
-
-        // Cria FichaSgm se enviado
 
         if ($fichaRequest->filled('nom_mae')) {
             $sgmData = $sgmRequest->validated();
@@ -79,14 +115,24 @@ class FichaSGMController extends Controller
             }
         }
 
+        $duration = round((microtime(true) - $start) * 1000, 2);
+
+        Log::notice('Ficha SGM criada com sucesso', array_merge($context, [
+            'ficha_id' => $ficha->idt_ficha,
+            'duration_ms' => $duration,
+        ]));
+
         return redirect()->route('ficha.listSGM', ['evento' => $ficha->idt_evento]);
     }
 
     public function show($id)
     {
+        $context = $this->getLogContext(request());
+        Log::info('Visualização de ficha SGM', array_merge($context, ['ficha_id' => $id]));
+
         $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'analises.situacao'])->find($id);
 
-        return view('ficha.formSGM', array_merge(FichaService::dadosFixosFicha($ficha), [
+        return view('ficha.formSGM', array_merge($his->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
             'movimentopadrao' => TipoMovimento::SegueMe,
@@ -95,9 +141,13 @@ class FichaSGMController extends Controller
 
     public function edit($id)
     {
+        $context = $this->getLogContext(request());
+
+        Log::info('Acesso ao formulário de edição de ficha SGM', array_merge($context, ['ficha_id' => $id]));
+
         $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'analises.situacao'])->find($id);
 
-        return view('ficha.formSGM', array_merge(FichaService::dadosFixosFicha($ficha), [
+        return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
             'movimentopadrao' => TipoMovimento::SegueMe,
@@ -109,6 +159,15 @@ class FichaSGMController extends Controller
         FichaSGMRequest $sgmRequest,
         $id
     ) {
+
+        $start = microtime(true);
+        $context = $this->getLogContext($fichaRequest);
+
+        Log::info('Tentativa de atualização de ficha SGM', array_merge($context, [
+            'ficha_id' => $id,
+            'candidato' => $fichaRequest->input('nom_candidato'),
+        ]));
+
         $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'analises'])->findOrFail($id);
 
         $fichaData = $fichaRequest->validated();
@@ -155,20 +214,55 @@ class FichaSGMController extends Controller
             }
         }
 
+        $duration = round((microtime(true) - $start) * 1000, 2);
+
+        Log::notice('Ficha SGM atualizada com sucesso', array_merge($context, [
+            'ficha_id' => $id,
+            'duration_ms' => $duration,
+        ]));
+
         return redirect()->route('sgm.index')->with('success', 'Ficha atualizada com sucesso!');
     }
 
     public function approve($id)
     {
-        FichaService::atualizarAprovacaoFicha($id);
+        $start = microtime(true);
+        $context = $this->getLogContext($request);
+
+        Log::warning('Tentativa de atualização de aprovação de ficha SGM', array_merge($context, [
+            'ficha_id' => $id,
+        ]));
+
+        $this->fichaService::atualizarAprovacaoFicha($id);
+
+        $duration = round((microtime(true) - $start) * 1000, 2);
+
+        Log::notice('Aprovação de ficha SGM atualizada com sucesso', array_merge($context, [
+            'ficha_id' => $id,
+            'duration_ms' => $duration,
+        ]));
 
         return redirect()->route('sgm.index')->with('success', 'Aprovação atualizada com sucesso!');
     }
 
     public function destroy($id)
     {
+        $start = microtime(true);
+        $context = $this->getLogContext(request());
+
+        Log::warning('Tentativa de exclusão de ficha SGM', array_merge($context, [
+            'ficha_id' => $id,
+        ]));
+
         try {
             Ficha::find($id)->delete();
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+
+            Log::notice('Ficha SGM excluída com sucesso', array_merge($context, [
+                'ficha_id' => $id,
+                'duration_ms' => $duration,
+            ]));
 
             return redirect()
                 ->route('sgm.index')
@@ -179,6 +273,16 @@ class FichaSGMController extends Controller
                     ->route('sgm.index')
                     ->with('error', 'Não é possível excluir esta ficha. É preciso apagar os dados associados.');
             }
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+
+            Log::error('Erro de Query ao excluir ficha SGM', array_merge($context, [
+                'ficha_id' => $id,
+                'sql_state' => $e->getCode(),
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'duration_ms' => $duration,
+            ]));
 
             return redirect()
                 ->route('sgm.index')

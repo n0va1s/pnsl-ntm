@@ -2,25 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FichaRequest;
 use App\Http\Requests\FichaVemRequest;
 use App\Models\Evento;
 use App\Models\Ficha;
 use App\Models\TipoMovimento;
 use App\Services\FichaService;
+use App\Traits\LogContext;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class FichaVemController extends Controller
 {
+    use LogContext;
+
+    protected $fichaService;
+
+    public function __construct(FichaService $fichaService)
+    {
+        $this->fichaService = $fichaService;
+    }
+
     /**
      * Listagem das fichas.
      */
     public function index(Request $request)
     {
+        $start = microtime(true);
+        $context = $this->getLogContext($request);
+
         $search = $request->get('search');
         $eventoId = $request->get('evento');
         $evento = null;
+
+        Log::info('Requisição de listagem de fichas VEM iniciada', array_merge($context, [
+            'search_term' => $search,
+            'evento_filtro' => $eventoId,
+        ]));
 
         if ($eventoId) {
             $evento = Evento::find($eventoId);
@@ -43,6 +61,13 @@ class FichaVemController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        $duration = round((microtime(true) - $start) * 1000, 2);
+
+        Log::notice('Listagem de fichas VEM concluída com sucesso', array_merge($context, [
+            'total_fichas' => $fichas->total(),
+            'duration_ms' => $duration,
+        ]));
+
         return view('ficha.listVEM', compact('fichas', 'search', 'evento'));
     }
 
@@ -52,9 +77,13 @@ class FichaVemController extends Controller
      */
     public function create()
     {
+        $context = $this->getLogContext(request());
+        Log::info('Acesso ao formulário de criação de ficha VEM', $context);
+
         $ficha = new Ficha();
         $eventos = Evento::getByTipo(TipoMovimento::VEM, 'E', 3);
-        return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
+
+        return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => $eventos,
             'movimentopadrao' => TipoMovimento::VEM,
@@ -67,6 +96,15 @@ class FichaVemController extends Controller
     public function store(
         FichaVemRequest $vemRequest
     ) {
+
+        $start = microtime(true);
+        $context = $this->getLogContext($vemRequest);
+
+        Log::info('Tentativa de criação de ficha VEM', array_merge($context, [
+            'candidato' => $vemRequest->input('nom_candidato'),
+            'evento_id' => $vemRequest->input('idt_evento'),
+        ]));
+
         $data = $vemRequest->only([
             'idt_evento',
             'nom_candidato',
@@ -119,6 +157,12 @@ class FichaVemController extends Controller
             }
         }
 
+        $duration = round((microtime(true) - $start) * 1000, 2);
+        Log::notice('Ficha VEM criada com sucesso', array_merge($context, [
+            'ficha_id' => $ficha->idt_ficha,
+            'duration_ms' => $duration,
+        ]));
+
         return redirect()->route('home')->with('success', 'Ficha cadastrada com sucesso!');
     }
 
@@ -127,9 +171,12 @@ class FichaVemController extends Controller
      */
     public function show($id)
     {
+        $context = $this->getLogContext(request());
+        Log::info('Visualização de ficha VEM', array_merge($context, ['ficha_id' => $id]));
+
         $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
 
-        return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
+        return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
             'movimentopadrao' => TipoMovimento::VEM,
@@ -141,9 +188,12 @@ class FichaVemController extends Controller
      */
     public function edit($id)
     {
+        $context = $this->getLogContext(request());
+        Log::info('Acesso ao formulário de edição de ficha VEM', array_merge($context, ['ficha_id' => $id]));
+
         $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
 
-        return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
+        return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
             'movimentopadrao' => TipoMovimento::VEM,
@@ -157,6 +207,14 @@ class FichaVemController extends Controller
         FichaVemRequest $vemRequest,
         $id
     ) {
+        $start = microtime(true);
+        $context = $this->getLogContext($vemRequest);
+
+        Log::info('Tentativa de atualização de ficha VEM', array_merge($context, [
+            'ficha_id' => $id,
+            'candidato' => $vemRequest->input('nom_candidato'),
+        ]));
+
         $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises'])->findOrFail($id);
 
         $vemData = $vemRequest->validated();
@@ -205,12 +263,31 @@ class FichaVemController extends Controller
             }
         }
 
+        $duration = round((microtime(true) - $start) * 1000, 2);
+        Log::notice('Ficha VEM atualizada com sucesso', array_merge($context, [
+            'ficha_id' => $id,
+            'duration_ms' => $duration,
+        ]));
+
         return redirect()->route('vem.index')->with('success', 'Ficha atualizada com sucesso!');
     }
 
     public function approve($id)
     {
-        FichaService::atualizarAprovacaoFicha($id);
+        $start = microtime(true);
+        $context = $this->getLogContext(request());
+
+        Log::warning('Tentativa de atualização de aprovação de ficha VEM', array_merge($context, [
+            'ficha_id' => $id,
+        ]));
+
+        $this->fichaService::atualizarAprovacaoFicha($id);
+
+        $duration = round((microtime(true) - $start) * 1000, 2);
+        Log::notice('Aprovação de ficha VEM atualizada com sucesso', array_merge($context, [
+            'ficha_id' => $id,
+            'duration_ms' => $duration,
+        ]));
 
         return redirect()->route('vem.index')->with('success', 'Aprovação atualizada com sucesso!');
     }
@@ -220,15 +297,38 @@ class FichaVemController extends Controller
      */
     public function destroy($id)
     {
+        $start = microtime(true);
+        $context = $this->getLogContext(request());
+
+        Log::warning('Tentativa de exclusão de ficha VEM', array_merge($context, [
+            'ficha_id' => $id,
+        ]));
+
         try {
             // FichaVem, FichaSaude e FichaAnalise são deletadas por cascata
             // Soft delete
             Ficha::find($id)->delete();
 
+            $duration = round((microtime(true) - $start) * 1000, 2);
+            Log::notice('Ficha VEM excluída com sucesso', array_merge($context, [
+                'ficha_id' => $id,
+                'duration_ms' => $duration,
+            ]));
+
             return redirect()
                 ->route('vem.index')
                 ->with('success', 'Ficha excluída com sucesso!');
         } catch (QueryException $e) {
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+            Log::error('Erro de Query ao excluir ficha VEM', array_merge($context, [
+                'ficha_id' => $id,
+                'sql_state' => $e->getCode(),
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'duration_ms' => $duration,
+            ]));
+
             if ($e->getCode() === '23000') {
                 return redirect()
                     ->route('vem.index')

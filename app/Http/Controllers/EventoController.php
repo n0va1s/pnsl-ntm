@@ -7,9 +7,9 @@ use App\Models\TipoMovimento;
 use App\Http\Requests\EventoRequest;
 use App\Models\Participante;
 use App\Models\Pessoa;
-use App\Models\Trabalhador;
 use App\Services\EventoService;
 use App\Services\UserService;
+use App\Traits\LogContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 
 class EventoController extends Controller
 {
+    use LogContext;
     protected $eventoService;
     protected $userService;
 
@@ -43,8 +44,16 @@ class EventoController extends Controller
      */
     public function index(Request $request): View
     {
+        $start = microtime(true);
+        $context = $this->getLogContext($request);
+
         $search = trim($request->input('search', ''));
         $idt_movimento = $request->input('idt_movimento');
+
+        Log::info('Requisição de listagem de eventos iniciada', array_merge($context, [
+            'search_term' => $search,
+            'idt_movimento_filtro' => $idt_movimento,
+        ]));
 
         $pessoa = Auth::check() ? $this->userService->createPessoaFromLoggedUser() : null;
 
@@ -59,6 +68,12 @@ class EventoController extends Controller
 
             // Encontros anuais
             $encontrosInscritos = $this->eventoService->getEncontrosInscritos($pessoa);
+
+            Log::debug('Inscrições de eventos carregadas', array_merge($context, [
+                'pessoa_id' => $pessoa->idt_pessoa,
+                'total_eventos_inscritos' => count($eventosInscritos),
+                'total de encontros inscritos' => count($encontrosInscritos),
+            ]));
         }
 
         $query = Evento::with(['movimento', 'foto'])
@@ -87,6 +102,13 @@ class EventoController extends Controller
 
         $eventos = $query->paginate(12);
 
+        $duration = round((microtime(true) - $start) * 1000, 2);
+
+        Log::notice('Listagem de eventos concluída com sucesso', array_merge($context, [
+            'total_eventos' => $eventos->total(),
+            'duration_ms' => $duration,
+        ]));
+
         return view('evento.list', compact(
             'eventos',
             'search',
@@ -105,6 +127,9 @@ class EventoController extends Controller
      */
     public function create(): View
     {
+        $context = $this->getLogContext(request());
+        Log::info('Acesso ao formulário de criação de evento', $context);
+
         $movimentos = TipoMovimento::all();
         $evento = new Evento();
 
@@ -119,6 +144,13 @@ class EventoController extends Controller
      */
     public function store(EventoRequest $request): RedirectResponse
     {
+        $start = microtime(true);
+        $context = $this->getLogContext($request);
+
+        Log::info('Tentativa de criação de novo evento', array_merge($context, [
+            'titulo' => $request->get('des_evento'),
+        ]));
+
         try {
             DB::beginTransaction();
             $data = $request->validated();
@@ -126,12 +158,27 @@ class EventoController extends Controller
             $this->eventoService->fotoUpload($evento, $request->file('med_foto'));
             DB::commit();
 
+            $duration = round((microtime(true) - $start) * 1000, 2);
+
+            Log::notice('Evento criado com sucesso', array_merge($context, [
+                'evento_id' => $evento->idt_evento,
+                'duration_ms' => $duration,
+            ]));
+
             return redirect()
                 ->route('eventos.index')
                 ->with('success', 'Evento criado com sucesso!');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Erro ao criar evento: ' . $e->getMessage(), ['exception' => $e]);
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+
+            Log::error('Erro ao criar evento', array_merge($context, [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'duration_ms' => $duration,
+                'input_data' => $request->validated(), // Loga dados validados para debugging
+            ]));
 
             return redirect()
                 ->route('eventos.index')
@@ -141,8 +188,10 @@ class EventoController extends Controller
 
     public function show(Evento $evento): View
     {
-        $movimentos = TipoMovimento::all();
+        $context = $this->getLogContext(request());
+        Log::info('Visualização de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
 
+        $movimentos = TipoMovimento::all();
         return view('evento.form', compact('movimentos', 'evento'));
     }
 
@@ -154,8 +203,10 @@ class EventoController extends Controller
      */
     public function edit(Evento $evento): View
     {
-        $movimentos = TipoMovimento::all();
+        $context = $this->getLogContext(request());
+        Log::info('Acesso ao formulário de edição de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
 
+        $movimentos = TipoMovimento::all();
         return view('evento.form', compact('movimentos', 'evento'));
     }
 
@@ -168,6 +219,14 @@ class EventoController extends Controller
      */
     public function update(EventoRequest $request, Evento $evento): RedirectResponse
     {
+        $start = microtime(true);
+        $context = $this->getLogContext($request);
+
+        Log::info('Tentativa de atualização de evento', array_merge($context, [
+            'evento_id' => $evento->idt_evento,
+            'titulo' => $request->get('des_evento'),
+        ]));
+
         try {
             DB::beginTransaction();
             $data = $request->validated();
@@ -175,12 +234,27 @@ class EventoController extends Controller
             $this->eventoService->fotoUpload($evento, $request->file('med_foto'));
             DB::commit();
 
+            $duration = round((microtime(true) - $start) * 1000, 2);
+
+            Log::notice('Evento atualizado com sucesso', array_merge($context, [
+                'evento_id' => $evento->idt_evento,
+                'duration_ms' => $duration,
+            ]));
+
             return redirect()
                 ->route('eventos.index')
                 ->with('success', 'Evento atualizado com sucesso!');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Erro ao atualizar evento: ' . $e->getMessage(), ['exception' => $e]);
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+            Log::error('Erro ao atualizar evento', array_merge($context, [
+                'evento_id' => $evento->idt_evento,
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'duration_ms' => $duration,
+                'input_data' => $request->validated(),
+            ]));
 
             return redirect()
                 ->route('eventos.index')
@@ -196,8 +270,23 @@ class EventoController extends Controller
      */
     public function destroy(Evento $evento)
     {
+        $start = microtime(true);
+        $context = $this->getLogContext($request);
+
+        Log::warning('Tentativa de exclusão de evento', array_merge($context, [
+            'evento_id' => $evento->idt_evento,
+            'titulo_evento' => $evento->des_evento,
+        ]));
+
         try {
             $this->eventoService->excluirEventoComFoto($evento);
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+
+            Log::notice('Evento excluído com sucesso', array_merge($context, [
+                'evento_id' => $evento->idt_evento,
+                'duration_ms' => $duration,
+            ]));
 
             return redirect()->route('eventos.index')
                 ->with('success', 'Evento excluído com sucesso!');
@@ -222,10 +311,26 @@ class EventoController extends Controller
      */
     public function confirm(Evento $evento, Pessoa $pessoa): RedirectResponse
     {
+        $start = microtime(true);
+        $context = $this->getLogContext(request());
+
+        Log::info('Tentativa de confirmação de participação em evento', array_merge($context, [
+            'evento_id' => $evento->idt_evento,
+            'pessoa_id' => $pessoa->idt_pessoa,
+        ]));
+
         Participante::create([
             'idt_evento' => $evento->idt_evento,
             'idt_pessoa' => $pessoa->idt_pessoa,
         ]);
+
+        $duration = round((microtime(true) - $start) * 1000, 2);
+
+        Log::notice('Participação confirmada com sucesso', array_merge($context, [
+            'evento_id' => $evento->idt_evento,
+            'pessoa_id' => $pessoa->idt_pessoa,
+            'duration_ms' => $duration,
+        ]));
 
         return redirect()
             ->route('eventos.index')
@@ -239,11 +344,28 @@ class EventoController extends Controller
      */
     public function timeline(): View
     {
+        $start = microtime(true);
+        $context = $this->getLogContext(request());
+
+        Log::info('Requisição da linha do tempo iniciada', $context);
+
         $pessoa = $this->userService->createPessoaFromLoggedUser();
+        Log::debug('Carregando dados da linha do tempo e ranking', array_merge($context, [
+            'pessoa_id' => $pessoa->idt_pessoa,
+        ]));
 
         $timeline = $this->eventoService->getEventosTimeline($pessoa);
         $pontuacaoTotal = $this->eventoService->calcularPontuacao($pessoa);
         $posicaoNoRanking = $this->eventoService->calcularRanking($pessoa);
+
+        $duration = round((microtime(true) - $start) * 1000, 2);
+
+        Log::notice('Linha do tempo concluída com sucesso', array_merge($context, [
+            'total_eventos_timeline' => count($timeline),
+            'pontuacao_total' => $pontuacaoTotal,
+            'posicao_ranking' => $posicaoNoRanking,
+            'duration_ms' => $duration,
+        ]));
 
         return view('evento.linhadotempo', compact('timeline', 'pontuacaoTotal', 'posicaoNoRanking', 'pessoa'));
     }

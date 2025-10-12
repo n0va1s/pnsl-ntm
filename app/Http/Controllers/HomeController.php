@@ -5,15 +5,28 @@ namespace App\Http\Controllers;
 use App\Models\Contato;
 use App\Models\Evento;
 use App\Models\Ficha;
-use App\Models\FichaVem;
 use App\Models\TipoMovimento;
 use App\Services\FichaService;
+use App\Traits\LogContext;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
+    use LogContext;
+    protected $fichaService;
+
+    public function __construct(FichaService $fichaService)
+    {
+        $this->fichaService = $fichaService;
+    }
+
     public function index()
     {
+        $start = microtime(true);
+        $context = $this->getLogContext(request());
+        Log::info('Acesso à página inicial (index)', $context);
+
         $movimentos = TipoMovimento::select(
             'idt_movimento',
             'nom_movimento',
@@ -27,11 +40,26 @@ class HomeController extends Controller
             ->select('idt_evento', 'des_evento', 'dat_inicio', 'idt_movimento')
             ->get();
 
+        $duration = round((microtime(true) - $start) * 1000, 2);
+
+        Log::notice('Carregamento da página inicial concluído', array_merge($context, [
+            'total_movimentos' => $movimentos->count(),
+            'proximos_eventos' => $proximoseventos->pluck('idt_evento')->toArray(),
+            'duration_ms' => $duration,
+        ]));
+
         return view('welcome', compact('proximoseventos', 'movimentos'));
     }
 
     public function contato(Request $request)
     {
+        $start = microtime(true);
+        $context = $this->getLogContext($request);
+        Log::info('Tentativa de registro de contato', array_merge($context, [
+            'contato_nome' => $request->input('nom_contato'),
+            'contato_movimento' => $request->input('idt_movimento'),
+        ]));
+
         $data = $request->validate([
             'nom_contato' => 'required|string|max:255',
             'eml_contato' => 'nullable|email|max:255',
@@ -41,14 +69,31 @@ class HomeController extends Controller
         ]);
 
         Contato::create($data);
+
+        $duration = round((microtime(true) - $start) * 1000, 2);
+        Log::notice('Contato registrado com sucesso', array_merge($context, [
+            'movimento_id' => $data['idt_movimento'],
+            'duration_ms' => $duration,
+        ]));
+
         return redirect()->route('home')->with('message', 'Recebemos seu contato. Em breve retornaremos!');
     }
 
     public function fichaVem()
     {
+        $start = microtime(true);
+        $context = $this->getLogContext(request());
+        Log::info('Acesso ao formulário público de ficha VEM', $context);
+
         $ficha = new Ficha();
         $ficha->idt_movimento = TipoMovimento::VEM;
         $eventos = Evento::getByTipo(TipoMovimento::VEM, 'E', 3);
+
+        $duration = round((microtime(true) - $start) * 1000, 2);
+        Log::notice('Contato registrado com sucesso', array_merge($context, [
+            'movimento_id' => $ficha->idt_movimento,
+            'duration_ms' => $duration,
+        ]));
 
         return view('ficha.formVEM', array_merge(FichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -61,11 +106,17 @@ class HomeController extends Controller
 
     public function fichaEcc()
     {
+        $context = $this->getLogContext(request());
+        Log::info('Acesso ao formulário público de ficha ECC', $context);
+
         return view('ficha.formECC');
     }
 
     public function fichaSgm()
     {
+        $context = $this->getLogContext(request());
+        Log::info('Acesso ao formulário público de ficha Segue-Me', $context);
+
         return view('ficha.formSGM');
     }
 }
