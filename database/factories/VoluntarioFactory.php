@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Voluntario;
-use App\Models\Pessoa;
 use App\Models\Evento;
+use App\Models\Pessoa;
 use App\Models\TipoEquipe;
 use App\Models\Trabalhador;
+use App\Models\Voluntario;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class VoluntarioFactory extends Factory

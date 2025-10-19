@@ -4,12 +4,12 @@ use App\Models\Pessoa;
 use App\Models\PessoaSaude;
 use App\Models\TipoRestricao;
 use App\Services\UserService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
 
-use function Pest\Laravel\{get, post, put, delete};
+use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
@@ -120,13 +120,12 @@ test('pode criar pessoa com restricoes de saude e foto', function () {
     $this->assertDatabaseHas('pessoa_saude', [
         'idt_pessoa' => $pessoa->idt_pessoa,
         'idt_restricao' => $restricao->idt_restricao,
-        'txt_complemento' => $complemento
+        'txt_complemento' => $complemento,
     ]);
 
     $this->assertDatabaseHas('pessoa_foto', [
         'idt_pessoa' => $pessoa->idt_pessoa,
     ]);
-
 
     $this->assertNotNull($pessoa->foto);
     Storage::disk('public')->assertExists($pessoa->foto->med_foto);
@@ -217,14 +216,14 @@ test('pode atualizar pessoa com novas restricoes de saude', function () {
     // Confirma que a restrição antiga não existe mais
     $this->assertDatabaseMissing('pessoa_saude', [
         'idt_pessoa' => $pessoa->idt_pessoa,
-        'idt_restricao' => $restricaoAntiga->idt_restricao
+        'idt_restricao' => $restricaoAntiga->idt_restricao,
     ]);
 
     // Confirma que a nova restrição foi criada
     $this->assertDatabaseHas('pessoa_saude', [
         'idt_pessoa' => $pessoa->idt_pessoa,
         'idt_restricao' => $restricaoNova->idt_restricao,
-        'txt_complemento' => $complementoNovo
+        'txt_complemento' => $complementoNovo,
     ]);
 });
 

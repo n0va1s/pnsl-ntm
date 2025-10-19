@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Models\Ficha;
+use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\PessoaSaude;
-use App\Models\Participante;
 use App\Models\TipoMovimento;
 use App\Models\TipoResponsavel;
 use App\Models\TipoRestricao;
@@ -39,7 +39,7 @@ class FichaService
         $ficha = Ficha::with('fichaSaude')->findOrFail($id);
 
         // Alterna o valor de aprovado
-        $ficha->ind_aprovado = !$ficha->ind_aprovado;
+        $ficha->ind_aprovado = ! $ficha->ind_aprovado;
 
         return DB::transaction(function () use ($ficha) {
             if ($ficha->ind_aprovado) {
@@ -53,7 +53,7 @@ class FichaService
                 // Restrições de saúde
                 $restricoes = $ficha->fichaSaude->map(function ($item) {
                     return [
-                        'idt_restricao'   => $item->idt_restricao,
+                        'idt_restricao' => $item->idt_restricao,
                         'txt_complemento' => $item->txt_complemento,
                     ];
                 })->toArray();
@@ -69,7 +69,7 @@ class FichaService
                     $pessoa->delete();
                 }
 
-                //$ficha->idt_pessoa = null;
+                // $ficha->idt_pessoa = null;
                 $ficha->save();
             }
 
@@ -80,17 +80,17 @@ class FichaService
     private static function criarOuAtualizarPessoaAPartirDaFicha(Ficha $ficha): Pessoa
     {
         $dados = [
-            'nom_pessoa'       => $ficha->nom_candidato,
-            'nom_apelido'      => $ficha->nom_apelido,
-            'tel_pessoa'       => $ficha->tel_candidato,
-            'dat_nascimento'   => $ficha->dat_nascimento,
-            'des_endereco'     => $ficha->des_endereco,
-            'eml_pessoa'       => $ficha->eml_candidato,
-            'tam_camiseta'     => $ficha->tam_camiseta,
-            'tip_genero'       => $ficha->tip_genero,
-            'ind_toca_violao'  => $ficha->ind_toca_instrumento,
+            'nom_pessoa' => $ficha->nom_candidato,
+            'nom_apelido' => $ficha->nom_apelido,
+            'tel_pessoa' => $ficha->tel_candidato,
+            'dat_nascimento' => $ficha->dat_nascimento,
+            'des_endereco' => $ficha->des_endereco,
+            'eml_pessoa' => $ficha->eml_candidato,
+            'tam_camiseta' => $ficha->tam_camiseta,
+            'tip_genero' => $ficha->tip_genero,
+            'ind_toca_violao' => $ficha->ind_toca_instrumento,
             'ind_consentimento' => $ficha->ind_consentimento,
-            'ind_restricao'    => $ficha->ind_restricao,
+            'ind_restricao' => $ficha->ind_restricao,
         ];
 
         if ($ficha->eml_candidato) {

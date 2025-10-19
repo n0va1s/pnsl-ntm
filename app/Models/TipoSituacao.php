@@ -11,13 +11,15 @@ class TipoSituacao extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'tipo_situacao';
+
     protected $primaryKey = 'idt_situacao';
+
     public $timestamps = true;
 
     const CADASTRADA = 1;
 
     protected $fillable = [
-        'des_situacao'
+        'des_situacao',
     ];
 
     public function fichasAnalises()

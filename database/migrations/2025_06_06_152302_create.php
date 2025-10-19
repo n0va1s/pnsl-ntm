@@ -64,8 +64,8 @@ return new class extends Migration
                 ->constrained('tipo_movimento', 'idt_movimento');
             $table->string('des_evento', 255);
             $table->string('num_evento', 5)->nullable();
-            $table->date('dat_inicio');
-            $table->date('dat_termino')->nullable();
+            $table->date('dat_inicio')->index();
+            $table->date('dat_termino')->index()->nullable();
             $table->decimal('val_camiseta', 8, 2)->nullable(); // valor da camiseta
             $table->decimal('val_trabalhador', 8, 2)->nullable(); // contribuição do trabalhador
             $table->decimal('val_venista', 8, 2)->nullable(); // contribuição do venista (participante)
@@ -74,6 +74,8 @@ return new class extends Migration
             $table->text('txt_informacao')->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->index('created_at');
+            $table->index(['tip_evento', 'idt_movimento']);
         });
 
         // Tabela Evento_Foto ex: foto do evento 22 tirada durante o evento
@@ -81,7 +83,7 @@ return new class extends Migration
             $table->foreignId('idt_evento')
                 ->constrained('evento', 'idt_evento')
                 ->onDelete('cascade');
-            $table->string('med_foto'); //armazenar no filesystem
+            $table->string('med_foto'); // armazenar no filesystem
             $table->timestamps();
             $table->primary(['idt_evento']);
         });
@@ -92,12 +94,12 @@ return new class extends Migration
         Schema::create('pessoa', function (Blueprint $table) {
             $table->id('idt_pessoa');
             $table->foreignId('idt_usuario')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('nom_pessoa', 255);
-            $table->string('nom_apelido', 255)->nullable();
+            $table->string('nom_pessoa', 255)->index();
+            $table->string('nom_apelido', 255)->index()->nullable();
             $table->string('tel_pessoa', 20)->nullable();
-            $table->date('dat_nascimento');
+            $table->date('dat_nascimento')->index();
             $table->string('des_endereco', 255)->nullable();
-            $table->string('eml_pessoa', 255);
+            $table->string('eml_pessoa', 255)->index();
             $table->string('tam_camiseta', 3)->nullable();
             $table->string('tip_genero', 1)->nullable();
             $table->boolean('ind_toca_violao')->default(false);
@@ -105,14 +107,21 @@ return new class extends Migration
             $table->boolean('ind_restricao')->default(false);
             $table->timestamps();
             $table->softDeletes();
+            $table->index('created_at');
         });
+
+        if (config('database.default') === 'mysql') {
+            Schema::connection('mysql')->table('pessoa', function (Blueprint $table) {
+                $table->fullText(['nom_pessoa', 'nom_apelido']);
+            });
+        }
 
         // Tabela Pessoa_Foto ex: foto da pessoa 22 tirada durante o evento
         Schema::create('pessoa_foto', function (Blueprint $table) {
             $table->foreignId('idt_pessoa')
                 ->constrained('pessoa', 'idt_pessoa')
                 ->onDelete('cascade');
-            $table->string('med_foto'); //armazenar no filesystem
+            $table->string('med_foto'); // armazenar no filesystem
             $table->timestamps();
 
             $table->primary(['idt_pessoa']);
@@ -143,6 +152,8 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->string('tip_cor_troca', 10)->nullable();
             $table->timestamps();
+            $table->index(['idt_evento', 'created_at']);
+            $table->index(['idt_pessoa', 'idt_evento']);
 
             $table->unique(['idt_pessoa', 'idt_evento'], 'unique_participante_per_evento');
         });
@@ -181,6 +192,8 @@ return new class extends Migration
             $table->boolean('ind_camiseta_pediu')->default(false);
             $table->boolean('ind_camiseta_pagou')->default(false);
             $table->timestamps();
+            $table->index(['idt_evento', 'idt_equipe', 'created_at']);
+            $table->index(['idt_pessoa', 'idt_evento']);
             $table->unique(['idt_pessoa', 'idt_evento', 'idt_equipe'], 'unique_trabalhador');
         });
 
@@ -193,6 +206,7 @@ return new class extends Migration
             $table->foreignId('idt_trabalhador')->nullable()->constrained('trabalhador', 'idt_trabalhador')->nullOnDelete();
             $table->text('txt_habilidade')->nullable(); // quais as suas habilidades para esta equipe
             $table->timestamps();
+            $table->unique(['idt_pessoa', 'idt_evento', 'idt_equipe'], 'unique_voluntario');
         });
 
         // Tabela Ficha com os dados básicos do participante
@@ -202,24 +216,25 @@ return new class extends Migration
             $table->foreignId('idt_evento')
                 ->constrained('evento', 'idt_evento');
             $table->foreignId('idt_pessoa')->nullable()
-                ->constrained('pessoa', 'idt_pessoa')->nullOnDelete(); //pessoa criada apos aprovacao
+                ->constrained('pessoa', 'idt_pessoa')->nullOnDelete(); // pessoa criada apos aprovacao
             $table->string('tip_genero', 3);
-            $table->string('nom_candidato', 255);
+            $table->string('nom_candidato', 255)->index();
             $table->string('nom_apelido', 255);
             $table->date('dat_nascimento');
             $table->string('tel_candidato', 20)->nullable();
-            $table->string('eml_candidato', 255);
+            $table->string('eml_candidato', 255)->index();
             $table->string('des_endereco', 255)->nullable();
             $table->string('tam_camiseta', 3);
-            $table->string('tip_como_soube', 3)->nullable(); //indicacao, padre
-            $table->boolean('ind_catolico')->default(false); //candidato catolico
-            $table->boolean('ind_toca_instrumento')->default(false); //toca algum instrumento
-            $table->boolean('ind_consentimento')->default(false); //concordou com o termo
+            $table->string('tip_como_soube', 3)->nullable(); // indicacao, padre
+            $table->boolean('ind_catolico')->default(false); // candidato catolico
+            $table->boolean('ind_toca_instrumento')->default(false); // toca algum instrumento
+            $table->boolean('ind_consentimento')->default(false); // concordou com o termo
             $table->boolean('ind_aprovado')->default(false); // flag para facilitar busca
             $table->boolean('ind_restricao')->default(false); // nao possui restricao alimentar
-            $table->text('txt_observacao')->nullable(); //qual o instrumento, remedio continuo
+            $table->text('txt_observacao')->nullable(); // qual o instrumento, remedio continuo
             $table->timestamps();
             $table->softDeletes();
+            $table->index('created_at');
         });
 
         // Tabela Ficha com os detalhes do vem
@@ -291,20 +306,21 @@ return new class extends Migration
             $table->text('txt_analise')->nullable();
         });
 
-
         // Tabela Contato para tirar dúvidas externas
         Schema::create('contato', function (Blueprint $table) {
             $table->id('idt_contato');
             $table->date('dat_contato')->default(now());
-            $table->string('nom_contato', 255);
-            $table->string('eml_contato', 255)->nullable();
+            $table->string('nom_contato', 255)->index();
+            $table->string('eml_contato', 255)->index()->nullable();
             $table->string('tel_contato', 20);
             $table->text('txt_mensagem');
             $table->foreignId('idt_movimento')
                 ->constrained('tipo_movimento', 'idt_movimento')
-                ->onDelete('cascade'); // para direcionar para os responsaveis
+                ->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes(); // para manter histórico de contatos\
+            $table->softDeletes(); // para manter histórico de contatos
+            $table->index('created_at');
+            $table->index(['idt_movimento', 'created_at']);
         });
     }
 

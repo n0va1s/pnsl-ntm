@@ -22,7 +22,7 @@ class TipoResponsavelFactory extends Factory
                 'Tia',
                 'Padrinho',
                 'Madrinha',
-                'Outro(a)'
+                'Outro(a)',
             ]),
         ];
     }
@@ -50,7 +50,7 @@ class TipoResponsavelFactory extends Factory
      */
     public static function seedDefaults(): void
     {
-        foreach ((new self())->defaults() as $data) {
+        foreach ((new self)->defaults() as $data) {
             TipoResponsavel::firstOrCreate($data);
         }
     }

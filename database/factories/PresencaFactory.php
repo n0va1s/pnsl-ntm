@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Presenca;
 use App\Models\Participante;
+use App\Models\Presenca;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Log;
 
@@ -15,7 +15,7 @@ class PresencaFactory extends Factory
     {
         $participante = Participante::inRandomOrder()->first();
 
-        if (!$participante) {
+        if (! $participante) {
             // Este erro indica que ParticipanteFactory precisa ser executada antes no seeder.
             throw new \Exception('Nenhum participante encontrado para criar Presenca. Verifique a ordem dos seeders.');
         }
@@ -45,8 +45,8 @@ class PresencaFactory extends Factory
             // Loop para encontrar uma combinação única de participante e data
             while (
                 Presenca::where('idt_participante', $presenca->idt_participante)
-                ->where('dat_presenca', $presenca->dat_presenca)
-                ->exists() && $attempts < $maxAttempts
+                    ->where('dat_presenca', $presenca->dat_presenca)
+                    ->exists() && $attempts < $maxAttempts
             ) {
                 // Se a combinação já existe, gera uma nova data
                 $presenca->dat_presenca = $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d');

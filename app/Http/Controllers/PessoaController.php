@@ -35,10 +35,27 @@ class PessoaController extends Controller
             'search_term' => $search,
         ]));
 
-        $pessoas = Pessoa::with(['foto', 'usuario', 'restricoes', 'parceiro'])
+        $pessoas = Pessoa::select(
+            'idt_pessoa',
+            'idt_usuario',
+            'nom_pessoa',
+            'nom_apelido',
+            'tel_pessoa',
+            'eml_pessoa',
+            'created_at' // Recomendado para o orderBy funcionar de forma otimizada
+        )->with([
+            'foto' => function ($query) {
+                $query->select('idt_pessoa', 'caminho_foto');
+            },
+            'usuario' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'restricoes',
+            'parceiro',
+
+        ])
             ->when($search, function ($query, $search) {
-                return $query->where('nom_pessoa', 'like', "%{$search}%")
-                    ->orWhere('nom_apelido', 'like', "%{$search}%");
+                return $query->searchByName($search);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10)
@@ -59,7 +76,7 @@ class PessoaController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de criação de pessoa', $context);
 
-        $pessoa = new Pessoa();
+        $pessoa = new Pessoa;
         $restricoes = TipoRestricao::select(
             'idt_restricao',
             'tip_restricao',
@@ -243,7 +260,7 @@ class PessoaController extends Controller
     public function destroy($id): RedirectResponse
     {
         $start = microtime(true);
-        $context = $this->getLogContext($request);
+        $context = $this->getLogContext(request());
         Log::warning('Tentativa de exclusão de pessoa', array_merge($context, [
             'pessoa_id' => $id,
         ]));

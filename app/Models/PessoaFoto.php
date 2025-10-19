@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 
 class PessoaFoto extends Model
 {
     use HasFactory;
 
     protected $table = 'pessoa_foto';
+
     protected $primaryKey = 'idt_pessoa';
+
     public $timestamps = true;
 
     protected $fillable = [

@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Brick\Math\BigInteger;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Evento extends Model
@@ -13,7 +12,9 @@ class Evento extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'evento';
+
     protected $primaryKey = 'idt_evento';
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -87,25 +88,23 @@ class Evento extends Model
     /**
      * Scope para busca insensível a maiúsculas e minúsculas nos campos des_evento e num_evento.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  string|null  $search
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSearch(Builder $query, ?string $search)
     {
         if ($search) {
             $lowerSearch = strtolower($search);
+
             return $query->whereRaw('LOWER(des_evento) LIKE ?', ["%{$lowerSearch}%"])
                 ->orWhereRaw('LOWER(num_evento) LIKE ?', ["%{$lowerSearch}%"]);
         }
+
         return $query;
     }
 
     /**
      * Scope para buscar eventos por ID de movimento.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  int|null  $idt_movimento
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeMovimento(Builder $query, ?int $idt_movimento)
@@ -113,14 +112,15 @@ class Evento extends Model
         if ($idt_movimento) {
             return $query->where('idt_movimento', $idt_movimento);
         }
+
         return $query;
     }
 
     /**
      * Retorna collection de eventos por tipo de movimento e tipo de evento
      *
-     * @param  int  $tipMovimento // Constantes da classe TipoMovimento
-     * @param  string  $tipEvento // E - evento anual, P - pós-encontro, D - desafio
+     * @param  int  $tipMovimento  // Constantes da classe TipoMovimento
+     * @param  string  $tipEvento  // E - evento anual, P - pós-encontro, D - desafio
      * @return int|null $limite // quantidade de linha retornadas
      */
     public static function getByTipo(int $tipMovimento, string $tipEvento, ?int $limite)

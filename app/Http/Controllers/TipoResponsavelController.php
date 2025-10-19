@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\TipoResponsavel;
 use Illuminate\Http\Request;
 
 class TipoResponsavelController extends Controller
 {
-
     protected array $regras = [
         'des_responsavel' => 'required|string|max:255',
     ];
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $responsavel = \App\Models\TipoResponsavel::all();
+
         return view('configuracoes.TipoResponsavelList', compact('responsavel'));
     }
 
@@ -27,7 +27,7 @@ class TipoResponsavelController extends Controller
     public function create()
     {
         return view('configuracoes.TipoResponsavelForm', [
-            'responsavel' => new TipoResponsavel(),
+            'responsavel' => new TipoResponsavel,
         ]);
     }
 
@@ -59,6 +59,7 @@ class TipoResponsavelController extends Controller
     public function edit(string $id)
     {
         $responsavel = TipoResponsavel::findOrFail($id);
+
         return view('configuracoes.TipoResponsavelForm', compact('responsavel'));
     }
 
@@ -84,11 +85,12 @@ class TipoResponsavelController extends Controller
 
         try {
             $responsavel->delete();
+
             return redirect()->route('responsavel.index')
                 ->with('success', 'Tipo de responsável excluído com sucesso!');
         } catch (\Exception $e) {
             return redirect()->route('responsavel.index')
-                ->with('error', 'Erro ao excluir tipo de responsável: ' . $e->getMessage());
+                ->with('error', 'Erro ao excluir tipo de responsável: '.$e->getMessage());
         }
     }
 }

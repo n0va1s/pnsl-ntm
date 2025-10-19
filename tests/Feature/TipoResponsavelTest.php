@@ -1,6 +1,7 @@
 <?php
 
-use function Pest\Laravel\{post, get};
+use function Pest\Laravel\get;
+use function Pest\Laravel\post;
 
 beforeEach(function () {
     $this->user = createUser();

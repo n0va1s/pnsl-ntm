@@ -37,7 +37,7 @@ class TipoSituacaoFactory extends Factory
      */
     public static function seedDefaults(): void
     {
-        foreach ((new self())->defaults() as $data) {
+        foreach ((new self)->defaults() as $data) {
             TipoSituacao::firstOrCreate($data);
         }
     }

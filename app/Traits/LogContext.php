@@ -10,8 +10,7 @@ trait LogContext
      * Obtém o contexto base para logs.
      * Deve ser chamado dentro de um método de Controller que injeta Request.
      *
-     * @param Request $request O objeto da requisição HTTP.
-     * @return array
+     * @param  Request  $request  O objeto da requisição HTTP.
      */
     protected function getLogContext(Request $request): array
     {

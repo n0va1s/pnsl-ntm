@@ -3,16 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 
 class Trabalhador extends Model
 {
     use HasFactory;
 
     protected $table = 'trabalhador';
+
     protected $primaryKey = 'idt_trabalhador';
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -64,10 +65,6 @@ class Trabalhador extends Model
 
     /**
      * Scope para retornar os trabalhadores de um evento específico
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  int|null  $idt_evento
-     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeEvento(Builder $query, ?int $idt_evento): Builder
     {

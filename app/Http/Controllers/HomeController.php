@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 class HomeController extends Controller
 {
     use LogContext;
+
     protected $fichaService;
 
     public function __construct(FichaService $fichaService)
@@ -54,7 +55,7 @@ class HomeController extends Controller
     public function contato(Request $request)
     {
         $start = microtime(true);
-        $context = $this->getLogContext($request);
+        $context = $this->getLogContext(request());
         Log::info('Tentativa de registro de contato', array_merge($context, [
             'contato_nome' => $request->input('nom_contato'),
             'contato_movimento' => $request->input('idt_movimento'),
@@ -85,7 +86,7 @@ class HomeController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário público de ficha VEM', $context);
 
-        $ficha = new Ficha();
+        $ficha = new Ficha;
         $ficha->idt_movimento = TipoMovimento::VEM;
         $eventos = Evento::getByTipo(TipoMovimento::VEM, 'E', 3);
 

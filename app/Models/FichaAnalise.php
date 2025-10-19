@@ -2,20 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class FichaAnalise extends Model
 {
     use HasFactory;
 
     protected $table = 'ficha_analise';
+
     public $timestamps = false;
 
     protected $fillable = [
         'idt_ficha',
         'idt_situacao',
-        'txt_analise'
+        'txt_analise',
     ];
 
     public function ficha()

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class TipoMovimentoController extends Controller
 {
-    //Por ser pequeno, optei por nao criar um request
+    // Por ser pequeno, optei por nao criar um request
     protected array $regras = [
         'nom_movimento' => 'required|string|max:255',
         'des_sigla' => 'required|string|max:10',
@@ -17,12 +17,13 @@ class TipoMovimentoController extends Controller
     public function index()
     {
         $tipos = TipoMovimento::orderBy('dat_inicio', 'desc')->paginate(10);
+
         return view('configuracoes.TipoMovimentoList', compact('tipos'));
     }
 
     public function create()
     {
-        return view('configuracoes.TipoMovimentoForm', ['tipo' => new TipoMovimento()]);
+        return view('configuracoes.TipoMovimentoForm', ['tipo' => new TipoMovimento]);
     }
 
     public function store(Request $request)
@@ -38,6 +39,7 @@ class TipoMovimentoController extends Controller
     public function edit($id)
     {
         $tipo = TipoMovimento::findOrFail($id);
+
         return view('configuracoes.TipoMovimentoForm', compact('tipo'));
     }
 
@@ -57,6 +59,7 @@ class TipoMovimentoController extends Controller
 
         try {
             $tipo->delete();
+
             return redirect()->route('movimento.index')
                 ->with('success', 'Movimento excluído com sucesso!');
         } catch (\Throwable $e) {

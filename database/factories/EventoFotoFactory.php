@@ -14,7 +14,7 @@ class EventoFotoFactory extends Factory
     {
         return [
             'idt_evento' => Evento::factory(),
-            'med_foto' => 'fotos/evento/' . $this->faker->uuid . '.jpg', // caminho fictício
+            'med_foto' => 'fotos/evento/'.$this->faker->uuid.'.jpg', // caminho fictício
         ];
     }
 }

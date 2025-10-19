@@ -6,15 +6,15 @@ use App\Models\Evento;
 use App\Models\TipoEquipe;
 use App\Models\Trabalhador;
 use App\Models\Voluntario;
-use App\Services\UserService;
 use App\Services\VoluntarioService;
 use App\Traits\LogContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class TrabalhadorController extends Controller
 {
@@ -47,14 +47,21 @@ class TrabalhadorController extends Controller
             $evento = Evento::find($idt_evento);
         }
 
-        $equipes  = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
+        $equipes = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
             ->select('idt_equipe', 'des_grupo')->get();
 
-        $trabalhadores = Trabalhador::with(['pessoa', 'evento', 'equipe'])
+        $trabalhadores = Trabalhador::with([
+            'pessoa' => function ($query) {
+                $query->select('idt_pessoa', 'nom_pessoa', 'nom_apelido');
+            },
+            'evento' => function ($query) {
+                $query->select('idt_evento', 'des_evento');
+            },
+            'equipe',
+        ])
             ->when($search, function ($query, $search) {
                 return $query->whereHas('pessoa', function ($q) use ($search) {
-                    $q->where('nom_pessoa', 'like', "%{$search}%")
-                        ->orWhere('nom_apelido', 'like', "%{$search}%");
+                    $q->searchByName($search);
                 });
             })->when($idt_equipe, function ($query, $idt_equipe) {
                 return $query->where('idt_equipe', $idt_equipe);
@@ -90,7 +97,7 @@ class TrabalhadorController extends Controller
             $evento = Evento::find($eventoId);
         }
 
-        $equipes  = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
+        $equipes = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
             ->select('idt_equipe', 'des_grupo')->get();
 
         $duration = round((microtime(true) - $start) * 1000, 2);
@@ -99,6 +106,7 @@ class TrabalhadorController extends Controller
             'pessoa_id' => $equipes->count(),
             'duration_ms' => $duration,
         ]));
+
         return view('trabalhador.form', compact('equipes', 'evento'));
     }
 
@@ -127,7 +135,7 @@ class TrabalhadorController extends Controller
         ]);
 
         try {
-            $pessoa = UserService::createPessoaFromLoggedUser();
+            $pessoa = Auth::user()->pessoa;
             Log::info('Pessoa autenticada para candidatura', array_merge($context, ['pessoa_id' => $pessoa->idt_pessoa]));
 
             $this->voluntarioService->candidatura(
@@ -152,6 +160,7 @@ class TrabalhadorController extends Controller
                 'erros' => $e->errors(),
                 'duration_ms' => $duration,
             ]));
+
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             $duration = round((microtime(true) - $start) * 1000, 2);
@@ -160,11 +169,12 @@ class TrabalhadorController extends Controller
                 'message' => $e->getMessage(),
                 'duration_ms' => $duration,
             ]));
+
             return back()->with('error', 'Ocorreu um erro ao registrar suas candidaturas. Por favor, tente novamente.')->withInput();
         }
     }
 
-    //Lista de voluntarios para indicacao das equipes que ele(a) querem trabalhar
+    // Lista de voluntarios para indicacao das equipes que ele(a) querem trabalhar
     public function mount(Request $request): View
     {
         $start = microtime(true);
@@ -256,7 +266,7 @@ class TrabalhadorController extends Controller
 
             // Agrupa por equipe e ordena coordenadores no topo
             $trabalhadoresPorEquipe = $trabalhadores
-                ->groupBy(fn($t) => $t->equipe->des_grupo)
+                ->groupBy(fn ($t) => $t->equipe->des_grupo)
                 ->map(function (Collection $grupo) {
                     return $grupo->sortByDesc('ind_coordenador')->values();
                 });
@@ -313,11 +323,11 @@ class TrabalhadorController extends Controller
 
         $dados = $request->validate([
             'idt_trabalhador' => 'required',
-            'ind_recomendado'  => 'nullable|boolean',
-            'ind_lideranca'  => 'nullable|boolean',
-            'ind_destaque'  => 'nullable|boolean',
-            'ind_camiseta_pediu'  => 'nullable|boolean',
-            'ind_camiseta_pagou'  => 'nullable|boolean',
+            'ind_recomendado' => 'nullable|boolean',
+            'ind_lideranca' => 'nullable|boolean',
+            'ind_destaque' => 'nullable|boolean',
+            'ind_camiseta_pediu' => 'nullable|boolean',
+            'ind_camiseta_pagou' => 'nullable|boolean',
         ], [
             'idt_trabalhador.required' => 'O trabalhador é obrigatório.',
         ]);

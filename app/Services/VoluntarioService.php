@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Models\Pessoa;
-use App\Models\Voluntario;
 use App\Models\Trabalhador;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB; // Para transações, se necessário
+use App\Models\Voluntario;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException; // Para transações, se necessário
 
 class VoluntarioService
 {
@@ -26,7 +26,7 @@ class VoluntarioService
                     throw ValidationException::withMessages([
                         'equipes' => 'A habilidade deve ter mais de 5 caracteres.',
                     ]);
-                } elseif (preg_match('/(.)\1{4,}/', $habilidade)) { //obrigado gemini
+                } elseif (preg_match('/(.)\1{4,}/', $habilidade)) { // obrigado gemini
                     throw ValidationException::withMessages([
                         'equipes' => 'A habilidade não pode conter sequências de caracteres repetidos (ex: "aaaaa" ou ".....").',
                     ]);
@@ -83,7 +83,7 @@ class VoluntarioService
             $trabalhador = Trabalhador::updateOrCreate([
                 'idt_pessoa' => $voluntario->idt_pessoa,
                 'idt_evento' => $voluntario->idt_evento,
-                'idt_equipe' => $equipeId
+                'idt_equipe' => $equipeId,
             ], [
                 'ind_coordenador' => $isCoordenador,
                 'ind_primeira_vez' => $isPrimeiraVez,
@@ -93,7 +93,7 @@ class VoluntarioService
             Voluntario::where('idt_pessoa', $voluntario->idt_pessoa)
                 ->where('idt_evento', $voluntario->idt_evento)
                 ->update([
-                    'idt_trabalhador' => $trabalhador->idt_trabalhador
+                    'idt_trabalhador' => $trabalhador->idt_trabalhador,
                 ]);
         });
 

@@ -1,45 +1,42 @@
 <?php
 
-use App\Http\Controllers\{
-    ConfiguracoesController,
-    ContatoController,
-    DashboardController,
-    EventoController,
-    FichaVemController,
-    FichaEccController,
-    FichaSGMController,
-    HomeController,
-    ParticipanteController,
-    PessoaController,
-    TipoMovimentoController,
-    TipoResponsavelController,
-    TipoSituacaoController,
-    TrabalhadorController,
-    AniversarioController,
-    RoleController,
-};
-
-
+use App\Http\Controllers\AniversarioController;
+use App\Http\Controllers\ConfiguracoesController;
+use App\Http\Controllers\ContatoController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EventoController;
+use App\Http\Controllers\FichaEccController;
+use App\Http\Controllers\FichaSGMController;
+use App\Http\Controllers\FichaVemController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ParticipanteController;
+use App\Http\Controllers\PessoaController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TipoMovimentoController;
+use App\Http\Controllers\TipoResponsavelController;
+use App\Http\Controllers\TipoSituacaoController;
+use App\Http\Controllers\TrabalhadorController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-// Area Publica
-Route::get(
-    '/',
-    [HomeController::class, 'index']
-)->name('home');
+Route::middleware('guest')->group(function () {
+    Route::get(
+        '/',
+        [HomeController::class, 'index']
+    )->name('home');
 
-Route::post(
-    '/',
-    [HomeController::class, 'contato']
-)->name('home.contato');
+    Route::post(
+        '/',
+        [HomeController::class, 'contato']
+    )->name('home.contato');
 
-Route::get('/vem', [HomeController::class, 'fichaVem'])
-    ->name('home.ficha.vem');
-Route::get('/ecc', [HomeController::class, 'fichaEcc'])
-    ->name('home.ficha.ecc');
-Route::get('/sgm', [HomeController::class, 'fichaSgm'])
-    ->name('home.ficha.sgm');
+    Route::get('/vem', [HomeController::class, 'fichaVem'])
+        ->name('home.ficha.vem');
+    Route::get('/ecc', [HomeController::class, 'fichaEcc'])
+        ->name('home.ficha.ecc');
+    Route::get('/sgm', [HomeController::class, 'fichaSgm'])
+        ->name('home.ficha.sgm');
+});
 
 // Area Administrativa
 Route::middleware(['auth'])->group(function () {
@@ -153,4 +150,4 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

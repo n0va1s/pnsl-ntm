@@ -5,9 +5,8 @@ namespace Database\Seeders;
 use App\Models\Pessoa;
 use App\Models\PessoaFoto;
 use App\Models\PessoaSaude;
-use App\Models\Presenca;
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
 class PessoaSeeder extends Seeder
 {

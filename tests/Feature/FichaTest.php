@@ -2,8 +2,8 @@
 
 use App\Models\Evento;
 use App\Models\Ficha;
-use App\Models\FichaVem;
 use App\Models\FichaEcc;
+use App\Models\FichaVem;
 use App\Models\TipoMovimento;
 use App\Models\User;
 use App\Services\FichaService;
@@ -18,7 +18,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->fichaService = new FichaService();
+    $this->fichaService = new FichaService;
 
     // Criar usuário e logar
     $this->user = createUser();
@@ -53,21 +53,21 @@ describe('Cadastro de Ficha VEM', function () {
     test('pode criar ficha VEM com dados obrigatórios', function () {
         $fichaData = [
             // Ficha
-            'idt_evento'        => $this->evento->idt_evento,
-            'tip_genero'        => 'M',
-            'nom_candidato'     => 'João Silva',
-            'nom_apelido'      => 'João',
-            'eml_candidato'     => 'joao@email.com',
+            'idt_evento' => $this->evento->idt_evento,
+            'tip_genero' => 'M',
+            'nom_candidato' => 'João Silva',
+            'nom_apelido' => 'João',
+            'eml_candidato' => 'joao@email.com',
             // Dados obrigatórios
-            'dat_nascimento'    => '2005-01-15',
-            'tam_camiseta'      => 'M',
+            'dat_nascimento' => '2005-01-15',
+            'tam_camiseta' => 'M',
             'ind_consentimento' => true,
-            'ind_restricao'     => false,
+            'ind_restricao' => false,
 
             // Ficha VEM
-            'idt_falar_com'     => 1,
-            'des_onde_estuda'   => 'Escola Estadual Central',
-            'des_mora_quem'     => 'Com os pais',
+            'idt_falar_com' => 1,
+            'des_onde_estuda' => 'Escola Estadual Central',
+            'des_mora_quem' => 'Com os pais',
         ];
         $this->actingAs($this->user)
             ->post(route('vem.store'), $fichaData)
@@ -98,7 +98,7 @@ describe('Cadastro de Ficha VEM', function () {
             'nom_pai' => 'Carlos Santos',
             'tel_pai' => '11999554433',
 
-            'idt_falar_com'     => 1,
+            'idt_falar_com' => 1,
             'des_onde_estuda' => 'Colégio São José',
             'des_mora_quem' => 'Com os pais',
         ];
@@ -128,7 +128,7 @@ describe('Cadastro de Ficha VEM', function () {
             'ind_consentimento' => true,
             'ind_restricao' => true,
             // Dados VEM específicos
-            'idt_falar_com'     => 1,
+            'idt_falar_com' => 1,
             'des_onde_estuda' => 'Colégio São José',
             'des_mora_quem' => 'Com os pais',
             'restricoes' => [
@@ -204,7 +204,7 @@ describe('Cadastro de Ficha VEM', function () {
             'ind_restricao' => false,
             'nom_mae' => 'Mãe Atualizada',
 
-            'idt_falar_com'     => 2,
+            'idt_falar_com' => 2,
             'des_onde_estuda' => 'Colégio Atualizado',
             'des_mora_quem' => 'Com a avó',
 
@@ -459,7 +459,7 @@ describe('Listagem de Fichas', function () {
 
     test('pode filtrar fichas ECC por evento', function () {
         $outroEvento = Evento::factory()->create([
-            'idt_movimento' => TipoMovimento::ECC
+            'idt_movimento' => TipoMovimento::ECC,
         ]);
 
         Ficha::factory()->create([
@@ -501,7 +501,7 @@ describe('Aprovação de Fichas', function () {
 
     test('pode desaprovar ficha ECC aprovada', function () {
         $evento = Evento::factory()->create([
-            'idt_movimento' => TipoMovimento::ECC
+            'idt_movimento' => TipoMovimento::ECC,
         ]);
 
         $ficha = Ficha::factory()->create([

@@ -13,10 +13,10 @@ class FichaVemFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_ficha'       => Ficha::factory(),
-            'idt_falar_com'   => TipoResponsavel::factory(), // garante dado válido
+            'idt_ficha' => Ficha::factory(),
+            'idt_falar_com' => TipoResponsavel::factory(), // garante dado válido
             'des_onde_estuda' => $this->faker->company(),
-            'des_mora_quem'   => $this->faker->words(3, true),
+            'des_mora_quem' => $this->faker->words(3, true),
         ];
     }
 }

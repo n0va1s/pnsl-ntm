@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class FichaSGM extends Model
 {
     use HasFactory;
 
     protected $table = 'ficha_sgm';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -31,5 +32,4 @@ class FichaSGM extends Model
     {
         return $this->belongsTo(TipoResponsavel::class, 'idt_falar_com');
     }
-
 }

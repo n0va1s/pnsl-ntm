@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
 class FichaEccRequest extends FichaRequest
 {
     public function authorize(): bool
@@ -14,11 +12,11 @@ class FichaEccRequest extends FichaRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'nom_conjuge'             => 'required|string|max:150',
-            'nom_apelido_conjuge'     => 'nullable|string|max:50',
-            'tel_conjuge'             => 'required|string|max:15',
-            'dat_nascimento_conjuge'  => 'required|date',
-            'tam_camiseta_conjuge'    => 'required|string|max:3',
+            'nom_conjuge' => 'required|string|max:150',
+            'nom_apelido_conjuge' => 'nullable|string|max:50',
+            'tel_conjuge' => 'required|string|max:15',
+            'dat_nascimento_conjuge' => 'required|date',
+            'tam_camiseta_conjuge' => 'required|string|max:3',
         ]);
     }
 

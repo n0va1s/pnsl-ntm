@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Models\Evento;
+use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\Trabalhador;
-use App\Models\Participante;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -15,34 +15,31 @@ class EventoService
 {
     /**
      * Busca e prepara todos os eventos de uma pessoa para a timeline.
-     *
-     * @param Pessoa $pessoa
-     * @return array
      */
     public function getEventosTimeline(Pessoa $pessoa): array
     {
         $trabalhadorEventos = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
-            ->whereHas('evento', fn($query) => $query->whereNotNull('dat_inicio'))
+            ->whereHas('evento', fn ($query) => $query->whereNotNull('dat_inicio'))
             ->with(['evento.movimento', 'equipe'])
             ->get()
-            ->map(fn($entry) => [
-                'id' => 'trab-' . $entry->idt_trabalhador,
+            ->map(fn ($entry) => [
+                'id' => 'trab-'.$entry->idt_trabalhador,
                 'type' => 'Trabalhador',
                 'date' => Carbon::parse($entry->evento->dat_inicio),
                 'event' => $entry->evento,
                 'details' => [
                     'equipe' => $entry->equipe->des_grupo ?? 'N/A',
-                    'coordenador' => (bool)$entry->ind_coordenador,
-                    'primeira_vez' => (bool)$entry->ind_primeira_vez,
+                    'coordenador' => (bool) $entry->ind_coordenador,
+                    'primeira_vez' => (bool) $entry->ind_primeira_vez,
                 ],
             ]);
 
         $participanteEventos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
-            ->whereHas('evento', fn($query) => $query->whereNotNull('dat_inicio'))
+            ->whereHas('evento', fn ($query) => $query->whereNotNull('dat_inicio'))
             ->with('evento.movimento')
             ->get()
-            ->map(fn($entry) => [
-                'id' => 'part-' . $entry->idt_participante,
+            ->map(fn ($entry) => [
+                'id' => 'part-'.$entry->idt_participante,
                 'type' => 'Participante',
                 'date' => Carbon::parse($entry->evento->dat_inicio),
                 'event' => $entry->evento,
@@ -56,36 +53,33 @@ class EventoService
 
     /**
      * Calcula a pontuação total de uma pessoa com base em seus eventos.
-     *
-     * @param Pessoa $pessoa
-     * @return int
      */
     public function calcularPontuacao(Pessoa $pessoa): int
     {
         $trabalhadorEventos = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
-            ->whereHas('evento', fn($q) => $q->where('tip_evento', 'A'))
+            ->whereHas('evento', fn ($q) => $q->where('tip_evento', 'A'))
             ->with('evento')
             ->get();
 
         $participanteEventos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
-            ->whereHas('evento', fn($q) => $q->where('tip_evento', 'P'))
+            ->whereHas('evento', fn ($q) => $q->where('tip_evento', 'P'))
             ->with('evento')
             ->get();
 
         $desafioEventos = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
-            ->whereHas('evento', fn($q) => $q->where('tip_evento', 'D'))
+            ->whereHas('evento', fn ($q) => $q->where('tip_evento', 'D'))
             ->with('evento')
             ->get();
 
-        $todosEventos = $trabalhadorEventos->map(fn($entry) => [
+        $todosEventos = $trabalhadorEventos->map(fn ($entry) => [
             'type' => 'Trabalhador',
             'date' => Carbon::parse($entry->evento->dat_inicio),
-            'is_coordenador' => (bool)$entry->ind_coordenador,
-        ])->concat($participanteEventos->map(fn($entry) => [
+            'is_coordenador' => (bool) $entry->ind_coordenador,
+        ])->concat($participanteEventos->map(fn ($entry) => [
             'type' => 'Participante',
             'date' => Carbon::parse($entry->evento->dat_inicio),
             'is_coordenador' => false,
-        ]))->concat($desafioEventos->map(fn($entry) => [
+        ]))->concat($desafioEventos->map(fn ($entry) => [
             'type' => 'Desafio',
             'date' => Carbon::parse($entry->evento->dat_inicio),
             'is_coordenador' => false,
@@ -118,12 +112,8 @@ class EventoService
         return $pontuacao;
     }
 
-
     /**
      * Calcula a posição no ranking de uma pessoa.
-     *
-     * @param Pessoa $currentPessoa
-     * @return int|string
      */
     public function calcularRanking(Pessoa $currentPessoa): int|string
     {
@@ -149,27 +139,25 @@ class EventoService
             }
             $pontuacaoAnterior = $pontuacao;
         }
+
         return 'N/A';
     }
 
     /**
      * Agrupa eventos por década e ano para a visualização da timeline.
-     *
-     * @param Collection $allEntries
-     * @return array
      */
     private function agruparEventosPorDecadaEAno(Collection $allEntries): array
     {
         return $allEntries
-            ->groupBy(fn($entry) => $entry['date']->year)
+            ->groupBy(fn ($entry) => $entry['date']->year)
             ->sortKeysDesc()
-            ->map(fn($yearEntries, $year) => [
+            ->map(fn ($yearEntries, $year) => [
                 'year' => $year,
                 'events' => $yearEntries->values()->all(),
             ])
-            ->groupBy(fn($yearData) => floor($yearData['year'] / 10) * 10 . 's')
+            ->groupBy(fn ($yearData) => floor($yearData['year'] / 10) * 10 .'s')
             ->sortKeysDesc()
-            ->map(fn($decadeYears, $decade) => [
+            ->map(fn ($decadeYears, $decade) => [
                 'decade' => $decade,
                 'years' => $decadeYears->values()->all(),
             ])
@@ -180,9 +168,8 @@ class EventoService
     /**
      * Lida com o upload da foto do evento, excluindo a antiga se houver.
      *
-     * @param Evento $evento O modelo do evento ao qual a foto está associada.
-     * @param UploadedFile|null $file O arquivo da foto.
-     * @return void
+     * @param  Evento  $evento  O modelo do evento ao qual a foto está associada.
+     * @param  UploadedFile|null  $file  O arquivo da foto.
      */
     public function fotoUpload(Evento $evento, ?UploadedFile $file = null): void
     {
@@ -206,9 +193,6 @@ class EventoService
 
     /**
      * Exclui um evento e sua foto associada de forma segura.
-     *
-     * @param Evento $evento
-     * @return void
      */
     public function excluirEventoComFoto(Evento $evento): void
     {
@@ -230,10 +214,6 @@ class EventoService
 
     /**
      * Confirma a participação de uma pessoa em um evento.
-     *
-     * @param Evento $evento
-     * @param Pessoa $pessoa
-     * @return void
      */
     public function confirmarParticipacao(Evento $evento, Pessoa $pessoa): void
     {

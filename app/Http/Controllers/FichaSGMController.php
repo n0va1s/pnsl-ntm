@@ -75,8 +75,9 @@ class FichaSGMController extends Controller
 
         Log::info('Acesso ao formulário de criação de ficha SGM', $context);
 
-        $ficha = new Ficha();
+        $ficha = new Ficha;
         $eventos = Evento::getByTipo(TipoMovimento::SegueMe, 'E', 3);
+
         return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => $eventos,
@@ -155,7 +156,7 @@ class FichaSGMController extends Controller
     }
 
     public function update(
-        FichaRequest  $fichaRequest,
+        FichaRequest $fichaRequest,
         FichaSGMRequest $sgmRequest,
         $id
     ) {
@@ -172,7 +173,6 @@ class FichaSGMController extends Controller
 
         $fichaData = $fichaRequest->validated();
         $ficha->update($fichaData);
-
 
         if ($fichaRequest->filled('nom_mae') || $fichaRequest->filled('nom_pai')) {
             $sgmData = $sgmRequest->validated();
@@ -191,12 +191,12 @@ class FichaSGMController extends Controller
             // A ficha ja tem a situacao
             if ($analise) {
                 $analise->update([
-                    'txt_analise' => $fichaRequest->input('txt_analise')
+                    'txt_analise' => $fichaRequest->input('txt_analise'),
                 ]);
             } else {
                 $ficha->analises()->create([
                     'idt_situacao' => $situacao,
-                    'txt_analise' => $fichaRequest->input('txt_analise')
+                    'txt_analise' => $fichaRequest->input('txt_analise'),
                 ]);
             }
         }
@@ -227,7 +227,7 @@ class FichaSGMController extends Controller
     public function approve($id)
     {
         $start = microtime(true);
-        $context = $this->getLogContext($request);
+        $context = $this->getLogContext(request());
 
         Log::warning('Tentativa de atualização de aprovação de ficha SGM', array_merge($context, [
             'ficha_id' => $id,

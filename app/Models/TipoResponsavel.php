@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TipoResponsavel extends Model
@@ -11,11 +11,13 @@ class TipoResponsavel extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'tipo_responsavel';
+
     protected $primaryKey = 'idt_responsavel';
+
     public $timestamps = true;
 
     protected $fillable = [
-        'des_responsavel'
+        'des_responsavel',
     ];
 
     public function fichas()

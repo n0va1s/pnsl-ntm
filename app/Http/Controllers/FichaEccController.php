@@ -80,8 +80,9 @@ class FichaEccController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de criação de ficha ECC', $context);
 
-        $ficha = new Ficha();
+        $ficha = new Ficha;
         $eventos = Evento::getByTipo(TipoMovimento::ECC, 'E', 3);
+
         return view('ficha.formECC', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => $eventos,
@@ -130,7 +131,7 @@ class FichaEccController extends Controller
                 'nom_apelido_conjuge',
                 'tel_conjuge',
                 'dat_nascimento_conjuge',
-                'tam_camiseta_conjuge'
+                'tam_camiseta_conjuge',
             ]);
             $ficha->fichaEcc()->create($eccData);
         }
@@ -166,6 +167,7 @@ class FichaEccController extends Controller
 
         $ficha = Ficha::with(['fichaEcc', 'fichaSaude', 'analises.situacao'])->find($id);
         $ultimaAnalise = $ficha->analises()->latest('created_at')->first();
+
         return view('ficha.formECC', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
@@ -226,7 +228,7 @@ class FichaEccController extends Controller
             'tam_camiseta_conjuge',
         ])->toArray();
 
-        if (!empty($eccData)) {
+        if (! empty($eccData)) {
             $eccData['idt_ficha'] = $ficha->idt_ficha;
 
             if ($ficha->fichaEcc) {
@@ -245,7 +247,7 @@ class FichaEccController extends Controller
             } else {
                 $ficha->analises()->create([
                     'idt_situacao' => $situacao,
-                    'txt_analise' => $eccRequest->input('txt_analise')
+                    'txt_analise' => $eccRequest->input('txt_analise'),
                 ]);
             }
         }
@@ -287,7 +289,7 @@ class FichaEccController extends Controller
     public function destroy($id)
     {
         $start = microtime(true);
-        $context = $this->getLogContext($request);
+        $context = $this->getLogContext(request());
 
         Log::warning('Tentativa de exclusão de ficha ECC', array_merge($context, [
             'ficha_id' => $id,

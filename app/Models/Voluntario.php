@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Voluntario extends Model
 {
     use HasFactory;
 
     protected $table = 'voluntario';
+
     protected $primaryKey = 'idt_voluntario';
+
     public $timestamps = true;
 
     protected $fillable = [

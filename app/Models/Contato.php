@@ -12,7 +12,9 @@ class Contato extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'contato';
+
     protected $primaryKey = 'idt_contato';
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -33,7 +35,6 @@ class Contato extends Model
      * Scope para realizar a busca por nome de contato.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  string  $search
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSearch(Builder $query, string $search): Builder

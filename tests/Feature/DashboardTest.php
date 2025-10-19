@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\User;
-
 beforeEach(function () {
     $this->user = createUser();
 });

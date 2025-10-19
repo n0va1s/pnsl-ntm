@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Traits\LogContext;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class RoleController extends Controller
@@ -28,7 +27,6 @@ class RoleController extends Controller
 
         return view('configuracoes.RoleList', compact('perfis'));
     }
-
 
     public function change(Request $request)
     {

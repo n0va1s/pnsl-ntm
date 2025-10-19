@@ -71,7 +71,6 @@ class FichaVemController extends Controller
         return view('ficha.listVEM', compact('fichas', 'search', 'evento'));
     }
 
-
     /**
      * Formulário de criação.
      */
@@ -80,7 +79,7 @@ class FichaVemController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de criação de ficha VEM', $context);
 
-        $ficha = new Ficha();
+        $ficha = new Ficha;
         $eventos = Evento::getByTipo(TipoMovimento::VEM, 'E', 3);
 
         return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
@@ -140,7 +139,7 @@ class FichaVemController extends Controller
                 'nom_pai',
                 'tel_pai',
                 'nom_mae',
-                'tel_mae'
+                'tel_mae',
             ]);
 
             $ficha->fichaVem()->create($vemData);
@@ -239,12 +238,12 @@ class FichaVemController extends Controller
             // A ficha ja tem a situacao
             if ($analise) {
                 $analise->update([
-                    'txt_analise' => $vemRequest->input('txt_analise')
+                    'txt_analise' => $vemRequest->input('txt_analise'),
                 ]);
             } else {
                 $ficha->analises()->create([
                     'idt_situacao' => $situacao,
-                    'txt_analise' => $vemRequest->input('txt_analise')
+                    'txt_analise' => $vemRequest->input('txt_analise'),
                 ]);
             }
         }

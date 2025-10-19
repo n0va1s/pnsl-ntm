@@ -2,16 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Mail\BoasVindasMail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class Pessoa extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $table = 'pessoa';
+
     protected $primaryKey = 'idt_pessoa';
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -72,10 +78,38 @@ class Pessoa extends Model
         return $this->belongsTo(Pessoa::class, 'idt_parceiro', 'idt_pessoa');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function (Pessoa $pessoa) {
+            // VERIFICAÇÃO DE SEGURANÇA: Se já houver um usuário associado, não faça nada.
+            if ($pessoa->idt_usuario) {
+                return;
+            }
+
+            $user = User::create([
+                'name' => $pessoa->nom_pessoa,
+                'email' => $pessoa->eml_pessoa,
+                'password' => Hash::make($pessoa->dat_nascimento->format('Ymd')),
+                'role' => User::ROLE_USER,
+            ]);
+
+            $pessoa->idt_usuario = $user->id;
+            $pessoa->save();
+
+            try {
+                Mail::to($user->email)->send(new BoasVindasMail($user, $pessoa->dat_nascimento->format('Ymd')));
+            } catch (\Exception $e) {
+                Log::error('Falha ao enviar e-mail de boas-vindas para '.$user->email.': '.$e->getMessage());
+            }
+        });
+    }
+
     public function setParceiro(Pessoa $umaSoCarne)
     {
         if ($umaSoCarne && $this->idt_pessoa === $umaSoCarne->idt_pessoa) {
-            throw new \InvalidArgumentException("Uma pessoa não pode ser parceira de si mesma.");
+            throw new \InvalidArgumentException('Uma pessoa não pode ser parceira de si mesma.');
         }
 
         $this->idt_parceiro = $umaSoCarne ? $umaSoCarne->idt_pessoa : null;
@@ -103,5 +137,21 @@ class Pessoa extends Model
         return $this->dat_nascimento
             ? $this->dat_nascimento->format('Y-m-d')
             : null;
+    }
+
+    public function scopeSearchByName($query, $search)
+    {
+        // Verifica se estamos usando MySQL/MariaDB (produção)
+        if (config('database.default') === 'mysql' || config('database.default') === 'mariadb') {
+            // Usa o Full-Text Search OTIMIZADO (Exige que você adicione o FTS manualmente no MySQL)
+            return $query->whereFullText(['nom_pessoa', 'nom_apelido'], $search);
+        }
+
+        // Caso contrário (ambiente SQLite de desenvolvimento)
+        // Usamos a sintaxe mais lenta, mas compatível (LIKE "%...%")
+        return $query->where(function ($q) use ($search) {
+            $q->where('nom_pessoa', 'like', "%{$search}%")
+                ->orWhere('nom_apelido', 'like', "%{$search}%");
+        });
     }
 }

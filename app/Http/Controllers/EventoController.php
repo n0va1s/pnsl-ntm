@@ -2,33 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Evento;
-use App\Models\TipoMovimento;
 use App\Http\Requests\EventoRequest;
+use App\Models\Evento;
 use App\Models\Participante;
 use App\Models\Pessoa;
+use App\Models\TipoMovimento;
 use App\Services\EventoService;
 use App\Services\UserService;
 use App\Traits\LogContext;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Auth;
 
 class EventoController extends Controller
 {
     use LogContext;
+
     protected $eventoService;
+
     protected $userService;
 
     /**
      * Injeção de dependência do EventoService e UserService no construtor.
-     *
-     * @param EventoService $eventoService
-     * @param UserService $userService
      */
     public function __construct(EventoService $eventoService, UserService $userService)
     {
@@ -38,9 +37,6 @@ class EventoController extends Controller
 
     /**
      * Exibe a página de listagem de eventos.
-     *
-     * @param Request $request
-     * @return \Illuminate\View\View
      */
     public function index(Request $request): View
     {
@@ -55,13 +51,13 @@ class EventoController extends Controller
             'idt_movimento_filtro' => $idt_movimento,
         ]));
 
-        $pessoa = Auth::check() ? $this->userService->createPessoaFromLoggedUser() : null;
+        $pessoa = Auth::user()->pessoa;
 
         $eventosInscritos = [];
         $encontrosInscritos = [];
 
         // Verifica se o usuário está logado para popular as listas de eventos inscritos
-        if ($pessoa) {
+        if (Auth::check()) {
 
             // Pos-entrontros e desafios
             $eventosInscritos = $this->eventoService->getEventosInscritos($pessoa);
@@ -122,8 +118,6 @@ class EventoController extends Controller
 
     /**
      * Exibe o formulário para criar um novo evento.
-     *
-     * @return \Illuminate\View\View
      */
     public function create(): View
     {
@@ -131,16 +125,13 @@ class EventoController extends Controller
         Log::info('Acesso ao formulário de criação de evento', $context);
 
         $movimentos = TipoMovimento::all();
-        $evento = new Evento();
+        $evento = new Evento;
 
         return view('evento.form', compact('movimentos', 'evento'));
     }
 
     /**
      * Armazena um novo evento no banco de dados.
-     *
-     * @param EventoRequest $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(EventoRequest $request): RedirectResponse
     {
@@ -192,14 +183,12 @@ class EventoController extends Controller
         Log::info('Visualização de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
 
         $movimentos = TipoMovimento::all();
+
         return view('evento.form', compact('movimentos', 'evento'));
     }
 
     /**
      * Exibe o formulário para editar um evento.
-     *
-     * @param Evento $evento
-     * @return \Illuminate\View\View
      */
     public function edit(Evento $evento): View
     {
@@ -207,15 +196,12 @@ class EventoController extends Controller
         Log::info('Acesso ao formulário de edição de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
 
         $movimentos = TipoMovimento::all();
+
         return view('evento.form', compact('movimentos', 'evento'));
     }
 
     /**
      * Atualiza o evento no banco de dados.
-     *
-     * @param EventoRequest $request
-     * @param Evento $evento
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(EventoRequest $request, Evento $evento): RedirectResponse
     {
@@ -265,13 +251,12 @@ class EventoController extends Controller
     /**
      * Remove o evento do banco de dados.
      *
-     * @param Evento $evento
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Evento $evento)
     {
         $start = microtime(true);
-        $context = $this->getLogContext($request);
+        $context = $this->getLogContext(request());
 
         Log::warning('Tentativa de exclusão de evento', array_merge($context, [
             'evento_id' => $evento->idt_evento,
@@ -304,10 +289,6 @@ class EventoController extends Controller
 
     /**
      * Confirma a participação de uma pessoa em um evento.
-     *
-     * @param Evento $evento
-     * @param Pessoa $pessoa
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function confirm(Evento $evento, Pessoa $pessoa): RedirectResponse
     {
@@ -339,8 +320,6 @@ class EventoController extends Controller
 
     /**
      * Exibe a linha do tempo de eventos de uma pessoa.
-     *
-     * @return \Illuminate\View\View
      */
     public function timeline(): View
     {
@@ -349,7 +328,7 @@ class EventoController extends Controller
 
         Log::info('Requisição da linha do tempo iniciada', $context);
 
-        $pessoa = $this->userService->createPessoaFromLoggedUser();
+        $pessoa = Auth::user()->pessoa;
         Log::debug('Carregando dados da linha do tempo e ranking', array_merge($context, [
             'pessoa_id' => $pessoa->idt_pessoa,
         ]));

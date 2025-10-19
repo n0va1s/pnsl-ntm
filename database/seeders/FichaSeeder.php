@@ -3,11 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Ficha;
-use App\Models\FichaVem;
 use App\Models\FichaEcc;
-use Illuminate\Database\Seeder;
+use App\Models\FichaVem;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\TipoResponsavel;
+use Illuminate\Database\Seeder;
 
 class FichaSeeder extends Seeder
 {

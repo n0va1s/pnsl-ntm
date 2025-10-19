@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\TipoSituacao;
+use Illuminate\Http\Request;
 
 class TipoSituacaoController extends Controller
 {
-
     protected array $regras = [
         'des_situacao' => 'required|string|max:255',
     ];
 
     public function index()
-    { {
-            $situacoes = \App\Models\TipoSituacao::all();
-            return view('configuracoes.TipoSituacaoList', compact('situacoes'));
-        }
+    {
+        $situacoes = \App\Models\TipoSituacao::all();
+
+        return view('configuracoes.TipoSituacaoList', compact('situacoes'));
+
     }
 
     /**
@@ -26,7 +25,7 @@ class TipoSituacaoController extends Controller
     public function create()
     {
         return view('configuracoes.TipoSituacaoForm', [
-            'situacao' => new TipoSituacao(),
+            'situacao' => new TipoSituacao,
         ]);
     }
 
@@ -49,6 +48,7 @@ class TipoSituacaoController extends Controller
     public function edit(string $id)
     {
         $situacao = TipoSituacao::findOrFail($id);
+
         return view('configuracoes.TipoSituacaoForm', compact('situacao'));
     }
 
@@ -75,11 +75,12 @@ class TipoSituacaoController extends Controller
 
         try {
             $situacao->delete();
+
             return redirect()->route('situacao.index')
                 ->with('success', 'Tipo de situação excluído com sucesso!');
         } catch (\Exception $e) {
             return redirect()->route('situacao.index')
-                ->with('error', 'Erro ao excluir tipo de situação: ' . $e->getMessage());
+                ->with('error', 'Erro ao excluir tipo de situação: '.$e->getMessage());
         }
     }
 }

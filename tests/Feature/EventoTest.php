@@ -1,20 +1,18 @@
 <?php
 
 use App\Models\Evento;
-use App\Models\Pessoa;
-use App\Models\Trabalhador;
+use App\Models\EventoFoto;
 use App\Models\Participante;
+use App\Models\Pessoa;
+use App\Models\TipoEquipe;
 use App\Models\TipoMovimento;
+use App\Models\Trabalhador;
 use App\Services\EventoService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use App\Models\EventoFoto;
-use App\Models\TipoEquipe;
-use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Mockery\MockInterface;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -24,24 +22,19 @@ beforeEach(function () {
         DB::rollBack();
     }
 
-    $this->eventoService = new EventoService();
+    $this->eventoService = new EventoService;
 
     $this->user = createUser();
     $this->actingAs($this->user);
 
     $this->pessoa = createPessoa();
 
-    //Criar as equipes para cada movimento
+    // Criar as equipes para cada movimento
     createMovimentos();
 
     // Adicionar movimento padrão para os testes
     $this->movimento = TipoMovimento::all()->first();
     $this->evento = createEvento();
-
-    //Mocks
-    $this->mock(UserService::class, function (MockInterface $mock) {
-        $mock->shouldReceive('createPessoaFromLoggedUser')->andReturn(Pessoa::factory()->create());
-    });
 
     Storage::fake('public');
 });
@@ -63,12 +56,12 @@ describe('EventoService - Timeline', function () {
     test('retorna eventos de trabalhador na timeline corretamente', function () {
         $evento = Evento::factory()->create([
             'idt_movimento' => $this->movimento->idt_movimento,
-            'dat_inicio' => '2023-01-15'
+            'dat_inicio' => '2023-01-15',
         ]);
 
         $equipe = TipoEquipe::firstOrCreate([
             'des_grupo' => 'Coordenação Geral',
-            'idt_movimento' => $this->movimento->idt_movimento
+            'idt_movimento' => $this->movimento->idt_movimento,
         ]);
 
         Trabalhador::factory()->create([
@@ -76,7 +69,7 @@ describe('EventoService - Timeline', function () {
             'idt_evento' => $evento->idt_evento,
             'idt_equipe' => $equipe->idt_equipe,
             'ind_coordenador' => true,
-            'ind_primeira_vez' => false
+            'ind_primeira_vez' => false,
         ]);
 
         $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
@@ -91,12 +84,12 @@ describe('EventoService - Timeline', function () {
     test('retorna eventos de participante na timeline corretamente', function () {
         $evento = Evento::factory()->create([
             'idt_movimento' => $this->movimento->idt_movimento,
-            'dat_inicio' => '2023-06-20'
+            'dat_inicio' => '2023-06-20',
         ]);
 
         Participante::factory()->create([
             'idt_pessoa' => $this->pessoa->idt_pessoa,
-            'idt_evento' => $evento->idt_evento
+            'idt_evento' => $evento->idt_evento,
         ]);
 
         $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
@@ -141,12 +134,12 @@ test('calcula pontuação correta para primeiro evento', function () {
     $evento = Evento::factory()->create(
         [
             'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
         ]
     );
     Participante::factory()->create([
         'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento->idt_evento
+        'idt_evento' => $evento->idt_evento,
     ]);
 
     $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
@@ -159,13 +152,13 @@ test('calcula pontuação correta para trabalhador coordenador', function () {
     $evento = Evento::factory()->create(
         [
             'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'A'
+            'tip_evento' => 'A',
         ]
     );
     Trabalhador::factory()->create([
         'idt_pessoa' => $this->pessoa->idt_pessoa,
         'idt_evento' => $evento->idt_evento,
-        'ind_coordenador' => true
+        'ind_coordenador' => true,
     ]);
 
     $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
@@ -178,25 +171,25 @@ test('calcula pontuação correta para múltiplos eventos', function () {
     $evento1 = Evento::factory()->create(
         [
             'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
 
         ]
     );
     $evento2 = Evento::factory()->create(
         [
             'dat_inicio' => '2023-06-20',
-            'tip_evento' => 'A'
+            'tip_evento' => 'A',
         ]
     );
 
     Participante::factory()->create([
         'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento1->idt_evento
+        'idt_evento' => $evento1->idt_evento,
     ]);
     Trabalhador::factory()->create([
         'idt_pessoa' => $this->pessoa->idt_pessoa,
         'idt_evento' => $evento2->idt_evento,
-        'ind_coordenador' => false
+        'ind_coordenador' => false,
     ]);
 
     $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
@@ -209,23 +202,23 @@ test('não adiciona bônus de primeiro evento para eventos subsequentes', functi
     $evento1 = Evento::factory()->create(
         [
             'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
         ]
     );
     $evento2 = Evento::factory()->create(
         [
             'dat_inicio' => '2023-06-20',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
         ]
     );
 
     Participante::factory()->create([
         'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento1->idt_evento
+        'idt_evento' => $evento1->idt_evento,
     ]);
     Participante::factory()->create([
         'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento2->idt_evento
+        'idt_evento' => $evento2->idt_evento,
     ]);
 
     $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
@@ -241,23 +234,23 @@ test('lida com empates no ranking corretamente', function () {
     $evento1 = Evento::factory()->create(
         [
             'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
         ]
     );
     $evento2 = Evento::factory()->create(
         [
             'dat_inicio' => '2023-06-20',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
         ]
     );
 
     Participante::factory()->create([
         'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento1->idt_evento
+        'idt_evento' => $evento1->idt_evento,
     ]);
     Participante::factory()->create([
         'idt_pessoa' => $pessoa2->idt_pessoa,
-        'idt_evento' => $evento2->idt_evento
+        'idt_evento' => $evento2->idt_evento,
     ]);
 
     $ranking1 = $this->eventoService->calcularRanking($this->pessoa);
@@ -274,27 +267,27 @@ test('ranking reflete pontuação corretamente', function () {
     $evento1 = Evento::factory()->create(
         [
             'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
         ]
     );
     $evento2 = Evento::factory()->create(
         [
             'dat_inicio' => '2023-06-20',
-            'tip_evento' => 'A'
+            'tip_evento' => 'A',
         ]
     );
 
     // Pessoa 1: participante e primeiro evento → 6 pontos
     Participante::factory()->create([
         'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento1->idt_evento
+        'idt_evento' => $evento1->idt_evento,
     ]);
 
     // Pessoa 2: trabalhador coordenador no primeiro evento → 9 pontos
     Trabalhador::factory()->create([
         'idt_pessoa' => $pessoa2->idt_pessoa,
         'idt_evento' => $evento2->idt_evento,
-        'ind_coordenador' => true
+        'ind_coordenador' => true,
     ]);
 
     $ranking1 = $this->eventoService->calcularRanking($this->pessoa);
@@ -309,7 +302,7 @@ describe('EventoService - Upload de Foto', function () {
         $evento = Evento::factory()->create(
             [
                 'dat_inicio' => '2023-07-01',
-                'tip_evento' => 'A'
+                'tip_evento' => 'A',
             ]
         );
         $file = UploadedFile::fake()->image('evento.jpg');
@@ -325,7 +318,7 @@ describe('EventoService - Upload de Foto', function () {
         $evento = Evento::factory()->create(
             [
                 'dat_inicio' => '2023-12-01',
-                'tip_evento' => 'A'
+                'tip_evento' => 'A',
             ]
         );
         $evento->foto()->create(['med_foto' => 'fotos/evento/antiga.jpg']);
@@ -341,7 +334,7 @@ describe('EventoService - Upload de Foto', function () {
         $evento = Evento::factory()->create(
             [
                 'dat_inicio' => '2023-12-31',
-                'tip_evento' => 'A'
+                'tip_evento' => 'A',
             ]
         );
         $fotoOriginal = $evento->foto;
@@ -357,7 +350,7 @@ describe('EventoService - Exclusão', function () {
         $evento = Evento::factory()->create(
             [
                 'dat_inicio' => '2024-01-01',
-                'tip_evento' => 'A'
+                'tip_evento' => 'A',
             ]
         );
 
@@ -370,7 +363,7 @@ describe('EventoService - Exclusão', function () {
         $evento = Evento::factory()->create(
             [
                 'dat_inicio' => '2024-02-01',
-                'tip_evento' => 'A'
+                'tip_evento' => 'A',
             ]
         );
         $evento->foto()->create(['med_foto' => 'fotos/evento/teste.jpg']);
@@ -386,7 +379,7 @@ describe('EventoService - Participação', function () {
         $evento = Evento::factory()->create(
             [
                 'dat_inicio' => '2024-03-01',
-                'tip_evento' => 'P'
+                'tip_evento' => 'P',
             ]
         );
 
@@ -400,18 +393,18 @@ describe('EventoService - Participação', function () {
     test('retorna eventos inscritos corretamente', function () {
         $evento1 = Evento::factory()->create([
             'dat_inicio' => '2024-04-01',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
         ]);
 
         $evento2 = Evento::factory()->create([
             'dat_inicio' => '2024-05-01',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
         ]);
 
         // Não inscrito
         $evento3 = Evento::factory()->create([
             'dat_inicio' => '2024-06-01',
-            'tip_evento' => 'P'
+            'tip_evento' => 'P',
         ]);
 
         Participante::factory()->create(
@@ -520,17 +513,17 @@ describe('EventoController - Create', function () {
         $this->tipoMovimentoECC = TipoMovimento::firstOrCreate([
             'des_sigla' => 'ECC',
             'nom_movimento' => 'Encontro de Casais com Cristo',
-            'dat_inicio' => '1980-01-01'
+            'dat_inicio' => '1980-01-01',
         ]);
         $this->tipoMovimentoVEM = TipoMovimento::firstOrCreate([
             'des_sigla' => 'VEM',
             'nom_movimento' => 'Encontro de Adolescentes com Cristo',
-            'dat_inicio' => '2000-07-01'
+            'dat_inicio' => '2000-07-01',
         ]);
         $this->tipoMovimentoSegueMe = TipoMovimento::firstOrCreate([
             'des_sigla' => 'Segue-Me',
             'nom_movimento' => 'Encontro de Jovens com Cristo',
-            'dat_inicio' => '1990-12-31'
+            'dat_inicio' => '1990-12-31',
         ]);
 
         $response = $this->get(route('eventos.create'));
@@ -552,7 +545,7 @@ describe('EventoController - Store', function () {
             'val_trabalhador' => 50.00,
             'val_venista' => 30.00,
             'val_entrada' => 15.00,
-            'tip_evento' => 'A'
+            'tip_evento' => 'A',
         ];
 
         $response = $this->post(route('eventos.store'), $dadosEvento);
@@ -562,7 +555,7 @@ describe('EventoController - Store', function () {
 
         $this->assertDatabaseHas('evento', [
             'des_evento' => 'Novo Evento',
-            'num_evento' => 'EV001'
+            'num_evento' => 'EV001',
         ]);
     });
 
@@ -576,7 +569,7 @@ describe('EventoController - Store', function () {
             'dat_inicio' => '2024-01-15',
             'dat_termino' => '2024-01-17',
             'med_foto' => UploadedFile::fake()->image('evento.jpg'),
-            'tip_evento' => 'A'
+            'tip_evento' => 'A',
         ];
 
         $response = $this->post(route('eventos.store'), $dadosEvento);
@@ -703,7 +696,7 @@ describe('EventoController - Update', function () {
             'num_evento',
             'dat_inicio',
             'idt_movimento',
-            'tip_evento'
+            'tip_evento',
         ]);
     });
 });
@@ -767,7 +760,7 @@ describe('EventoController - Confirm', function () {
 
         $this->assertDatabaseHas('participante', [
             'idt_evento' => $evento->idt_evento,
-            'idt_pessoa' => $pessoa->idt_pessoa
+            'idt_pessoa' => $pessoa->idt_pessoa,
         ]);
     });
 });
@@ -810,13 +803,13 @@ describe('Evento Model', function () {
             'txt_informacao',
         ];
 
-        expect((new Evento())->getFillable())->toBe($fillable);
+        expect((new Evento)->getFillable())->toBe($fillable);
     });
 
     test('faz cast de datas corretamente', function () {
         $evento = Evento::factory()->create([
             'dat_inicio' => '2023-01-15',
-            'dat_termino' => '2023-01-17'
+            'dat_termino' => '2023-01-17',
         ]);
 
         expect($evento->dat_inicio)->toBeInstanceOf(\Carbon\Carbon::class)
@@ -855,7 +848,7 @@ describe('Evento Model', function () {
         $movimento = TipoMovimento::firstOrCreate([
             'des_sigla' => 'ECC',
             'nom_movimento' => 'Encontro de Casais com Cristo',
-            'dat_inicio' => '1980-01-01'
+            'dat_inicio' => '1980-01-01',
         ]);
 
         $evento = Evento::factory()->create(['idt_movimento' => $movimento->idt_movimento]);
@@ -875,20 +868,20 @@ describe('Evento Model', function () {
 
 describe('EventoFoto Model', function () {
     test('usa timestamps', function () {
-        expect((new EventoFoto())->timestamps)->toBeTrue();
+        expect((new EventoFoto)->timestamps)->toBeTrue();
     });
 
     test('tem atributos fillable corretos', function () {
         $fillable = ['idt_evento', 'med_foto'];
 
-        expect((new EventoFoto())->getFillable())->toBe($fillable);
+        expect((new EventoFoto)->getFillable())->toBe($fillable);
     });
 
     test('relacionamento com evento funciona', function () {
         $evento = Evento::factory()->create();
         $foto = EventoFoto::create([
             'idt_evento' => $evento->idt_evento,
-            'med_foto' => 'teste.jpg'
+            'med_foto' => 'teste.jpg',
         ]);
 
         expect($foto->evento)->toBeInstanceOf(Evento::class)

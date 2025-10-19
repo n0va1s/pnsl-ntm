@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class EventoFoto extends Model
 {
     use HasFactory;
 
     protected $table = 'evento_foto';
+
     protected $primaryKey = 'idt_evento';
+
     public $timestamps = true;
 
     protected $fillable = [

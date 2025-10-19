@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Evento;
 use App\Models\Participante;
 use App\Models\Pessoa;
-use App\Models\Evento;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ParticipanteFactory extends Factory

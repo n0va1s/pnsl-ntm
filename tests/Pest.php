@@ -63,19 +63,19 @@ function createMovimentos(): void
     \App\Models\TipoMovimento::firstOrCreate([
         'des_sigla' => 'ECC',
         'nom_movimento' => 'Encontro de Casais com Cristo',
-        'dat_inicio' => '1980-01-01'
+        'dat_inicio' => '1980-01-01',
     ]);
 
     \App\Models\TipoMovimento::firstOrCreate([
         'des_sigla' => 'VEM',
         'nom_movimento' => 'Encontro de Adolescentes com Cristo',
-        'dat_inicio' => '2000-07-01'
+        'dat_inicio' => '2000-07-01',
     ]);
 
     \App\Models\TipoMovimento::firstOrCreate([
         'des_sigla' => 'Segue-Me',
         'nom_movimento' => 'Encontro de Jovens com Cristo',
-        'dat_inicio' => '1990-12-31'
+        'dat_inicio' => '1990-12-31',
     ]);
 
     $tipoMovimento = \App\Models\TipoMovimento::all()->first()->idt_movimento;

@@ -1,16 +1,14 @@
 <?php
 
 use App\Models\Contato;
-
-use function Pest\Laravel\{get, delete, actingAs};
 use Illuminate\Foundation\Testing\RefreshDatabase;
+
+use function Pest\Laravel\actingAs;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    // Cria uma pessoa e um usuário com a relação correta
     $this->user = createUser();
-
     createMovimentos();
 });
 

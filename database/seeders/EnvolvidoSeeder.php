@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\Pessoa;
 use App\Models\Evento;
 use App\Models\Participante;
+use App\Models\Pessoa;
 use App\Models\Presenca;
 use App\Models\TipoEquipe;
 use App\Models\Trabalhador;
 use App\Models\Voluntario;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
-//Participante, Voluntario e Trabalhador
+// Participante, Voluntario e Trabalhador
 class EnvolvidoSeeder extends Seeder
 {
     use WithoutModelEvents;

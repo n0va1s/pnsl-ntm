@@ -27,7 +27,7 @@ class TipoEquipeFactory extends Factory
         $movimentos = TipoMovimento::all()->keyBy('des_sigla');
 
         return [
-            ['des_grupo' => 'Alimentação', 'idt_movimento' =>  $movimentos['VEM']->idt_movimento],
+            ['des_grupo' => 'Alimentação', 'idt_movimento' => $movimentos['VEM']->idt_movimento],
             ['des_grupo' => 'Bandinha', 'idt_movimento' => $movimentos['VEM']->idt_movimento],
             ['des_grupo' => 'Coordenação Geral', 'idt_movimento' => $movimentos['VEM']->idt_movimento],
             ['des_grupo' => 'Emaús', 'idt_movimento' => $movimentos['VEM']->idt_movimento],
@@ -57,7 +57,7 @@ class TipoEquipeFactory extends Factory
      */
     public static function seedDefaults(): void
     {
-        foreach ((new self())->defaults() as $data) {
+        foreach ((new self)->defaults() as $data) {
             TipoEquipe::firstOrCreate($data);
         }
     }

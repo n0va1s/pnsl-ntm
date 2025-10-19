@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Trabalhador;
-use App\Models\Pessoa;
 use App\Models\Evento;
+use App\Models\Pessoa;
 use App\Models\TipoEquipe;
+use App\Models\Trabalhador;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TrabalhadorFactory extends Factory
