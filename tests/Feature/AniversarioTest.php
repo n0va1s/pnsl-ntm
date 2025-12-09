@@ -2,12 +2,12 @@
 
 use App\Mail\AniversarioMail;
 use App\Models\Pessoa;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithConsole;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Mail;
 
 uses(RefreshDatabase::class);
 uses(InteractsWithConsole::class);

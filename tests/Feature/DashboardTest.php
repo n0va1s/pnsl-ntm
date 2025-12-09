@@ -4,12 +4,12 @@ beforeEach(function () {
     $this->user = createUser();
 });
 
-test('guests are redirected to the login page', function () {
+test('visitante sao direcionados pra pagina de login', function () {
     $response = $this->get('/dashboard');
     $response->assertRedirect('/login');
 });
 
-test('authenticated users can visit the dashboard', function () {
+test('usuario autenticados acessam o dashboard', function () {
     $this->actingAs($this->user);
 
     $response = $this->get('/dashboard');

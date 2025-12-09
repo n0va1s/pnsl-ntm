@@ -1,0 +1,234 @@
+services:
+  # ============================================
+  # Serviço da Aplicação Laravel (PHP-FPM)
+  # ============================================
+  laravel.app:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: pnsl-ntm:latest
+    container_name: pnsl_laravel_app
+    restart: unless-stopped
+
+    # Variáveis de ambiente - usar arquivo .env.production
+    env_file:
+      - .env.production
+
+    # Volumes para persistência
+    volumes:
+      - storage_data:/var/www/html/storage
+      - bootstrap_cache:/var/www/html/bootstrap/cache
+
+    # Healthcheck
+    healthcheck:
+      test: [ "CMD-SHELL", "php-fpm-healthcheck || exit 1" ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+    # Limites de recursos
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    # Configuração de logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Redes
+    networks:
+      - backend
+
+    # Dependências
+    depends_on:
+      mysql.db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ============================================
+  # Serviço do Servidor Web (Nginx)
+  # ============================================
+  nginx:
+    image: nginx:stable-alpine
+    container_name: pnsl_nginx
+    restart: unless-stopped
+
+    # Portas
+    ports:
+      - "80:80"
+      # Para HTTPS, descomente:
+      # - "443:443"
+
+      # Volumes
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./public:/var/www/html/public:ro
+      - storage_data:/var/www/html/storage:ro
+      # Para SSL, adicione:
+      # - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+
+      # Healthcheck
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health" ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+    # Limites de recursos
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+    # Configuração de logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Redes
+    networks:
+      - frontend
+      - backend
+
+    # Dependências
+    depends_on:
+      laravel.app:
+        condition: service_healthy
+
+  # ============================================
+  # Serviço do Banco de Dados (MySQL)
+  # ============================================
+  mysql.db:
+    image: mysql:8.0
+    container_name: pnsl_mysql
+    restart: unless-stopped
+
+    # Variáveis de ambiente
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-pnsl_ntm}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME:-pnsl_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_HOST: '%'
+
+    # Comando customizado para melhor performance
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=200 --innodb_buffer_pool_size=256M
+
+    # Volumes para persistência
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
+
+    # Healthcheck
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
+    # Limites de recursos
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    # Configuração de logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Redes
+    networks:
+      - backend
+
+  # ============================================
+  # Serviço de Cache (Redis)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: pnsl_redis
+    restart: unless-stopped
+
+    # Comando com configurações de segurança
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password_here}
+
+    # Volumes para persistência
+    volumes:
+      - redis_data:/data
+
+    # Healthcheck
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+    # Limites de recursos
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+    # Configuração de logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Redes
+    networks:
+      - backend
+
+# ============================================
+# Volumes para persistência de dados
+# ============================================
+volumes:
+  db_data:
+    driver: local
+  redis_data:
+    driver: local
+  storage_data:
+    driver: local
+  bootstrap_cache:
+    driver: local
+
+# ============================================
+# Redes para isolamento de serviços
+# ============================================
+networks:
+  # Rede frontend - acessível externamente
+  frontend:
+    driver: bridge
+
+  # Rede backend - apenas comunicação interna
+  backend:
+    driver: bridge
+    internal: true
