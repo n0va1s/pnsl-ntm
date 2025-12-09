@@ -11,7 +11,6 @@ class TipoMovimentoFactory extends Factory
 
     public function definition(): array
     {
-        // Valores aleatórios para criar movimentos adicionais, se necessário
         return [
             'des_sigla' => $this->faker->unique()->lexify('???'),
             'nom_movimento' => $this->faker->sentence(3),

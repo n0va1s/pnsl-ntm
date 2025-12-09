@@ -11,10 +11,15 @@ class RoleController extends Controller
 {
     use LogContext;
 
-    public function index()
+    public function index(Request $request)
     {
         $start = microtime(true);
         $context = $this->getLogContext($request);
+
+        if ($request->user()->role !== 'admin') {
+            abort(403);
+        }
+
         Log::info('Requisição de listagem de perfis de usuário (RoleList) iniciada', $context);
 
         $perfis = User::orderBy('name', 'asc')->paginate(10);
@@ -32,6 +37,11 @@ class RoleController extends Controller
     {
         $start = microtime(true);
         $context = $this->getLogContext($request);
+
+        if ($request->user()->role !== 'admin') {
+            abort(403);
+        }
+
         $rolesData = $request->input('role', []);
 
         Log::info('Tentativa de atualização de perfis (roles) de usuário', array_merge($context, [

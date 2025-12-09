@@ -14,8 +14,8 @@ class TipoEquipeFactory extends Factory
     {
         // Valores aleatórios padrão, caso queira criar outros registros
         return [
+            'idt_movimento' => TipoMovimento::factory(),
             'des_grupo' => $this->faker->word(),
-            'idt_movimento' => $this->faker->randomElement(['1', '2', '3']), // IDs de movimentos fictícios
         ];
     }
 

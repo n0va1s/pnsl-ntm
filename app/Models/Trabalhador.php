@@ -19,17 +19,10 @@ class Trabalhador extends Model
     protected $fillable = [
         'idt_pessoa',
         'idt_evento',
-        'idt_pessoa',
-        'idt_evento',
         'idt_equipe',
         'ind_coordenador',
         'ind_recomendado',
-        'ind_recomendado',
         'ind_lideranca',
-        'ind_destaque',
-        'ind_coordenador',
-        'ind_destaque',
-        'ind_coordenador',
         'ind_destaque',
         'ind_avaliacao',
         'ind_primeira_vez',
@@ -68,6 +61,9 @@ class Trabalhador extends Model
      */
     public function scopeEvento(Builder $query, ?int $idt_evento): Builder
     {
-        return $query->where('idt_evento', $idt_evento);
+        if ($idt_evento) {
+            return $query->where('idt_evento', $idt_evento);
+        }
+        return $query;
     }
 }

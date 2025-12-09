@@ -11,7 +11,7 @@
         <div class="flex justify-between items-center mb-4">
             <form method="GET" action="{{ route('trabalhadores.index') }}"
                 class="flex items-center gap-2 w-full max-w-md">
-                <input type="hidden" name="evento" value="{{ $evento->idt_evento }}">
+                <input type="hidden" name="evento" value="{{ $evento?->idt_evento }}">
                 <div>
                     <label for="search" class="sr-only">Buscar</label>
                     <input type="text" name="search" id="search" value="{{ $search }}"
@@ -36,7 +36,7 @@
                     Buscar
                 </button>
 
-                @if ($search || $equipe)
+                @if ($search || $idt_equipe)
                     <a href="{{ route('trabalhadores.index', ['evento' => $evento]) }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400">
                         <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />

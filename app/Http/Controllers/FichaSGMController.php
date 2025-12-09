@@ -123,7 +123,7 @@ class FichaSGMController extends Controller
             'duration_ms' => $duration,
         ]));
 
-        return redirect()->route('ficha.listSGM', ['evento' => $ficha->idt_evento]);
+        return redirect()->route('sgm.index', ['evento' => $ficha->idt_evento])->with('success', 'Ficha cadastrada com sucesso!');
     }
 
     public function show($id)
@@ -133,7 +133,7 @@ class FichaSGMController extends Controller
 
         $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'analises.situacao'])->find($id);
 
-        return view('ficha.formSGM', array_merge($his->fichaService::dadosFixosFicha($ficha), [
+        return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
             'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
             'movimentopadrao' => TipoMovimento::SegueMe,

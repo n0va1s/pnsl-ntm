@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $fichasrecentes = Ficha::with(['evento'])
             ->orderBy('created_at', 'desc')
             ->take(5)
-            ->select('idt_ficha', 'idt_evento', 'nom_candidato', 'dat_nascimento', 'idt_movimento')
+            ->select('idt_ficha', 'idt_evento', 'nom_candidato', 'dat_nascimento')
             ->get();
 
         $qtdEventosAtivos = Evento::where('dat_termino', '>=', today())->count();

@@ -341,7 +341,7 @@ class TrabalhadorController extends Controller
             'ind_destaque' => $dados['ind_destaque'] ?? false,
             'ind_camiseta_pediu' => $dados['ind_camiseta_pediu'] ?? false,
             'ind_camiseta_pagou' => $dados['ind_camiseta_pagou'] ?? false,
-            'ind_avaliado' => true,
+            'ind_avaliacao' => true,
         ]);
 
         $trabalhador->save();

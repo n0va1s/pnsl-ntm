@@ -28,7 +28,7 @@
 
             <form method="POST" action="{{ route('trabalhadores.store') }}" class="space-y-6">
                 @csrf
-                <input type="hidden" name="idt_evento" value="{{ $evento->idt_evento }}">
+                <input type="hidden" name="idt_evento" value="{{ $evento?->idt_evento }}">
 
                 <div class="bg-gray-50 dark:bg-zinc-700 rounded-md p-4">
                     <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">Escolha até 3 equipes</h3>
