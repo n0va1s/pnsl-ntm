@@ -1,51 +1,115 @@
-# Usa uma imagem base oficial do PHP com o FPM (FastCGI Process Manager)
+# Multi-stage build para otimizar o tamanho da imagem
+FROM php:8.2-fpm-alpine AS builder
+
+# Define o diretório de trabalho
+WORKDIR /var/www/html
+
+# Instala o Composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+# Copia apenas os arquivos de dependências primeiro (melhor cache)
+COPY composer.json composer.lock ./
+
+# Instala dependências de build temporárias
+RUN apk add --no-cache --virtual .build-deps \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    zlib-dev \
+    linux-headers \
+    && docker-php-ext-configure gd --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+    pdo_mysql \
+    opcache \
+    bcmath \
+    zip \
+    gd \
+    sockets \
+    exif \
+    pcntl \
+    pdo
+
+# Instala dependências do Composer
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Copia o resto da aplicação
+COPY . .
+
+# Executa scripts pós-instalação
+RUN composer dump-autoload --optimize
+
+# ============================================
+# Stage 2: Imagem de produção
+# ============================================
 FROM php:8.2-fpm-alpine
 
-# Instala dependências do sistema e extensões PHP necessárias para o Laravel
+# Define variáveis de ambiente
+ENV TZ=America/Sao_Paulo \
+    PHP_MEMORY_LIMIT=256M \
+    PHP_UPLOAD_MAX_FILESIZE=20M \
+    PHP_POST_MAX_SIZE=25M
+
+# Instala dependências do sistema (apenas runtime, sem -dev)
 RUN apk add --no-cache \
-    $php_packages \
-    nginx \
-    # Dependências do sistema
     supervisor \
     libzip \
     libpng \
-    libjpeg \
+    libjpeg-turbo \
     mysql-client \
-    # Extensões PHP
-    && docker-php-ext-install pdo_mysql \
-    && docker-php-ext-install opcache \
-    && docker-php-ext-install bcmath \
-    && docker-php-ext-install zip \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install sockets \
-    && docker-php-ext-install exif \
-    && docker-php-ext-install pcntl \
-    && docker-php-ext-install pdo
+    tzdata \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone
 
-# Instala o Composer globalmente
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+# Instala extensões PHP (copiando dos binários já compilados do builder)
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
-# Define o diretório de trabalho dentro do container
+# Copia configurações PHP customizadas
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+# Define o diretório de trabalho
 WORKDIR /var/www/html
 
-# Copia o código da aplicação
-COPY . .
+# Copia a aplicação do builder
+COPY --from=builder /var/www/html /var/www/html
 
-# Instala as dependências do Laravel
-RUN composer install --no-dev --optimize-autoloader
+# Cria usuário não-root para segurança
+RUN addgroup -g 1000 laravel \
+    && adduser -D -u 1000 -G laravel laravel
 
-# Gera a chave da aplicação (se não estiver no .env)
-# Recomenda-se que isso seja feito fora do Dockerfile se possível,
-# mas se precisar:
-# RUN php artisan key:generate
+# Cria diretórios necessários e ajusta permissões
+RUN mkdir -p \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache \
+    && chown -R laravel:laravel \
+    storage \
+    bootstrap/cache \
+    && chmod -R 775 \
+    storage \
+    bootstrap/cache
 
-# Dá permissão ao PHP-FPM para os arquivos (pode variar dependendo do usuário que o PHP-FPM usa,
-# mas 'www-data' ou 'root' são comuns, 'root' no caso do alpine)
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Cria diretório para logs do PHP-FPM
+RUN mkdir -p /var/log/php-fpm && chown -R laravel:laravel /var/log/php-fpm
 
-# Expor a porta do PHP-FPM (geralmente 9000)
+# Configura PHP-FPM para rodar como usuário laravel
+RUN sed -i 's/user = www-data/user = laravel/g' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/group = www-data/group = laravel/g' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/listen.owner = www-data/listen.owner = laravel/g' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/listen.group = www-data/listen.group = laravel/g' /usr/local/etc/php-fpm.d/www.conf
+
+# Muda para usuário não-root
+USER laravel
+
+# Expõe a porta do PHP-FPM
 EXPOSE 9000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 --start-period=40s \
+    CMD php-fpm-healthcheck || exit 1
 
 # Comando padrão para iniciar o PHP-FPM
 CMD ["php-fpm"]
