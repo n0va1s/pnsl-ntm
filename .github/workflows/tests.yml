@@ -1,67 +1,117 @@
-name: tests
+#!/usr/bin/env powershell
 
-on:
-  push:
-    branches:
-      - develop
-      - main
-  pull_request:
-    branches:
-      - develop
-      - main
+# ============================================
+# Script de Análise de Cobertura de Testes - VERSÃO SIMPLIFICADA
+# Focado em Cobertura Total e por Arquivo.
+# ============================================
 
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    environment: Testing
+# Função para calcular cobertura de um arquivo (com tipagem forçada)
+function Get-FileCoverage {
+    param($file)
+    
+    # Se metrics não existir, retorna 0
+    if (-not $file.metrics) { return 0 }
+    
+    $metrics = $file.metrics
+    [int]$statements = $metrics.statements
+    [int]$coveredstatements = $metrics.coveredstatements
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    if ($statements -eq 0) {
+        return 100
+    }
+    return [math]::Round(($coveredstatements / $statements) * 100, 2)
+}
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.4
-          extensions: mbstring, bcmath, pcntl, sqlite
-          tools: composer:v2
-          coverage: xdebug
+# Função para obter nome curto do arquivo
+function Get-ShortName {
+    param($fullPath)
+    
+    # Divide por barra ou contrabarra e pega o último elemento, removendo .php
+    $parts = $fullPath -split '[\\/]'
+    return $parts[-1] -replace "\.php$", ""
+}
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
+# --- Cabeçalho ---
+Write-Host ""
+Write-Host "========================================"
+Write-Host "  Análise de Cobertura - SIMPLES"
+Write-Host "========================================"
+Write-Host ""
 
-      - name: Install Node Dependencies
-        run: npm i
+# --- 1. Leitura do XML (Método robusto) ---
+if (-not (Test-Path "coverage.xml")) {
+    Write-Host "Arquivo coverage.xml nao encontrado! Execute 'sail test --coverage --min=0'." -ForegroundColor Red
+    exit 1
+}
 
-      - name: Add Flux Credentials Loaded From ENV
-        run: composer config http-basic.composer.fluxui.dev "${{ secrets.FLUX_USERNAME }}" "${{ secrets.FLUX_LICENSE_KEY }}"
+try {
+    # Usando Get-Content | ConvertFrom-Xml para leitura robusta (contra erros de parsing)
+    $xmlContent = Get-Content "coverage.xml" -Encoding UTF8 -Raw
+    [xml]$coverage = $xmlContent | ConvertFrom-Xml
+}
+catch {
+    Write-Host "Erro ao ler o arquivo XML: $($_.Exception.Message)" -ForegroundColor Red
+    exit 1
+}
 
-      - name: Install Dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+# Coletar dados de cobertura
+$coverageData = @()
 
-      - name: Copy Environment File
-        run: cp .env.testing .env
+$packages = @($coverage.coverage.project.package)
+foreach ($package in $packages) {
+    # Usando SelectNodes (XPath) para selecionar explicitamente apenas os elementos <file>
+    if (-not $package.SelectNodes) { continue }
+    $files = $package.SelectNodes("file")
+    
+    if (-not $files) { continue } 
+    
+    foreach ($file in $files) {
+        
+        # Ignora nós que não são elementos XML válidos (evita o erro 'valor para XmlDocument')
+        if ($file.GetType().Name -ne 'XmlElement') { continue }
+        if (-not $file.name -or -not $file.metrics) { continue } 
+        
+        $fullPath = $file.name
+        $shortName = Get-ShortName $fullPath
+        
+        $coverage = Get-FileCoverage $file 
+        $metrics = $file.metrics
+        
+        $coverageData += [PSCustomObject]@{
+            Name              = $shortName
+            Coverage          = $coverage
+            Statements        = [int]$metrics.statements
+            CoveredStatements = [int]$metrics.coveredstatements
+            FullPath          = $fullPath
+        }
+    }
+}
 
-      - name: Configure Mailtrap
-        run: |
-          echo "MAIL_MAILER=smtp" >> .env
-          echo "MAIL_HOST=smtp.mailtrap.io" >> .env
-          echo "MAIL_PORT=2525" >> .env
-          echo "MAIL_USERNAME=${{ secrets.MAILTRAP_USER }}" >> .env
-          echo "MAIL_PASSWORD=${{ secrets.MAILTRAP_PASS }}" >> .env
-          echo "MAIL_ENCRYPTION=null" >> .env
+# ============================================
+# RELATÓRIO
+# ============================================
 
-      - name: Generate Application Key
-        run: php artisan key:generate
+# Calcular estatísticas gerais
+$totalStatements = ($coverageData | Measure-Object -Property Statements -Sum).Sum
+$totalCovered = ($coverageData | Measure-Object -Property CoveredStatements -Sum).Sum
+$overallCoverage = if ($totalStatements -gt 0) { [math]::Round(($totalCovered / $totalStatements) * 100, 2) } else { 0 }
 
-      - name: Run migrations
-        run: php artisan migrate --env=testing --force
+# --- 1. Resumo Geral ---
+Write-Host "RESUMO GERAL" -ForegroundColor Green
+Write-Host "======================================" -ForegroundColor Green
+Write-Host "Cobertura Total: $overallCoverage%" -ForegroundColor Yellow
+Write-Host "Statements Cobertos: $totalCovered / $totalStatements"
+Write-Host ""
 
-      - name: Build Assets
-        run: npm run build
+# --- 2. Cobertura por Arquivo (Ordenado por Cobertura Baixa) ---
+Write-Host "COBERTURA DETALHADA POR ARQUIVO" -ForegroundColor Cyan
+Write-Host "======================================" -ForegroundColor Gray
 
-      - name: Run Tests
-        run: ./vendor/bin/pest
+# Tabela formatada: Ordena pela Cobertura (Ascendente) para ver os piores primeiro
+$coverageData | 
+    Sort-Object Coverage | 
+    Format-Table Name, Coverage, Statements, CoveredStatements -AutoSize
+
+Write-Host ""
+Write-Host "Execucao concluida."
+Write-Host ""

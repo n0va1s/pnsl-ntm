@@ -1,131 +1,119 @@
 #!/bin/bash
 
-# ============================================
-# Script de Deploy para Produção
-# ============================================
-# Este script automatiza o processo de deploy
-# da aplicação Laravel em ambiente Docker
-# ============================================
+set -e  # Sai imediatamente em caso de erro
 
-set -e  # Para execução em caso de erro
-
-# Cores para output
+# Configuração de Cores
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Nome dos serviços e arquivo compose
+COMPOSE_FILE="docker-compose-prd.yml"
+APP_SERVICE="laravel.app"
+DB_SERVICE="mysql.db"
+
 # Funções auxiliares
-print_success() {
-    echo -e "${GREEN}✓ $1${NC}"
-}
+print_success() { echo -e "${GREEN}✓ $1${NC}"; }
+print_error() { echo -e "${RED}✗ $1${NC}"; }
+print_warning() { echo -e "${YELLOW}⚠ $1${NC}"; }
+print_info() { echo -e "${BLUE}ℹ $1${NC}"; }
+# ---------------------------------------------
 
-print_error() {
-    echo -e "${RED}✗ $1${NC}"
-}
+# Função principal de espera por Healthcheck
+wait_for_healthcheck() {
+    local service_name=$1
+    local max_retries=15
+    local interval=5
+    local i=0
 
-print_warning() {
-    echo -e "${YELLOW}⚠ $1${NC}"
-}
+    print_info "Aguardando o serviço ${service_name} ficar 'healthy'..."
 
-print_info() {
-    echo -e "${YELLOW}ℹ $1${NC}"
-}
+    while [ $i -lt $max_retries ]; do
+        STATUS=$(docker inspect --format='{{json .State.Health}}' "${service_name}" | grep -o '"Status":"[^"]*"' | cut -d':' -f2 | tr -d '"')
+        
+        if [ "$STATUS" == "healthy" ]; then
+            print_success "Serviço ${service_name} está HEALTHY."
+            return 0
+        fi
+        
+        # Ignora "starting" e "unhealthy" nos primeiros passos, a menos que as retries acabem
+        if [ "$STATUS" == "starting" ] || [ "$STATUS" == "unhealthy" ]; then
+            print_info "Status atual de ${service_name}: ${STATUS}. Tentativa $((i+1))/${max_retries}..."
+        fi
 
-# Verifica se .env.production existe
-if [ ! -f .env.production ]; then
-    print_error "Arquivo .env.production não encontrado!"
-    print_info "Copie .env.production.example para .env.production e configure as variáveis"
+        sleep $interval
+        i=$((i+1))
+    done
+
+    print_error "Serviço ${service_name} não atingiu o status 'healthy' após $(($max_retries * $interval)) segundos."
+    docker-compose -f ${COMPOSE_FILE} logs ${service_name}
     exit 1
-fi
+}
+# ---------------------------------------------
 
-# Verifica se APP_KEY está configurada
-if grep -q "APP_KEY=base64:GERAR_COM" .env.production; then
-    print_error "APP_KEY não foi gerada!"
-    print_info "Execute: php artisan key:generate --env=production"
-    exit 1
-fi
+# --- Pré-Checks ---
+if [ ! -f .env.production ]; then print_error "Arquivo .env.production não encontrado!"; exit 1; fi
+if grep -q "APP_KEY=base64:GERAR_COM" .env.production; then print_error "APP_KEY não foi gerada!"; exit 1; fi
 
 print_info "Iniciando deploy da aplicação PNSL-NTM..."
 
-# 1. Para containers existentes
-print_info "Parando containers existentes..."
-docker-compose -f docker-compose.production.yml down
+# 1. Para e remove containers existentes (substitua por 'up --force-recreate' para Zero Downtime)
+print_info "Parando e removendo containers existentes..."
+docker-compose -f ${COMPOSE_FILE} down
 print_success "Containers parados"
 
-# 2. Remove imagens antigas (opcional)
-read -p "Deseja remover imagens antigas? (s/N): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Ss]$ ]]; then
-    print_info "Removendo imagens antigas..."
-    docker image prune -f
-    print_success "Imagens antigas removidas"
-fi
-
-# 3. Build da nova imagem
+# 2. Build da nova imagem
 print_info "Construindo nova imagem Docker..."
-docker-compose -f docker-compose.production.yml build --no-cache
+# Garante que o build use o Dockerfile.production correto se o compose não especificar
+docker-compose -f ${COMPOSE_FILE} build --no-cache
 print_success "Imagem construída com sucesso"
 
-# 4. Sobe os containers
-print_info "Iniciando containers..."
-docker-compose -f docker-compose.production.yml up -d
+# 3. Sobe os containers (sem a flag down, para Zero Downtime, mas aqui mantemos o padrão)
+print_info "Iniciando containers e volumes..."
+docker-compose -f ${COMPOSE_FILE} up -d --remove-orphans
 print_success "Containers iniciados"
 
-# 5. Aguarda containers ficarem saudáveis
-print_info "Aguardando containers ficarem saudáveis..."
-sleep 10
+# 4. Aguarda Healthchecks
+# Note: Usamos o nome real do container para o 'docker inspect', o docker-compose ps pode ajudar a descobrir
+# Vamos assumir o nome padrão do compose: <project_name>-<service_name>-<instance>
+PROJECT_NAME=$(basename $(pwd) | tr '[:upper:]' '[:lower:]' | tr -c -d '[:alnum:]_')
+wait_for_healthcheck "${PROJECT_NAME}-${DB_SERVICE}-1"
+wait_for_healthcheck "${PROJECT_NAME}-${APP_SERVICE}-1"
 
-# 6. Verifica status dos containers
-print_info "Verificando status dos containers..."
-docker-compose -f docker-compose.production.yml ps
+# 5. Executa migrations e comandos Artisan
+print_info "Executando migrations e caches..."
+# Usando o usuário 'laravel' do Dockerfile para executar comandos
+ARTISAN_CMD="docker-compose -f ${COMPOSE_FILE} exec -T --user laravel ${APP_SERVICE}"
 
-# 7. Executa migrations
-print_info "Executando migrations do banco de dados..."
-docker-compose -f docker-compose.production.yml exec -T laravel.app php artisan migrate --force
+# Migrations
+${ARTISAN_CMD} php artisan migrate --force
 print_success "Migrations executadas"
 
-# 8. Cache de configurações
-print_info "Gerando cache de configurações..."
-docker-compose -f docker-compose.production.yml exec -T laravel.app php artisan config:cache
-docker-compose -f docker-compose.production.yml exec -T laravel.app php artisan route:cache
-docker-compose -f docker-compose.production.yml exec -T laravel.app php artisan view:cache
-print_success "Cache gerado"
+# Cache
+${ARTISAN_CMD} php artisan config:cache
+${ARTISAN_CMD} php artisan route:cache
+${ARTISAN_CMD} php artisan view:cache
+print_success "Cache de configurações/rotas/views gerado"
 
-# 9. Otimiza autoloader
-print_info "Otimizando autoloader..."
-docker-compose -f docker-compose.production.yml exec -T laravel.app composer dump-autoload --optimize
-print_success "Autoloader otimizado"
+# 6. Verifica logs
+print_info "Últimas linhas dos logs do App:"
+docker-compose -f ${COMPOSE_FILE} logs ${APP_SERVICE} --tail=20
 
-# 10. Limpa caches antigos (se necessário)
-print_info "Limpando caches da aplicação..."
-docker-compose -f docker-compose.production.yml exec -T laravel.app php artisan cache:clear
-print_success "Caches limpos"
-
-# 11. Verifica logs
-print_info "Últimas linhas dos logs:"
-docker-compose -f docker-compose.production.yml logs --tail=20
-
-# 12. Testa conectividade
-print_info "Testando conectividade..."
-if curl -f http://localhost/health > /dev/null 2>&1; then
-    print_success "Aplicação está respondendo!"
+# 7. Testa conectividade (endpoint /health deve estar configurado no Laravel)
+print_info "Testando conectividade da porta 80..."
+if curl -f http://localhost > /dev/null 2>&1; then
+    print_success "Aplicação está respondendo!"
 else
-    print_warning "Aplicação não está respondendo no endpoint /health"
-    print_info "Verifique os logs com: docker-compose -f docker-compose.production.yml logs -f"
+    print_warning "Aplicação não está respondendo. Verifique os logs!"
 fi
 
-# Resumo final
+# Resumo final (Mantido)
 echo ""
 print_success "========================================="
-print_success "Deploy concluído com sucesso!"
+print_success "DEPLOY CONCLUÍDO COM SUCESSO!"
 print_success "========================================="
-echo ""
-print_info "Comandos úteis:"
-echo "  - Ver logs: docker-compose -f docker-compose.production.yml logs -f"
-echo "  - Status: docker-compose -f docker-compose.production.yml ps"
-echo "  - Parar: docker-compose -f docker-compose.production.yml down"
-echo "  - Reiniciar: docker-compose -f docker-compose.production.yml restart"
 echo ""
 print_info "Acesse a aplicação em: http://localhost"
 echo ""
