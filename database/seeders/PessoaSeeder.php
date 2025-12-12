@@ -15,7 +15,7 @@ class PessoaSeeder extends Seeder
     public function run(): void
     {
         // Pessoas sem parceiro
-        Pessoa::factory(50)->create([
+        Pessoa::factory(500)->create([
             'idt_parceiro' => null,
         ]);
 

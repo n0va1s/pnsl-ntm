@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\OnlyAdminMiddleware;
 use App\Http\Middleware\TraceIdMiddleware;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +30,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function configure(Middleware $middleware): void
     {
-        $middleware->append(TraceIdMiddleware::class);
+        //
     }
 }

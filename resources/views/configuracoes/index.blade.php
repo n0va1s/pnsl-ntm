@@ -29,7 +29,7 @@
             </a>
 
             <!-- Card 3 -->
-            <a href=""
+            <a href="{{ route('equipe.index') }}"
                 class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
                 <div class="flex flex-col items-center justify-center h-full">
                     <x-heroicon-o-cog-8-tooth class="w-12 h-12 text-purple-600 mb-4" />
@@ -40,7 +40,7 @@
             </a>
 
             <!-- Card 4 -->
-            <a href=""
+            <a href="{{ route('restricao.index') }}"
                 class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
                 <div class="flex flex-col items-center justify-center h-full">
                     <x-heroicon-o-exclamation-circle class="w-12 h-12 text-red-600 mb-4" />

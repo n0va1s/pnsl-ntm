@@ -7,7 +7,7 @@ use App\Traits\LogContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class RoleController extends Controller
+class TipoPerfilController extends Controller
 {
     use LogContext;
 
@@ -15,10 +15,6 @@ class RoleController extends Controller
     {
         $start = microtime(true);
         $context = $this->getLogContext($request);
-
-        if ($request->user()->role !== 'admin') {
-            abort(403);
-        }
 
         Log::info('Requisição de listagem de perfis de usuário (RoleList) iniciada', $context);
 
@@ -37,10 +33,6 @@ class RoleController extends Controller
     {
         $start = microtime(true);
         $context = $this->getLogContext($request);
-
-        if ($request->user()->role !== 'admin') {
-            abort(403);
-        }
 
         $rolesData = $request->input('role', []);
 

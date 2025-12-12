@@ -10,9 +10,7 @@
         <div class="mb-6">
             <div>
                 <x-session-alert />
-
             </div>
-
             <div>
                 <x-botao-navegar href="{{ route('configuracoes.index') }}" aria-label="Voltar para Configurações">
                     <x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />

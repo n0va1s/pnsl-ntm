@@ -12,7 +12,6 @@ class ContatoSeeder extends Seeder
 
     public function run(): void
     {
-        Contato::factory()->count(100)->create();
-
+        Contato::factory()->count(500)->create();
     }
 }

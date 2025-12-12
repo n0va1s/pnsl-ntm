@@ -25,12 +25,11 @@ class EnvolvidoSeeder extends Seeder
             $this->call([
                 PessoaSeeder::class,
                 EventoSeeder::class,
-                TipoEquipeSeeder::class,
             ]);
         }
-        Participante::factory()->count(20)->create();
-        Presenca::factory()->count(20)->create();
-        Voluntario::factory()->count(30)->create();
-        Trabalhador::factory()->count(20)->create();
+        Participante::factory()->count(200)->create();
+        Presenca::factory()->count(200)->create();
+        Voluntario::factory()->count(200)->create();
+        Trabalhador::factory()->count(200)->create();
     }
 }
