@@ -26,7 +26,7 @@ class TipoPerfilController extends Controller
             'duration_ms' => $duration,
         ]));
 
-        return view('configuracoes.RoleList', compact('perfis'));
+        return view('configuracoes.TipoPerfilList', compact('perfis'));
     }
 
     public function change(Request $request)

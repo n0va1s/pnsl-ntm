@@ -22,24 +22,23 @@ use App\Http\Controllers\TrabalhadorController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::middleware('guest')->group(function () {
-    Route::get(
-        '/',
-        [HomeController::class, 'index']
-    )->name('home');
 
-    Route::post(
-        '/',
-        [HomeController::class, 'contato']
-    )->name('home.contato');
+Route::get(
+    '/',
+    [HomeController::class, 'index']
+)->name('home');
 
-    Route::get('/vem', [HomeController::class, 'fichaVem'])
-        ->name('home.ficha.vem');
-    Route::get('/ecc', [HomeController::class, 'fichaEcc'])
-        ->name('home.ficha.ecc');
-    Route::get('/sgm', [HomeController::class, 'fichaSgm'])
-        ->name('home.ficha.sgm');
-});
+Route::post(
+    '/',
+    [HomeController::class, 'contato']
+)->name('home.contato');
+
+Route::get('/vem', [HomeController::class, 'fichaVem'])
+    ->name('home.ficha.vem');
+Route::get('/ecc', [HomeController::class, 'fichaEcc'])
+    ->name('home.ficha.ecc');
+Route::get('/sgm', [HomeController::class, 'fichaSgm'])
+    ->name('home.ficha.sgm');
 
 // Area Administrativa
 Route::middleware(['auth'])->group(function () {
