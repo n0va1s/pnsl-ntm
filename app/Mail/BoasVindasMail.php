@@ -28,7 +28,7 @@ class BoasVindasMail extends Mailable
     {
         return new Envelope(
             from: new Address(env('MAIL_FROM_ADDRESS'), 'Paróquia Nossa Senhora do Lago'),
-            subject: 'Bem-vindo(a) ao Sistema de Eventos da Paróaquia Nossa Senhora do Lago',
+            subject: 'Bem-vindo(a) ao Sistema de Eventos da Paróquia Nossa Senhora do Lago',
         );
     }
 

@@ -485,7 +485,7 @@
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Máximo de 1000 caracteres</p>
                     </div>
                 </div>
-                @if (Auth::user() && Auth::user()->isAdmin())
+                @if (Auth::user()->isAdmin())
                     <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
                         <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Análise</h2>
                         <div class="space-y-6">

@@ -38,11 +38,12 @@ class PessoaController extends Controller
         $pessoas = Pessoa::select(
             'idt_pessoa',
             'idt_usuario',
+            'idt_parceiro',
             'nom_pessoa',
             'nom_apelido',
             'tel_pessoa',
             'eml_pessoa',
-            'created_at' // Recomendado para o orderBy funcionar de forma otimizada
+            'created_at'
         )->with([
             'foto' => function ($query) {
                 $query->select('idt_pessoa', 'caminho_foto');
