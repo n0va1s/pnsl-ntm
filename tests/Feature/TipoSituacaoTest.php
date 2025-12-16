@@ -1,11 +1,18 @@
 <?php
 
+use App\Models\TipoSituacao;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Unit\CrudBasic;
+
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 
+uses(RefreshDatabase::class, CrudBasic::class);
+
 beforeEach(function () {
-    $this->user = createUser();
-    $this->actingAs($this->user);
+    $this->admin = User::factory()->create(['role' => 'admin']);
+    $this->actingAs($this->admin);
 });
 
 test('shows the tiporesponsavel list page', function () {
@@ -31,10 +38,25 @@ test('pode criar um novo tipo de situacao com sucesso', function () {
 });
 
 test('nao pode criar um tipo de situacao sem a descricao', function () {
-    $data = ['des_situacao' => ''];
+    $data = ['des_situacao' => null];
 
     post(route('situacao.store'), $data)
         ->assertSessionHasErrors('des_situacao');
 
     $this->assertDatabaseCount('tipo_situacao', 0);
+});
+
+describe('Situacao::CRUD', function () {
+    test('tipo situacao respeita contrato basico', function () {
+        $this->verificaOperacoes(
+            TipoSituacao::class,
+            ['des_situacao']
+        );
+    });
+
+    test('tipo situacao pode ser usado como foreign key', function () {
+        $situacao = TipoSituacao::factory()->create();
+
+        expect($situacao->idt_situacao)->toBeInt();
+    });
 });

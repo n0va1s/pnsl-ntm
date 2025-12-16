@@ -1,11 +1,15 @@
 <?php
 
+use App\Mail\BoasVindasMail;
 use App\Models\Pessoa;
 use App\Models\PessoaSaude;
 use App\Models\TipoRestricao;
+use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Mockery\MockInterface;
 
@@ -241,4 +245,89 @@ test('pode excluir uma pessoa com sucesso', function () {
         ->assertSessionHas('success', 'Pessoa excluída com sucesso!');
 
     $this->assertSoftDeleted('pessoa', ['idt_pessoa' => $pessoa->idt_pessoa]);
+});
+
+test('ao criar pessoa sem usuario cria usuario automaticamente', function () {
+    Mail::fake();
+
+    $pessoa = Pessoa::factory()->create([
+        'idt_usuario' => null,
+        'eml_pessoa' => 'teste@teste.com',
+        'dat_nascimento' => '1990-01-01',
+    ]);
+
+    $pessoa->refresh();
+
+    expect($pessoa->idt_usuario)->not->toBeNull();
+
+    $user = User::find($pessoa->idt_usuario);
+
+    expect($user)->not->toBeNull()
+        ->and($user->email)->toBe('teste@teste.com')
+        ->and(Hash::check('19900101', $user->password))->toBeTrue();
+
+    Mail::assertSent(BoasVindasMail::class);
+});
+
+test('nao cria usuario se pessoa ja possui idt_usuario', function () {
+    Mail::fake();
+
+    $pessoa = Pessoa::factory()->make([
+        'idt_usuario' => $this->user->id,
+    ]);
+
+    $pessoa->skip_user_creation = true;
+    $pessoa->save();
+
+    Mail::assertNothingSent();
+});
+
+
+test('nao permite definir a si mesmo como parceiro', function () {
+    $pessoa = Pessoa::factory()->create();
+
+    expect(fn() => $pessoa->setParceiro($pessoa))
+        ->toThrow(InvalidArgumentException::class);
+});
+
+test('remove parceiro corretamente', function () {
+    $p1 = Pessoa::factory()->create();
+    $p2 = Pessoa::factory()->create();
+
+    $p1->setParceiro($p2);
+
+    $p1->removeParceiro();
+
+    $p1->refresh();
+    $p2->refresh();
+
+    expect($p1->idt_parceiro)->toBeNull()
+        ->and($p2->idt_parceiro)->toBeNull();
+});
+
+test('retorna data de nascimento formatada', function () {
+    $pessoa = Pessoa::factory()->create([
+        'dat_nascimento' => '1995-10-20',
+    ]);
+
+    expect($pessoa->getDataNascimentoFormatada())
+        ->toBe('1995-10-20');
+});
+
+test('scopeSearchByName funciona com like no sqlite', function () {
+    config(['database.default' => 'sqlite']);
+
+    Pessoa::factory()->create([
+        'nom_pessoa' => 'Carlos Silva',
+        'nom_apelido' => 'Carlão',
+    ]);
+
+    Pessoa::factory()->create([
+        'nom_pessoa' => 'Maria Souza',
+    ]);
+
+    $result = Pessoa::searchByName('Carl')->get();
+
+    expect($result)->toHaveCount(1)
+        ->and($result->first()->nom_pessoa)->toBe('Carlos Silva');
 });

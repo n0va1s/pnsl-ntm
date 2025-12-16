@@ -34,6 +34,29 @@ class FichaService
         });
     }
 
+    private static function processarAprovacao(Ficha $ficha): void
+    {
+        $pessoa = self::criarOuAtualizarPessoaAPartirDaFicha($ficha);
+
+        $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
+
+        self::criarPessoaSaude(
+            $pessoa->idt_pessoa,
+            $ficha->fichaSaude->map(fn($r) => [
+                'idt_restricao' => $r->idt_restricao,
+                'txt_complemento' => $r->txt_complemento,
+            ])->toArray()
+        );
+
+        self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
+    }
+
+    private static function processarReprovacao(Ficha $ficha): void
+    {
+        optional(Pessoa::find($ficha->idt_pessoa))->delete();
+    }
+
+
     public static function atualizarAprovacaoFicha($id): bool
     {
         $ficha = Ficha::with('fichaSaude')->findOrFail($id);
@@ -43,34 +66,9 @@ class FichaService
 
         return DB::transaction(function () use ($ficha) {
             if ($ficha->ind_aprovado) {
-                // Cria Pessoa a partir da ficha
-                $pessoa = self::criarOuAtualizarPessoaAPartirDaFicha($ficha);
-
-                // Atualiza a ficha com o id da pessoa criada
-                $ficha->idt_pessoa = $pessoa->idt_pessoa;
-                $ficha->save();
-
-                // Restrições de saúde
-                $restricoes = $ficha->fichaSaude->map(function ($item) {
-                    return [
-                        'idt_restricao' => $item->idt_restricao,
-                        'txt_complemento' => $item->txt_complemento,
-                    ];
-                })->toArray();
-
-                self::criarPessoaSaude($pessoa->idt_pessoa, $restricoes);
-                self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
+                self::processarAprovacao($ficha);
             } else {
-                // Reprovação: remover dados relacionados e desvincular pessoa da ficha
-                $pessoa = Pessoa::find($ficha->idt_pessoa);
-
-                if ($pessoa) {
-                    // Cascade
-                    $pessoa->delete();
-                }
-
-                // $ficha->idt_pessoa = null;
-                $ficha->save();
+                self::processarReprovacao($ficha);
             }
 
             return true;
@@ -97,7 +95,10 @@ class FichaService
             $dados['idt_usuario'] = UserService::getUsuarioByEmail($ficha->eml_candidato);
         }
 
-        return Pessoa::updateOrCreate($dados);
+        return Pessoa::updateOrCreate(
+            ['eml_pessoa' => $ficha->eml_candidato],
+            $dados
+        );
     }
 
     private static function criarPessoaSaude($idt_pessoa, array $restricoes): void

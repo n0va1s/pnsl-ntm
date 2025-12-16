@@ -6,9 +6,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 test('can access configuracoes index', function () {
-    $user = User::factory()->create();
 
-    $this->actingAs($user)
+    $admin = User::factory()->create(['role' => 'admin']);
+    $this->actingAs($admin)
         ->get(route('configuracoes.index'))
         ->assertStatus(200)
         ->assertViewIs('configuracoes.index');

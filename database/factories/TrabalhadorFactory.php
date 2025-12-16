@@ -16,8 +16,8 @@ class TrabalhadorFactory extends Factory
     {
         return [
             'idt_pessoa' => Pessoa::factory(),
-            'idt_evento' => Evento::inRandomOrder()->first()->idt_evento ?? Evento::factory(),
-            'idt_equipe' => TipoEquipe::inRandomOrder()->first()->idt_equipe ?? TipoEquipe::factory(),
+            'idt_evento' => Evento::factory(),
+            'idt_equipe' => TipoEquipe::factory(),
             'ind_coordenador' => $this->faker->boolean(20),
             'ind_primeira_vez' => $this->faker->boolean(50),
             'ind_avaliacao' => $this->faker->boolean(30),
@@ -26,8 +26,6 @@ class TrabalhadorFactory extends Factory
             'ind_destaque' => $this->faker->boolean(30),
             'ind_camiseta_pediu' => $this->faker->boolean(),
             'ind_camiseta_pagou' => $this->faker->boolean(),
-            'ind_coordenador' => $this->faker->boolean(20),
-            'ind_primeira_vez' => $this->faker->boolean(50),
         ];
     }
 }

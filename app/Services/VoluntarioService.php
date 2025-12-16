@@ -6,55 +6,74 @@ use App\Models\Pessoa;
 use App\Models\Trabalhador;
 use App\Models\Voluntario;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException; // Para transações, se necessário
+use Illuminate\Validation\ValidationException;
 
 class VoluntarioService
 {
+    /**
+     * Registra candidatura de uma pessoa a equipes de um evento
+     *
+     * Regras:
+     * - Deve selecionar entre 1 e 3 equipes
+     * - Habilidade obrigatória para equipes selecionadas
+     * - Não permite candidatura duplicada para a mesma equipe no mesmo evento
+     */
     public function candidatura(array $equipesData, int $eventoId, Pessoa $pessoa): void
     {
+        $equipesSelecionadas = [];
 
-        $equipes = [];
-        foreach ($equipesData as $id => $texto) {
-            if (isset($texto['selecionado']) && $texto['selecionado'] === '1') {
-                $habilidade = $texto['habilidade'] ?? '';
+        foreach ($equipesData as $equipeId => $dados) {
+            if (($dados['selecionado'] ?? null) === '1') {
+                $habilidade = trim($dados['habilidade'] ?? '');
 
-                if (empty($habilidade)) {
+                if ($habilidade === '') {
                     throw ValidationException::withMessages([
                         'equipes' => 'A descrição da habilidade é obrigatória para equipes selecionadas.',
                     ]);
-                } elseif (strlen($habilidade) <= 5) {
+                }
+
+                if (mb_strlen($habilidade) <= 5) {
                     throw ValidationException::withMessages([
                         'equipes' => 'A habilidade deve ter mais de 5 caracteres.',
                     ]);
-                } elseif (preg_match('/(.)\1{4,}/', $habilidade)) { // obrigado gemini
+                }
+
+                if (preg_match('/(.)\1{4,}/', $habilidade)) {
                     throw ValidationException::withMessages([
-                        'equipes' => 'A habilidade não pode conter sequências de caracteres repetidos (ex: "aaaaa" ou ".....").',
+                        'equipes' => 'A habilidade não pode conter sequências de caracteres repetidos.',
                     ]);
                 }
-                $equipes[$id] = $habilidade;
+
+                $equipesSelecionadas[$equipeId] = $habilidade;
             }
         }
-        $qtd = count($equipes);
-        if ($qtd < 1 || $qtd > 3) {
-            $message = '';
-            if ($qtd < 1) {
-                $message = 'Você deve selecionar ao menos 1 equipe.';
-            } elseif ($qtd > 3) {
-                $message = 'Você pode selecionar no máximo 3 equipes.';
-            }
+
+        $quantidade = count($equipesSelecionadas);
+
+        if ($quantidade < 1 || $quantidade > 3) {
             throw ValidationException::withMessages([
-                'equipes' => $message,
+                'equipes' => $quantidade < 1
+                    ? 'Você deve selecionar ao menos 1 equipe.'
+                    : 'Você pode selecionar no máximo 3 equipes.',
             ]);
         }
 
-        DB::transaction(function () use ($equipes, $eventoId, $pessoa) {
-            // Limpa candidaturas anteriores da pessoa para este evento, se necessário
-            Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
+        // Validação de duplicidade
+        foreach (array_keys($equipesSelecionadas) as $equipeId) {
+            $duplicado = Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
                 ->where('idt_evento', $eventoId)
-                ->delete();
+                ->where('idt_equipe', $equipeId)
+                ->exists();
 
-            // Salvar os voluntários para cada equipe selecionada
-            foreach ($equipes as $equipeId => $habilidade) {
+            if ($duplicado) {
+                throw ValidationException::withMessages([
+                    'equipes' => 'Você já se candidatou para esta equipe neste evento.',
+                ]);
+            }
+        }
+
+        DB::transaction(function () use ($equipesSelecionadas, $eventoId, $pessoa) {
+            foreach ($equipesSelecionadas as $equipeId => $habilidade) {
                 Voluntario::create([
                     'idt_pessoa' => $pessoa->idt_pessoa,
                     'idt_evento' => $eventoId,
@@ -65,6 +84,14 @@ class VoluntarioService
         });
     }
 
+    /**
+     * Confirma um voluntário como trabalhador do evento
+     *
+     * Regras:
+     * - Voluntário deve existir
+     * - Pessoa só pode ter 1 trabalhador por evento
+     * - Todas as candidaturas do voluntário são vinculadas ao trabalhador
+     */
     public function confirmacao(
         int $voluntarioId,
         int $equipeId,
@@ -73,23 +100,30 @@ class VoluntarioService
     ): Voluntario {
         $voluntario = Voluntario::find($voluntarioId);
 
+        if (!$voluntario) {
+            throw ValidationException::withMessages([
+                'voluntario' => 'Voluntário não encontrado.',
+            ]);
+        }
+
         DB::transaction(function () use (
             $voluntario,
             $equipeId,
             $isCoordenador,
             $isPrimeiraVez
         ) {
+            $trabalhador = Trabalhador::updateOrCreate(
+                [
+                    'idt_pessoa' => $voluntario->idt_pessoa,
+                    'idt_evento' => $voluntario->idt_evento,
+                ],
+                [
+                    'idt_equipe' => $equipeId,
+                    'ind_coordenador' => $isCoordenador,
+                    'ind_primeira_vez' => $isPrimeiraVez,
+                ]
+            );
 
-            $trabalhador = Trabalhador::updateOrCreate([
-                'idt_pessoa' => $voluntario->idt_pessoa,
-                'idt_evento' => $voluntario->idt_evento,
-                'idt_equipe' => $equipeId,
-            ], [
-                'ind_coordenador' => $isCoordenador,
-                'ind_primeira_vez' => $isPrimeiraVez,
-            ]);
-
-            // Atualiza todos as equipes que o voluntário se inscreveu para este evento
             Voluntario::where('idt_pessoa', $voluntario->idt_pessoa)
                 ->where('idt_evento', $voluntario->idt_evento)
                 ->update([

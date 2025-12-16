@@ -101,8 +101,6 @@ class HomeController extends Controller
             'eventos' => $eventos,
             'movimentopadrao' => TipoMovimento::VEM,
         ]));
-
-        return view('ficha.formVEM', compact('ficha'));
     }
 
     public function fichaEcc()
@@ -110,7 +108,15 @@ class HomeController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário público de ficha ECC', $context);
 
-        return view('ficha.formECC');
+        $ficha = new Ficha;
+        $ficha->idt_movimento = TipoMovimento::ECC;
+        $eventos = Evento::getByTipo(TipoMovimento::ECC, 'E', 3);
+
+        return view('ficha.formECC', array_merge(FichaService::dadosFixosFicha($ficha), [
+            'ficha' => $ficha,
+            'eventos' => $eventos,
+            'movimentopadrao' => TipoMovimento::ECC,
+        ]));
     }
 
     public function fichaSgm()
@@ -118,6 +124,14 @@ class HomeController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário público de ficha Segue-Me', $context);
 
-        return view('ficha.formSGM');
+        $ficha = new Ficha;
+        $ficha->idt_movimento = TipoMovimento::SegueMe;
+        $eventos = Evento::getByTipo(TipoMovimento::SegueMe, 'E', 3);
+
+        return view('ficha.formSGM', array_merge(FichaService::dadosFixosFicha($ficha), [
+            'ficha' => $ficha,
+            'eventos' => $eventos,
+            'movimentopadrao' => TipoMovimento::SegueMe,
+        ]));
     }
 }

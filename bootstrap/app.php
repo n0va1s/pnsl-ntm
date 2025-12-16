@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\OnlyAdminMiddleware;
+use App\Http\Middleware\OnlyManagerMiddleware;
 use App\Http\Middleware\TraceIdMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'admin' => OnlyAdminMiddleware::class,
+            'manager' => OnlyManagerMiddleware::class,
         ]);
 
         $middleware->append(TraceIdMiddleware::class);

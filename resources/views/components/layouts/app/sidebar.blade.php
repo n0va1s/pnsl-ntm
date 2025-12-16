@@ -41,7 +41,7 @@
                     {{ __('Eventos') }}
                 </flux:navlist.item>
                 <flux:navlist.item icon="user"
-                    :href="route('pessoas.edit', ['pessoa' => Auth::user()->pessoa->idt_pessoa])"
+                    :href="route('pessoas.edit', ['pessoa' => Auth::user()->pessoa?->idt_pessoa])"
                     :current="request()->routeIs('pessoas.edit')" wire:navigate>
                     {{ __('Meus Dados') }}
                 </flux:navlist.item>

@@ -36,6 +36,7 @@ class TrabalhadorController extends Controller
         $idt_evento = $request->get('evento');
         $idt_equipe = $request->get('equipe');
         $evento = null;
+        $equipes = collect();
 
         Log::info('Requisição de listagem de trabalhadores iniciada', array_merge($context, [
             'search_term' => $search,
@@ -47,8 +48,12 @@ class TrabalhadorController extends Controller
             $evento = Evento::find($idt_evento);
         }
 
-        $equipes = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
-            ->select('idt_equipe', 'des_grupo')->get();
+        if ($evento) {
+            $equipes = TipoEquipe::query()
+                ->where('idt_movimento', $evento->idt_movimento)
+                ->select('idt_equipe', 'des_grupo')
+                ->get();
+        }
 
         $trabalhadores = Trabalhador::with([
             'pessoa' => function ($query) {
@@ -80,7 +85,7 @@ class TrabalhadorController extends Controller
             'trabalhadores',
             'search',
             'evento',
-            'equipes',
+            'equipes', // Variável agora garantida
             'idt_equipe'
         ));
     }
@@ -162,6 +167,15 @@ class TrabalhadorController extends Controller
             ]));
 
             return back()->withErrors($e->errors())->withInput();
+        } catch (\DomainException $e) {
+            $duration = round((microtime(true) - $start) * 1000, 2);
+            Log::warning('Erro de validação ao registrar candidatura de trabalhador', array_merge($context, [
+                'erros' => $e->errors(),
+                'duration_ms' => $duration,
+            ]));
+            return back()->withErrors([
+                'equipes' => $e->getMessage(),
+            ])->withInput();
         } catch (\Exception $e) {
             $duration = round((microtime(true) - $start) * 1000, 2);
             Log::error('Erro geral ao registrar candidatura de trabalhador', array_merge($context, [
@@ -174,34 +188,39 @@ class TrabalhadorController extends Controller
         }
     }
 
-    // Lista de voluntarios para indicacao das equipes que ele(a) querem trabalhar
     public function mount(Request $request): View
     {
         $start = microtime(true);
         $context = $this->getLogContext($request);
         $eventoId = $request->get('evento');
-        Log::info('Acesso à tela de montagem de equipes (voluntários agrupados)', array_merge($context, ['evento_id' => $eventoId]));
 
-        $eventoId = $request->get('evento');
+        Log::info('Acesso à tela de montagem de equipes', array_merge($context, [
+            'evento_id' => $eventoId
+        ]));
 
-        $evento = Evento::find($eventoId);
+        $evento = $eventoId ? Evento::find($eventoId) : null;
 
         $voluntarios = $evento
             ? Voluntario::listarAgrupadoPorPessoa($evento->idt_evento)
-            : collect(); // coleção vazia se não tiver evento
+            : collect();
+
+        $equipes = $evento
+            ? TipoEquipe::select('idt_equipe', 'des_grupo')
+            ->where('idt_movimento', $evento->idt_movimento)
+            ->get()
+            : collect();
 
         $duration = round((microtime(true) - $start) * 1000, 2);
-        Log::notice('Carregamento da montagem de equipes concluída', array_merge($context, [
+
+        Log::notice('Montagem carregada', array_merge($context, [
             'evento_id' => $eventoId,
-            'total_voluntarios_agrupados' => $voluntarios->count(),
+            'total_voluntarios' => $voluntarios->count(),
             'duration_ms' => $duration,
         ]));
 
         return view('evento.montagem', [
             'evento' => $evento,
-            'equipes' => TipoEquipe::select('idt_equipe', 'des_grupo')
-                ->where('idt_movimento', $evento->idt_movimento)
-                ->get(),
+            'equipes' => $equipes,
             'voluntarios' => $voluntarios,
         ]);
     }
@@ -266,7 +285,7 @@ class TrabalhadorController extends Controller
 
             // Agrupa por equipe e ordena coordenadores no topo
             $trabalhadoresPorEquipe = $trabalhadores
-                ->groupBy(fn ($t) => $t->equipe->des_grupo)
+                ->groupBy(fn($t) => $t->equipe->des_grupo)
                 ->map(function (Collection $grupo) {
                     return $grupo->sortByDesc('ind_coordenador')->values();
                 });
@@ -334,6 +353,12 @@ class TrabalhadorController extends Controller
 
         $trabalhador = Trabalhador::find($dados['idt_trabalhador']);
 
+        if (!$trabalhador) {
+            return redirect()->back()->withErrors([
+                'idt_trabalhador' => 'Trabalhador não encontrado.'
+            ]);
+        }
+
         // Atualiza os campos booleanos, se existirem
         $trabalhador->fill([
             'ind_recomendado' => $dados['ind_recomendado'] ?? false,
@@ -358,6 +383,14 @@ class TrabalhadorController extends Controller
 
     public function destroy($id)
     {
-        //
+        $trabalhador = Trabalhador::find($id);
+
+        if ($trabalhador) {
+            $trabalhador->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+        ], 200);
     }
 }

@@ -1,11 +1,18 @@
 <?php
 
+use App\Models\TipoResponsavel;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Unit\CrudBasic;
+
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 
+uses(RefreshDatabase::class, CrudBasic::class);
+
 beforeEach(function () {
-    $this->user = createUser();
-    $this->actingAs($this->user);
+    $this->admin = User::factory()->create(['role' => 'admin']);
+    $this->actingAs($this->admin);
 });
 
 test('a pagina de listagem de tipo de responsavel esta acessivel', function () {
@@ -33,10 +40,25 @@ test('pode criar um novo tipo de responsavel com sucesso', function () {
 
 test('nao pode criar um tipo de responsavel sem a descricao', function () {
 
-    $data = ['des_responsavel' => ''];
+    $data = ['des_responsavel' => null];
 
     post(route('responsavel.store'), $data)
         ->assertSessionHasErrors('des_responsavel');
 
     $this->assertDatabaseCount('tipo_responsavel', 0);
+});
+
+describe('Responsavel::CRUD', function () {
+    test('tipo responsavel respeita contrato basico', function () {
+        $this->verificaOperacoes(
+            TipoResponsavel::class,
+            ['des_responsavel']
+        );
+    });
+
+    test('tipo responsavel pode ser usado como foreign key', function () {
+        $responsavel = TipoResponsavel::factory()->create();
+
+        expect($responsavel->idt_responsavel)->toBeInt();
+    });
 });

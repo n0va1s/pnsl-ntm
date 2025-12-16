@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Pest\Support\Str;
 
 class Pessoa extends Model
 {
@@ -82,27 +83,36 @@ class Pessoa extends Model
     {
         parent::boot();
 
-        static::created(function (Pessoa $pessoa) {
-            // VERIFICAÇÃO DE SEGURANÇA: Se já houver um usuário associado, não faça nada.
+        static::creating(function (Pessoa $pessoa) {
+
+            // Flag explícita (vem do controller/factory)
+            if ($pessoa->skip_user_creation === true) {
+                unset($pessoa->skip_user_creation);
+                return;
+            }
+
             if ($pessoa->idt_usuario) {
                 return;
             }
 
+            if (!$pessoa->eml_pessoa || !$pessoa->dat_nascimento) {
+                return;
+            }
+
+            $senha = $pessoa->dat_nascimento->format('Ymd');
+
             $user = User::create([
-                'name' => $pessoa->nom_pessoa,
-                'email' => $pessoa->eml_pessoa,
-                'password' => Hash::make($pessoa->dat_nascimento->format('Ymd')),
-                'role' => User::ROLE_USER,
+                'name'     => $pessoa->nom_pessoa,
+                'email'    => $pessoa->eml_pessoa,
+                'password' => Hash::make($senha),
+                'role'     => User::ROLE_USER,
             ]);
 
             $pessoa->idt_usuario = $user->id;
-            $pessoa->save();
 
-            try {
-                Mail::to($user->email)->send(new BoasVindasMail($user, $pessoa->dat_nascimento->format('Ymd')));
-            } catch (\Exception $e) {
-                Log::error('Falha ao enviar e-mail de boas-vindas para '.$user->email.': '.$e->getMessage());
-            }
+            Mail::to($user->email)->send(
+                new BoasVindasMail($user, $senha)
+            );
         });
     }
 

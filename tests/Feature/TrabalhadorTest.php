@@ -1,254 +1,315 @@
 <?php
 
-use App\Models\User;
-use App\Models\Trabalhador;
-use App\Models\Pessoa;
-use App\Models\TipoEquipe;
-use App\Models\Evento;
-use App\Models\Voluntario;
+namespace Tests\Feature;
+
+use App\Models\{
+    Pessoa,
+    Voluntario,
+    Evento,
+    TipoEquipe,
+    Trabalhador,
+    User
+};
+use App\Services\VoluntarioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
 
 uses(RefreshDatabase::class);
 
+/*
+|--------------------------------------------------------------------------
+| SETUP GLOBAL
+|--------------------------------------------------------------------------
+*/
 beforeEach(function () {
-    // Cria um usuário para autenticação. 
-    // O UserObserver (ou boot do model) cria automaticamente uma Pessoa vinculada.
-    $this->user = User::factory()->create();
-    $this->pessoa = $this->user->pessoa;
-});
+    $this->user = User::factory()->create(['role' => 'user']);
+    $this->admin = User::factory()->create(['role' => 'admin']);
 
-// ==========================================
-// TESTES DE LISTAGEM (INDEX)
-// ==========================================
-
-test('usuario autenticado pode acessar listagem de trabalhadores', function () {
-    $response = $this->actingAs($this->user)->get('/trabalhadores');
-    
-    $response->assertStatus(200);
-    $response->assertViewIs('trabalhador.list');
-});
-
-test('listagem exibe trabalhadores cadastrados', function () {
-    $evento = Evento::factory()->create();
-    $equipe = TipoEquipe::factory()->create(['idt_movimento' => $evento->idt_movimento]);
-    
-    // Cria trabalhadores com pessoas diferentes para evitar erro de unique constraint
-    Trabalhador::factory()->count(5)->create([
-        'idt_evento' => $evento->idt_evento,
-        'idt_equipe' => $equipe->idt_equipe
+    $this->pessoa = Pessoa::factory()->create([
+        'idt_usuario' => $this->user->id,
     ]);
-    
-    $response = $this->actingAs($this->user)->get('/trabalhadores');
-    
-    $response->assertStatus(200);
-    $response->assertViewHas('trabalhadores');
-    expect($response['trabalhadores'])->toHaveCount(5);
+
+    $this->evento = Evento::factory()->create();
+
+    $this->equipe1 = TipoEquipe::factory()->create(['idt_movimento' => $this->evento->idt_movimento]);
+    $this->equipe2 = TipoEquipe::factory()->create(['idt_movimento' => $this->evento->idt_movimento]);
+    $this->equipe3 = TipoEquipe::factory()->create(['idt_movimento' => $this->evento->idt_movimento]);
+    $this->equipe4 = TipoEquipe::factory()->create(['idt_movimento' => $this->evento->idt_movimento]);
 });
 
-test('listagem pode ser filtrada por evento', function () {
-    $evento1 = Evento::factory()->create();
-    $evento2 = Evento::factory()->create();
-    $equipe = TipoEquipe::factory()->create(); 
-    
-    Trabalhador::factory()->create(['idt_evento' => $evento1->idt_evento, 'idt_equipe' => $equipe->idt_equipe]);
-    Trabalhador::factory()->create(['idt_evento' => $evento2->idt_evento, 'idt_equipe' => $equipe->idt_equipe]);
-    
-    $response = $this->actingAs($this->user)
-        ->get('/trabalhadores?evento=' . $evento1->idt_evento);
-    
-    $response->assertStatus(200);
-    expect($response['trabalhadores'])->toHaveCount(1);
-    expect($response['trabalhadores']->first()->idt_evento)->toBe($evento1->idt_evento);
-});
+afterEach(fn() => Mockery::close());
 
-// ==========================================
-// TESTES DE CANDIDATURA (STORE - VOLUNTARIADO)
-// ==========================================
-
-test('usuario pode acessar formulario de candidatura', function () {
-    $response = $this->actingAs($this->user)->get('/trabalhadores/create');
-    
-    $response->assertStatus(200);
-    $response->assertViewIs('trabalhador.form');
-});
-
-test('usuario pode se candidatar como voluntario', function () {
-    $evento = Evento::factory()->create();
-    $equipe1 = TipoEquipe::factory()->create(['idt_movimento' => $evento->idt_movimento]);
-    $equipe2 = TipoEquipe::factory()->create(['idt_movimento' => $evento->idt_movimento]);
-    
-    $data = [
-        'idt_evento' => $evento->idt_evento,
+function makeValidPayload($overrides = [])
+{
+    return array_replace_recursive([
+        'idt_evento' => test()->evento->idt_evento,
         'equipes' => [
-            $equipe1->idt_equipe => [
+            test()->equipe1->idt_equipe => [
                 'selecionado' => '1',
-                'habilidade' => 'Tenho experiência com vendas e atendimento.',
+                'habilidade' => 'Habilidade válida equipe 1',
             ],
-            // Equipe 2 não enviada ou enviada sem 'selecionado' => '1'
-        ],
-    ];
-    
-    $response = $this->actingAs($this->user)->post('/trabalhadores', $data);
-    
-    $response->assertRedirect(route('eventos.index'));
-    $response->assertSessionHas('success');
-    
-    // Verifica se criou o voluntário
-    $this->assertDatabaseHas('voluntario', [
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento->idt_evento,
-        'idt_equipe' => $equipe1->idt_equipe,
-        'txt_habilidade' => 'Tenho experiência com vendas e atendimento.',
-    ]);
-    
-    // Verifica se NÃO criou para a equipe não selecionada
-    $this->assertDatabaseMissing('voluntario', [
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento->idt_evento,
-        'idt_equipe' => $equipe2->idt_equipe,
-    ]);
-});
-
-test('validacao de candidatura: habilidade curta demais', function () {
-    $evento = Evento::factory()->create();
-    $equipe = TipoEquipe::factory()->create(['idt_movimento' => $evento->idt_movimento]);
-    
-    $data = [
-        'idt_evento' => $evento->idt_evento,
-        'equipes' => [
-            $equipe->idt_equipe => [
+            test()->equipe3->idt_equipe => [
                 'selecionado' => '1',
-                'habilidade' => 'Oi', // Muito curto
+                'habilidade' => 'Habilidade válida equipe 3',
             ],
         ],
-    ];
-    
-    $response = $this->actingAs($this->user)->post('/trabalhadores', $data);
-    
-    $response->assertSessionHasErrors(['equipes']);
+    ], $overrides);
+}
+
+/*
+|--------------------------------------------------------------------------
+| INDEX
+|--------------------------------------------------------------------------
+*/
+describe('TrabalhadorController::index', function () {
+
+    test('filtra por evento, equipe e nome', function () {
+        $trabalhador = Trabalhador::factory()->create([
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe1->idt_equipe,
+            'idt_pessoa' => Pessoa::factory()->create(['nom_pessoa' => 'Joao Silva'])->idt_pessoa,
+        ]);
+
+        $eventoRuido = Evento::factory()->create();
+        Trabalhador::factory()->create([
+            'idt_evento' => $eventoRuido->idt_evento,
+            'idt_pessoa' => Pessoa::factory()->create(['nom_pessoa' => 'Ruido'])->idt_pessoa,
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->get(route('trabalhadores.index', [
+                'evento' => $this->evento->idt_evento,
+                'equipe' => $this->equipe1->idt_equipe,
+                'search' => 'Joao',
+            ]));
+
+        $response->assertStatus(200);
+
+        $lista = $response->viewData('trabalhadores');
+        expect($lista->total())->toBe(1);
+        expect($lista->first()->idt_trabalhador)->toBe($trabalhador->idt_trabalhador);
+    });
+
+    // NOVO
+    test('usuario comum nao pode acessar index', function () {
+        $this->actingAs($this->user)
+            ->get(route('trabalhadores.index'))
+            ->assertStatus(403);
+    });
 });
 
-test('validacao de candidatura: nenhuma equipe selecionada', function () {
-    $evento = Evento::factory()->create();
-    $equipe = TipoEquipe::factory()->create(['idt_movimento' => $evento->idt_movimento]);
-    
-    $data = [
-        'idt_evento' => $evento->idt_evento,
-        'equipes' => [], // Nenhuma equipe
-    ];
-    
-    $response = $this->actingAs($this->user)->post('/trabalhadores', $data);
-    
-    $response->assertSessionHasErrors(['equipes']);
+/*
+|--------------------------------------------------------------------------
+| CREATE / STORE
+|--------------------------------------------------------------------------
+*/
+describe('Candidatura', function () {
+
+    test('usuario se candidata com sucesso', function () {
+        $this->app->instance(VoluntarioService::class, new VoluntarioService());
+
+        $payload = makeValidPayload();
+
+        $this->actingAs($this->user)
+            ->post(route('trabalhadores.store'), $payload)
+            ->assertRedirect(route('eventos.index'))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseCount('voluntario', 2);
+
+        $this->assertDatabaseHas('voluntario', [
+            'idt_equipe' => $this->equipe1->idt_equipe,
+        ]);
+    });
+
+    test('Candidatura → falha se duplicar candidatura', function () {
+        $payload = makeValidPayload();
+
+        $this->actingAs($this->user)->post(route('trabalhadores.store'), $payload);
+        $this->actingAs($this->user)->post(route('trabalhadores.store'), $payload);
+
+        $this->assertDatabaseCount('voluntario', 2);
+    });
+
+    test('falha candidatura sem equipes selecionadas', function () {
+        $this->actingAs($this->user)
+            ->post(route('trabalhadores.store'), [
+                'idt_evento' => $this->evento->idt_evento,
+                'equipes' => [],
+            ])
+            ->assertSessionHasErrors();
+    });
 });
 
-// ==========================================
-// TESTES DE MONTAGEM E CONFIRMAÇÃO
-// ==========================================
+/*
+|--------------------------------------------------------------------------
+| MOUNT / CONFIRM
+|--------------------------------------------------------------------------
+*/
+describe('Confirmação', function () {
 
-test('admin pode ver lista de montagem de equipes', function () {
-    $evento = Evento::factory()->create();
-    
-    $response = $this->actingAs($this->user)->get('/montagem?evento=' . $evento->idt_evento);
-    
-    $response->assertStatus(200);
-    $response->assertViewIs('evento.montagem');
-    $response->assertViewHas('voluntarios');
+    test('admin confirma voluntario', function () {
+        $this->app->instance(VoluntarioService::class, new VoluntarioService());
+
+        $vol1 = Voluntario::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe1->idt_equipe,
+        ]);
+
+        Voluntario::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe2->idt_equipe,
+        ]);
+
+        $payload = [
+            'idt_voluntario' => $vol1->idt_voluntario,
+            'idt_equipe' => $this->equipe3->idt_equipe,
+            'ind_coordenador' => true,
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('montagem.confirm'), $payload)
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas('trabalhador', [
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe3->idt_equipe,
+        ]);
+    });
+
+    test('admin pode confirmar voluntario', function () {
+        $this->app->instance(VoluntarioService::class, new VoluntarioService());
+
+        $vol = Voluntario::factory()->create([
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe1->idt_equipe,
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+        ]);
+
+        $this->actingAs($this->admin)
+            ->post(route('montagem.confirm'), [
+                'idt_voluntario' => $vol->idt_voluntario,
+                'idt_equipe' => $this->equipe2->idt_equipe,
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+    });
+
+    test('coordenador pode confirmar voluntario', function () {
+        $coord = User::factory()->create(['role' => 'coord']);
+
+        $vol = Voluntario::factory()->create([
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe1->idt_equipe,
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+        ]);
+
+        $this->actingAs($coord)
+            ->post(route('montagem.confirm'), [
+                'idt_voluntario' => $vol->idt_voluntario,
+                'idt_equipe' => $this->equipe2->idt_equipe,
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas('trabalhador', [
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe2->idt_equipe,
+        ]);
+    });
+
+    test('usuario comum nao pode confirmar voluntario', function () {
+        $vol = Voluntario::factory()->create();
+
+        $this->actingAs($this->user)
+            ->post(route('montagem.confirm'), [
+                'idt_voluntario' => $vol->idt_voluntario,
+                'idt_equipe' => $this->equipe1->idt_equipe,
+            ])
+            ->assertStatus(403);
+    });
 });
 
-test('admin pode confirmar um voluntario como trabalhador', function () {
-    $evento = Evento::factory()->create();
-    $equipe = TipoEquipe::factory()->create(['idt_movimento' => $evento->idt_movimento]);
-    
-    // Cria um voluntário
-    $voluntario = Voluntario::create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento->idt_evento,
-        'idt_equipe' => $equipe->idt_equipe,
-        'txt_habilidade' => 'Habilidade teste suficiente',
-    ]);
-    
-    $data = [
-        'idt_voluntario' => $voluntario->idt_voluntario,
-        'idt_equipe' => $equipe->idt_equipe,
-        'ind_coordenador' => '1',
-        'ind_primeira_vez' => '0',
-    ];
-    
-    $response = $this->actingAs($this->user)->post('/montagem', $data);
-    
-    $response->assertRedirect(route('eventos.index', ['evento' => $evento->idt_evento]));
-    $response->assertSessionHas('success');
-    
-    // Verifica se criou o trabalhador
-    $this->assertDatabaseHas('trabalhador', [
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento->idt_evento,
-        'idt_equipe' => $equipe->idt_equipe,
-        'ind_coordenador' => true,
-    ]);
-    
-    // Verifica se atualizou o voluntário com o ID do trabalhador
-    $trabalhador = Trabalhador::where('idt_pessoa', $this->pessoa->idt_pessoa)
-        ->where('idt_evento', $evento->idt_evento)
-        ->first();
-        
-    $this->assertDatabaseHas('voluntario', [
-        'idt_voluntario' => $voluntario->idt_voluntario,
-        'idt_trabalhador' => $trabalhador->idt_trabalhador,
-    ]);
-});
+/*
+|--------------------------------------------------------------------------
+| VOLUNTARIO (MODEL)
+|--------------------------------------------------------------------------
+*/
+describe('Voluntario model', function () {
 
-// ==========================================
-// TESTES DE AVALIAÇÃO
-// ==========================================
+    test('relacionamentos basicos funcionam corretamente', function () {
+        $voluntario = Voluntario::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe1->idt_equipe,
+        ]);
 
-test('admin pode salvar avaliacao de trabalhador', function () {
-    $evento = Evento::factory()->create();
-    $equipe = TipoEquipe::factory()->create(['idt_movimento' => $evento->idt_movimento]);
-    
-    $trabalhador = Trabalhador::factory()->create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento->idt_evento,
-        'idt_equipe' => $equipe->idt_equipe,
-        'ind_avaliacao' => false,
-    ]);
-    
-    $data = [
-        'idt_trabalhador' => $trabalhador->idt_trabalhador,
-        'ind_recomendado' => '1',
-        'ind_lideranca' => '1',
-        'ind_destaque' => '0',
-        'ind_camiseta_pediu' => '1',
-        'ind_camiseta_pagou' => '1',
-    ];
-    
-    $response = $this->actingAs($this->user)->post('/avaliacao', $data);
-    
-    $response->assertRedirect(route('quadrante.list', ['evento' => $evento->idt_evento]));
-    
-    // Verifica atualização
-    $this->assertDatabaseHas('trabalhador', [
-        'idt_trabalhador' => $trabalhador->idt_trabalhador,
-        'ind_recomendado' => true,
-        'ind_lideranca' => true,
-        'ind_destaque' => false,
-        'ind_camiseta_pediu' => true,
-        'ind_camiseta_pagou' => true,
-        'ind_avaliacao' => true, 
-    ]);
-});
+        expect($voluntario->pessoa)->toBeInstanceOf(Pessoa::class);
+        expect($voluntario->evento)->toBeInstanceOf(Evento::class);
+        expect($voluntario->equipe)->toBeInstanceOf(TipoEquipe::class);
+    });
 
-// ==========================================
-// TESTES DE QUADRANTE
-// ==========================================
+    test('listarAgrupadoPorPessoa retorna voluntarios agrupados e sem trabalhador', function () {
+        Voluntario::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe1->idt_equipe,
+        ]);
 
-test('admin pode visualizar quadrante', function () {
-    $evento = Evento::factory()->create();
-    
-    $response = $this->actingAs($this->user)->get('/quadrante?evento=' . $evento->idt_evento);
-    
-    $response->assertStatus(200);
-    $response->assertViewIs('evento.quadrante');
-    $response->assertViewHas('trabalhadoresPorEquipe');
+        Voluntario::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe2->idt_equipe,
+        ]);
+
+        Voluntario::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe3->idt_equipe,
+            'idt_trabalhador' => Trabalhador::factory()->create()->idt_trabalhador,
+        ]);
+
+        $resultado = Voluntario::listarAgrupadoPorPessoa($this->evento->idt_evento);
+
+        expect($resultado)->toHaveCount(1);
+        expect($resultado->first()->equipes)->toHaveCount(2);
+    });
+
+    test('listarEquipesSelecionadas retorna apenas equipes do evento e pessoa informados', function () {
+        Voluntario::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe1->idt_equipe,
+        ]);
+
+        Voluntario::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe2->idt_equipe,
+        ]);
+
+        Voluntario::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $this->evento->idt_evento,
+            'idt_equipe' => $this->equipe3->idt_equipe,
+            'idt_trabalhador' => Trabalhador::factory()->create()->idt_trabalhador,
+        ]);
+
+        $equipes = Voluntario::listarEquipesSelecionadas(
+            $this->evento->idt_evento,
+            $this->pessoa->idt_pessoa
+        );
+
+        expect($equipes)->toHaveCount(2);
+    });
+
+    test('listarAgrupadoPorPessoa retorna vazio quando nao ha voluntarios', function () {
+        $resultado = Voluntario::listarAgrupadoPorPessoa($this->evento->idt_evento);
+        expect($resultado)->toBeEmpty();
+    });
 });

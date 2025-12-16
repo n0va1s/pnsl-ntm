@@ -38,7 +38,7 @@
         <form action="{{ route('avaliacao.send') }}" method="POST" class="space-y-6">
             @csrf
 
-            <input type="hidden" name="idt_trabalhador" value="{{ $trabalhador->idt_trabalhador }}">
+            <input type="hidden" name="idt_trabalhador" value="{{ $trabalhador?->idt_trabalhador }}">
 
             <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-4">
                 @php

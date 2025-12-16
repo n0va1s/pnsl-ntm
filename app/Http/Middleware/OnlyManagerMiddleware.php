@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class OnlyAdminMiddleware
+class OnlyManagerMiddleware
 {
     /**
      * Handle an incoming request.
@@ -15,10 +15,12 @@ class OnlyAdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
-        if (! $user || $user->role !== 'admin') {
-            abort(403);
-        }
+        abort_unless(
+            auth()->check() &&
+                in_array(auth()->user()->role, ['admin', 'coord']),
+            403
+        );
+
         return $next($request);
     }
 }

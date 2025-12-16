@@ -81,7 +81,7 @@
                     {{-- Formulário para confirmação de equipe --}}
                     <form action="{{ route('montagem.confirm') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="idt_voluntario" value="{{ $voluntario->idt_voluntario }}">
+                        <input type="hidden" name="idt_voluntario" value="{{ $voluntario?->idt_voluntario }}">
 
                         {{-- Equipe --}}
                         <div class="mb-4">

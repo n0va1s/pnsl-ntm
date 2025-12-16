@@ -33,15 +33,16 @@ Route::post(
     [HomeController::class, 'contato']
 )->name('home.contato');
 
-Route::get('/vem', [HomeController::class, 'fichaVem'])
-    ->name('home.ficha.vem');
-Route::get('/ecc', [HomeController::class, 'fichaEcc'])
-    ->name('home.ficha.ecc');
-Route::get('/sgm', [HomeController::class, 'fichaSgm'])
-    ->name('home.ficha.sgm');
 
 // Area Administrativa
 Route::middleware(['auth'])->group(function () {
+    Route::get('/vem', [HomeController::class, 'fichaVem'])
+        ->name('home.ficha.vem');
+    Route::get('/ecc', [HomeController::class, 'fichaEcc'])
+        ->name('home.ficha.ecc');
+    Route::get('/sgm', [HomeController::class, 'fichaSgm'])
+        ->name('home.ficha.sgm');
+
     Route::redirect('settings', 'settings/profile');
 
     Route::get(
@@ -81,7 +82,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get(
         '/trabalhadores',
         [TrabalhadorController::class, 'index']
-    )->name('trabalhadores.index');
+    )->name('trabalhadores.index')->middleware(['manager']);
 
     Route::get(
         '/trabalhadores/create',
@@ -98,6 +99,16 @@ Route::middleware(['auth'])->group(function () {
         [TrabalhadorController::class, 'review']
     )->name('trabalhadores.review');
 
+    Route::delete(
+        '/trabalhadores/{id}',
+        [TrabalhadorController::class, 'destroy']
+    )->name('trabalhadores.destroy');
+
+    Route::get(
+        '/avaliacao',
+        [TrabalhadorController::class, 'review']
+    )->name('avaliacao.review');
+
     Route::post(
         '/avaliacao',
         [TrabalhadorController::class, 'send']
@@ -111,7 +122,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post(
         '/montagem',
         [TrabalhadorController::class, 'confirm']
-    )->name('montagem.confirm');
+    )->name('montagem.confirm')->middleware(['manager']);
 
     Route::get(
         '/quadrante',
@@ -135,16 +146,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
 
-    // Somente admin
-    Route::middleware(['admin'])->group(function () {
+    // Somente admin e coord
+    Route::middleware(['manager'])->group(function () {
         Route::get(
             '/configuracoes',
             [ConfiguracoesController::class, 'index']
-        )->name('configuracoes.index')->middleware('admin');
+        )->name('configuracoes.index');
 
-        Route::get('/configuracoes/role', [TipoPerfilController::class, 'index'])->name('role.index')->middleware('admin');
-        Route::post('/configuracoes/role', [TipoPerfilController::class, 'store'])->name('role.store')->middleware('admin');
-        Route::post('/configuracoes/role/change', [TipoPerfilController::class, 'change'])->name('role.change')->middleware('admin');
+        Route::get('/configuracoes/role', [TipoPerfilController::class, 'index'])->name('role.index');
+        Route::post('/configuracoes/role', [TipoPerfilController::class, 'store'])->name('role.store');
+        Route::post('/configuracoes/role/change', [TipoPerfilController::class, 'change'])->name('role.change');
 
         Route::resources([
             'configuracoes/equipe' => TipoEquipeController::class,

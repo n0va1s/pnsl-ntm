@@ -45,7 +45,7 @@ describe('FichaSGMController', function () {
             'tam_camiseta' => 'M',
             'ind_consentimento' => true,
             'ind_restricao' => false,
-            
+
             // Dados FichaSGM
             'idt_falar_com' => $this->responsavel->idt_responsavel,
             'des_mora_quem' => 'Pais',
@@ -106,7 +106,7 @@ describe('FichaSGMController', function () {
             'tam_camiseta' => 'G',
             'ind_consentimento' => true,
             'ind_restricao' => false,
-            
+
             'idt_falar_com' => $this->responsavel->idt_responsavel,
             'des_mora_quem' => 'Avós',
             'nom_mae' => 'Mae Atualizada',

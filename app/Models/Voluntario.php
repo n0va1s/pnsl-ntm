@@ -38,6 +38,11 @@ class Voluntario extends Model
         return $this->belongsTo(TipoEquipe::class, 'idt_equipe');
     }
 
+    public function scopePendentes($query)
+    {
+        return $query->whereNull('idt_trabalhador');
+    }
+
     public static function listarAgrupadoPorPessoa(int $idt_evento)
     {
         // A ideia é selecionar as pessoas que são voluntárias para o evento
@@ -71,6 +76,7 @@ class Voluntario extends Model
     {
         return self::where('idt_pessoa', $idt_pessoa)
             ->where('idt_evento', $idt_evento)
+            ->whereNull('idt_trabalhador') // apenas equipes não confirmadas como trabalhador
             ->with('equipe')
             ->get()
             ->pluck('equipe');
