@@ -1,0 +1,46 @@
+name: Deploy via FTP - Laravel 12
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    name: Build e Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Configurar PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2' # Versão recomendada para Laravel 12
+        extensions: mbstring, xml, ctype, iconv, mysql, zip
+
+    - name: Instalar Dependências do Composer
+      run: composer install --no-dev --optimize-autoloader --no-interaction
+
+    - name: Instalar Dependências NPM e Build (Vite)
+      run: |
+        npm install
+        npm run build
+
+    - name: Sync FTP para Locaweb
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        password: ${{ secrets.PASS }}
+        # Local de origem (raiz do projeto onde o build aconteceu)
+        local-dir: ./
+        # Destino no servidor (ajuste se o caminho for diferente)
+        server-dir: public_html/movimento/
+        # Arquivos que você NÃO quer que sejam enviados ou sobrescritos
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          storage/*.key
+          .env
