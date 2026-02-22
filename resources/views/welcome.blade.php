@@ -7,7 +7,7 @@
     </div>
     <!-- Seção: Sistema de Gestão -->
     <section
-        @class(['flex', 'flex-col', 'md:flex-row', 'items-center', 'justify-center', 'text-center', 'md:text-left', 'space-y-6', 'md:space-y-0'])>
+        @class(['flex', 'flex-col', 'md:flex-row', 'items-center', 'justify-center', 'text-center', 'md:text-left', 'space-y-6', 'md:space-y-0', 'md:space-x-1', 'gap-8'])>
         <div @class(['md:w-1/2', 'space-y-4'])>
             <h2 @class(['text-2xl', 'font-semibold', 'text-gray-800', 'dark:text-gray-400'])>
                 Sistema de Gestão de Movimentos Paroquiais
