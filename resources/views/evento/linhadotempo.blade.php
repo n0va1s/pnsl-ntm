@@ -8,7 +8,7 @@
 
         {{-- Page Title and Description --}}
         <div class="mb-6 text-center">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Linha do Tempo</h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100" >Linha do Tempo</h1>
             <p class="text-gray-700 mt-1 dark:text-gray-400">Sua caminhada na Igreja até a santidade</p>
             @if ($pessoa?->exists)
                 <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">

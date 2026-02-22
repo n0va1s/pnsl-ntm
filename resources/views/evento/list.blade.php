@@ -20,10 +20,10 @@
                     <label for="idt_movimento" class="sr-only">Movimentos</label>
                     <select id="idt_movimento" name="idt_movimento"
                         class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Movimento</option>
+                        <option value="" class="dark:bg-zinc-900" disabled selected>Movimento</option>
                         @foreach ($movimentos as $movimento)
                             <option value="{{ $movimento->idt_movimento }}"
-                                {{ old('idt_movimento', $idt_movimento) == $movimento->idt_movimento ? 'selected' : '' }}>
+                                {{ old('idt_movimento', $idt_movimento) == $movimento->idt_movimento ? 'selected' : '' }} class="dark:bg-zinc-800">
                                 {{ $movimento->des_sigla }}</option>
                         @endforeach
                     </select>

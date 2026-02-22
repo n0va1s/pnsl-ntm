@@ -1,8 +1,8 @@
 <x-layouts.app :title="'Evento'">
     <section class="p-6 w-full max-w-[80vw] ml-auto">
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">Novo Evento</h1>
-            <p class="text-gray-700 mt-1">Cadastre um novo evento ou atividade de pós-encontro</p>
+            <h1 class="text-3xl font-bold text-gray-900  dark:text-gray-100">Novo Evento</h1>
+            <p class="text-gray-700 mt-1 dark:text-gray-400">Cadastre um novo evento ou atividade de pós-encontro</p>
         </div>
         <div class="flex justify-end mt-4">
             <div class="flex justify-end mt-4">
@@ -36,10 +36,10 @@
                             aria-describedby="idt_movimento_help idt_movimento_error"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('idt_movimento') border-red-500 @enderror">
-                            <option value="">Selecione um movimento</option>
+                            <option value="" class="dark:bg-zinc-800">Selecione um movimento</option>
                             @foreach ($movimentos as $movimento)
                                 <option value="{{ $movimento->idt_movimento }}"
-                                    {{ old('idt_movimento', $evento->idt_movimento ?? null) == $movimento->idt_movimento ? 'selected' : '' }}>
+                                    {{ old('idt_movimento', $evento->idt_movimento ?? null) == $movimento->idt_movimento ? 'selected' : '' }} class="dark:bg-zinc-800">
                                     {{ $movimento->nom_movimento }} ({{ $movimento->des_sigla }})
                                 </option>
                             @endforeach
@@ -156,15 +156,16 @@
                         <select name="tip_evento" id="tip_evento" required x-bind:disabled="bloqueado"
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                             @error('tip_evento') border-red-500 @enderror">
-                            <option value="">Selecione o tipo</option>
+                            <option value="" class="dark:bg-zinc-800" disabled selected>Selecione o tipo</option>
                             <option value="E"
-                                {{ old('tip_evento', $evento->tip_evento) == 'E' ? 'selected' : '' }}>Encontro Anual
+                                {{ old('tip_evento', $evento->tip_evento) == 'E' ? 'selected' : '' }} class="dark:bg-zinc-800">Encontro Anual
                             </option>
                             <option value="P"
-                                {{ old('tip_evento', $evento->tip_evento) == 'P' ? 'selected' : '' }}>Pós-Encontro
+                                {{ old('tip_evento', $evento->tip_evento) == 'P' ? 'selected' : '' }} class="dark:bg-zinc-800">Pós-Encontro
                             </option>
                             <option value="D"
-                                {{ old('tip_evento', $evento->tip_evento) == 'D' ? 'selected' : '' }}>Desafio</option>
+                                {{ old('tip_evento', $evento->tip_evento) == 'D' ? 'selected' : '' }} class="dark:bg-zinc-800">Desafio
+                            </option>
                         </select>
                         @error('tip_evento')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
