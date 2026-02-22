@@ -1,15 +1,18 @@
+
 <x-layouts.public :title="'Não Tenhais Medo'">
+
+
     <div>
         <x-session-alert />
     </div>
     <!-- Seção: Sistema de Gestão -->
     <section
-        class="flex flex-col md:flex-row items-center justify-center text-center md:text-left space-y-6 md:space-y-0 md:space-x-10">
-        <div class="md:w-1/2 space-y-4">
-            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-400">
+        @class(['flex', 'flex-col', 'md:flex-row', 'items-center', 'justify-center', 'text-center', 'md:text-left', 'space-y-6', 'md:space-y-0'])>
+        <div @class(['md:w-1/2', 'space-y-4'])>
+            <h2 @class(['text-2xl', 'font-semibold', 'text-gray-800', 'dark:text-gray-400'])>
                 Sistema de Gestão de Movimentos Paroquiais
             </h2>
-            <p class="max-w-2xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
+            <p @class(['max-w-2xl', 'mx-auto', 'md:mx-0', 'text-gray-600', 'dark:text-gray-300'])>
                 Bem-vindo! Este sistema foi criado para facilitar o cadastro e a organização dos encontros
                 promovidos
                 pela Paraóquia Nossa Senhora do Lago, como o VEM, ECC e Segue-Me.
@@ -19,43 +22,43 @@
             </p>
         </div>
         <div>
-            <div class="relative w-full max-w-2xl mx-auto overflow-hidden rounded-2xl" id="carousel">
-                <div id="carouselSlides" class="flex transition-transform duration-500">
+            <div @class(['relative', 'w-full', 'max-w-2xl', 'mx-auto', 'overflow-hidden', 'rounded-2xl']) id="carousel">
+                <div id="carouselSlides" @class(['flex', 'transition-transform', 'duration-500'])>
                     <img src="https://i.imgur.com/yXiQHE9.jpeg"
-                        class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img " alt="Imagem 1">
+                        @class(['w-full', 'h-64', 'md:h-100', 'object-cover', 'flex-shrink-0', 'carousel-img']) alt="Imagem 1">
                     <img src="https://i.imgur.com/FdbulA4.jpeg"
-                        class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img " alt="Imagem 2">
+                        @class(['w-full', 'h-64', 'md:h-100', 'object-cover', 'flex-shrink-0', 'carousel-img']) alt="Imagem 2">
                     <img src="https://i.imgur.com/piduEFx.jpeg"
-                        class="w-full h-64 md:h-100 object-cover flex-shrink-0 carousel-img " alt="Imagem 3">
+                        @class(['w-full', 'h-64', 'md:h-100', 'object-cover', 'flex-shrink-0', 'carousel-img']) alt="Imagem 3">
                 </div>
 
                 <!-- Dots navigation -->
-                <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+                <div @class(['absolute', 'bottom-4', 'left-0', 'right-0', 'flex', 'justify-center', 'space-x-2'])>
                     <button onclick="showSlide(0)"
-                        class="w-3 h-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-blue-600"
+                        @class(['w-3', 'h-3', 'rounded-full', 'transition-all', 'duration-300', 'cursor-pointer', 'hover:bg-blue-600'])
                         id="dot-0"></button>
                     <button onclick="showSlide(1)"
-                        class="w-3 h-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-blue-600"
+                        @class(['w-3', 'h-3', 'rounded-full', 'transition-all', 'duration-300', 'cursor-pointer', 'hover:bg-blue-600'])
                         id="dot-1"></button>
                     <button onclick="showSlide(2)"
-                        class="w-3 h-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-blue-600"
+                        @class(['w-3', 'h-3', 'rounded-full', 'transition-all', 'duration-300', 'cursor-pointer', 'hover:bg-blue-600'])
                         id="dot-2"></button>
                 </div>
 
                 <button onclick="prevSlide()"
-                    class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-opacity-50 text-white p-3 text-2xl z-10 hover: transition cursor-pointer"
+                    @class(['absolute', 'top-1/2', 'left-0', 'transform', '-translate-y-1/2', 'bg-opacity-50', 'text-white', 'p-3', 'text-2xl', 'z-10', 'hover:', 'transition', 'cursor-pointer'])
                     onmouseover="this.querySelector('svg').style.transform='scale(1.4)'"
                     onmouseout="this.querySelector('svg').style.transform='scale(1)'">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg @class(['w-6', 'h-6']) fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
 
                 <button onclick="nextSlide()"
-                    class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-opacity-50 text-white p-3 text-2xl z-10 hover:bg-opacity-70 transition cursor-pointer"
+                    @class(['absolute', 'top-1/2', 'right-0', 'transform', '-translate-y-1/2', 'bg-opacity-50', 'text-white', 'p-3', 'text-2xl', 'z-10', 'hover:bg-opacity-70', 'transition', 'cursor-pointer'])
                     onmouseover="this.querySelector('svg').style.transform='scale(1.4)'"
                     onmouseout="this.querySelector('svg').style.transform='scale(1)'">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg @class(['w-6', 'h-6']) fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
@@ -106,53 +109,53 @@
     </section>
 
     <!-- Seção: Movimentos -->
-    <section class="text-center space-y-8 mt-16">
-        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">
+    <section @class(['text-center', 'space-y-8', 'mt-16', 'max-w-7xl', 'px-4', 'mx-auto'])>
+        <h2 @class(['text-3xl', 'font-bold', 'text-gray-800', 'dark:text-white', 'mb-6'])>
             Nossos Movimentos
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div @class(['grid', 'grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'gap-6'])>
 
             <!-- Card VEM -->
             <div
-                class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col justify-between shadow-sm dark:bg-gray-800">
+                @class(['border', 'border-gray-300', 'dark:border-gray-700', 'rounded-xl', 'p-6', 'flex', 'flex-col', 'justify-between', 'shadow-sm', 'dark:bg-gray-800'])>
                 <div>
                     <img src="https://i.imgur.com/JmjVysp.png"
-                        class="w-full h-64 md:h-30 object-cover flex-shrink-0 rounded-2xl" alt="Imagem 1">
-                    <h3 class="text-xl font-bold text-blue-600 dark:text-blue-400">VEM</h3>
-                    <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Adolescentes com Cristo</p>
+                        @class(['w-64', 'h-64', 'md:h-30', 'object-cover', 'flex-shrink-0', 'rounded-2xl', 'mx-auto']) alt="Imagem 1">
+                    <h3 @class(['text-xl', 'font-bold', 'text-blue-600', 'dark:text-blue-400'])>VEM</h3>
+                    <p @class(['text-gray-600', 'dark:text-gray-300', 'mt-2'])>Encontro de Adolescentes com Cristo</p>
                 </div>
                 <a href="{{ route('home.ficha.vem') }}"
-                    class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition">
+                    @class(['mt-4', 'inline-block', 'bg-blue-600', 'hover:bg-blue-700', 'text-white', 'font-semibold', 'px-4', 'py-2', 'rounded-md', 'transition'])>
                     Ficha do VEM
                 </a>
             </div>
 
             <!-- Card Segue-Me -->
             <div
-                class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col justify-between shadow-sm dark:bg-gray-800">
+                @class(['border', 'border-gray-300', 'dark:border-gray-700', 'rounded-xl', 'p-6', 'flex', 'flex-col', 'justify-between', 'shadow-sm', 'dark:bg-gray-800'])>
                 <div>
                     <img src="https://i.imgur.com/U3FfnPu.png"
-                        class="w-full h-64 md:h-30 object-contain flex-shrink-0 rounded-2xl" alt="Imagem 1">
-                    <h3 class="text-xl font-bold text-orange-600 dark:text-orange-400">Segue-Me</h3>
-                    <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Jovens com Cristo</p>
+                        @class(['w-64', 'h-64', 'md:h-30', 'object-contain', 'flex-shrink-0', 'rounded-2xl', 'mx-auto']) alt="Imagem 1">
+                    <h3 @class(['text-xl', 'font-bold', 'text-orange-600', 'dark:text-orange-400'])>Segue-Me</h3>
+                    <p @class(['text-gray-600', 'dark:text-gray-300', 'mt-2'])>Encontro de Jovens com Cristo</p>
                 </div>
                 <a
-                    class="mt-4 inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-md transition">
+                    @class(['mt-4', 'inline-block', 'bg-orange-600', 'hover:bg-orange-700', 'text-white', 'font-semibold', 'px-4', 'py-2', 'rounded-md', 'transition'])>
                     Ficha do Segue-Me (Em breve)
                 </a>
             </div>
 
             <!-- Card ECC -->
             <div
-                class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col justify-between shadow-sm dark:bg-gray-800">
+                @class(['border', 'border-gray-300', 'dark:border-gray-700', 'rounded-xl', 'p-6', 'flex', 'flex-col', 'justify-between', 'shadow-sm', 'dark:bg-gray-800'])>
                 <div>
                     <img src="https://i.imgur.com/aaifcaH.png"
-                        class="w-full h-64 md:h-30 object-contain flex-shrink-0 rounded-2xl" alt="Imagem 1">
-                    <h3 class="text-xl font-bold text-green-600 dark:text-green-400">ECC</h3>
-                    <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Casais com Cristo</p>
+                        @class(['w-64', 'h-64', 'md:h-30', 'object-contain', 'flex-shrink-0', 'rounded-2xl', 'mx-auto']) alt="Imagem 1">
+                    <h3 @class(['text-xl', 'font-bold', 'text-green-600', 'dark:text-green-400'])>ECC</h3>
+                    <p @class(['text-gray-600', 'dark:text-gray-300', 'mt-2'])>Encontro de Casais com Cristo</p>
                 </div>
                 <a
-                    class="mt-4 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md transition">
+                    @class(['mt-4', 'inline-block', 'bg-green-600', 'hover:bg-green-700', 'text-white', 'font-semibold', 'px-4', 'py-2', 'rounded-md', 'transition'])>
                     Ficha do ECC (Em breve)
                 </a>
             </div>
@@ -160,46 +163,46 @@
     </section>
 
     <!-- FAQ -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto my-16 px-4">
+    <div @class(['grid', 'grid-cols-1', 'md:grid-cols-3', 'gap-8', 'max-w-7xl', 'mx-auto', 'my-16', 'px-4'])>
         <!-- FAQ VEM -->
-        <section class="max-w-full bg-blue-50 dark:bg-blue-900 rounded-xl p-6 shadow">
-            <h4 class="font-bold text-blue-600 mb-8 dark:text-blue-400">Perguntas Frequentes - VEM</h4>
-            <div class="space-y-4">
-                <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+        <section @class(['max-w-full', 'bg-blue-50', 'dark:bg-blue-900', 'rounded-xl', 'p-6', 'shadow'])>
+            <h4 @class(['font-bold', 'text-blue-600', 'mb-8', 'dark:text-blue-400'])>Perguntas Frequentes - VEM</h4>
+            <div @class(['space-y-4'])>
+                <details @class(['group', 'border', 'border-blue-200', 'rounded-lg', 'p-4', 'bg-white', 'dark:bg-blue-800'])>
                     <summary
-                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        @class(['flex', 'justify-between', 'items-center', 'cursor-pointer', 'text-blue-700', 'font-medium', 'dark:text-blue-400'])>
                         Quem pode participar do VEM?
-                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                        <svg @class(['w-5', 'h-5', 'transform', 'transition-transform', 'group-open:rotate-180', 'text-blue-600'])
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </summary>
-                    <p class="mt-2 text-gray-700 dark:text-gray-100">Jovens solteiros entre 12 e 15 anos que
+                    <p @class(['mt-2', 'text-gray-700', 'dark:text-gray-100'])>Jovens solteiros entre 12 e 15 anos que
                         desejam iniciar sua caminhada cristã.</p>
                 </details>
-                <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                <details @class(['group', 'border', 'border-blue-200', 'rounded-lg', 'p-4', 'bg-white', 'dark:bg-blue-800'])>
                     <summary
-                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        @class(['flex', 'justify-between', 'items-center', 'cursor-pointer', 'text-blue-700', 'font-medium', 'dark:text-blue-400'])>
                         Quanto tempo acontece o VEM?
-                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                        <svg @class(['w-5', 'h-5', 'transform', 'transition-transform', 'group-open:rotate-180', 'text-blue-600'])
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </summary>
-                    <p class="mt-2 text-gray-700 dark:text-gray-100">O VEM é um movimento que acontece há mais de
+                    <p @class(['mt-2', 'text-gray-700', 'dark:text-gray-100'])>O VEM é um movimento que acontece há mais de
                         30 anos.</p>
                 </details>
             </div>
         </section>
         <!-- FAQ Segue-Me -->
-        <section class="max-w-full bg-orange-50 dark:bg-orange-900 rounded-xl p-6 shadow">
-            <h4 class="font-bold text-orange-600 mb-8 dark:text-orange-400">Perguntas Frequentes - Segue-Me</h4>
-            <div class="space-y-4">
-                <details class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-800">
+        <section @class(['max-w-full', 'bg-orange-50', 'dark:bg-orange-900', 'rounded-xl', 'p-6', 'shadow'])>
+            <h4 @class(['font-bold', 'text-orange-600', 'mb-8', 'dark:text-orange-400'])>Perguntas Frequentes - Segue-Me</h4>
+            <div @class(['space-y-4'])>
+                <details @class(['group', 'border', 'border-orange-200', 'rounded-lg', 'p-4', 'bg-white', 'dark:bg-orange-800'])>
                     <summary
-                        class="flex justify-between items-center cursor-pointer text-orange-700 font-medium dark:text-orange-400">
+                        @class(['flex', 'justify-between', 'items-center', 'cursor-pointer', 'text-orange-700', 'font-medium', 'dark:text-orange-400'])>
                         Quem pode participar do Segue-Me?
-                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
+                        <svg @class(['w-5', 'h-5', 'transform', 'transition-transform', 'group-open:rotate-180', 'text-orange-600'])
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -211,30 +214,30 @@
         </section>
 
         <!-- FAQ Segue-Me -->
-        <section class="max-w-full bg-green-50 dark:bg-green-900 rounded-xl p-6 shadow">
-            <h4 class="font-bold text-green-600 mb-8 dark:text-green-200">Perguntas Frequentes - ECC</h4>
-            <div class="space-y-4">
-                <details class="group border border-green-200 rounded-lg p-4 bg-white dark:bg-green-800">
+        <section @class(['max-w-full', 'bg-green-50', 'dark:bg-green-900', 'rounded-xl', 'p-6', 'shadow'])>
+            <h4 @class(['font-bold', 'text-green-600', 'mb-8', 'dark:text-green-200'])>Perguntas Frequentes - ECC</h4>
+            <div @class(['space-y-4'])>
+                <details @class(['group', 'border', 'border-green-200', 'rounded-lg', 'p-4', 'bg-white', 'dark:bg-green-800'])>
                     <summary
-                        class="flex justify-between items-center cursor-pointer text-green-700 font-medium dark:text-green-600">
+                        @class(['flex', 'justify-between', 'items-center', 'cursor-pointer', 'text-green-700', 'font-medium', 'dark:text-green-600'])>
                         Quem pode participar do ECC?
-                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-green-600"
+                        <svg @class(['w-5', 'h-5', 'transform', 'transition-transform', 'group-open:rotate-180', 'text-green-600'])
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </summary>
-                    <p class="mt-2 text-gray-700 dark:text-gray-100">Casais de todas as idades</p>
+                    <p @class(['mt-2', 'text-gray-700', 'dark:text-gray-100'])>Casais de todas as idades</p>
                 </details>
             </div>
         </section>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-7xl mx-auto my-8 px-4">
+    <div @class(['grid', 'grid-cols-1', 'md:grid-cols-5', 'gap-8', 'max-w-7xl', 'mx-auto', 'my-8', 'px-4'])>
         <!-- Seção 60% -->
-        <div class="md:col-span-3">
-            <section class="max-w-3xl mx-auto mt-8 px-4">
-                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Próximos Eventos</h2>
+        <div @class(['md:col-span-3'])>
+            <section @class(['max-w-3xl', 'mx-auto', 'mt-8', 'px-4'])>
+                <h2 @class(['text-3xl', 'font-bold', 'text-gray-800', 'dark:text-white', 'mb-6'])>Próximos Eventos</h2>
                 {{-- Lista de eventos --}}
-                <ul class="space-y-4">
+                <ul @class(['space-y-4'])>
                     @forelse ($proximoseventos as $evento)
                         @php
                             $sigla = $evento->movimento?->des_sigla;
@@ -246,83 +249,83 @@
                             };
                         @endphp
                         <li
-                            class="flex items-start gap-4 p-4 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-                            <x-heroicon-o-calendar class="w-6 h-6 text-blue-500 mt-1" />
-                            <div class="flex-1 flex flex-col w-full">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="text-base font-medium text-gray-900 dark:text-white">
+                            @class(['flex', 'items-start', 'gap-4', 'p-4', 'bg-gray-50', 'dark:bg-zinc-800', 'border', 'border-gray-200', 'dark:border-gray-700', 'rounded-lg', 'shadow-sm'])>
+                            <x-heroicon-o-calendar @class(['w-6', 'h-6', 'text-blue-500', 'mt-1']) />
+                            <div @class(['flex-1', 'flex', 'flex-col', 'w-full'])>
+                                <div @class(['flex', 'justify-between', 'items-start'])>
+                                    <h3 @class(['text-base', 'font-medium', 'text-gray-900', 'dark:text-white'])>
                                         {{ $evento->des_evento }}
                                     </h3>
 
-                                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeClasses }}">
+                                    <span @class(['text-xs', 'font-semibold', 'px-2', 'py-0.5', 'rounded-full', '{{', '$badgeClasses', '}}'])>
                                         {{ $sigla }}
                                     </span>
                                 </div>
 
                                 {{-- Informações adicionais --}}
-                                <span class="text-sm text-gray-600 dark:text-gray-300">
+                                <span @class(['text-sm', 'text-gray-600', 'dark:text-gray-300'])>
                                     {{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('d/m/Y') }}
                                 </span>
                             </div>
                         </li>
                     @empty
-                        <li class="text-gray-600 dark:text-gray-300">Nenhum evento encontrado.</li>
+                        <li @class(['text-gray-600', 'dark:text-gray-300'])>Nenhum evento encontrado.</li>
                     @endforelse
                 </ul>
             </section>
         </div>
         <!-- Seção 40% -->
-        <div class="md:col-span-2">
-            <section class="max-w-3xl mx-auto mt-8 px-4">
+        <div @class(['md:col-span-2'])>
+            <section @class(['max-w-3xl', 'mx-auto', 'mt-8', 'px-4'])>
                 @if (session('message'))
-                    <div class="max-w-3xl mx-auto mt-6 px-4">
-                        <div class="bg-green-50 dark:bg-green-900 text-green-800 dark:text-green-200 p-4 rounded-lg">
-                            <p class="font-semibold">{{ session('message') }}</p>
+                    <div @class(['max-w-3xl', 'mx-auto', 'mt-6', 'px-4'])>
+                        <div @class(['bg-green-50', 'dark:bg-green-900', 'text-green-800', 'dark:text-green-200', 'p-4', 'rounded-lg'])>
+                            <p @class(['font-semibold'])>{{ session('message') }}</p>
                         </div>
                     </div>
                 @endif
-                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Entre em Contato</h2>
+                <h2 @class(['text-3xl', 'font-bold', 'text-gray-800', 'dark:text-white', 'mb-6'])>Entre em Contato</h2>
 
                 <form action="{{ route('home.contato') }}" method="POST"
-                    class="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                    @class(['space-y-6', 'bg-white', 'dark:bg-gray-800', 'p-6', 'rounded-lg', 'shadow', 'border', 'border-gray-200', 'dark:border-gray-700'])>
                     @csrf
 
                     <!-- Nome -->
                     <div>
-                        <label for="nom_contato" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Nome <span class="text-red-600 dark:text-red-400">*</span>
+                        <label for="nom_contato" @class(['block', 'text-sm', 'font-medium', 'text-gray-700', 'dark:text-gray-300'])>
+                            Nome <span @class(['text-red-600', 'dark:text-red-400'])>*</span>
                         </label>
                         <input type="text" name="nom_contato" id="nom_contato" required
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @class(['px-3', 'py-2', 'mt-1', 'block', 'w-full', 'rounded-md', 'border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-900', 'text-gray-900', 'dark:text-gray-100', 'shadow-sm', 'focus:ring-blue-500', 'focus:border-blue-500'])>
                     </div>
 
 
                     <!-- Email -->
                     <div>
                         <label for="eml_contato"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                            @class(['block', 'text-sm', 'font-medium', 'text-gray-700', 'dark:text-gray-300'])>Email</label>
                         <input type="email" name="eml_contato" id="eml_contato"
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @class(['px-3', 'py-2', 'mt-1', 'block', 'w-full', 'rounded-md', 'border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-900', 'text-gray-900', 'dark:text-gray-100', 'shadow-sm', 'focus:ring-blue-500', 'focus:border-blue-500'])>
                     </div>
 
                     <!-- Telefone -->
                     <div>
                         <label for="tel_contato"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Telefone <span
-                                class="text-red-600 dark:text-red-400">*</span>
+                            @class(['block', 'text-sm', 'font-medium', 'text-gray-700', 'dark:text-gray-300'])>Telefone <span
+                                @class(['text-red-600', 'dark:text-red-400'])>*</span>
                         </label>
                         <input type="tel" name="tel_contato" id="tel_contato" required
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @class(['px-3', 'py-2', 'mt-1', 'block', 'w-full', 'rounded-md', 'border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-900', 'text-gray-900', 'dark:text-gray-100', 'shadow-sm', 'focus:ring-blue-500', 'focus:border-blue-500'])>
                     </div>
 
                     <!-- Movimento -->
                     <div>
                         <label for="idt_movimento"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Movimento <span
-                                class="text-red-600 dark:text-red-400">*</span>
+                            @class(['block', 'text-sm', 'font-medium', 'text-gray-700', 'dark:text-gray-300'])>Movimento <span
+                                @class(['text-red-600', 'dark:text-red-400'])>*</span>
                         </label>
                         <select name="idt_movimento" id="idt_movimento" required
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-100">
+                            @class(['w-full', 'rounded-md', 'border', 'border-gray-300', 'dark:border-zinc-600', 'px-3', 'py-2', 'text-gray-900', 'dark:text-gray-100', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'dark:bg-gray-900', 'dark:text-gray-100'])>
                             <option value="">Selecione um movimento</option>
                             @foreach ($movimentos as $movimento)
                                 <option value="{{ $movimento->idt_movimento }}">{{ $movimento->des_sigla }}
@@ -334,17 +337,17 @@
                     <!-- Mensagem -->
                     <div>
                         <label for="txt_mensagem"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mensagem <span
-                                class="text-red-600 dark:text-red-400">*</span>
+                            @class(['block', 'text-sm', 'font-medium', 'text-gray-700', 'dark:text-gray-300'])>Mensagem <span
+                                @class(['text-red-600', 'dark:text-red-400'])>*</span>
                         </label>
                         <textarea name="txt_mensagem" id="txt_mensagem" rows="4" required
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            @class(['px-3', 'py-2', 'mt-1', 'block', 'w-full', 'rounded-md', 'border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-900', 'text-gray-900', 'dark:text-gray-100', 'shadow-sm', 'focus:ring-blue-500', 'focus:border-blue-500'])></textarea>
                     </div>
 
                     <!-- Botão -->
                     <div>
                         <button type="submit"
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">
+                            @class(['w-full', 'bg-blue-600', 'hover:bg-blue-700', 'text-white', 'font-semibold', 'py-2', 'px-4', 'rounded-md', 'transition'])>
                             Enviar Mensagem
                         </button>
                     </div>
@@ -353,51 +356,52 @@
         </div>
     </div>
     </main>
-
+{{-- relative  right-[50%] ml-[-50vw] mr-[-50vw] w-screen bg-gray-100 dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-300 py-6 --}}
     <!-- Rodapé -->
-    <footer class="bg-gray-100 dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-300 py-6">
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+            <footer @class(['relative','mb-[-2rem]' ,'left-[50%]', 'ml-[-50vw]', 'mr-[-50vw]','w-screen', 'bg-gray-100', 'dark:bg-gray-800', 'text-sm', 'text-gray-600', 'dark:text-gray-300', 'py-6'])>
+            <div @class(['flex', 'flex-col', 'sm:flex-row', 'justify-center', 'items-center', 'gap-6'])>
 
-            <a href="https://www.instagram.com/nossasenhoradolago" target="_blank"
-                class="flex items-center gap-2 hover:underline">
-                <!-- Instagram Icon -->
-                <svg class="w-6 h-6 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                <a href="https://www.instagram.com/nossasenhoradolago" target="_blank"
+                @class(['flex', 'items-center', 'gap-2', 'hover:underline'])>
+                    <!-- Instagram Icon -->
+                    <svg @class(['w-6', 'h-6', 'text-pink-500']) xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                     viewBox="0 0 24 24">
                     <path
-                        d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5ZM4.5 7.75a3.25 3.25 0 0 1 3.25-3.25h8.5a3.25 3.25 0 0 1 3.25 3.25v8.5a3.25 3.25 0 0 1-3.25 3.25h-8.5a3.25 3.25 0 0 1-3.25-3.25v-8.5Zm7.5 1.25a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM17.5 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
-                </svg>
+                    d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5ZM4.5 7.75a3.25 3.25 0 0 1 3.25-3.25h8.5a3.25 3.25 0 0 1 3.25 3.25v8.5a3.25 3.25 0 0 1-3.25 3.25h-8.5a3.25 3.25 0 0 1-3.25-3.25v-8.5Zm7.5 1.25a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM17.5 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
+                    </svg>
                 Instagram da Paróquia
-            </a>
+                </a>
 
-            <a href="https://www.instagram.com/vempnsl" target="_blank"
-                class="flex items-center gap-2 hover:underline">
-                <svg class="w-6 h-6 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                <a href="https://www.instagram.com/vempnsl" target="_blank"
+                @class(['flex', 'items-center', 'gap-2', 'hover:underline'])>
+                    <svg @class(['w-6', 'h-6', 'text-pink-500']) xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                     viewBox="0 0 24 24">
                     <path
-                        d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5ZM4.5 7.75a3.25 3.25 0 0 1 3.25-3.25h8.5a3.25 3.25 0 0 1 3.25 3.25v8.5a3.25 3.25 0 0 1-3.25 3.25h-8.5a3.25 3.25 0 0 1-3.25-3.25v-8.5Zm7.5 1.25a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM17.5 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
+                    d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5ZM4.5 7.75a3.25 3.25 0 0 1 3.25-3.25h8.5a3.25 3.25 0 0 1 3.25 3.25v8.5a3.25 3.25 0 0 1-3.25 3.25h-8.5a3.25 3.25 0 0 1-3.25-3.25v-8.5Zm7.5 1.25a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM17.5 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
                 </svg>
                 Fale com o VEM
-            </a>
+                </a>
 
-            <a href="https://www.instagram.com/seguemepnsl" target="_blank"
-                class="flex items-center gap-2 hover:underline">
-                <svg class="w-6 h-6 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                        d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5ZM4.5 7.75a3.25 3.25 0 0 1 3.25-3.25h8.5a3.25 3.25 0 0 1 3.25 3.25v8.5a3.25 3.25 0 0 1-3.25 3.25h-8.5a3.25 3.25 0 0 1-3.25-3.25v-8.5Zm7.5 1.25a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM17.5 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
-                </svg>
-                Fale com o Segue-Me
-            </a>
+                <a href="https://www.instagram.com/seguemepnsl" target="_blank"
+                @class(['flex', 'items-center', 'gap-2', 'hover:underline'])>
+                <svg @class(['w-6', 'h-6', 'text-pink-500']) xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                                    d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5ZM4.5 7.75a3.25 3.25 0 0 1 3.25-3.25h8.5a3.25 3.25 0 0 1 3.25 3.25v8.5a3.25 3.25 0 0 1-3.25 3.25h-8.5a3.25 3.25 0 0 1-3.25-3.25v-8.5Zm7.5 1.25a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM17.5 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
+                            </svg>
+                            Fale com o Segue-Me
+                        </a>
 
-            <a href="https://www.facebook.com/lourdes.ecc/" target="_blank"
-                class="flex items-center gap-2 hover:underline">
-                <svg class="w-6 h-6 text-blue-800" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
+                        <a href="https://www.facebook.com/lourdes.ecc/" target="_blank"
+                        @class(['flex', 'items-center', 'gap-2', 'hover:underline'])>
+                        <svg @class(['w-6', 'h-6', 'text-blue-800']) xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
                         d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-2.9h2v-2.2c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2v1.9h2.2l-.4 2.9h-1.8v7A10 10 0 0 0 22 12Z" />
-                </svg>
-                Fale com o ECC
-            </a>
-        </div>
-    </footer>
+                    </svg>
+                    Fale com o ECC
+                </a>
+            </div>
+        </footer>
 </x-layouts.public>
+
