@@ -19,6 +19,7 @@ use App\Http\Controllers\TipoResponsavelController;
 use App\Http\Controllers\TipoRestricaoController;
 use App\Http\Controllers\TipoSituacaoController;
 use App\Http\Controllers\TrabalhadorController;
+use App\Http\Controllers\GerarCrachaController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -165,6 +166,8 @@ Route::middleware(['auth'])->group(function () {
             'configuracoes/situacao' => TipoSituacaoController::class,
         ]);
     });
+
+    Route::get('/gerar-cracha', [GerarCrachaController::class, 'index'])->name('gerar-cracha');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
