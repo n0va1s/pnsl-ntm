@@ -5,7 +5,7 @@
                 <div class="bg-blue-500 p-2 rounded-lg shadow-lg shadow-blue-500/20">
                     <i data-lucide="sparkles" class="w-6 h-6 text-white"></i>
                 </div>
-                <h1 class="text-3xl font-bold tracking-tight">Gerador de Crachás</h1>
+                <h1 class="text-3xl font-bold tracking-tight">Gerador de Crachá</h1>
             </div>
             <p class="text-slate-400 text-sm md:text-base ml-12">
                 Carregue seu modelo, defina a área de preenchimento e gere crachás personalizados
@@ -15,6 +15,8 @@
         <main class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 space-y-6">
+
+                    {{-- ! Card Definir pontos --}}
                     <div class="card-bg p-6 rounded-2xl shadow-2xl dark:bg-zinc-900">
                         <div class="flex items-center gap-3 mb-6">
                             <span
@@ -23,56 +25,78 @@
                         </div>
 
                         <div class="space-y-3">
-                            <div class="point-card flex items-center gap-4 p-4 rounded-xl border border-rose-500/30 bg-rose-500/5 cursor-pointer"
-                                data-point-key="topRight">
-                                <span
-                                    class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500 text-white text-sm font-bold">1</span>
-                                <div>
-                                    <p class="text-sm font-medium dark:text-slate-200 ">Superior Direito</p>
+                            <div class="flex gap-4">
+                                <div class="point-card flex items-center gap-4 p-4 rounded-xl border border-rose-500/30 bg-rose-500/5 cursor-pointer"
+                                    data-point-key="topRight">
+                                    <span
+                                        class="flex items-center justify-center w-8 h-8 rounded-full bg-rose-500 text-white text-sm font-bold">1</span>
+                                    <div>
+                                        <p class="text-sm font-medium dark:text-slate-200 ">Superior Direito</p>
+                                    </div>
+                                </div>
+
+                                <div class="point-card flex items-center gap-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 cursor-pointer"
+                                    data-point-key="topLeft">
+                                    <span
+                                        class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white text-sm font-bold">2</span>
+                                    <div>
+                                        <p class="text-sm font-medium dark:text-slate-200">Superior Esquerdo</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="point-card flex items-center gap-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 cursor-pointer"
-                                data-point-key="topLeft">
-                                <span
-                                    class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white text-sm font-bold">2</span>
-                                <div>
-                                    <p class="text-sm font-medium dark:text-slate-200">Superior Esquerdo</p>
+                            <div class="flex gap-4">
+                                <div class="point-card flex items-center gap-4 p-4 rounded-xl border border-blue-500/30 bg-blue-500/5 cursor-pointer"
+                                    data-point-key="bottomRight">
+                                    <span
+                                        class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white text-sm font-bold">3</span>
+                                    <div>
+                                        <p class="text-sm font-medium dark:text-slate-200">Inferior Direito</p>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="point-card flex items-center gap-4 p-4 rounded-xl border border-blue-500/30 bg-blue-500/5 cursor-pointer"
-                                data-point-key="bottomRight">
-                                <span
-                                    class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white text-sm font-bold">3</span>
-                                <div>
-                                    <p class="text-sm font-medium dark:text-slate-200">Inferior Direito</p>
-                                </div>
-                            </div>
-
-                            <div class="point-card flex items-center gap-4 p-4 rounded-xl border border-purple-500/30 bg-purple-500/5 cursor-pointer"
-                                data-point-key="bottomLeft">
-                                <span
-                                    class="flex items-center justify-center w-8 h-8 rounded-full bg-purple-500 text-white text-sm font-bold">4</span>
-                                <div>
-                                    <p class="text-sm font-medium dark:text-slate-200">Inferior Esquerdo</p>
+                                <div class="point-card flex items-center gap-4 p-4 rounded-xl border border-purple-500/30 bg-purple-500/5 cursor-pointer"
+                                    data-point-key="bottomLeft">
+                                    <span
+                                        class="flex items-center justify-center w-8 h-8 rounded-full bg-purple-500 text-white text-sm font-bold">4</span>
+                                    <div>
+                                        <p class="text-sm font-medium dark:text-slate-200">Inferior Esquerdo</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-bg p-6 rounded-2xl shadow-2xl dark:bg-zinc-900">
+                    {{-- ! Card Inserir Dados --}}
+                    <div id="dataCard" class="card-bg p-6 rounded-2xl shadow-2xl dark:bg-zinc-900">
                         <div class="flex items-center gap-3 mb-6">
                             <span
                                 class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
                             <h2 class="font-semibold text-lg">Inserir Dados</h2>
                         </div>
 
-                        <div class="space-y-4">
+
+                        <div class="relative w-64 bg-zinc-800 rounded-xl p-1 w-full flex mb-2 gap-2">
+
+
+                            <button id="tabIndividualBtn" type="button"
+                                class="flex-1 py-2 font-semibold bg-blue-500 rounded-xl text-white transition-all duration-500 ease-in-out">
+                                Individual
+                            </button>
+                            <button id="tabBulkBtn" type="button"
+                                class="flex-1 peer/tab2 py-2 font-semibold rounded-xl border-transparent text-gray-500 transition-all duration-500 ease-in-out">
+                                Em massa
+                            </button>
+                        </div>
+
+
+                        {{-- ? Card Individual --}}
+                        <div id="individualTab" class="space-y-4">
                             <input id="nameInput" type="text" placeholder="Digite o nome completo"
                                 class="w-full dark:bg-[#0a1120] border border-slate-700 rounded-xl px-4 py-3 text-sm">
                             <input id="teamInput" type="text" placeholder="Digite a equipe"
-                                class="w-full dark:bg-[#0a1120] border border-slate-700 rounded-xl px-4 py-3 text-sm">
+                                class="w-full dark:bg-[#0a1120] border border-slate-700 rounded-xl px-4 py-3 text-sm transition-opacity duration-200"
+                                disabled>
                             <label class="flex items-center gap-2 text-sm text-slate-300">
                                 <input id="includeTeamCheckbox" type="checkbox" class="rounded border-slate-600"
                                     checked>
@@ -80,16 +104,59 @@
                             </label>
 
                             <button id="generateBadgeBtn" type="button"
-                                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl px-4 py-3">
+                                class="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-xl px-4 py-3">
                                 Gerar Crachá
                             </button>
                             <button id="exportPngBtn" type="button"
-                                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl px-4 py-3">
+                                class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-xl px-4 py-3">
                                 Exportar PNG
                             </button>
 
-                            <button id="resetAllBtn" type="button"
-                                class="w-full border border-slate-600 hover:bg-slate-300 dark:hover:bg-slate-800 text-zinc-900 dark:text-slate-200 font-medium rounded-xl px-4 py-3">
+                            <button id="resetBtnIndividual" type="button"
+                                class="w-full border border-slate-600 hover:bg-slate-300 dark:hover:bg-slate-800 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed text-zinc-900 dark:text-slate-200 font-medium rounded-xl px-4 py-3">
+                                Recomeçar do Zero
+                            </button>
+                        </div>
+
+                        {{-- ? Card em Massa --}}
+                        <div id="bulkTab" class="space-y-4 hidden">
+                            {{-- Form --}}
+                            <div class=" mx-auto space-y-4">
+                                <div class="mx-auto space-y-4">
+                                    <input id="nameInputBulk" type="text" placeholder="Digite o nome completo"
+                                        class="w-full dark:bg-[#0a1120] border border-slate-700 rounded-xl px-4 py-3 text-sm">
+                                    <input id="teamInputBulk" type="text" placeholder="Digite a equipe"
+                                        class="w-full dark:bg-[#0a1120] border border-slate-700 rounded-xl px-4 py-3 text-sm transition-opacity duration-200"
+                                        disabled>
+                                    <label class="flex items-center gap-2 text-sm text-slate-300">
+                                        <input id="includeTeamCheckboxBulk" type="checkbox"
+                                            class="rounded border-slate-600" checked>
+                                        Incluir equipe no crachá
+                                    </label>
+                                </div>
+
+                                <button id="addToListBtn" type="button">
+                                    Adicionar
+                                </button>
+                                {{-- Lista --}}
+
+                                <ul id="badgeList" class="mt-4 space-y-2 max-h-60 overflow-y-auto"></ul>
+
+                            </div>
+
+
+
+                            <button id="generateBadgeBtnBulk" type="button"
+                                class="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-xl px-4 py-3">
+                                Gerar Crachás
+                            </button>
+                            <button id="exportPngBtnBulk" type="button"
+                                class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-xl px-4 py-3">
+                                Exportar PNG.zip
+                            </button>
+
+                            <button id="resetBtnBulk" type="button"
+                                class="w-full border border-slate-600 hover:bg-slate-300 dark:hover:bg-slate-800 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed text-zinc-900 dark:text-slate-200 font-medium rounded-xl px-4 py-3">
                                 Recomeçar do Zero
                             </button>
                         </div>
@@ -113,10 +180,34 @@
                                 </label>
 
                                 <img id="templateImage" class="hidden w-full h-auto select-none" alt="Template">
-                                <canvas id="previewCanvas" class="hidden w-full h-auto"></canvas>
-
                                 <div id="areaLayer" class="absolute inset-0 pointer-events-none"></div>
                                 <div id="pointsLayer" class="absolute inset-0 pointer-events-none"></div>
+                                <canvas id="previewCanvas" class="hidden w-full h-auto"></canvas>
+
+                                <div id="bulkNavigation"
+                                    class="hidden absolute inset-y-0 left-0 right-0 z-30 flex items-center justify-between px-3 pointer-events-none">
+                                    <button id="btnPrevBulk" type="button"
+                                        class="pointer-events-auto rounded-full bg-slate-900/70 text-white px-3 py-2 hover:bg-slate-800">
+                                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
+                                    </button>
+                                    <span id="bilkPreviewCounter"
+                                        class="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-md bg-slate-900/70 text-white text-xs px-2 py-1">
+                                        1 de 1
+                                    </span>
+                                    <button id="btnNextBulk" type="button"
+                                        class="pointer-events-auto rounded-full bg-slate-900/70 text-white px-3 py-2 hover:bg-slate-800">
+                                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -126,7 +217,7 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Inicializa ícones do Lucide, se a lib estiver disponível na página.
+                // Inicializa ÃƒÂ­cones do Lucide, se a lib estiver disponÃƒÂ­vel na pÃƒÂ¡gina.
                 if (window.lucide && typeof window.lucide.createIcons === 'function') {
                     window.lucide.createIcons();
                 }
@@ -138,36 +229,64 @@
                         w: 0, // Largura real da imagem.
                         h: 0 // Altura real da imagem.
                     },
-                    activePoint: null, // Qual ponto (1..4) está selecionado para receber o próximo clique.
+                    activePoint: null, // Qual ponto (1..4) estÃƒÂ¡ selecionado para receber o prÃƒÂ³ximo clique.
                     points: {
                         topRight: null, // Coordenada do ponto 1.
                         topLeft: null, // Coordenada do ponto 2.
                         bottomRight: null, // Coordenada do ponto 3.
                         bottomLeft: null, // Coordenada do ponto 4.
                     },
-                    name: '', // Texto do nome a ser desenhado no crachá.
-                    team: '', // Texto da equipe a ser desenhado no crachá.
-                    previewMode: false, // true quando o canvas final já foi gerado.
+                    name: '', // Texto do nome a ser desenhado no crachÃƒÂ¡.
+                    team: '', // Texto da equipe a ser desenhado no crachÃƒÂ¡.
+                    previewMode: false, // true quando o canvas final jÃƒÂ¡ foi gerado.
                 };
 
-                // Referências dos elementos DOM usados pelo fluxo.
+                // ReferÃƒÂªncias dos elementos DOM usados pelo fluxo.
                 const templateInput = document.getElementById('templateInput'); // Input file do modelo.
                 const templateImage = document.getElementById('templateImage'); // <img> para exibir o modelo.
-                const uploadLabel = document.getElementById('uploadLabel'); // Área clicável de upload (placeholder).
+                const uploadLabel = document.getElementById(
+                    'uploadLabel'); // ÃƒÂrea clicÃƒÂ¡vel de upload (placeholder).
                 const canvasContainer = document.getElementById(
                     'canvasContainer'); // Container para captar clique de ponto.
                 const previewCanvas = document.getElementById('previewCanvas'); // Canvas final com nome/equipe.
                 const areaLayer = document.getElementById(
-                    'areaLayer'); // Camada SVG para desenhar o polígono dos 4 pontos.
+                    'areaLayer'); // Camada SVG para desenhar o polÃƒÂ­gono dos 4 pontos.
                 const pointsLayer = document.getElementById('pointsLayer'); // Camada de bolinhas numeradas dos pontos.
                 const nameInput = document.getElementById('nameInput'); // Input de nome.
                 const teamInput = document.getElementById('teamInput'); // Input de equipe.
-                const generateBadgeBtn = document.getElementById('generateBadgeBtn'); // Botão "Gerar Crachá".
-                const pointCards = document.querySelectorAll('.point-card'); // Cards laterais de seleção de ponto.
-                const exportPngBtn = document.getElementById('exportPngBtn'); // Botão de exportar PNG.
-                const resetAllBtn = document.getElementById('resetAllBtn'); // Botão de reset total.
+                const nameInputBulk = document.getElementById('nameInputBulk'); // Input de nome em massa
+                const teamInputBulk = document.getElementById('teamInputBulk'); // Input de equipe em massa
+
+                const generateBadgeBtn = document.getElementById('generateBadgeBtn'); // BotÃƒÂ£o "Gerar CrachÃƒÂ¡".
+                const generateBadgeBtnBulk = document.getElementById(
+                    'generateBadgeBtnBulk'); // BotÃƒÂ£o "Gerar CrachÃƒÂ¡" em massa.
+                const pointCards = document.querySelectorAll(
+                    '.point-card'); // Cards laterais de seleÃƒÂ§ÃƒÂ£o de ponto.
+                const exportPngBtn = document.getElementById('exportPngBtn'); // BotÃƒÂ£o de exportar PNG.
+                const exportPngBtnBulk = document.getElementById('exportPngBtnBulk'); // BotÃƒÂ£o de exportar PNG
+                const resetIndividualBtn = document.getElementById('resetBtnIndividual'); // BotÃƒÂ£o de reset total.
+                const resetBulkBtn = document.getElementById('resetBtnBulk'); // BotÃƒÂ£o de reset total em massa.
                 const includeTeamCheckbox = document.getElementById(
-                'includeTeamCheckbox'); // Checkbox para incluir equipe.
+                    'includeTeamCheckbox'); // Checkbox para incluir equipe.
+                const includeTeamCheckboxBulk = document.getElementById(
+                    'includeTeamCheckboxBulk'); // Checkbox para incluir equipe em massa.
+                const dataCard = document.getElementById('dataCard'); // Card de dados.
+                const individualTab = document.getElementById('individualTab'); // Card individual
+                const bulkTab = document.getElementById('bulkTab'); // Card em massa
+                const btnIndividualTab = document.getElementById('tabIndividualBtn'); // Botão tab individual
+                const btnBulkTab = document.getElementById('tabBulkBtn'); // Botão
+                const addToListBtn = document.getElementById('addToListBtn'); // Botão adicionar à lista
+                const badgeList = document.getElementById('badgeList'); // Lista de crachás em massa
+                const btnPrevBulk = document.getElementById('btnPrevBulk'); // Botão anterior em massa
+                const btnNextBulk = document.getElementById('btnNextBulk'); // Botão próximo em massa
+                const bilkPreviewCounter = document.getElementById(
+                    'bilkPreviewCounter'); // Contador de páginas em massa
+                const bulkNavigation = document.getElementById('bulkNavigation'); // Barra de navegação em massa
+
+
+                let items = [];
+                let editingIndex = null;
+                let currentBulkPreviewIndex = 0;
 
                 // Rótulo visual (número) de cada ponto.
                 const pointLabels = {
@@ -177,12 +296,18 @@
                     bottomLeft: '4'
                 };
 
-                // Retorna true quando os 4 pontos já foram definidos.
+                //  Retorna true quando os 4 pontos jÃƒÂ¡ foram definidos.
+                // ======================================================
+                // ======================================================
+                // ======================================================
+                // ======================================================
+                // ======================================================
                 function allPointsSet() {
-                    return Object.values(state.points).every(Boolean);
+                    // return Object.values(state.points).every(Boolean);
+                    return true;
                 }
 
-                // Desenha o polígono tracejado da área de impressão quando os 4 pontos existem.
+                // Desenha o polÃƒÂ­gono tracejado da ÃƒÂ¡rea de impressÃƒÂ£o quando os 4 pontos existem.
                 function renderAreaOverlay() {
                     areaLayer.innerHTML = '';
                     if (!state.imageObj || !allPointsSet() || state.previewMode) return;
@@ -205,10 +330,10 @@
                     svg.appendChild(polygon);
                     areaLayer.appendChild(svg);
 
-                    console.log('[area] polígono desenhado');
+                    console.log('[area] polÃƒÂ­gono desenhado');
                 }
 
-                // Desenha as bolinhas dos pontos já marcados e atualiza o overlay da área.
+                // Desenha as bolinhas dos pontos jÃƒÂ¡ marcados e atualiza o overlay da ÃƒÂ¡rea.
                 function renderPoints() {
                     pointsLayer.innerHTML = '';
                     if (!state.imageObj || state.previewMode) return;
@@ -248,7 +373,110 @@
                     console.log('[pontos] renderPoints', state.points);
                 }
 
-                // Evento de upload da imagem base do crachá.
+                function switchTab(tab) {
+
+                    if (tab === 'individualTab') {
+                        individualTab.classList.remove('hidden');
+                        bulkTab.classList.add('hidden');
+
+                        btnIndividualTab.classList.add('bg-blue-500', 'text-white');
+                        btnIndividualTab.classList.remove('text-gray-500', 'border-transparent');
+                        btnBulkTab.classList.remove('bg-blue-500', 'text-white');
+                        btnBulkTab.classList.add('text-gray-500', 'border-transparent');
+
+                    } else {
+                        individualTab.classList.add('hidden');
+                        bulkTab.classList.remove('hidden');
+
+                        btnBulkTab.classList.add('bg-blue-500', 'text-white');
+                        btnBulkTab.classList.remove('text-gray-500', 'border-transparent');
+                        btnIndividualTab.classList.remove('bg-blue-500', 'text-white');
+                        btnIndividualTab.classList.add('text-gray-500', 'border-transparent');
+                    }
+
+                }
+
+                function renderList() {
+                    badgeList.innerHTML = '';
+
+                    items.forEach((item, index) => {
+                        const li = document.createElement("li");
+                        li.className =
+                            "flex items-center justify-between bg-zinc-800 rounded-xl px-4 py-2 text-sm";
+
+                        li.innerHTML = `
+                            <div>
+                                <p class="text-white font-semibold">${item.name}</p>
+                                <p class="text-gray-400 text-sm">${item.team}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button data-edit="${index}"
+                                    class="px-2 py-1 bg-yellow-500 text-white rounded">
+                                Editar
+                                </button>
+                                <button data-delete="${index}"
+                                    class="px-2 py-1 bg-red-500 text-white rounded">
+                                Deletar
+                                </button>
+                            </div>
+                        `;
+
+                        badgeList.appendChild(li);
+                    });
+                };
+
+                addToListBtn.addEventListener("click", () => {
+                    const name = nameInputBulk.value.trim();
+                    const team = teamInputBulk.value.trim();
+                    const includeTeamBulk = includeTeamCheckboxBulk?.checked;
+
+                    if (!name || (includeTeamBulk && !team)) return;
+
+                    if (editingIndex !== null) {
+                        items[editingIndex] = {
+                            name,
+                            team
+                        };
+                        editingIndex = null;
+                        addToListBtn.textContent = "Adicionar";
+                    } else {
+                        items.push({
+                            name,
+                            team
+                        });
+                    }
+
+
+                    nameInputBulk.value = "";
+                    teamInputBulk.value = "";
+                    renderList();
+                });
+
+                function deleteItem(index) {
+                    items.splice(index, 1);
+                    renderList();
+                }
+
+                function editItem(index) {
+                    nameInputBulk.value = items[index].name;
+                    teamInputBulk.value = items[index].team;
+                    editingIndex = index;
+                    addToListBtn.textContent = "Salvar";
+                }
+
+                badgeList.addEventListener('click', function(e) {
+                    const editIndex = e.target.getAttribute('data-edit');
+                    const deleteIndex = e.target.getAttribute('data-delete');
+
+                    if (editIndex !== null) {
+                        editItem(Number(editIndex));
+                    }
+                    if (deleteIndex !== null) {
+                        deleteItem(Number(deleteIndex));
+                    }
+                });
+
+                // Evento de upload da imagem base do crachÃƒÂ¡.
                 templateInput?.addEventListener('change', function(e) {
                     const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
                     console.log('[upload] change', file ? {
@@ -258,7 +486,7 @@
                     } : 'sem arquivo');
                     if (!file) return;
 
-                    const reader = new FileReader(); // Lê arquivo local para DataURL.
+                    const reader = new FileReader(); // LÃƒÂª arquivo local para DataURL.
                     reader.onload = function(ev) {
                         const dataUrl = ev.target && ev.target.result ? ev.target.result : null;
                         console.log('[upload] FileReader.onload', {
@@ -266,7 +494,8 @@
                         });
                         if (!dataUrl || typeof dataUrl !== 'string') return;
 
-                        const img = new Image(); // Cria imagem em memória para obter dimensões naturais.
+                        const img =
+                            new Image(); // Cria imagem em memÃƒÂ³ria para obter dimensÃƒÂµes naturais.
                         img.onload = function() {
                             state.imageObj = img;
                             state.imageNatural = {
@@ -282,6 +511,7 @@
                             uploadLabel.classList.add('hidden');
 
                             renderPoints();
+                            syncDataCardState();
                             console.log('[upload] imagem carregada', state.imageNatural);
                         };
                         img.onerror = function(err) {
@@ -342,6 +572,7 @@
                     state.activePoint = null;
                     pointCards.forEach((c) => c.classList.remove('ring-2', 'ring-blue-500'));
                     renderPoints();
+                    syncDataCardState();
                 });
 
                 // Captura texto do nome em tempo real.
@@ -356,30 +587,110 @@
                     console.log('[input] team', state.team);
                 });
 
-                // Ajusta dinamicamente tamanho da fonte para caber na largura disponível.
-                function findOptimalFontSize(ctx, text, maxWidth, start, min = 12) {
-                    let size = start;
-                    ctx.font = `bold ${size}px Inter, sans-serif`;
-                    while (ctx.measureText(text).width > maxWidth && size > min) {
-                        size -= 1;
-                        ctx.font = `bold ${size}px Inter, sans-serif`;
+                function syncTeamInputState() {
+                    const includeTeam = includeTeamCheckbox?.checked;
+                    teamInput.disabled = !includeTeam;
+
+                    if (!includeTeam) {
+                        teamInput.value = '';
+                        state.team = '';
+                        teamInput.classList.add('opacity-50', 'cursor-not-allowed');
+                        teamInput.classList.remove('opacity-100', 'cursor-text');
+                    } else {
+                        teamInput.classList.remove('opacity-50', 'cursor-not-allowed');
+                        teamInput.classList.add('opacity-100', 'cursor-text');
                     }
-                    return size;
                 }
 
-                // Gera o crachá final no canvas com nome/equipe dentro da área dos 4 pontos.
-                function drawBadge() {
+                function syncDataCardState() {
+                    const enabled = allPointsSet();
+                    const controls = [
+                        nameInput,
+                        teamInput,
+                        includeTeamCheckbox,
+                        generateBadgeBtn,
+                        exportPngBtn,
+                        resetIndividualBtn,
+                    ];
+
+                    controls.forEach((el) => {
+                        if (!el) return;
+                        el.disabled = !enabled;
+                    });
+
+                    if (!enabled) {
+                        dataCard.classList.add('opacity-50', 'cursor-not-allowed', );
+                        dataCard.classList.remove('opacity-100', 'cursor-text');
+                    } else {
+                        dataCard.classList.remove('opacity-50', 'cursor-not-allowed', );
+                        dataCard.classList.add('opacity-100', 'cursor-text');
+                        syncTeamInputState();
+                    }
+                }
+
+                includeTeamCheckbox?.addEventListener('change', function() {
+                    syncTeamInputState();
+                });
+
+                function syncTeamInputStateBulk() {
+                    const includeTeamBulk = includeTeamCheckboxBulk?.checked;
+                    teamInputBulk.disabled = !includeTeamBulk;
+
+                    if (!includeTeamBulk) {
+                        teamInputBulk.value = '';
+                        teamInputBulk.classList.add('opacity-50', 'cursor-not-allowed');
+                        teamInputBulk.classList.remove('opacity-100', 'cursor-text');
+                    } else {
+                        teamInputBulk.classList.remove('opacity-50', 'cursor-not-allowed');
+                        teamInputBulk.classList.add('opacity-100', 'cursor-text');
+                    }
+                }
+
+                includeTeamCheckboxBulk?.addEventListener('change', function() {
+                    syncTeamInputStateBulk();
+                });
+
+
+                // Ajusta dinamicamente tamanho da fonte para caber na largura disponÃƒÂ­vel.
+                let customNameFontSize = null;
+
+                // Ajusta dinamicamente tamanho da fonte para caber na largura disponÃƒÂ­vel.
+                function findOptimalFontSize(ctx, text, maxWidth, min = 12, max = 220) {
+                    if (!text || !text.trim()) return min;
+
+                    let low = min;
+                    let high = max;
+                    let best = min;
+
+                    while (low <= high) {
+                        const mid = Math.floor((low + high) / 2);
+                        ctx.font = `bold ${mid}px Inter, sans-serif`;
+                        const w = ctx.measureText(text).width;
+
+                        if (w <= maxWidth) {
+                            best = mid;
+                            low = mid + 1;
+                        } else {
+                            high = mid - 1;
+                        }
+                    }
+
+                    return best;
+                }
+
+                function buildBadgeCanvas(nameValue, teamValue, includeTeamValue) {
                     if (!state.imageObj || !allPointsSet()) {
                         console.log('[gerar] faltando imagem ou 4 pontos');
                         return;
                     }
 
-                    const ctx = previewCanvas.getContext('2d'); // Contexto 2D do canvas de saída.
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
                     const w = state.imageNatural.w;
                     const h = state.imageNatural.h;
 
-                    previewCanvas.width = w;
-                    previewCanvas.height = h;
+                    canvas.width = w;
+                    canvas.height = h;
                     ctx.clearRect(0, 0, w, h);
                     ctx.drawImage(state.imageObj, 0, 0);
 
@@ -401,12 +712,21 @@
                     const padding = areaWidth * 0.05;
                     const maxTextWidth = areaWidth - (padding * 2);
 
-                    const name = state.name || 'Nome';
-                    const team = state.team || 'Equipe';
-                    const includeTeam = includeTeamCheckbox?.checked;
+                    const name = nameValue || 'Nome';
+                    const team = teamValue || 'Equipe';
+                    const includeTeam = !!includeTeamValue;
 
-                    const initialNameSize = Math.max(24, Math.min(areaHeight * 0.25, areaWidth * 0.1));
-                    const nameFontSize = findOptimalFontSize(ctx, name, maxTextWidth, initialNameSize, 14);
+                    const maxNameFontSize = includeTeam ?
+                        Math.floor(areaHeight * 0.42) :
+                        Math.floor(areaHeight * 0.70);
+                    const autoNameFontSize = findOptimalFontSize(
+                        ctx,
+                        name,
+                        maxTextWidth,
+                        14,
+                        maxNameFontSize
+                    );
+                    const nameFontSize = customNameFontSize ?? autoNameFontSize;
 
 
                     ctx.textAlign = 'center';
@@ -414,8 +734,46 @@
                     ctx.fillStyle = '#000';
                     ctx.font = `bold ${nameFontSize}px Inter, sans-serif`;
 
-                    if (!includeTeam) { // só nome
-                        ctx.fillText(name, centerX, centerY);
+                    if (!includeTeam) { // sÃ³ nome, com quebra em atÃ© 2 linhas
+                        const words = name.trim().split(/\s+/);
+                        let line1 = name;
+                        let line2 = '';
+
+                        if (words.length > 1) { //  sÃ³ tenta quebrar se existir mais de uma palavra.
+                            let bestLine1 = name;
+                            let bestLine2 = '';
+
+                            for (let i = 1; i < words.length; i++) {
+                                const test1 = words.slice(0, i).join(' ');
+                                const text2 = words.slice(i).join(' ');
+
+                                const w1 = ctx.measureText(test1).width;
+                                const w2 = ctx.measureText(text2).width;
+
+                                if (w1 <= maxTextWidth && w2 <= maxTextWidth) {
+                                    bestLine1 = test1;
+                                    bestLine2 = text2;
+                                };
+                            };
+
+                            line1 = bestLine1;
+                            line2 = bestLine2;
+                        };
+
+                        if (line2) {
+                            const lineHeight = nameFontSize * 1.1;
+                            const y1 = centerY - (lineHeight / 2);
+                            const y2 = centerY + (lineHeight / 2);
+                            ctx.fillText(line1, centerX, y1);
+                            ctx.fillText(line2, centerX, y2);
+                        } else {
+
+                            ctx.fillText(name, centerX, centerY);
+                        }
+
+
+
+
                     } else { // Nome e equipe
                         const teamFontSize = Math.max(10, nameFontSize - 10);
                         const totalTextHeight = nameFontSize + teamFontSize + 8;
@@ -429,28 +787,124 @@
                         ctx.fillText(team, centerX, teamY);
                     }
 
+                    return canvas;
+                }
+
+
+                // Gera o crachÃƒÂ¡ final no canvas com nome/equipe dentro da ÃƒÂ¡rea dos 4 pontos.
+                function drawBadge() {
+                    const canvas = buildBadgeCanvas(
+                        state.name || 'Nome',
+                        state.team || 'Equipe',
+                        includeTeamCheckbox?.checked
+                    )
+                    if (!canvas) return;
+
+
+                    previewCanvas.width = canvas.width;
+                    previewCanvas.height = canvas.height;
+                    const previewCtx = previewCanvas.getContext('2d');
+                    previewCtx.clearRect(0, 0, canvas.width, canvas.height);
+                    previewCtx.drawImage(canvas, 0, 0);
+
+
+
                     state.previewMode = true;
                     templateImage.classList.add('hidden');
                     previewCanvas.classList.remove('hidden');
                     pointsLayer.innerHTML = '';
                     areaLayer.innerHTML = '';
 
-                    console.log('[gerar] crachá gerado com sucesso');
+                    console.log('[gerar] crachÃƒÂ¡ gerado com sucesso');
                 }
+
+                function generateBulkPngs() {
+                    if (!items.length) return;
+
+                    const includeTeamBulk = includeTeamCheckboxBulk?.checked;
+
+                    items.forEach((item, index) => {
+                        const canvas = buildBadgeCanvas(item.name, item.team || '', includeTeamBulk);
+                        if (!canvas) return;
+
+                        const link = document.createElement('a');
+                        const safe = (item.name || `item-${index+1}`).trim().toLowerCase().replace(/\s+/g, '-');
+                        link.download = `cracha-${String(index + 1).padStart(3, '0')}-${safe}.png`;
+                        link.href = canvas.toDataURL('image/png');
+
+                        setTimeout(() => link.click(), index * 120);
+
+
+                    })
+                }
+
+                function drawBulkPreview(index) {
+                    if (!items.length) return;
+                    if (!state.imageObj || !allPointsSet()) return;
+
+                    const item = items[index];
+                    if (!item) return;
+
+                    const canvas = buildBadgeCanvas(
+                        item.name,
+                        item.team || '',
+                        includeTeamCheckboxBulk?.checked
+                    );
+
+                    if (!canvas) return;
+
+                    previewCanvas.width = canvas.width;
+                    previewCanvas.height = canvas.height;
+
+                    const ctx = previewCanvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(canvas, 0, 0);
+
+                    bilkPreviewCounter.textContent = `${index + 1} de ${items.length}`;
+                    bulkNavigation.classList.remove('hidden');
+
+                    state.previewMode = true;
+                    templateImage.classList.add('hidden');
+                    previewCanvas.classList.remove('hidden');
+                    canvasContainer.classList.remove('border-0')
+                    canvasContainer.classList.add('border-transparent')
+                    pointsLayer.innerHTML = '';
+                    areaLayer.innerHTML = '';
+                    state.previewMode = true;
+
+
+                }
+
+                function goToNextBulkPreview() {
+                    if (!items.length) return;
+
+                    currentBulkPreviewIndex = (currentBulkPreviewIndex + 1) % items.length;
+
+                    drawBulkPreview(currentBulkPreviewIndex);
+                }
+
+                function goToPrevBulkPreview() {
+                    if (!items.length) return;
+
+                    currentBulkPreviewIndex = (currentBulkPreviewIndex - 1 + items.length) % items.length;
+
+                    drawBulkPreview(currentBulkPreviewIndex);
+                }
+
 
                 // Exporta o canvas final em arquivo PNG.
                 function handleExportPng() {
-                    // Se ainda não estiver em preview, tenta gerar primeiro.
+                    // Se ainda nÃƒÂ£o estiver em preview, tenta gerar primeiro.
                     if (!state.previewMode) {
                         drawBadge();
                     }
 
                     if (!previewCanvas || previewCanvas.classList.contains('hidden')) {
-                        console.log('[export] preview indisponível');
+                        console.log('[export] preview indisponÃƒÂ­vel');
                         return;
                     }
 
-                    const link = document.createElement('a'); // Link temporário para forçar download.
+                    const link = document.createElement('a'); // Link temporÃƒÂ¡rio para forÃƒÂ§ar download.
                     const safeName = (state.name || 'badge').trim().toLowerCase().replace(/\s+/g, '-');
                     link.download = `cracha-${safeName}.png`;
                     link.href = previewCanvas.toDataURL('image/png');
@@ -460,7 +914,7 @@
                 }
 
                 // Reseta completamente a tela: modelo, pontos, inputs e preview.
-                function handleResetAll() {
+                function handleResetIndividual() {
                     // modelo
                     state.imageObj = null;
                     state.imageNatural = {
@@ -499,13 +953,89 @@
                     // Limpa input file para aceitar selecionar o mesmo arquivo novamente.
                     if (templateInput) templateInput.value = '';
 
+                    includeTeamCheckbox.checked = true;
+                    syncTeamInputState();
+                    syncDataCardState();
+
                     console.log('[reset] modelo e pontos removidos');
                 }
 
-                // Liga os botões às funções de ação.
+                function handleResetBulk() {
+                    // modelo
+                    state.imageObj = null;
+                    state.imageNatural = {
+                        w: 0,
+                        h: 0
+                    };
+
+                    // pontos
+                    state.points = {
+                        topRight: null,
+                        topLeft: null,
+                        bottomRight: null,
+                        bottomLeft: null,
+                    };
+                    state.activePoint = null;
+
+                    // dados
+                    state.name = '';
+                    state.team = '';
+                    state.previewMode = false;
+
+                    // UI
+                    templateImage.removeAttribute('src');
+                    templateImage.classList.add('hidden');
+                    previewCanvas.classList.add('hidden');
+                    uploadLabel.classList.remove('hidden');
+
+                    areaLayer.innerHTML = '';
+                    pointsLayer.innerHTML = '';
+
+                    items = [];
+                    editingIndex = null;
+                    badgeList.innerHTML = '';
+                    nameInputBulk.value = '';
+                    teamInputBulk.value = '';
+
+                    pointCards.forEach((c) => c.classList.remove('ring-2', 'ring-blue-500'));
+
+                    // Limpa input file para aceitar selecionar o mesmo arquivo novamente.
+                    if (templateInput) templateInput.value = '';
+
+                    includeTeamCheckboxBulk.checked = true;
+                    bulkNavigation.classList.add('hidden');
+                    canvasContainer.classList.add('border-o')
+                    canvasContainer.classList.remove('border-transparent')
+                    syncTeamInputStateBulk();
+                    syncDataCardState();
+
+                    console.log('[reset] modelo e pontos removidos');
+                }
+
+                // Liga os botÃƒÂµes ÃƒÂ s funÃƒÂ§ÃƒÂµes de aÃƒÂ§ÃƒÂ£o.
+                btnIndividualTab?.addEventListener('click', () => switchTab('individualTab'));
+                btnBulkTab?.addEventListener('click', () => switchTab('bulkTab'));
                 exportPngBtn?.addEventListener('click', handleExportPng);
-                resetAllBtn?.addEventListener('click', handleResetAll);
+                resetIndividualBtn?.addEventListener('click', handleResetIndividual);
                 generateBadgeBtn?.addEventListener('click', drawBadge);
+
+                // BULK
+                exportPngBtnBulk?.addEventListener('click', generateBulkPngs);
+                resetBulkBtn?.addEventListener('click', handleResetBulk);
+                generateBadgeBtnBulk?.addEventListener('click', function() {
+                    if (!items.length) return;
+                    currentBulkPreviewIndex = 0;
+                    drawBulkPreview(currentBulkPreviewIndex);
+                });
+
+                btnNextBulk?.addEventListener('click', goToNextBulkPreview);
+                btnPrevBulk?.addEventListener('click', goToPrevBulkPreview);
+
+
+
+
+                syncDataCardState();
+                syncTeamInputStateBulk();
             });
         </script>
     </section>
