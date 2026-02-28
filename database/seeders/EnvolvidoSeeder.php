@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Evento;
+use App\Models\Gamificacao;
 use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\Presenca;
@@ -31,5 +32,6 @@ class EnvolvidoSeeder extends Seeder
         Presenca::factory()->count(200)->create();
         Voluntario::factory()->count(200)->create();
         Trabalhador::factory()->count(200)->create();
+        Gamificacao::factory()->count(200)->create();
     }
 }

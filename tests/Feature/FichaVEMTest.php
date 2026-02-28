@@ -95,7 +95,7 @@ describe('FichaVemController', function () {
 
         $ficha = Ficha::latest('idt_ficha')->first();
 
-        //expect($ficha)->not->toBeNull();
+        // expect($ficha)->not->toBeNull();
         expect($ficha->fichaSaude)->toHaveCount(1);
     });
 

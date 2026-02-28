@@ -173,6 +173,7 @@ class TrabalhadorController extends Controller
                 'erros' => $e->errors(),
                 'duration_ms' => $duration,
             ]));
+
             return back()->withErrors([
                 'equipes' => $e->getMessage(),
             ])->withInput();
@@ -195,7 +196,7 @@ class TrabalhadorController extends Controller
         $eventoId = $request->get('evento');
 
         Log::info('Acesso à tela de montagem de equipes', array_merge($context, [
-            'evento_id' => $eventoId
+            'evento_id' => $eventoId,
         ]));
 
         $evento = $eventoId ? Evento::find($eventoId) : null;
@@ -206,8 +207,8 @@ class TrabalhadorController extends Controller
 
         $equipes = $evento
             ? TipoEquipe::select('idt_equipe', 'des_grupo')
-            ->where('idt_movimento', $evento->idt_movimento)
-            ->get()
+                ->where('idt_movimento', $evento->idt_movimento)
+                ->get()
             : collect();
 
         $duration = round((microtime(true) - $start) * 1000, 2);
@@ -285,7 +286,7 @@ class TrabalhadorController extends Controller
 
             // Agrupa por equipe e ordena coordenadores no topo
             $trabalhadoresPorEquipe = $trabalhadores
-                ->groupBy(fn($t) => $t->equipe->des_grupo)
+                ->groupBy(fn ($t) => $t->equipe->des_grupo)
                 ->map(function (Collection $grupo) {
                     return $grupo->sortByDesc('ind_coordenador')->values();
                 });
@@ -353,9 +354,9 @@ class TrabalhadorController extends Controller
 
         $trabalhador = Trabalhador::find($dados['idt_trabalhador']);
 
-        if (!$trabalhador) {
+        if (! $trabalhador) {
             return redirect()->back()->withErrors([
-                'idt_trabalhador' => 'Trabalhador não encontrado.'
+                'idt_trabalhador' => 'Trabalhador não encontrado.',
             ]);
         }
 

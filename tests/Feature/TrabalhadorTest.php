@@ -2,14 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\{
-    Pessoa,
-    Voluntario,
-    Evento,
-    TipoEquipe,
-    Trabalhador,
-    User
-};
+use App\Models\Evento;
+use App\Models\Pessoa;
+use App\Models\TipoEquipe;
+use App\Models\Trabalhador;
+use App\Models\User;
+use App\Models\Voluntario;
 use App\Services\VoluntarioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
@@ -37,7 +35,7 @@ beforeEach(function () {
     $this->equipe4 = TipoEquipe::factory()->create(['idt_movimento' => $this->evento->idt_movimento]);
 });
 
-afterEach(fn() => Mockery::close());
+afterEach(fn () => Mockery::close());
 
 function makeValidPayload($overrides = [])
 {
@@ -106,7 +104,7 @@ describe('TrabalhadorController::index', function () {
 describe('Candidatura', function () {
 
     test('usuario se candidata com sucesso', function () {
-        $this->app->instance(VoluntarioService::class, new VoluntarioService());
+        $this->app->instance(VoluntarioService::class, new VoluntarioService);
 
         $payload = makeValidPayload();
 
@@ -149,7 +147,7 @@ describe('Candidatura', function () {
 describe('Confirmação', function () {
 
     test('admin confirma voluntario', function () {
-        $this->app->instance(VoluntarioService::class, new VoluntarioService());
+        $this->app->instance(VoluntarioService::class, new VoluntarioService);
 
         $vol1 = Voluntario::factory()->create([
             'idt_pessoa' => $this->pessoa->idt_pessoa,
@@ -182,7 +180,7 @@ describe('Confirmação', function () {
     });
 
     test('admin pode confirmar voluntario', function () {
-        $this->app->instance(VoluntarioService::class, new VoluntarioService());
+        $this->app->instance(VoluntarioService::class, new VoluntarioService);
 
         $vol = Voluntario::factory()->create([
             'idt_evento' => $this->evento->idt_evento,

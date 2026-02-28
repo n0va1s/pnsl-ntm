@@ -44,17 +44,11 @@ class PessoaController extends Controller
             'tel_pessoa',
             'eml_pessoa',
             'created_at'
-        )->with([
-            'foto' => function ($query) {
-                $query->select('idt_pessoa', 'caminho_foto');
-            },
-            'usuario' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'restricoes',
-            'parceiro',
-
-        ])
+        )
+            ->with([
+                'foto:idt_pessoa,med_foto',
+            ])
+            ->withExists('parceiro') // parceiro_exists
             ->when($search, function ($query, $search) {
                 return $query->searchByName($search);
             })
@@ -166,37 +160,41 @@ class PessoaController extends Controller
     {
         $start = microtime(true);
         $context = $this->getLogContext(request());
-        Log::info('Acesso ao formulário de edição de pessoa', array_merge($context, ['pessoa_id' => $id]));
 
-        $pessoa = Pessoa::with(['foto', 'usuario', 'restricoes'])->findOrFail($id);
+        // 1. Eager loading apenas com colunas essenciais
+        $pessoa = Pessoa::with([
+            'foto:idt_pessoa,med_foto',
+            'usuario:id,name',
+            'restricoes',
+        ])->findOrFail($id);
 
+        // 2. Busca de restrições (seletiva)
         $restricoes = TipoRestricao::select(
             'idt_restricao',
             'tip_restricao',
-            'des_restricao',
-            'txt_restricao'
+            'des_restricao'
+            // 'txt_restricao' -> Remova se não for usado no label/form
         )->get();
 
-        $pessoasDisponiveis = Pessoa::whereNull('idt_parceiro')
-            ->when($pessoa->idt_parceiro, function ($query) use ($pessoa) {
+        // 3. Otimização Crítica: Lista de parceiros usando pluck
+        // Isso evita hidratar milhares de modelos Pessoa na memória
+        $pessoasDisponiveis = Pessoa::where(function ($query) use ($pessoa) {
+            $query->whereNull('idt_parceiro');
+            if ($pessoa->idt_parceiro) {
                 $query->orWhere('idt_pessoa', $pessoa->idt_parceiro);
-            })
-            ->where('idt_pessoa', '!=', $pessoa->idt_pessoa) // Não pode ser parceira de si mesma
+            }
+        })
+            ->where('idt_pessoa', '!=', $pessoa->idt_pessoa)
             ->orderBy('nom_pessoa')
-            ->get();
+            ->pluck('nom_pessoa', 'idt_pessoa'); // Retorna [id => nome]
 
         $duration = round((microtime(true) - $start) * 1000, 2);
-        Log::notice('Dados obtidos', array_merge($context, [
-            'total_restricoes' => count($restricoes),
-            'total_pessoas_disponiveis' => $pessoasDisponiveis->count(),
+        Log::notice('Dados para edição obtidos', array_merge($context, [
+            'pessoa_id' => $id,
             'duration_ms' => $duration,
         ]));
 
-        return view('pessoa.form', [
-            'pessoa' => $pessoa,
-            'restricoes' => $restricoes,
-            'pessoasDisponiveis' => $pessoasDisponiveis,
-        ]);
+        return view('pessoa.form', compact('pessoa', 'restricoes', 'pessoasDisponiveis'));
     }
 
     public function update(PessoaRequest $request, $id): RedirectResponse

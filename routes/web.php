@@ -11,7 +11,6 @@ use App\Http\Controllers\FichaVemController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ParticipanteController;
 use App\Http\Controllers\PessoaController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TipoEquipeController;
 use App\Http\Controllers\TipoMovimentoController;
 use App\Http\Controllers\TipoPerfilController;
@@ -22,7 +21,6 @@ use App\Http\Controllers\TrabalhadorController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-
 Route::get(
     '/',
     [HomeController::class, 'index']
@@ -32,7 +30,6 @@ Route::post(
     '/',
     [HomeController::class, 'contato']
 )->name('home.contato');
-
 
 // Area Administrativa
 Route::middleware(['auth'])->group(function () {
@@ -171,4 +168,4 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

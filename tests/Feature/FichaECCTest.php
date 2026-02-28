@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Evento;
 use App\Models\Ficha;
 use App\Models\FichaEcc;
 use App\Models\TipoMovimento;

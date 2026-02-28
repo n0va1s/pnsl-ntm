@@ -90,7 +90,7 @@ class TipoEquipeController extends Controller
                 ->with('success', 'Tipo de equipe excluído com sucesso!');
         } catch (\Exception $e) {
             return redirect()->route('equipe.index')
-                ->with('error', 'Erro ao excluir tipo de equipe: ' . $e->getMessage());
+                ->with('error', 'Erro ao excluir tipo de equipe: '.$e->getMessage());
         }
     }
 }

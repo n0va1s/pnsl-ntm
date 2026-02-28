@@ -172,7 +172,6 @@ return new class extends Migration
         });
 
         // Tabela Trabalhador indica os encontros que a pessoa trabalhou ou coordenou
-        // Nao ha necessidade do trabalhador ter indicado as equipes que quer trabalhar
         Schema::create('trabalhador', function (Blueprint $table) {
             $table->id('idt_trabalhador');
             $table->foreignId('idt_pessoa')

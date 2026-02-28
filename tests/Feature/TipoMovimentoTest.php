@@ -60,7 +60,6 @@ test('nao pode criar um tipo de movimento sem a descricao', function () {
     // Se você não enviou dat_inicio, adicione-o também:
     // ->assertSessionHasErrors(['nom_movimento', 'des_sigla', 'dat_inicio']);
 
-
     $this->assertDatabaseCount('tipo_movimento', 0);
 });
 

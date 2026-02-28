@@ -1,7 +1,6 @@
 
 <?php
 
-use App\Models\TipoEquipe;
 use App\Models\TipoRestricao;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Unit\CrudBasic;

@@ -1,164 +1,106 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div class="flex flex-col gap-4 w-full max-w-7xl mx-auto px-4 py-6">
+    <div class="p-6 w-full max-w-7xl mx-auto space-y-8">
 
-        {{-- Linha 1 - 4 colunas --}}
-        <div class="grid gap-4 md:grid-cols-4">
-            <div
-                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
-                <div class="text-center space-y-3">
-                    <div class="flex items-center justify-center gap-2">
-                        <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300">Total de Eventos</h3>
-                        <x-heroicon-o-calendar class="w-5 h-5 text-blue-600" />
-                    </div>
-                    <p class="text-4xl font-bold text-gray-900 dark:text-white">{{ $qtdEventosAtivos }}</p>
-                    <div class="flex items-center justify-center text-sm text-green-600 dark:text-green-400 gap-1">
-                        <span class="text-gray-500 dark:text-gray-400">eventos próximos</span>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
-                <div class="text-center space-y-3">
-                    <div class="flex items-center justify-center gap-2">
-                        <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300">Total de Fichas</h3>
-                        <x-heroicon-o-clipboard-document class="w-5 h-5 text-yellow-500" />
-                    </div>
-                    <p class="text-4xl font-bold text-gray-900 dark:text-white">{{ $qtdFichasCadastradas }}</p>
-                    <div class="flex items-center justify-center text-sm text-green-600 dark:text-green-400 gap-1">
-                        <span class="text-gray-500 dark:text-gray-400">fichas cadastradas</span>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
-                <div class="text-center space-y-3">
-                    <div class="flex items-center justify-center gap-2">
-                        <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300">Total de Participantes</h3>
-                        <x-heroicon-o-users class="w-5 h-5 text-green-600" />
-                    </div>
-                    <p class="text-4xl font-bold text-gray-900 dark:text-white">{{ $qtdParticipantesCadastrados }}</p>
-                    <div class="flex items-center justify-center text-sm text-green-600 dark:text-green-400 gap-1">
-                        <span class="text-gray-500 dark:text-gray-400">participantes cadastrados</span>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="flex items-center justify-center rounded-xl bg-white p-4 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
-                <div class="text-center space-y-3">
-                    <div class="flex items-center justify-center gap-2">
-                        <h3 class="text-sm font-medium text-gray-600 dark:text-gray-300">Total de Trabalhadores</h3>
-                        <x-heroicon-o-briefcase class="w-5 h-5 text-purple-600" />
-                    </div>
-                    <p class="text-4xl font-bold text-gray-900 dark:text-white">{{ $qtdTrabalhadoresCadastrados }}</p>
-                    <div class="flex items-center justify-center text-sm text-green-600 dark:text-green-400 gap-1">
-                        <span class="text-gray-500 dark:text-gray-400">trabalhadores cadastrados</span>
-                    </div>
-                </div>
-            </div>
+        {{-- Cabeçalho de Boas-vindas --}}
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Olá, {{ Auth::user()->name }}!</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Aqui está o resumo das atividades do sistema hoje.</p>
         </div>
 
-        {{-- Linha 2 - 2 colunas --}}
-        <div class="grid gap-4 md:grid-cols-2">
-            <div class="rounded-xl bg-white p-6 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
-                {{-- Cabeçalho --}}
-                <header class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-2">
-                        <x-heroicon-o-calendar class="w-6 h-6 text-blue-600" />
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Próximos Eventos</h2>
-                    </div>
+        {{-- Grid de Estatísticas (Totalizadores) --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <x-dashboard-stat-card title="Eventos Ativos" :value="$qtdEventosAtivos" icon="heroicon-o-calendar" color="blue" />
+            <x-dashboard-stat-card title="Total de Fichas" :value="$qtdFichasCadastradas" icon="heroicon-o-clipboard-document"
+                color="yellow" />
+            <x-dashboard-stat-card title="Participantes" :value="$qtdParticipantesCadastrados" icon="heroicon-o-users" color="green" />
+            <x-dashboard-stat-card title="Trabalhadores" :value="$qtdTrabalhadoresCadastrados" icon="heroicon-o-briefcase" color="purple" />
+        </div>
+
+        <div class="grid gap-8 lg:grid-cols-2">
+
+            {{-- Lado Esquerdo: Próximos Eventos --}}
+            <section
+                class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-700 overflow-hidden">
+                <header
+                    class="px-6 py-4 border-b border-gray-100 dark:border-zinc-700 flex justify-between items-center bg-gray-50/50 dark:bg-zinc-800/50">
+                    <h2 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                        <x-heroicon-s-calendar-days class="w-5 h-5 text-blue-600" />
+                        Próximos Eventos
+                    </h2>
+                    <a href="{{ route('eventos.index') }}"
+                        class="text-xs font-bold text-blue-600 hover:text-blue-700 uppercase tracking-wider">Ver
+                        Todos</a>
                 </header>
 
-                {{-- Lista de eventos --}}
-                <ul class="space-y-4">
-                    @forelse ($proximoseventos as $evento)
-                        @php
-                            $sigla = $evento->movimento?->des_sigla;
-                            $badgeClasses = match ($sigla) {
-                                'VEM' => 'bg-blue-100 text-blue-700',
-                                'Segue-Me' => 'bg-orange-100 text-orange-700',
-                                'ECC' => 'bg-green-100 text-green-700',
-                                default => 'bg-gray-100 text-gray-600 ',
-                            };
-                        @endphp
-                        <li
-                            class="flex items-start gap-4 p-4 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-                            <x-heroicon-o-calendar class="w-6 h-6 text-blue-500 mt-1" />
-                            <div class="flex-1 flex flex-col w-full">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="text-base font-medium text-gray-900 dark:text-white">
+                <div class="p-6">
+                    <ul class="divide-y divide-gray-100 dark:divide-zinc-700 -my-4">
+                        @forelse ($proximoseventos as $evento)
+                            <li class="py-4 flex items-center gap-4 group">
+                                <div
+                                    class="flex-shrink-0 w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-xl flex flex-col items-center justify-center border border-blue-100 dark:border-blue-800/30">
+                                    <span
+                                        class="text-sm font-bold leading-none">{{ \Carbon\Carbon::parse($evento->dat_inicio)->format('d') }}</span>
+                                    <span
+                                        class="text-[10px] uppercase font-black">{{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('M') }}</span>
+                                </div>
+
+                                <div class="flex-1 min-w-0">
+                                    <h3
+                                        class="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
                                         {{ $evento->des_evento }}
                                     </h3>
-
-                                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeClasses }}">
-                                        {{ $sigla }}
-                                    </span>
+                                    <div class="mt-1 flex items-center gap-2">
+                                        <x-badge-movimento :sigla="$evento->movimento?->des_sigla" size="xs" />
+                                    </div>
                                 </div>
 
-                                {{-- Informações adicionais --}}
-                                <span class="text-sm text-gray-600 dark:text-gray-300">
-                                    {{ \Carbon\Carbon::parse($evento->dat_inicio)->translatedFormat('d/m/Y') }}
-                                </span>
+                                <a href="{{ route('eventos.edit', $evento) }}"
+                                    class="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                                    <x-heroicon-s-chevron-right class="w-5 h-5" />
+                                </a>
+                            </li>
+                        @empty
+                            <div class="py-8 text-center">
+                                <p class="text-sm text-gray-500">Nenhum evento agendado.</p>
                             </div>
-                        </li>
-                    @empty
-                        <li class="text-gray-600 dark:text-gray-300">Nenhum evento encontrado.</li>
-                    @endforelse
-                </ul>
-            </div>
+                        @endforelse
+                    </ul>
+                </div>
+            </section>
 
-            <div class="rounded-xl bg-white p-6 shadow-sm border border-neutral-200 dark:border-neutral-700 dark:bg-zinc-600">
-                {{-- Cabeçalho --}}
-                <header class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-2">
-                        <x-heroicon-o-newspaper class="w-6 h-6 text-blue-600" />
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Fichas Recentes</h2>
-                    </div>
+            {{-- Lado Direito: Fichas Recentes --}}
+            <section
+                class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-700 overflow-hidden">
+                <header
+                    class="px-6 py-4 border-b border-gray-100 dark:border-zinc-700 flex justify-between items-center bg-gray-50/50 dark:bg-zinc-800/50">
+                    <h2 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                        <x-heroicon-s-sparkles class="w-5 h-5 text-yellow-500" />
+                        Inscrições Recentes
+                    </h2>
                 </header>
 
-                {{-- Lista de eventos --}}
-                <ul class="space-y-4">
-                    @forelse ($fichasrecentes as $ficha)
-                        @php
-                            $sigla = $ficha->evento->movimento?->des_sigla;
-                            $badgeClasses = match ($sigla) {
-                                'VEM' => 'bg-blue-100 text-blue-700',
-                                'Segue-Me' => 'bg-orange-100 text-orange-700',
-                                'ECC' => 'bg-green-100 text-green-700',
-                                default => 'bg-gray-100 text-gray-600',
-                            };
-                        @endphp
-                        <li
-                            class="flex items-start gap-4 p-4 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-
-                            {{-- Ícone de novidade --}}
-                            <x-heroicon-o-sparkles class="w-6 h-6 text-blue-500 mt-1" />
-
-                            <div class="flex-1 flex flex-col w-full">
-                                {{-- Cabeçalho com nome e badge --}}
-                                <div class="flex justify-between items-start">
-                                    <h3 class="text-base font-medium text-gray-900 dark:text-white">
-                                        {{ $ficha->nom_candidato }}
-                                    </h3>
-
-                                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $badgeClasses }}">
-                                        {{ $sigla }}
-                                    </span>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        @forelse ($fichasrecentes as $ficha)
+                            <div
+                                class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-zinc-600">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-gray-100 dark:bg-zinc-900 flex items-center justify-center text-gray-500 font-bold text-xs uppercase">
+                                    {{ substr($ficha->nom_candidato, 0, 2) }}
                                 </div>
-
-                                {{-- Informações adicionais --}}
-                                <span class="text-sm text-gray-600 dark:text-gray-300">
-                                    {{ \Carbon\Carbon::parse($ficha->dat_nascimento)->translatedFormat('d/m/Y') }}
-                                </span>
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-gray-900 dark:text-white">
+                                        {{ $ficha->nom_candidato }}</p>
+                                    <p class="text-xs text-gray-500">Inscrito em: {{ $ficha->evento->des_evento }}</p>
+                                </div>
+                                <x-badge-movimento :sigla="$ficha->evento->movimento?->des_sigla" />
                             </div>
-                        </li>
-                    @empty
-                        <li class="text-gray-600 dark:text-gray-300">Nenhuma ficha encontrada.</li>
-                    @endforelse
-                </ul>
-            </div>
+                        @empty
+                            <p class="text-center py-8 text-sm text-gray-500">Nenhuma ficha recente.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 </x-layouts.app>

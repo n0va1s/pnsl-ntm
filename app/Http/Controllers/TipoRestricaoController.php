@@ -90,7 +90,7 @@ class TipoRestricaoController extends Controller
                 ->with('success', 'Tipo de restrição excluído com sucesso!');
         } catch (\Exception $e) {
             return redirect()->route('restricao.index')
-                ->with('error', 'Erro ao excluir tipo de restrição: ' . $e->getMessage());
+                ->with('error', 'Erro ao excluir tipo de restrição: '.$e->getMessage());
         }
     }
 }
