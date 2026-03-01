@@ -166,7 +166,7 @@
                 </article>
             @empty
                 <div class="col-span-full">
-                    <x-sem-registro icon="calendar" title="Nenhum evento encontrado" />
+                    <x-sem-registro icon="heroicon-o-calendar" title="Nenhum evento encontrado" />
                 </div>
             @endforelse
         </div>

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Contato;
+use App\Models\TipoMovimento;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ContatoFactory extends Factory
@@ -15,7 +16,7 @@ class ContatoFactory extends Factory
         $dataTermino = (clone $dataInicio)->modify('+3 days');
 
         return [
-            'idt_movimento' => $this->faker->numberBetween(1, 3),
+            'idt_movimento' => $this->faker->numberBetween(1, 3) ?? TipoMovimento::inRandomOrder()->first()?->idt_movimento,
             'dat_contato' => now(),
             'nom_contato' => $this->faker->name(),
             'eml_contato' => $this->faker->email(),

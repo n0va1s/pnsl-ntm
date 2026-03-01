@@ -123,7 +123,7 @@
                         </div>
                     </div>
                 @empty
-                    <x-sem-registro icon="academic-cap" title="Nenhuma atividade"
+                    <x-sem-registro icon="heroicon-o-academic-cap" title="Nenhuma atividade"
                         description="Sua caminhada começa aqui. Inscreva-se em um evento!" />
                 @endforelse
             </div>
