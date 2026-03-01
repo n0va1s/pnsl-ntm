@@ -20,14 +20,6 @@ class EnvolvidoSeeder extends Seeder
 
     public function run(): void
     {
-        // Garante que existam pessoas, eventos e equipes
-        if (Pessoa::count() === 0 || Evento::count() === 0 || TipoEquipe::count() === 0) {
-            $this->command->warn('Dependências faltando. Rodando PessoaSeeder, EventoSeeder e TipoEquipeSeeder...');
-            $this->call([
-                PessoaSeeder::class,
-                EventoSeeder::class,
-            ]);
-        }
         Participante::factory()->count(200)->create();
         Presenca::factory()->count(200)->create();
         Voluntario::factory()->count(200)->create();

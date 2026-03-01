@@ -205,7 +205,7 @@
                         @error('med_foto')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Imagem até 2MB nos formatos JPG, JPEG,
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Imagem até 5MB nos formatos JPG, JPEG,
                             PNG</p>
                     </div>
 

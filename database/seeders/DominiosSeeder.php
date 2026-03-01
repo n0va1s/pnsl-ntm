@@ -13,6 +13,9 @@ class DominiosSeeder extends Seeder
 {
     public function run(): void
     {
+        if (\App\Models\TipoMovimento::count() > 0) {
+            return;
+        }
         TipoRestricaoFactory::seedDefaults();
         TipoSituacaoFactory::seedDefaults();
         TipoResponsavelFactory::seedDefaults();

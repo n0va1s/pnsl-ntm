@@ -11,6 +11,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PessoaController extends Controller
@@ -161,23 +162,18 @@ class PessoaController extends Controller
         $start = microtime(true);
         $context = $this->getLogContext(request());
 
-        // 1. Eager loading apenas com colunas essenciais
         $pessoa = Pessoa::with([
             'foto:idt_pessoa,med_foto',
             'usuario:id,name',
             'restricoes',
         ])->findOrFail($id);
 
-        // 2. Busca de restrições (seletiva)
         $restricoes = TipoRestricao::select(
             'idt_restricao',
             'tip_restricao',
             'des_restricao'
-            // 'txt_restricao' -> Remova se não for usado no label/form
         )->get();
 
-        // 3. Otimização Crítica: Lista de parceiros usando pluck
-        // Isso evita hidratar milhares de modelos Pessoa na memória
         $pessoasDisponiveis = Pessoa::where(function ($query) use ($pessoa) {
             $query->whereNull('idt_parceiro');
             if ($pessoa->idt_parceiro) {
@@ -186,7 +182,7 @@ class PessoaController extends Controller
         })
             ->where('idt_pessoa', '!=', $pessoa->idt_pessoa)
             ->orderBy('nom_pessoa')
-            ->pluck('nom_pessoa', 'idt_pessoa'); // Retorna [id => nome]
+            ->pluck('nom_pessoa', 'idt_pessoa');
 
         $duration = round((microtime(true) - $start) * 1000, 2);
         Log::notice('Dados para edição obtidos', array_merge($context, [
@@ -217,12 +213,21 @@ class PessoaController extends Controller
         // Foto
         if ($request->hasFile('med_foto')) {
             $arquivo = $request->file('med_foto');
-            $caminho = $arquivo->store('fotos/pessoa/', 'public'); // pasta 'storage/app/public/fotos/pessoa/'
+            $caminho = $arquivo->store('fotos/pessoa', 'public');
 
-            if ($pessoa->foto) {
-                $pessoa->foto()->update(['med_foto' => $caminho]);
-            } else {
-                $pessoa->foto()->create(['med_foto' => $caminho]);
+            if ($caminho) {
+                $fotoExistente = \App\Models\PessoaFoto::where('idt_pessoa', $pessoa->idt_pessoa)->first();
+
+                if ($fotoExistente) {
+                    // Deleta o arquivo físico antigo
+                    if (Storage::disk('public')->exists($fotoExistente->med_foto)) {
+                        Storage::disk('public')->delete($fotoExistente->med_foto);
+                    }
+
+                    $fotoExistente->update(['med_foto' => $caminho]);
+                } else {
+                    $pessoa->foto()->create(['med_foto' => $caminho]);
+                }
             }
         }
 

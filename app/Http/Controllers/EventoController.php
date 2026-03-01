@@ -8,10 +8,12 @@ use App\Models\Pessoa;
 use App\Models\TipoMovimento;
 use App\Services\EventoService;
 use App\Traits\LogContext;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class EventoController extends Controller
@@ -31,15 +33,15 @@ class EventoController extends Controller
             ->with(['movimento:idt_movimento,des_sigla'])
             ->withCount([
                 'participantes',
-                'voluntarios as voluntarios_count' => fn ($q) => $q->whereNull('idt_trabalhador'),
-                'voluntarios as trabalhadores_count' => fn ($q) => $q->whereNotNull('idt_trabalhador'),
+                'voluntarios as voluntarios_count' => fn($q) => $q->whereNull('idt_trabalhador'),
+                'voluntarios as trabalhadores_count' => fn($q) => $q->whereNotNull('idt_trabalhador'),
             ])
             ->when($pessoa, function ($q) use ($pessoa) {
-                $q->withExists(['participantes as ja_inscrito_participante' => fn ($q) => $q->where('idt_pessoa', $pessoa->idt_pessoa)])
-                    ->withExists(['voluntarios as ja_inscrito_voluntario' => fn ($q) => $q->where('idt_pessoa', $pessoa->idt_pessoa)]);
+                $q->withExists(['participantes as ja_inscrito_participante' => fn($q) => $q->where('idt_pessoa', $pessoa->idt_pessoa)])
+                    ->withExists(['voluntarios as ja_inscrito_voluntario' => fn($q) => $q->where('idt_pessoa', $pessoa->idt_pessoa)]);
             })
-            ->when($request->search, fn ($q) => $q->search($request->search))
-            ->when($request->idt_movimento, fn ($q) => $q->movimento($request->idt_movimento))
+            ->when($request->search, fn($q) => $q->search($request->search))
+            ->when($request->idt_movimento, fn($q) => $q->movimento($request->idt_movimento))
             ->orderBy('dat_inicio', 'desc')
             ->paginate(12)
             ->withQueryString();
@@ -67,6 +69,117 @@ class EventoController extends Controller
             Log::error('Falha ao criar evento', ['error' => $e->getMessage()]);
 
             return back()->with('error', 'Erro ao processar cadastro.')->withInput();
+        }
+    }
+
+    public function show(Evento $evento): View
+    {
+        $context = $this->getLogContext(request());
+        Log::info('Visualização de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
+
+        $movimentos = TipoMovimento::all();
+
+        return view('evento.form', compact('movimentos', 'evento'));
+    }
+
+    /**
+     * Exibe o formulário para editar um evento.
+     */
+    public function edit(Evento $evento): View
+    {
+        $context = $this->getLogContext(request());
+        Log::info('Acesso ao formulário de edição de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
+
+        $movimentos = TipoMovimento::all();
+
+        return view('evento.form', compact('movimentos', 'evento'));
+    }
+
+    /**
+     * Atualiza o evento no banco de dados.
+     */
+    public function update(EventoRequest $request, Evento $evento): RedirectResponse
+    {
+        $start = microtime(true);
+        $context = $this->getLogContext($request);
+
+        Log::info('Tentativa de atualização de evento', array_merge($context, [
+            'evento_id' => $evento->idt_evento,
+            'titulo' => $request->get('des_evento'),
+        ]));
+
+        try {
+            DB::beginTransaction();
+            $data = $request->validated();
+            $evento->update($data);
+            $this->eventoService->fotoUpload($evento, $request->file('med_foto'));
+            DB::commit();
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+
+            Log::notice('Evento atualizado com sucesso', array_merge($context, [
+                'evento_id' => $evento->idt_evento,
+                'duration_ms' => $duration,
+            ]));
+
+            return redirect()
+                ->route('eventos.index')
+                ->with('success', 'Evento atualizado com sucesso!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+            Log::error('Erro ao atualizar evento', array_merge($context, [
+                'evento_id' => $evento->idt_evento,
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'duration_ms' => $duration,
+                'input_data' => $request->validated(),
+            ]));
+
+            return redirect()
+                ->route('eventos.index')
+                ->with('error', 'Erro ao atualizar evento. Por favor, tente novamente.');
+        }
+    }
+
+    /**
+     * Remove o evento do banco de dados.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(Evento $evento)
+    {
+        $start = microtime(true);
+        $context = $this->getLogContext(request());
+
+        Log::warning('Tentativa de exclusão de evento', array_merge($context, [
+            'evento_id' => $evento->idt_evento,
+            'titulo_evento' => $evento->des_evento,
+        ]));
+
+        try {
+            //deleta a foto e o evento    
+            $this->eventoService->fotoDelete($evento);
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+
+            Log::notice('Evento excluído com sucesso', array_merge($context, [
+                'evento_id' => $evento->idt_evento,
+                'duration_ms' => $duration,
+            ]));
+
+            return redirect()->route('eventos.index')
+                ->with('success', 'Evento excluído com sucesso!');
+        } catch (QueryException $e) {
+
+            if ($e->getCode() === '23000') {
+                return redirect()->route('eventos.index')
+                    ->with('error', 'Não é possível excluir o evento, pois ele possui participantes vinculados.');
+            }
+
+            return redirect()->route('eventos.index')
+                ->with('error', 'Ocorreu um erro de banco de dados ao excluir o evento.');
         }
     }
 

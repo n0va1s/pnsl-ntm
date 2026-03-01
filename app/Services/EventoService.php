@@ -34,16 +34,17 @@ class EventoService
     {
         $relacoesBase = ['evento.movimento:idt_movimento,des_sigla'];
 
-        // Busca trabalhadores e participantes em paralelo
         $trabalhos = Trabalhador::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->whereHas('evento')
             ->with(array_merge($relacoesBase, ['equipe:idt_equipe,des_equipe']))
             ->get()
-            ->map(fn ($t) => $this->formataTimeline($t, 'Trabalhador'));
+            ->map(fn($t) => $this->formataTimeline($t, 'Trabalhador'));
 
         $participacoes = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->whereHas('evento')
             ->with($relacoesBase)
             ->get()
-            ->map(fn ($p) => $this->formataTimeline($p, 'Participante'));
+            ->map(fn($p) => $this->formataTimeline($p, 'Participante'));
 
         $timeline = $trabalhos->concat($participacoes)->sortByDesc('date');
 
@@ -53,9 +54,9 @@ class EventoService
     private function agruparEventosPorAno(Collection $eventos): array
     {
         return $eventos
-            ->groupBy(fn ($entry) => \Carbon\Carbon::parse($entry['date'])->year) // Agrupa por ano
+            ->groupBy(fn($entry) => \Carbon\Carbon::parse($entry['date'])->year) // Agrupa por ano
             ->sortKeysDesc() // Garante o mais recente primeiro
-            ->map(fn ($yearEntries, $year) => [
+            ->map(fn($yearEntries, $year) => [
                 'year' => $year,
                 'events' => $yearEntries->values()->all(),
             ])
@@ -65,6 +66,19 @@ class EventoService
 
     private function formataTimeline($model, string $type): array
     {
+        // Verifica se o relacionamento 'evento' existe
+        if (!$model->evento) {
+            return [
+                'type' => $type,
+                'date' => null,
+                'event' => null,
+                'details' => [
+                    'equipe' => $model->equipe->des_equipe ?? null,
+                    'coordenador' => $model->ind_coordenador ?? false,
+                ],
+            ];
+        }
+
         return [
             'type' => $type,
             'date' => $model->evento->dat_inicio,
@@ -89,20 +103,39 @@ class EventoService
 
     public function fotoUpload(Evento $evento, ?UploadedFile $file): void
     {
-        if (! $file) {
+        if (!$file) {
             return;
         }
 
         DB::transaction(function () use ($evento, $file) {
-            $evento->load('foto');
+            $evento->load('foto'); // Carrega a relação
 
             if ($evento->foto && Storage::disk('public')->exists($evento->foto->med_foto)) {
                 Storage::disk('public')->delete($evento->foto->med_foto);
+            }
+
+            $path = $file->store('fotos/evento', 'public'); // Salva o novo arquivo
+
+            $evento->foto()->updateOrCreate(
+                ['idt_evento' => $evento->idt_evento], // Busca por este ID
+                ['med_foto' => $path]                  // Atualiza ou cria com este caminho
+            );
+        });
+    }
+
+    public function fotoDelete(Evento $evento): void
+    {
+        DB::transaction(function () use ($evento) {
+            $evento->load('foto');
+
+            if ($evento->foto) {
+                if (Storage::disk('public')->exists($evento->foto->med_foto)) {
+                    Storage::disk('public')->delete($evento->foto->med_foto);
+                }
                 $evento->foto->delete();
             }
 
-            $path = $file->store('fotos/evento', 'public');
-            $evento->foto()->create(['med_foto' => $path]);
+            $evento->delete();
         });
     }
 

@@ -25,7 +25,7 @@ class PessoaRequest extends FormRequest
             'ind_toca_violao' => ['boolean'],
             'ind_consentimento' => ['boolean'],
             'ind_restricao' => ['boolean'],
-            'med_foto' => ['nullable', 'image', 'max:2048'], // até 2MB
+            'med_foto' => ['nullable', 'image', 'max:5120'], // até 5MB
             'idt_parceiro' => ['nullable', 'exists:pessoa,idt_pessoa'],
         ];
     }
@@ -58,9 +58,9 @@ class PessoaRequest extends FormRequest
             'tip_genero.required' => 'Informe o gênero.',
             'tip_genero.in' => 'Gênero inválido.',
 
-            'url_foto.image' => 'O arquivo deve ser uma imagem.',
-            'url_foto.mimes' => 'A imagem deve estar nos formatos: jpeg, png, jpg, webp.',
-            'url_foto.max' => 'A imagem não pode ter mais de 2MB.',
+            'med_foto.image' => 'O arquivo deve ser uma imagem.',
+            'med_foto.mimes' => 'A imagem deve estar nos formatos: jpeg, png, jpg, webp.',
+            'med_foto.max'   => 'A imagem não pode ter mais de 5MB.',
 
             'ind_toca_violao.boolean' => 'Valor inválido para o campo "Toca Violão".',
             'ind_consentimento.boolean' => 'Valor inválido para o campo "Consentimento".',
