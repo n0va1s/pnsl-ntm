@@ -31,15 +31,17 @@ class ParticipanteController extends Controller
             $evento = Evento::find($eventoId);
         }
 
-        $participantes = Participante::with(['pessoa', 'evento'])
+        $participantes = Participante::with(['pessoa'])
             ->when($search, function ($query, $search) {
                 return $query->whereHas('pessoa', function ($q) use ($search) {
                     $q->where('nom_pessoa', 'like', "%{$search}%")
                         ->orWhere('nom_apelido', 'like', "%{$search}%");
                 });
-            })->when($eventoId, function ($query, $eventoId) {
+            })
+            ->when($eventoId, function ($query, $eventoId) {
                 return $query->where('idt_evento', $eventoId);
             })
+            ->whereNull('tip_cor_troca') // quando possui troca foi confirmado
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();

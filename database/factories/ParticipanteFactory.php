@@ -14,9 +14,10 @@ class ParticipanteFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_pessoa' => Pessoa::factory(),
+            'idt_pessoa' => Pessoa::inRandomOrder()->first()?->idt_pessoa ?? Pessoa::factory(),
             'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento,
-            'tip_cor_troca' => $this->faker->randomElement(['vermelha', 'azul', 'verde', 'amarela', 'laranja']),
+            // 50% chance de ter cor de troca
+            'tip_cor_troca' => $this->faker->optional(0.5)->randomElement(['vermelha', 'azul', 'verde', 'amarela', 'laranja']),
         ];
     }
 }

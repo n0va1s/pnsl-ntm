@@ -1,7 +1,6 @@
-@props(['label', 'count', 'href', 'icon', 'color' => 'blue'])
+@props(['label', 'count', 'href' => null, 'icon', 'color' => 'blue'])
 
 @php
-    // Mapeamento de cores suaves para os mini-cards de estatística
     $colors = [
         'blue' =>
             'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/30',
@@ -14,28 +13,33 @@
     ];
 
     $colorClass = $colors[$color] ?? $colors['blue'];
+
+    // Define se o elemento deve se comportar como um link ou uma div estática
+    $tag = $href ? 'a' : 'div';
+    $interactiveClasses = $href ? 'hover:opacity-80 transition-all group cursor-pointer' : 'cursor-default';
 @endphp
 
-<a href="{{ $href }}"
-    class="flex items-center p-2 rounded-lg border {{ $colorClass }} hover:opacity-80 transition-all group min-w-0 shadow-sm">
+<{{ $tag }} {{ $href ? 'href=' . $href : '' }}
+    class="flex flex-wrap items-center p-2 rounded-lg border {{ $colorClass }} {{ $interactiveClasses }} min-w-0 shadow-sm relative">
 
-    {{-- Ícone fixo --}}
-    <div class="flex-shrink-0 mr-2">
-        <x-dynamic-component :component="$icon" class="w-4 h-4" />
-    </div>
+    <div class="flex items-center w-full mb-1">
+        <x-dynamic-component :component="$icon" class="w-4 h-4 flex-shrink-0" />
 
-    {{-- Container de texto com min-w-0 para permitir truncamento --}}
-    <div class="flex-1 min-w-0">
-        <p class="text-[10px] font-bold uppercase tracking-tighter opacity-70 truncate">
+        <p class="text-[9px] font-bold uppercase tracking-tighter opacity-70 truncate ml-2">
             {{ $label }}
         </p>
-        <p class="text-sm font-black leading-none tabular-nums truncate">
+    </div>
+
+    <div class="w-full text-center">
+        <p class="text-lg font-black leading-none tabular-nums">
             {{ $count }}
         </p>
     </div>
 
-    {{-- Setinha indicando que é um link (opcional, aparece no hover) --}}
-    <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ml-1">
-        <x-heroicon-s-chevron-right class="w-3 h-3" />
-    </div>
-</a>
+    {{-- A setinha só aparece se houver um link --}}
+    @if ($href)
+        <div class="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <x-heroicon-s-chevron-right class="w-2 h-2" />
+        </div>
+    @endif
+    </{{ $tag }}>

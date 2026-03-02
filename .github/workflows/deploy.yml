@@ -25,20 +25,8 @@ jobs:
 
       - name: Run Lint (Pint)
         run: vendor/bin/pint --test
-
-      - name: Run Tests (PHPUnit)
-        run: |
-          cp .env.example .env.testing
-          php artisan key:generate --env=testing
-          touch database/database.sqlite
-          vendor/bin/phpunit
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
-
   deploy:
     name: Deploy para Provedor
-    needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 

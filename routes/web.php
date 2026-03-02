@@ -81,7 +81,7 @@ Route::middleware(['auth'])->group(function () {
         [TrabalhadorController::class, 'index']
     )->name('trabalhadores.index')->middleware(['manager']);
 
-    Route::get(
+    Route::post(
         '/trabalhadores/create',
         [TrabalhadorController::class, 'create']
     )->name('trabalhadores.create');
@@ -168,4 +168,4 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

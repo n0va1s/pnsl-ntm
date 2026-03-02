@@ -97,15 +97,28 @@
 
                     {{-- Admin Stats --}}
                     @if (Auth::user()?->isAdmin())
-                        <div class="px-5 pb-4 grid grid-cols-2 gap-2">
-                            <x-evento-card label="Inscritos" :count="$evento->participantes_count" :href="route('participantes.index', ['evento' => $evento->idt_evento])"
-                                icon="heroicon-o-user-group" color="blue" />
-                            <x-evento-card label="Voluntários" :count="$evento->voluntarios_count" :href="route('montagem.list', ['evento' => $evento->idt_evento])"
-                                icon="heroicon-o-hand-raised" color="green" />
-                            <x-evento-card label="Trabalho" :count="$evento->trabalhadores_count" :href="route('trabalhadores.index', ['evento' => $evento->idt_evento])"
-                                icon="heroicon-o-briefcase" color="orange" />
-                            <x-evento-card label="Quadrante" :count="$evento->trabalhadores_count" :href="route('quadrante.list', ['evento' => $evento->idt_evento])"
-                                icon="heroicon-o-clipboard" color="zinc" />
+                        <div class="px-5 pb-4">
+                            {{-- Se for tipo E, usa grid de 2 colunas. Se for P ou D, usa flex centralizado --}}
+                            <div
+                                class="{{ $evento->tip_evento == 'E' ? 'grid grid-cols-2 gap-2' : 'flex justify-center' }}">
+
+                                @if ($evento->tip_evento == 'E')
+                                    <div class="{{ $evento->tip_evento == 'E' ? '' : 'w-1/2' }}">
+                                        <x-evento-card label="Participantes" :count="$evento->participantes_count" :href="route('participantes.index', ['evento' => $evento->idt_evento])"
+                                            icon="heroicon-o-user-group" color="blue" />
+                                    </div>
+                                    <x-evento-card label="Inscritos" :count="$evento->inscritos_count" :href="route('quadrante.list', ['evento' => $evento->idt_evento])"
+                                        icon="heroicon-o-check-circle" color="zinc" />
+                                    <x-evento-card label="Voluntários" :count="$evento->voluntarios_count" :href="route('montagem.list', ['evento' => $evento->idt_evento])"
+                                        icon="heroicon-o-hand-raised" color="green" />
+                                    <x-evento-card label="Trabalhadores" :count="$evento->trabalhadores_count" :href="route('trabalhadores.index', ['evento' => $evento->idt_evento])"
+                                        icon="heroicon-o-briefcase" color="orange" />
+                                @else<div class="{{ $evento->tip_evento == 'E' ? '' : 'w-1/2' }}">
+                                        <x-evento-card label="Participantes" :count="$evento->participantes_count"
+                                            icon="heroicon-o-user-group" color="blue" />
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     @endif
 
@@ -130,36 +143,39 @@
                             </div>
                         @else
                             @if ($evento->ja_inscrito_participante || $evento->ja_inscrito_voluntario)
+                                {{-- Inscrição Confirmada --}}
                                 <div
                                     class="w-full py-2 bg-gray-100 dark:bg-zinc-700 text-gray-500 dark:text-gray-400 rounded-md font-bold text-center flex items-center justify-center gap-2 border border-gray-200 dark:border-zinc-600">
                                     <x-heroicon-s-check-circle class="w-5 h-5" />
                                     Inscrição Confirmada
                                 </div>
                             @else
-                                @php
-                                    $rotaInscricao =
-                                        $evento->tip_evento == 'E'
-                                            ? route('trabalhadores.create', ['evento' => $evento])
-                                            : route('participantes.confirm', [
-                                                'evento' => $evento,
-                                                'pessoa' => Auth::user()->pessoa,
-                                            ]);
+                                @if ($evento->tip_evento == 'E')
+                                    {{-- Caso 'E': Apenas navega para a página de criação (GET) --}}
+                                    <a href="{{ route('trabalhadores.create', ['evento' => $evento]) }}"
+                                        class="block w-full py-2 bg-green-600 text-white rounded-md font-bold text-center hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition shadow-md">
+                                        Quero Trabalhar
+                                    </a>
+                                @else
+                                    {{-- Caso 'P' ou 'D': Inscrição direta via POST --}}
+                                    @php
+                                        $rotaInscricao = route('participantes.confirm', [
+                                            'evento' => $evento,
+                                            'pessoa' => Auth::user()->pessoa,
+                                        ]);
+                                        $textoBotao =
+                                            $evento->tip_evento == 'P' ? 'Vou Participar' : 'Bora pro Desafio';
+                                    @endphp
 
-                                    $textoBotao = match ($evento->tip_evento) {
-                                        'P' => 'Vou Participar',
-                                        'D' => 'Bora pro Desafio',
-                                        default => 'Quero Trabalhar',
-                                    };
-                                @endphp
-                                <form method="POST" action="{{ $rotaInscricao }}"
-                                    onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').classList.add('opacity-50', 'bg-gray-400'); this.querySelector('button').innerHTML = 'Processando...';">
-                                    @csrf
-                                    {{-- Botão Participar (Verde para diferenciar ação de sucesso, mas com arredondamento padrão) --}}
-                                    <button
-                                        class="w-full py-2 bg-green-600 text-white rounded-md font-bold hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition shadow-md">
-                                        {{ $textoBotao }}
-                                    </button>
-                                </form>
+                                    <form method="POST" action="{{ $rotaInscricao }}"
+                                        onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').classList.add('opacity-50', 'bg-gray-400'); this.querySelector('button').innerHTML = 'Processando...';">
+                                        @csrf
+                                        <button
+                                            class="w-full py-2 bg-green-600 text-white rounded-md font-bold hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition shadow-md">
+                                            {{ $textoBotao }}
+                                        </button>
+                                    </form>
+                                @endif
                             @endif
                         @endif
                     </footer>
