@@ -100,7 +100,7 @@ class VoluntarioService
     ): Voluntario {
         $voluntario = Voluntario::find($voluntarioId);
 
-        if (!$voluntario) {
+        if (! $voluntario) {
             throw ValidationException::withMessages([
                 'voluntario' => 'Voluntário não encontrado.',
             ]);

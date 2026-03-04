@@ -132,7 +132,7 @@ describe('FichaSGMController', function () {
     test('pode aprovar ficha sgm', function () {
         $ficha = Ficha::factory()->create([
             'idt_evento' => $this->evento->idt_evento,
-            'ind_aprovado' => false
+            'ind_aprovado' => false,
         ]);
         FichaSGM::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
 

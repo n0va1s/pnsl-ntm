@@ -2,45 +2,77 @@ name: Deploy via FTP - Laravel 12
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-  deploy:
-    name: Build e Deploy
+  build-and-test:
+    name: Testes e Qualidade
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, xml, ctype, iconv, sqlite3
+
+      - name: Add Flux Credentials
+        run: composer config http-basic.composer.fluxui.dev "${{ secrets.FLUX_USERNAME }}" "${{ secrets.FLUX_LICENSE_KEY }}"
+
+      - name: Install Dependencies
+        run: composer install --optimize-autoloader
+
+      - name: Run Lint (Pint)
+        run: vendor/bin/pint --test
+
+      - name: Run Tests (PHPUnit)
+        run: |
+          cp .env.example .env.testing
+          php artisan key:generate --env=testing
+          touch database/database.sqlite
+          vendor/bin/phpunit
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+
+  deploy:
+    name: Deploy para Provedor
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
 
     steps:
-    - name: Checkout do código
-      uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-    - name: Configurar PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2' # Versão recomendada para Laravel 12
-        extensions: mbstring, xml, ctype, iconv, mysql, zip
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, xml, ctype, iconv, mysql, zip
 
-    - name: Instalar Dependências do Composer
-      run: composer install --no-dev --optimize-autoloader --no-interaction
+      - name: Instalar Dependências (Produção)
+        run: composer install --no-dev --optimize-autoloader --no-interaction
 
-    - name: Instalar Dependências NPM e Build (Vite)
-      run: |
-        npm install
-        npm run build
+      - name: Build Assets (Vite)
+        run: |
+          npm install
+          npm run build
 
-    - name: Sync FTP para Locaweb
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
-        password: ${{ secrets.PASS }}
-        # Local de origem (raiz do projeto onde o build aconteceu)
-        local-dir: ./
-        # Destino no servidor (ajuste se o caminho for diferente)
-        server-dir: public_html/movimento/
-        # Arquivos que você NÃO quer que sejam enviados ou sobrescritos
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          storage/*.key
-          .env
+      - name: Sync FTP para o provedor
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASS }}
+          local-dir: ./
+          server-dir: public_html/movimento/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            storage/*.key
+            .env
+            tests/**
+            phpunit.xml

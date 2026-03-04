@@ -4,176 +4,71 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EventoRequest;
 use App\Models\Evento;
-use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\TipoMovimento;
 use App\Services\EventoService;
-use App\Services\UserService;
 use App\Traits\LogContext;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class EventoController extends Controller
 {
     use LogContext;
 
-    protected $eventoService;
+    public function __construct(
+        protected EventoService $eventoService
+    ) {}
 
-    protected $userService;
-
-    /**
-     * Injeção de dependência do EventoService e UserService no construtor.
-     */
-    public function __construct(EventoService $eventoService, UserService $userService)
-    {
-        $this->eventoService = $eventoService;
-        $this->userService = $userService;
-    }
-
-    /**
-     * Exibe a página de listagem de eventos.
-     */
     public function index(Request $request): View
     {
-        $start = microtime(true);
         $context = $this->getLogContext($request);
-
-        $search = trim($request->input('search', ''));
-        $idt_movimento = $request->input('idt_movimento');
-
-        Log::info('Requisição de listagem de eventos iniciada', array_merge($context, [
-            'search_term' => $search,
-            'idt_movimento_filtro' => $idt_movimento,
-        ]));
-
         $pessoa = Auth::user()->pessoa;
 
-        $eventosInscritos = [];
-        $encontrosInscritos = [];
-
-        // Verifica se o usuário está logado para popular as listas de eventos inscritos
-        if (Auth::check()) {
-
-            // Pos-entrontros e desafios
-            $eventosInscritos = $this->eventoService->getEventosInscritos($pessoa);
-
-            // Encontros anuais
-            $encontrosInscritos = $this->eventoService->getEncontrosInscritos($pessoa);
-
-            Log::debug('Inscrições de eventos carregadas', array_merge($context, [
-                'pessoa_id' => $pessoa->idt_pessoa,
-                'total_eventos_inscritos' => count($eventosInscritos),
-                'total de encontros inscritos' => count($encontrosInscritos),
-            ]));
-        }
-
-        $query = Evento::with(['movimento', 'foto'])
+        $eventos = Evento::query()
+            ->with(['movimento:idt_movimento,des_sigla'])
             ->withCount([
-                'participantes as participantes_count' => function ($q) {
-                    $q->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
-                },
-                'voluntarios as voluntarios_count' => function ($q) {
-                    $q->whereNull('idt_trabalhador')
-                        ->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
-                },
-                'voluntarios as trabalhadores_count' => function ($q) {
-                    $q->whereNotNull('idt_trabalhador')
-                        ->select(DB::raw('COUNT(DISTINCT idt_pessoa)'));
-                },
-                'fichas',
-            ])->when($search, function ($query, $search) {
-                return $query->search($search);
-            })->when($idt_movimento, function ($query, $idt_movimento) {
-                return $query->movimento($idt_movimento);
-            })->orderBy('dat_inicio', 'desc');
+                'participantes',
+                'voluntarios as voluntarios_count' => fn($q) => $q->whereNull('idt_trabalhador'),
+                'voluntarios as trabalhadores_count' => fn($q) => $q->whereNotNull('idt_trabalhador'),
+            ])
+            ->when($pessoa, function ($q) use ($pessoa) {
+                $q->withExists(['participantes as ja_inscrito_participante' => fn($q) => $q->where('idt_pessoa', $pessoa->idt_pessoa)])
+                    ->withExists(['voluntarios as ja_inscrito_voluntario' => fn($q) => $q->where('idt_pessoa', $pessoa->idt_pessoa)]);
+            })
+            ->when($request->search, fn($q) => $q->search($request->search))
+            ->when($request->idt_movimento, fn($q) => $q->movimento($request->idt_movimento))
+            ->orderBy('dat_inicio', 'desc')
+            ->paginate(12)
+            ->withQueryString();
 
-        $movimentos = TipoMovimento::select('idt_movimento', 'nom_movimento', 'des_sigla')
-            ->orderBy('des_movimento')
-            ->get();
-
-        $eventos = $query->paginate(12);
-
-        $duration = round((microtime(true) - $start) * 1000, 2);
-
-        Log::notice('Listagem de eventos concluída com sucesso', array_merge($context, [
-            'total_eventos' => $eventos->total(),
-            'duration_ms' => $duration,
-        ]));
-
-        return view('evento.list', compact(
-            'eventos',
-            'search',
-            'idt_movimento',
-            'eventosInscritos',
-            'encontrosInscritos',
-            'pessoa',
-            'movimentos'
-        ));
+        return view('evento.list', [
+            'eventos' => $eventos,
+            'movimentos' => TipoMovimento::all(['idt_movimento', 'des_sigla']),
+            'search' => $request->search,
+            'idt_movimento' => $request->idt_movimento,
+        ]);
     }
 
     /**
-     * Exibe o formulário para criar um novo evento.
-     */
-    public function create(): View
-    {
-        $context = $this->getLogContext(request());
-        Log::info('Acesso ao formulário de criação de evento', $context);
-
-        $movimentos = TipoMovimento::all();
-        $evento = new Evento;
-
-        return view('evento.form', compact('movimentos', 'evento'));
-    }
-
-    /**
-     * Armazena um novo evento no banco de dados.
+     * Salva o evento delegando a complexidade ao Service.
      */
     public function store(EventoRequest $request): RedirectResponse
     {
-        $start = microtime(true);
-        $context = $this->getLogContext($request);
-
-        Log::info('Tentativa de criação de novo evento', array_merge($context, [
-            'titulo' => $request->get('des_evento'),
-        ]));
-
         try {
-            DB::beginTransaction();
-            $data = $request->validated();
-            $evento = Evento::create($data);
-            $this->eventoService->fotoUpload($evento, $request->file('med_foto'));
-            DB::commit();
+            $evento = $this->eventoService->criarEventoComFoto($request->validated(), $request->file('med_foto'));
 
-            $duration = round((microtime(true) - $start) * 1000, 2);
+            Log::notice('Evento criado', ['evento_id' => $evento->id]);
 
-            Log::notice('Evento criado com sucesso', array_merge($context, [
-                'evento_id' => $evento->idt_evento,
-                'duration_ms' => $duration,
-            ]));
-
-            return redirect()
-                ->route('eventos.index')
-                ->with('success', 'Evento criado com sucesso!');
+            return redirect()->route('eventos.index')->with('success', 'Evento criado com sucesso!');
         } catch (\Exception $e) {
-            DB::rollBack();
+            Log::error('Falha ao criar evento', ['error' => $e->getMessage()]);
 
-            $duration = round((microtime(true) - $start) * 1000, 2);
-
-            Log::error('Erro ao criar evento', array_merge($context, [
-                'exception' => get_class($e),
-                'message' => $e->getMessage(),
-                'duration_ms' => $duration,
-                'input_data' => $request->validated(), // Loga dados validados para debugging
-            ]));
-
-            return redirect()
-                ->route('eventos.index')
-                ->with('error', 'Erro ao criar evento. Por favor, tente novamente.');
+            return back()->with('error', 'Erro ao processar cadastro.')->withInput();
         }
     }
 
@@ -264,7 +159,8 @@ class EventoController extends Controller
         ]));
 
         try {
-            $this->eventoService->excluirEventoComFoto($evento);
+            //deleta a foto e o evento    
+            $this->eventoService->fotoDelete($evento);
 
             $duration = round((microtime(true) - $start) * 1000, 2);
 
@@ -288,64 +184,47 @@ class EventoController extends Controller
     }
 
     /**
-     * Confirma a participação de uma pessoa em um evento.
+     * Confirma participação
      */
     public function confirm(Evento $evento, Pessoa $pessoa): RedirectResponse
     {
-        $start = microtime(true);
-        $context = $this->getLogContext(request());
+        $this->eventoService->confirmarParticipacao($evento, $pessoa);
 
-        Log::info('Tentativa de confirmação de participação em evento', array_merge($context, [
-            'evento_id' => $evento->idt_evento,
-            'pessoa_id' => $pessoa->idt_pessoa,
-        ]));
-
-        Participante::create([
-            'idt_evento' => $evento->idt_evento,
-            'idt_pessoa' => $pessoa->idt_pessoa,
+        Log::notice('Participação confirmada', [
+            'evento' => $evento->idt_evento,
+            'pessoa' => $pessoa->idt_pessoa,
         ]);
 
-        $duration = round((microtime(true) - $start) * 1000, 2);
-
-        Log::notice('Participação confirmada com sucesso', array_merge($context, [
-            'evento_id' => $evento->idt_evento,
-            'pessoa_id' => $pessoa->idt_pessoa,
-            'duration_ms' => $duration,
-        ]));
-
-        return redirect()
-            ->route('eventos.index')
-            ->with('success', 'Sua participação foi confirmada!');
+        return redirect()->route('eventos.index')->with('success', 'Sua participação foi confirmada!');
     }
 
     /**
-     * Exibe a linha do tempo de eventos de uma pessoa.
+     * Linha do Tempo Otimizada.
      */
     public function timeline(): View
     {
         $start = microtime(true);
-        $context = $this->getLogContext(request());
+        $pessoa = Auth::user()->pessoa->fresh();
 
-        Log::info('Requisição da linha do tempo iniciada', $context);
+        // Dados cacheados/processados para alta performance
+        $data = [
+            'timeline' => $this->eventoService->getEventosTimeline($pessoa),
+            'pontuacaoTotal' => $pessoa->qtd_pontos_total ?? 0,
+            'posicaoNoRanking' => $this->eventoService->calcularRanking($pessoa),
+            'pessoa' => $pessoa,
+        ];
 
-        $pessoa = Auth::user()->pessoa;
-        Log::debug('Carregando dados da linha do tempo e ranking', array_merge($context, [
-            'pessoa_id' => $pessoa->idt_pessoa,
-        ]));
+        $this->logPerformance($pessoa, $data, $start);
 
-        $timeline = $this->eventoService->getEventosTimeline($pessoa);
-        $pontuacaoTotal = $this->eventoService->calcularPontuacao($pessoa);
-        $posicaoNoRanking = $this->eventoService->calcularRanking($pessoa);
+        return view('evento.linhadotempo', $data);
+    }
 
-        $duration = round((microtime(true) - $start) * 1000, 2);
-
-        Log::notice('Linha do tempo concluída com sucesso', array_merge($context, [
-            'total_eventos_timeline' => count($timeline),
-            'pontuacao_total' => $pontuacaoTotal,
-            'posicao_ranking' => $posicaoNoRanking,
-            'duration_ms' => $duration,
-        ]));
-
-        return view('evento.linhadotempo', compact('timeline', 'pontuacaoTotal', 'posicaoNoRanking', 'pessoa'));
+    private function logPerformance($pessoa, $timeline, $start): void
+    {
+        Log::info('Timeline acessada', [
+            'pessoa' => $pessoa->idt_pessoa,
+            'count' => count($timeline),
+            'ms' => round((microtime(true) - $start) * 1000, 2),
+        ]);
     }
 }

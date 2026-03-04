@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Pest\Support\Str;
 
 class Pessoa extends Model
 {
@@ -43,6 +41,36 @@ class Pessoa extends Model
         'ind_consentimento' => 'boolean',
         'ind_restricao' => 'boolean',
     ];
+
+    protected static function booted()
+    {
+        parent::boot();
+
+        static::created(function (Pessoa $pessoa) {
+            if ($pessoa->idt_usuario) {
+                return;
+            }
+
+            if (! $pessoa->eml_pessoa || ! $pessoa->dat_nascimento) {
+                return;
+            }
+
+            $senha = $pessoa->dat_nascimento->format('Ymd');
+
+            $user = User::create([
+                'name' => $pessoa->nom_pessoa,
+                'email' => $pessoa->eml_pessoa,
+                'password' => Hash::make($senha),
+                'role' => User::ROLE_USER,
+            ]);
+
+            $pessoa->idt_usuario = $user->id;
+            // Para evitar loop infinito, salvar a pessoa sem disparar eventos
+            $pessoa->saveQuietly();
+            // Envia e-mail de boas-vindas com a senha gerada
+            Mail::to($user->email)->send(new BoasVindasMail($user, $senha));
+        });
+    }
 
     public function usuario()
     {
@@ -79,41 +107,9 @@ class Pessoa extends Model
         return $this->belongsTo(Pessoa::class, 'idt_parceiro', 'idt_pessoa');
     }
 
-    protected static function boot()
+    public function pontos()
     {
-        parent::boot();
-
-        static::creating(function (Pessoa $pessoa) {
-
-            // Flag explícita (vem do controller/factory)
-            if ($pessoa->skip_user_creation === true) {
-                unset($pessoa->skip_user_creation);
-                return;
-            }
-
-            if ($pessoa->idt_usuario) {
-                return;
-            }
-
-            if (!$pessoa->eml_pessoa || !$pessoa->dat_nascimento) {
-                return;
-            }
-
-            $senha = $pessoa->dat_nascimento->format('Ymd');
-
-            $user = User::create([
-                'name'     => $pessoa->nom_pessoa,
-                'email'    => $pessoa->eml_pessoa,
-                'password' => Hash::make($senha),
-                'role'     => User::ROLE_USER,
-            ]);
-
-            $pessoa->idt_usuario = $user->id;
-
-            Mail::to($user->email)->send(
-                new BoasVindasMail($user, $senha)
-            );
-        });
+        return $this->hasMany(Gamificacao::class, 'idt_pessoa', 'idt_pessoa');
     }
 
     public function setParceiro(Pessoa $umaSoCarne)

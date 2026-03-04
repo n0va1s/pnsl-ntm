@@ -26,6 +26,7 @@ class PessoaFactory extends Factory
             'ind_toca_violao' => $this->faker->boolean(),
             'ind_consentimento' => $this->faker->boolean(),
             'ind_restricao' => $this->faker->boolean(),
+            'qtd_pontos_total' => 0,
         ];
     }
 }

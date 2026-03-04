@@ -172,7 +172,6 @@ return new class extends Migration
         });
 
         // Tabela Trabalhador indica os encontros que a pessoa trabalhou ou coordenou
-        // Nao ha necessidade do trabalhador ter indicado as equipes que quer trabalhar
         Schema::create('trabalhador', function (Blueprint $table) {
             $table->id('idt_trabalhador');
             $table->foreignId('idt_pessoa')
@@ -207,6 +206,7 @@ return new class extends Migration
             $table->text('txt_habilidade')->nullable(); // quais as suas habilidades para esta equipe
             $table->timestamps();
             $table->unique(['idt_pessoa', 'idt_evento', 'idt_equipe'], 'unique_voluntario');
+            $table->index(['idt_evento', 'idt_equipe'], 'voluntario_evento_equipe_idx');
         });
 
         // Tabela Ficha com os dados básicos do participante
@@ -235,6 +235,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->index('created_at');
+            $table->index(['idt_evento', 'created_at'], 'ficha_evento_created_at_idx');
         });
 
         // Tabela Ficha com os detalhes do vem
@@ -304,6 +305,7 @@ return new class extends Migration
             $table->foreignId('idt_situacao')
                 ->constrained('tipo_situacao', 'idt_situacao');
             $table->text('txt_analise')->nullable();
+            $table->index(['idt_ficha', 'idt_situacao'], 'ficha_analise_ficha_situacao_idx');
         });
 
         // Tabela Contato para tirar dúvidas externas

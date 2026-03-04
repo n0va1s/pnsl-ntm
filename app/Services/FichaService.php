@@ -42,7 +42,7 @@ class FichaService
 
         self::criarPessoaSaude(
             $pessoa->idt_pessoa,
-            $ficha->fichaSaude->map(fn($r) => [
+            $ficha->fichaSaude->map(fn ($r) => [
                 'idt_restricao' => $r->idt_restricao,
                 'txt_complemento' => $r->txt_complemento,
             ])->toArray()
@@ -55,7 +55,6 @@ class FichaService
     {
         optional(Pessoa::find($ficha->idt_pessoa))->delete();
     }
-
 
     public static function atualizarAprovacaoFicha($id): bool
     {

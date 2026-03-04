@@ -2,7 +2,6 @@
 
 use App\Models\Contato;
 use App\Models\Evento;
-use App\Models\Pessoa;
 use App\Models\TipoMovimento;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,6 +13,7 @@ function autenticarUsuarioComPessoa($test)
 {
     $user = User::factory()->create(['role' => 'user']);
     $test->actingAs($user);
+
     return $user;
 }
 
@@ -90,10 +90,10 @@ test('visitante pode enviar formulario de contato com dados validos', function (
     $movimento = TipoMovimento::factory()->create();
 
     $response = $this->post(route('home.contato'), [
-        'nom_contato'   => 'João da Silva',
-        'eml_contato'   => 'joao@email.com',
-        'tel_contato'   => '61999999999',
-        'txt_mensagem'  => 'Mensagem de teste',
+        'nom_contato' => 'João da Silva',
+        'eml_contato' => 'joao@email.com',
+        'tel_contato' => '61999999999',
+        'txt_mensagem' => 'Mensagem de teste',
         'idt_movimento' => $movimento->idt_movimento,
     ]);
 
@@ -162,7 +162,6 @@ test('visitante se autentica e pode acessar formulario publico de ficha SGM', fu
         ->assertStatus(200)
         ->assertViewIs('ficha.formSGM');
 });
-
 
 test('visitante nao autenticado nao pode acessar ficha VEM', function () {
     $response = $this->get(route('home.ficha.vem'));

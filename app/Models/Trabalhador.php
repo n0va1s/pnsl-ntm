@@ -41,6 +41,21 @@ class Trabalhador extends Model
         'ind_camiseta_pagou' => 'boolean',
     ];
 
+    protected static function booted()
+    {
+        parent::boot();
+        static::created(function ($trabalhador) {
+            $pontos = $trabalhador->ind_coordenador ? 4 : 2;
+            \App\Models\Gamificacao::create([
+                'idt_pessoa' => $trabalhador->idt_pessoa,
+                'qtd_pontos' => $pontos,
+                'des_motivo' => 'Trabalhou no evento: '.$trabalhador->evento->des_evento,
+                'origem_id' => $trabalhador->idt_trabalhador,
+                'origem_type' => get_class($trabalhador),
+            ]);
+        });
+    }
+
     public function pessoa()
     {
         return $this->belongsTo(Pessoa::class, 'idt_pessoa');
@@ -64,6 +79,7 @@ class Trabalhador extends Model
         if ($idt_evento) {
             return $query->where('idt_evento', $idt_evento);
         }
+
         return $query;
     }
 }

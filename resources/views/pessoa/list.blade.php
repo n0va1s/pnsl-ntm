@@ -70,7 +70,7 @@
                                 <td class="p-3 text-gray-700 dark:text-gray-300">{{ $pessoa->tel_pessoa }}</td>
 
                                 <td class="p-3 text-gray-700 dark:text-gray-300">
-                                    {{ $pessoa->parceiro ? 'Sim' : 'Não' }}
+                                    {{ $pessoa->parceiro_exists ? 'Sim' : 'Não' }}
                                 </td>
                                 <td class="p-3 flex items-center gap-2 justify-center">
                                     <a href="{{ route('pessoas.edit', $pessoa) }}"

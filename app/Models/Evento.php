@@ -37,6 +37,16 @@ class Evento extends Model
         'dat_termino' => 'date',
     ];
 
+    public function getTipoDescricaoAttribute()
+    {
+        return match ($this->tip_evento) {
+            'E' => 'Encontro Anual',
+            'P' => 'Pós-Encontro',
+            'D' => 'Desafio',
+            default => 'Outro',
+        };
+    }
+
     /**
      * Define o relacionamento de um evento com um tipo de movimento.
      */

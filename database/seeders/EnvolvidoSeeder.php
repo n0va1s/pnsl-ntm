@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Evento;
+use App\Models\Gamificacao;
 use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\Presenca;
@@ -19,17 +20,21 @@ class EnvolvidoSeeder extends Seeder
 
     public function run(): void
     {
-        // Garante que existam pessoas, eventos e equipes
-        if (Pessoa::count() === 0 || Evento::count() === 0 || TipoEquipe::count() === 0) {
-            $this->command->warn('Dependências faltando. Rodando PessoaSeeder, EventoSeeder e TipoEquipeSeeder...');
-            $this->call([
-                PessoaSeeder::class,
-                EventoSeeder::class,
+
+        Participante::factory()->count(200)->create();
+        //Presenca::factory()->count(200)->create();
+        // Estava apresentando erro de unique constraint violation, então optei por criar as presenças manualmente
+        $participantes = Participante::all();
+        foreach ($participantes as $p) {
+            Presenca::firstOrCreate([
+                'idt_participante' => $p->idt_participante,
+                'dat_presenca' => now()->format('Y-m-d')
+            ], [
+                'ind_presente' => rand(0, 1)
             ]);
         }
-        Participante::factory()->count(200)->create();
-        Presenca::factory()->count(200)->create();
         Voluntario::factory()->count(200)->create();
         Trabalhador::factory()->count(200)->create();
+        Gamificacao::factory()->count(200)->create();
     }
 }

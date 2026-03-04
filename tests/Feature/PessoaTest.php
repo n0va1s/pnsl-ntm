@@ -282,11 +282,10 @@ test('nao cria usuario se pessoa ja possui idt_usuario', function () {
     Mail::assertNothingSent();
 });
 
-
 test('nao permite definir a si mesmo como parceiro', function () {
     $pessoa = Pessoa::factory()->create();
 
-    expect(fn() => $pessoa->setParceiro($pessoa))
+    expect(fn () => $pessoa->setParceiro($pessoa))
         ->toThrow(InvalidArgumentException::class);
 });
 

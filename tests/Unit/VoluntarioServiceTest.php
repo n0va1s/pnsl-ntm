@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->service = new VoluntarioService();
+    $this->service = new VoluntarioService;
 });
 
 test('candidatura throws validation exception if skill is empty', function () {
@@ -22,8 +22,8 @@ test('candidatura throws validation exception if skill is empty', function () {
     $equipesData = [
         $equipe->idt_equipe => [
             'selecionado' => '1',
-            'habilidade' => ''
-        ]
+            'habilidade' => '',
+        ],
     ];
 
     expect(fn () => $this->service->candidatura($equipesData, $evento->idt_evento, $pessoa))
@@ -38,8 +38,8 @@ test('candidatura throws validation exception if skill is too short', function (
     $equipesData = [
         $equipe->idt_equipe => [
             'selecionado' => '1',
-            'habilidade' => 'curto' // 5 chars, needs > 5
-        ]
+            'habilidade' => 'curto', // 5 chars, needs > 5
+        ],
     ];
 
     expect(fn () => $this->service->candidatura($equipesData, $evento->idt_evento, $pessoa))
@@ -54,8 +54,8 @@ test('candidatura throws validation exception if skill has repeated chars', func
     $equipesData = [
         $equipe->idt_equipe => [
             'selecionado' => '1',
-            'habilidade' => 'Eu gosto de aaaaa' // repeated chars
-        ]
+            'habilidade' => 'Eu gosto de aaaaa', // repeated chars
+        ],
     ];
 
     expect(fn () => $this->service->candidatura($equipesData, $evento->idt_evento, $pessoa))
@@ -70,8 +70,8 @@ test('candidatura creates voluntario records successfully', function () {
     $equipesData = [
         $equipe->idt_equipe => [
             'selecionado' => '1',
-            'habilidade' => 'Habilidade válida para teste'
-        ]
+            'habilidade' => 'Habilidade válida para teste',
+        ],
     ];
 
     $this->service->candidatura($equipesData, $evento->idt_evento, $pessoa);
@@ -80,7 +80,7 @@ test('candidatura creates voluntario records successfully', function () {
         'idt_pessoa' => $pessoa->idt_pessoa,
         'idt_evento' => $evento->idt_evento,
         'idt_equipe' => $equipe->idt_equipe,
-        'txt_habilidade' => 'Habilidade válida para teste'
+        'txt_habilidade' => 'Habilidade válida para teste',
     ]);
 });
 
@@ -92,7 +92,7 @@ test('confirmacao promotes voluntario to trabalhador', function () {
     $voluntario = Voluntario::factory()->create([
         'idt_pessoa' => $pessoa->idt_pessoa,
         'idt_evento' => $evento->idt_evento,
-        'idt_equipe' => $equipe->idt_equipe
+        'idt_equipe' => $equipe->idt_equipe,
     ]);
 
     $this->service->confirmacao(
@@ -107,7 +107,7 @@ test('confirmacao promotes voluntario to trabalhador', function () {
         'idt_evento' => $evento->idt_evento,
         'idt_equipe' => $equipe->idt_equipe,
         'ind_coordenador' => true,
-        'ind_primeira_vez' => true
+        'ind_primeira_vez' => true,
     ]);
 
     $voluntario->refresh();

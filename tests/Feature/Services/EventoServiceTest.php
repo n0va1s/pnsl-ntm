@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->service = new EventoService();
+    $this->service = new EventoService;
     $this->movimento = \App\Models\TipoMovimento::factory()->create();
     $this->pessoa = Pessoa::factory()->create();
 });
@@ -21,22 +21,22 @@ describe('EventoService', function () {
     test('calcula pontuacao corretamente', function () {
         // Evento Participante (1 ponto)
         $eventoP = Evento::factory()->create([
-            'tip_evento' => 'P', 
+            'tip_evento' => 'P',
             'dat_inicio' => '2023-01-01',
-            'idt_movimento' => $this->movimento->idt_movimento
+            'idt_movimento' => $this->movimento->idt_movimento,
         ]);
         Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $eventoP->idt_evento]);
 
         // Evento Trabalhador (2 pontos) + Coordenador (2 pontos) = 4 pontos
         $eventoT = Evento::factory()->create([
-            'tip_evento' => 'A', 
+            'tip_evento' => 'A',
             'dat_inicio' => '2023-02-01',
-            'idt_movimento' => $this->movimento->idt_movimento
+            'idt_movimento' => $this->movimento->idt_movimento,
         ]);
         Trabalhador::factory()->create([
             'idt_pessoa' => $this->pessoa->idt_pessoa,
             'idt_evento' => $eventoT->idt_evento,
-            'ind_coordenador' => true
+            'ind_coordenador' => true,
         ]);
 
         // Bônus primeiro evento = 5 pontos
@@ -50,14 +50,14 @@ describe('EventoService', function () {
         // Pessoa com mais pontos
         $pessoaTop = Pessoa::factory()->create();
         $eventoT = Evento::factory()->create([
-            'tip_evento' => 'A', 
+            'tip_evento' => 'A',
             'dat_inicio' => '2023-01-01',
-            'idt_movimento' => $this->movimento->idt_movimento
+            'idt_movimento' => $this->movimento->idt_movimento,
         ]);
         Trabalhador::factory()->create(['idt_pessoa' => $pessoaTop->idt_pessoa, 'idt_evento' => $eventoT->idt_evento]); // 5+2=7 pts
 
         // Nossa pessoa sem eventos = 0 pts
-        
+
         $rank = $this->service->calcularRanking($pessoaTop);
         expect($rank)->toBe(1);
 
@@ -93,7 +93,7 @@ describe('EventoService', function () {
 
     test('confirma participacao', function () {
         $evento = Evento::factory()->create(['idt_movimento' => $this->movimento->idt_movimento]);
-        
+
         $this->service->confirmarParticipacao($evento, $this->pessoa);
 
         $this->assertDatabaseHas('participante', [

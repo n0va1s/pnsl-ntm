@@ -15,7 +15,7 @@ class ParticipanteFactory extends Factory
     {
         return [
             'idt_pessoa' => Pessoa::factory(),
-            'idt_evento' => Evento::inRandomOrder()->first()->idt_evento ?? Evento::factory(),
+            'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento,
             'tip_cor_troca' => $this->faker->randomElement(['vermelha', 'azul', 'verde', 'amarela', 'laranja']),
         ];
     }

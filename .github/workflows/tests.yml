@@ -1,117 +1,44 @@
-#!/usr/bin/env powershell
+name: Tests
 
-# ============================================
-# Script de Análise de Cobertura de Testes - VERSÃO SIMPLIFICADA
-# Focado em Cobertura Total e por Arquivo.
-# ============================================
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
 
-# Função para calcular cobertura de um arquivo (com tipagem forçada)
-function Get-FileCoverage {
-    param($file)
-    
-    # Se metrics não existir, retorna 0
-    if (-not $file.metrics) { return 0 }
-    
-    $metrics = $file.metrics
-    [int]$statements = $metrics.statements
-    [int]$coveredstatements = $metrics.coveredstatements
+jobs:
+  run-phpunit:
+    name: Executar Testes e Lint
+    runs-on: ubuntu-latest
 
-    if ($statements -eq 0) {
-        return 100
-    }
-    return [math]::Round(($coveredstatements / $statements) * 100, 2)
-}
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-# Função para obter nome curto do arquivo
-function Get-ShortName {
-    param($fullPath)
-    
-    # Divide por barra ou contrabarra e pega o último elemento, removendo .php
-    $parts = $fullPath -split '[\\/]'
-    return $parts[-1] -replace "\.php$", ""
-}
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, dom, curl, libxml, sqlite3
+          coverage: xdebug
 
-# --- Cabeçalho ---
-Write-Host ""
-Write-Host "========================================"
-Write-Host "  Análise de Cobertura - SIMPLES"
-Write-Host "========================================"
-Write-Host ""
+      - name: Add Flux Credentials
+        run: composer config http-basic.composer.fluxui.dev "${{ secrets.FLUX_USERNAME }}" "${{ secrets.FLUX_LICENSE_KEY }}"
 
-# --- 1. Leitura do XML (Método robusto) ---
-if (-not (Test-Path "coverage.xml")) {
-    Write-Host "Arquivo coverage.xml nao encontrado! Execute 'sail test --coverage --min=0'." -ForegroundColor Red
-    exit 1
-}
+      - name: Instalar Dependências
+        run: |
+          composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+          npm install
 
-try {
-    # Usando Get-Content | ConvertFrom-Xml para leitura robusta (contra erros de parsing)
-    $xmlContent = Get-Content "coverage.xml" -Encoding UTF8 -Raw
-    [xml]$coverage = $xmlContent | ConvertFrom-Xml
-}
-catch {
-    Write-Host "Erro ao ler o arquivo XML: $($_.Exception.Message)" -ForegroundColor Red
-    exit 1
-}
+      - name: Check Code Style (Pint)
+        run: vendor/bin/pint --test
 
-# Coletar dados de cobertura
-$coverageData = @()
-
-$packages = @($coverage.coverage.project.package)
-foreach ($package in $packages) {
-    # Usando SelectNodes (XPath) para selecionar explicitamente apenas os elementos <file>
-    if (-not $package.SelectNodes) { continue }
-    $files = $package.SelectNodes("file")
-    
-    if (-not $files) { continue } 
-    
-    foreach ($file in $files) {
-        
-        # Ignora nós que não são elementos XML válidos (evita o erro 'valor para XmlDocument')
-        if ($file.GetType().Name -ne 'XmlElement') { continue }
-        if (-not $file.name -or -not $file.metrics) { continue } 
-        
-        $fullPath = $file.name
-        $shortName = Get-ShortName $fullPath
-        
-        $coverage = Get-FileCoverage $file 
-        $metrics = $file.metrics
-        
-        $coverageData += [PSCustomObject]@{
-            Name              = $shortName
-            Coverage          = $coverage
-            Statements        = [int]$metrics.statements
-            CoveredStatements = [int]$metrics.coveredstatements
-            FullPath          = $fullPath
-        }
-    }
-}
-
-# ============================================
-# RELATÓRIO
-# ============================================
-
-# Calcular estatísticas gerais
-$totalStatements = ($coverageData | Measure-Object -Property Statements -Sum).Sum
-$totalCovered = ($coverageData | Measure-Object -Property CoveredStatements -Sum).Sum
-$overallCoverage = if ($totalStatements -gt 0) { [math]::Round(($totalCovered / $totalStatements) * 100, 2) } else { 0 }
-
-# --- 1. Resumo Geral ---
-Write-Host "RESUMO GERAL" -ForegroundColor Green
-Write-Host "======================================" -ForegroundColor Green
-Write-Host "Cobertura Total: $overallCoverage%" -ForegroundColor Yellow
-Write-Host "Statements Cobertos: $totalCovered / $totalStatements"
-Write-Host ""
-
-# --- 2. Cobertura por Arquivo (Ordenado por Cobertura Baixa) ---
-Write-Host "COBERTURA DETALHADA POR ARQUIVO" -ForegroundColor Cyan
-Write-Host "======================================" -ForegroundColor Gray
-
-# Tabela formatada: Ordena pela Cobertura (Ascendente) para ver os piores primeiro
-$coverageData | 
-    Sort-Object Coverage | 
-    Format-Table Name, Coverage, Statements, CoveredStatements -AutoSize
-
-Write-Host ""
-Write-Host "Execucao concluida."
-Write-Host ""
+      - name: Preparar Ambiente e Rodar Testes
+        run: |
+          cp .env.example .env.testing
+          php artisan key:generate --env=testing
+          touch database/database.sqlite
+          vendor/bin/phpunit --coverage-text
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite

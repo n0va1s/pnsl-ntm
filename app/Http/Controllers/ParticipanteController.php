@@ -35,7 +35,7 @@ class ParticipanteController extends Controller
             ->when($search, function ($query, $search) {
                 return $query->whereHas('pessoa', function ($q) use ($search) {
                     $q->where('nom_pessoa', 'like', "%{$search}%")
-                      ->orWhere('nom_apelido', 'like', "%{$search}%");
+                        ->orWhere('nom_apelido', 'like', "%{$search}%");
                 });
             })->when($eventoId, function ($query, $eventoId) {
                 return $query->where('idt_evento', $eventoId);

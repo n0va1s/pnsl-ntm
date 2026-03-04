@@ -4,12 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Mail\BoasVindasMail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable
@@ -43,17 +40,18 @@ class User extends Authenticatable
         parent::boot();
 
         static::created(function (User $user) {
-            $user->pessoa()->create([
-                'idt_usuario' => $user->id,
-                'nom_pessoa' => $user->name,
-                'eml_pessoa' => $user->email,
-                'dat_nascimento' => '1900-01-01',
-            ]);
+            $pessoaCadastrada = \App\Models\Pessoa::where('eml_pessoa', $user->email)->first();
 
-            try {
-                Mail::to($user->email)->send(new BoasVindasMail($user, $user->pessoa->dat_nascimento->format('Ymd')));
-            } catch (\Exception $e) {
-                Log::error('Falha ao enviar e-mail de boas-vindas para '.$user->email.': '.$e->getMessage());
+            if (! $pessoaCadastrada) {
+                $user->pessoa()->create([
+                    'nom_pessoa' => $user->name,
+                    'eml_pessoa' => $user->email,
+                    'dat_nascimento' => '1900-01-01',
+                ]);
+            } else {
+                $pessoaCadastrada->idt_usuario = $user->id;
+                // Para evitar loop infinito, salvar a pessoa sem disparar eventos
+                $pessoaCadastrada->saveQuietly();
             }
         });
     }

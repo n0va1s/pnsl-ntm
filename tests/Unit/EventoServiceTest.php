@@ -12,7 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->service = new EventoService();
+    $this->service = new EventoService;
 });
 
 test('calculates score correctly', function () {
@@ -103,7 +103,7 @@ test('timeline structure', function () {
     $evento = Evento::factory()->create([
         'idt_movimento' => $movimento->idt_movimento,
         'dat_inicio' => Carbon::create(2023, 5, 15),
-        'tip_evento' => 'A'
+        'tip_evento' => 'A',
     ]);
 
     Trabalhador::factory()->create([
@@ -115,14 +115,14 @@ test('timeline structure', function () {
 
     expect($timeline)->toBeArray();
     expect($timeline)->not->toBeEmpty();
-    
+
     // Check decade grouping
     expect($timeline[0]['decade'])->toBe('2020s');
-    
+
     // Check year grouping
     $years = $timeline[0]['years'];
     expect($years[0]['year'])->toBe(2023);
-    
+
     // Check event details
     $events = $years[0]['events'];
     expect($events)->toHaveCount(1);

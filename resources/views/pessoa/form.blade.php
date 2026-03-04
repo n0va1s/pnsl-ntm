@@ -179,10 +179,10 @@
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 
         @error('idt_parceiro') border-red-500 @enderror">
                             <option value="">Selecione o parceiro(a)</option>
-                            @foreach ($pessoasDisponiveis as $disponivel)
-                                <option value="{{ $disponivel->idt_pessoa }}"
-                                    {{ old('idt_parceiro', $pessoa->idt_parceiro) == $disponivel->idt_pessoa ? 'selected' : '' }}>
-                                    {{ $disponivel->nom_pessoa }}
+                            @foreach ($pessoasDisponiveis as $id => $nome)
+                                <option value="{{ $id }}"
+                                    {{ old('idt_parceiro', $pessoa->idt_parceiro) == $id ? 'selected' : '' }}>
+                                    {{ $nome }}
                                 </option>
                             @endforeach
                         </select>
@@ -205,7 +205,7 @@
                         @error('med_foto')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Imagem até 2MB nos formatos JPG, JPEG,
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Imagem até 5MB nos formatos JPG, JPEG,
                             PNG</p>
                     </div>
 

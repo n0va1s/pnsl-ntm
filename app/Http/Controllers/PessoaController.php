@@ -11,6 +11,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PessoaController extends Controller
@@ -44,17 +45,11 @@ class PessoaController extends Controller
             'tel_pessoa',
             'eml_pessoa',
             'created_at'
-        )->with([
-            'foto' => function ($query) {
-                $query->select('idt_pessoa', 'caminho_foto');
-            },
-            'usuario' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'restricoes',
-            'parceiro',
-
-        ])
+        )
+            ->with([
+                'foto:idt_pessoa,med_foto',
+            ])
+            ->withExists('parceiro') // parceiro_exists
             ->when($search, function ($query, $search) {
                 return $query->searchByName($search);
             })
@@ -166,37 +161,36 @@ class PessoaController extends Controller
     {
         $start = microtime(true);
         $context = $this->getLogContext(request());
-        Log::info('Acesso ao formulário de edição de pessoa', array_merge($context, ['pessoa_id' => $id]));
 
-        $pessoa = Pessoa::with(['foto', 'usuario', 'restricoes'])->findOrFail($id);
+        $pessoa = Pessoa::with([
+            'foto:idt_pessoa,med_foto',
+            'usuario:id,name',
+            'restricoes',
+        ])->findOrFail($id);
 
         $restricoes = TipoRestricao::select(
             'idt_restricao',
             'tip_restricao',
-            'des_restricao',
-            'txt_restricao'
+            'des_restricao'
         )->get();
 
-        $pessoasDisponiveis = Pessoa::whereNull('idt_parceiro')
-            ->when($pessoa->idt_parceiro, function ($query) use ($pessoa) {
+        $pessoasDisponiveis = Pessoa::where(function ($query) use ($pessoa) {
+            $query->whereNull('idt_parceiro');
+            if ($pessoa->idt_parceiro) {
                 $query->orWhere('idt_pessoa', $pessoa->idt_parceiro);
-            })
-            ->where('idt_pessoa', '!=', $pessoa->idt_pessoa) // Não pode ser parceira de si mesma
+            }
+        })
+            ->where('idt_pessoa', '!=', $pessoa->idt_pessoa)
             ->orderBy('nom_pessoa')
-            ->get();
+            ->pluck('nom_pessoa', 'idt_pessoa');
 
         $duration = round((microtime(true) - $start) * 1000, 2);
-        Log::notice('Dados obtidos', array_merge($context, [
-            'total_restricoes' => count($restricoes),
-            'total_pessoas_disponiveis' => $pessoasDisponiveis->count(),
+        Log::notice('Dados para edição obtidos', array_merge($context, [
+            'pessoa_id' => $id,
             'duration_ms' => $duration,
         ]));
 
-        return view('pessoa.form', [
-            'pessoa' => $pessoa,
-            'restricoes' => $restricoes,
-            'pessoasDisponiveis' => $pessoasDisponiveis,
-        ]);
+        return view('pessoa.form', compact('pessoa', 'restricoes', 'pessoasDisponiveis'));
     }
 
     public function update(PessoaRequest $request, $id): RedirectResponse
@@ -219,12 +213,21 @@ class PessoaController extends Controller
         // Foto
         if ($request->hasFile('med_foto')) {
             $arquivo = $request->file('med_foto');
-            $caminho = $arquivo->store('fotos/pessoa/', 'public'); // pasta 'storage/app/public/fotos/pessoa/'
+            $caminho = $arquivo->store('fotos/pessoa', 'public');
 
-            if ($pessoa->foto) {
-                $pessoa->foto()->update(['med_foto' => $caminho]);
-            } else {
-                $pessoa->foto()->create(['med_foto' => $caminho]);
+            if ($caminho) {
+                $fotoExistente = \App\Models\PessoaFoto::where('idt_pessoa', $pessoa->idt_pessoa)->first();
+
+                if ($fotoExistente) {
+                    // Deleta o arquivo físico antigo
+                    if (Storage::disk('public')->exists($fotoExistente->med_foto)) {
+                        Storage::disk('public')->delete($fotoExistente->med_foto);
+                    }
+
+                    $fotoExistente->update(['med_foto' => $caminho]);
+                } else {
+                    $pessoa->foto()->create(['med_foto' => $caminho]);
+                }
             }
         }
 

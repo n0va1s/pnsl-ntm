@@ -21,6 +21,22 @@ class Participante extends Model
         'tip_cor_troca',
     ];
 
+    protected static function booted()
+    {
+        parent::boot();
+
+        static::created(function (Participante $participante) {
+            $pontos = ($participante->evento->tip_evento === 'D') ? 3 : 1;
+            \App\Models\Gamificacao::create([
+                'idt_pessoa' => $participante->idt_pessoa,
+                'qtd_pontos' => $pontos,
+                'des_motivo' => 'Participou do evento: '.$participante->evento->des_evento,
+                'origem_id' => $participante->idt_participante,
+                'origem_type' => get_class($participante),
+            ]);
+        });
+    }
+
     public function evento()
     {
         return $this->belongsTo(Evento::class, 'idt_evento');

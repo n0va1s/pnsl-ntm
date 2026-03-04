@@ -14,7 +14,7 @@ class FichaSGMFactory extends Factory
     {
         return [
             'idt_ficha' => Ficha::factory(),
-            'idt_falar_com' => TipoResponsavel::factory(),
+            'idt_falar_com' => TipoResponsavel::inRandomOrder()->first()?->idt_responsavel,
             'des_mora_quem' => $this->faker->words(3, true),
             'nom_pai' => $this->faker->name('male'),
             'tel_pai' => $this->faker->numerify('###########'),
