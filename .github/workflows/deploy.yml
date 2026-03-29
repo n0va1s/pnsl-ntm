@@ -54,8 +54,16 @@ jobs:
           npm install
           npm run build
 
+      - name: Debug FTP Secrets
+        run: |
+          echo "HOST: ${{ secrets.HOST }}"
+          echo "USER: ${{ secrets.USER }}"
+          echo "PASS length: ${#PASS}"
+        env:
+          PASS: ${{ secrets.PASS }}
+
       - name: Sync FTP para Hostinger
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
