@@ -8,22 +8,25 @@
             <p class="text-gray-700 mt-1 dark:text-gray-400">Gerencie os contatos recebidos.</p>
         </div>
 
-        <div class="flex justify-between items-center mb-4">
-            <form method="GET" action="{{ route('contatos.index') }}" class="flex items-center gap-2 w-full max-w-md">
+        <div class="mb-4">
+            {{-- Removido o max-w-md e ajustado o flex para lidar com o preenchimento total --}}
+            <form method="GET" action="{{ route('contatos.index') }}" class="flex items-center gap-2 w-full">
                 <label for="search" class="sr-only">Buscar</label>
+
+                {{-- O input com w-full aqui fará com que ele estique para preencher o espaço restante --}}
                 <input type="text" name="search" id="search" value="{{ $search }}"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Buscar por descrição ou número" />
+                    placeholder="Buscar por nome ou número" />
+
                 <button type="submit"
-                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    aria-label="Cadastrar um novo evento">
-                    <x-heroicon-c-arrow-long-right class="w-5 h-5 mr-2" />
-                    Buscar
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none whitespace-nowrap">
+                    <x-heroicon-s-magnifying-glass class="w-5 h-5 mr-2" />
+                    Filtrar
                 </button>
+
                 @if ($search)
                     <a href="{{ route('contatos.index') }}"
-                        class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:outline-none"
-                        aria-label="Limpar a busca">
+                        class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:outline-none whitespace-nowrap">
                         <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
                         Limpar
                     </a>

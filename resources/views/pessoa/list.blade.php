@@ -1,40 +1,53 @@
-<x-layouts.app :title="'Pessoa'">
-    <section class="p-6 w-full max-w-[80vw] ml-auto">
-        <div>
-            <x-session-alert />
-        </div>
-
-        <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Lista de Pessoas</h1>
-            <p class="text-gray-700 mt-1 dark:text-gray-400">Visualize e gerencie os dados básicos dos participantes ou
-                trabalhadores.</p>
-        </div>
-        <div class="flex justify-between items-center mb-4">
-            <form method="GET" action="{{ route('pessoas.index') }}" class="flex items-center gap-2 w-full max-w-md">
-                <input type="text" name="search" id="search" value="{{ $search }}"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Buscar por nome ou apelido" />
-                <button type="submit"
-                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                    <x-heroicon-c-arrow-long-right class="w-5 h-5 mr-2" />
-                    Buscar
-                </button>
-                @if ($search)
-                    <a href="{{ route('pessoas.index') }}"
-                        class="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400">
-                        <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
-                        Limpar
-                    </a>
-                @endif
-            </form>
-            <div class="flex justify-end mb-4">
-                <a href="{{ route('pessoas.create') }}"
-                    class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none">
-                    <x-heroicon-s-plus class="w-5 h-5 mr-2" />
-                    Nova Pessoa
-                </a>
+<x-layouts.app :title="'Gerenciar Pessoas'">
+    <section class="p-6 w-full max-w-7xl mx-auto">
+        <x-session-alert />
+        {{-- Cabeçalho Reorganizado --}}
+        <header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Lista de Pessoas</h1>
+                <p class="text-gray-600 mt-1 dark:text-gray-400">
+                    Visualize e gerencie os dados básicos dos participantes ou trabalhadores.
+                </p>
             </div>
-        </div>
+
+            {{-- Botão Nova Pessoa movido para o topo --}}
+            <a href="{{ route('pessoas.create') }}"
+                class="inline-flex items-center px-5 py-2.5 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition-all shadow-md active:scale-95 font-bold">
+                <x-heroicon-s-plus class="w-5 h-5 mr-2" />
+                Nova Pessoa
+            </a>
+        </header>
+
+        {{-- Filtros Simplificados --}}
+        <nav class="bg-white dark:bg-zinc-800 p-5 rounded-xl border border-gray-200 dark:border-zinc-700 shadow-sm mb-8">
+            <form method="GET" action="{{ route('pessoas.index') }}"
+                class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+
+                {{-- Campo de Busca (Agora ocupa 9 colunas para preencher mais espaço) --}}
+                <div class="md:col-span-9">
+                    <input type="text" name="search" value="{{ $search }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-zinc-900 dark:border-zinc-600 dark:text-gray-200"
+                        placeholder="Buscar por nome ou apelido...">
+                </div>
+
+                {{-- Ações de Filtro (Ocupa as 3 colunas restantes) --}}
+                <div class="md:col-span-3 flex gap-2">
+                    <button type="submit"
+                        class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none flex justify-center items-center font-bold transition">
+                        <x-heroicon-s-magnifying-glass class="w-5 h-5 mr-2" />
+                        Filtrar
+                    </button>
+
+                    @if ($search)
+                        <a href="{{ route('pessoas.index') }}"
+                            class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 flex items-center dark:bg-zinc-700 dark:text-gray-300 transition"
+                            title="Limpar busca">
+                            <x-heroicon-o-x-mark class="w-5 h-5" />
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </nav>
         <div class="overflow-x-auto mt-4">
             @if ($pessoas->isNotEmpty())
                 <table
