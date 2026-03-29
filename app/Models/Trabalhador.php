@@ -46,7 +46,7 @@ class Trabalhador extends Model
         parent::boot();
         static::created(function ($trabalhador) {
             $pontos = $trabalhador->ind_coordenador ? 4 : 2;
-            \App\Models\Gamificacao::create([
+            Gamificacao::create([
                 'idt_pessoa' => $trabalhador->idt_pessoa,
                 'qtd_pontos' => $pontos,
                 'des_motivo' => 'Trabalhou no evento: '.$trabalhador->evento->des_evento,

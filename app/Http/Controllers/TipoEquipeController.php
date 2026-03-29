@@ -16,7 +16,7 @@ class TipoEquipeController extends Controller
      */
     public function index()
     {
-        $equipes = \App\Models\TipoEquipe::all();
+        $equipes = TipoEquipe::all();
 
         return view('configuracoes.TipoEquipeList', compact('equipes'));
     }

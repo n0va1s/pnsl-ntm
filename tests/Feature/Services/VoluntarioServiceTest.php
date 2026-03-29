@@ -3,6 +3,7 @@
 use App\Models\Evento;
 use App\Models\Pessoa;
 use App\Models\TipoEquipe;
+use App\Models\TipoMovimento;
 use App\Models\Voluntario;
 use App\Services\VoluntarioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,7 +13,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->service = new VoluntarioService;
-    $this->movimento = \App\Models\TipoMovimento::factory()->create();
+    $this->movimento = TipoMovimento::factory()->create();
     $this->pessoa = Pessoa::factory()->create();
     $this->evento = Evento::factory()->create(['idt_movimento' => $this->movimento->idt_movimento]);
     $this->equipe1 = TipoEquipe::factory()->create(['idt_movimento' => $this->movimento->idt_movimento]);

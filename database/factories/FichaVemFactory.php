@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use App\Models\Ficha;
+use App\Models\FichaVem;
 use App\Models\TipoResponsavel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FichaVemFactory extends Factory
 {
-    protected $model = \App\Models\FichaVem::class;
+    protected $model = FichaVem::class;
 
     public function definition(): array
     {

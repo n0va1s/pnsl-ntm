@@ -16,7 +16,7 @@ class TipoRestricaoController extends Controller
      */
     public function index()
     {
-        $restricoes = \App\Models\TipoRestricao::all();
+        $restricoes = TipoRestricao::all();
 
         return view('configuracoes.TipoRestricaoList', compact('restricoes'));
     }

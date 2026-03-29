@@ -11,11 +11,17 @@
 |
 */
 
+use App\Models\Evento;
+use App\Models\Pessoa;
+use App\Models\TipoMovimento;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
-pest()->extend(Tests\TestCase::class)
-    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
     ->in('Feature', 'Unit');
 
 /*
@@ -50,35 +56,35 @@ afterEach(function () {
     Cache::flush();
 });
 
-function createUser(): \App\Models\User
+function createUser(): User
 {
-    $user = \App\Models\User::factory()->create();
-    \App\Models\Pessoa::factory()->for($user, 'usuario')->create();
+    $user = User::factory()->create();
+    Pessoa::factory()->for($user, 'usuario')->create();
 
     return $user;
 }
 
 function createMovimentos(): void
 {
-    \App\Models\TipoMovimento::firstOrCreate([
+    TipoMovimento::firstOrCreate([
         'des_sigla' => 'ECC',
         'nom_movimento' => 'Encontro de Casais com Cristo',
         'dat_inicio' => '1980-01-01',
     ]);
 
-    \App\Models\TipoMovimento::firstOrCreate([
+    TipoMovimento::firstOrCreate([
         'des_sigla' => 'VEM',
         'nom_movimento' => 'Encontro de Adolescentes com Cristo',
         'dat_inicio' => '2000-07-01',
     ]);
 
-    \App\Models\TipoMovimento::firstOrCreate([
+    TipoMovimento::firstOrCreate([
         'des_sigla' => 'Segue-Me',
         'nom_movimento' => 'Encontro de Jovens com Cristo',
         'dat_inicio' => '1990-12-31',
     ]);
 
-    $tipoMovimento = \App\Models\TipoMovimento::all()->first()->idt_movimento;
+    $tipoMovimento = TipoMovimento::all()->first()->idt_movimento;
 
     $equipes = [
         ['des_grupo' => 'Alimentação', 'idt_movimento' => $tipoMovimento],
@@ -97,16 +103,16 @@ function createMovimentos(): void
     DB::table('tipo_equipe')->insertOrIgnore($equipes);
 }
 
-function createEvento(): \App\Models\Evento
+function createEvento(): Evento
 {
-    return \App\Models\Evento::factory()->create([
-        'idt_movimento' => \App\Models\TipoMovimento::all()->first()->idt_movimento,
+    return Evento::factory()->create([
+        'idt_movimento' => TipoMovimento::all()->first()->idt_movimento,
     ]);
 }
 
-function createPessoa(): \App\Models\Pessoa
+function createPessoa(): Pessoa
 {
-    return \App\Models\Pessoa::factory()->create([
+    return Pessoa::factory()->create([
         'idt_parceiro' => null,
     ]);
 }

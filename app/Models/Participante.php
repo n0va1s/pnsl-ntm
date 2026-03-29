@@ -27,7 +27,7 @@ class Participante extends Model
 
         static::created(function (Participante $participante) {
             $pontos = ($participante->evento->tip_evento === 'D') ? 3 : 1;
-            \App\Models\Gamificacao::create([
+            Gamificacao::create([
                 'idt_pessoa' => $participante->idt_pessoa,
                 'qtd_pontos' => $pontos,
                 'des_motivo' => 'Participou do evento: '.$participante->evento->des_evento,

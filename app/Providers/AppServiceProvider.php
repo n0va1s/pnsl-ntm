@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Gamificacao;
+use App\Observers\GamificacaoObserver;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \App\Models\Gamificacao::observe(\App\Observers\GamificacaoObserver::class);
+        Gamificacao::observe(GamificacaoObserver::class);
     }
 
     /**

@@ -16,7 +16,7 @@ class TipoResponsavelController extends Controller
      */
     public function index()
     {
-        $responsavel = \App\Models\TipoResponsavel::all();
+        $responsavel = TipoResponsavel::all();
 
         return view('configuracoes.TipoResponsavelList', compact('responsavel'));
     }

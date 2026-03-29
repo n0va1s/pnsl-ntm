@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Ficha;
+use App\Models\FichaEcc;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FichaEccFactory extends Factory
 {
-    protected $model = \App\Models\FichaEcc::class;
+    protected $model = FichaEcc::class;
 
     public function definition(): array
     {

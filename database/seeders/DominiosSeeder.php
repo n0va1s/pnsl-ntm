@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\TipoMovimento;
 use Database\Factories\TipoEquipeFactory;
 use Database\Factories\TipoMovimentoFactory;
 use Database\Factories\TipoResponsavelFactory;
@@ -13,7 +14,7 @@ class DominiosSeeder extends Seeder
 {
     public function run(): void
     {
-        if (\App\Models\TipoMovimento::count() > 0) {
+        if (TipoMovimento::count() > 0) {
             return;
         }
         TipoRestricaoFactory::seedDefaults();

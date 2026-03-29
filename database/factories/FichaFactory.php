@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Evento;
+use App\Models\Ficha;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FichaFactory extends Factory
 {
-    protected $model = \App\Models\Ficha::class;
+    protected $model = Ficha::class;
 
     public function definition(): array
     {

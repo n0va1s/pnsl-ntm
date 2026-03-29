@@ -98,7 +98,7 @@ class Evento extends Model
     /**
      * Scope para busca insensível a maiúsculas e minúsculas nos campos des_evento e num_evento.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeSearch(Builder $query, ?string $search)
     {
@@ -115,7 +115,7 @@ class Evento extends Model
     /**
      * Scope para buscar eventos por ID de movimento.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeMovimento(Builder $query, ?int $idt_movimento)
     {

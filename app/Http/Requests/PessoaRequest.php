@@ -60,7 +60,7 @@ class PessoaRequest extends FormRequest
 
             'med_foto.image' => 'O arquivo deve ser uma imagem.',
             'med_foto.mimes' => 'A imagem deve estar nos formatos: jpeg, png, jpg, webp.',
-            'med_foto.max'   => 'A imagem não pode ter mais de 5MB.',
+            'med_foto.max' => 'A imagem não pode ter mais de 5MB.',
 
             'ind_toca_violao.boolean' => 'Valor inválido para o campo "Toca Violão".',
             'ind_consentimento.boolean' => 'Valor inválido para o campo "Consentimento".',

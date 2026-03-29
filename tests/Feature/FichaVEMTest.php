@@ -4,6 +4,7 @@ use App\Models\Ficha;
 use App\Models\FichaVem;
 use App\Models\TipoMovimento;
 use App\Models\TipoResponsavel;
+use App\Models\TipoRestricao;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -16,7 +17,7 @@ beforeEach(function () {
     $this->evento = createEvento();
 
     $this->responsavel = TipoResponsavel::factory()->create();
-    $this->restricoes = \App\Models\TipoRestricao::factory()->count(2)->create();
+    $this->restricoes = TipoRestricao::factory()->count(2)->create();
 });
 
 describe('FichaVemController', function () {

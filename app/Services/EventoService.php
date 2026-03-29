@@ -6,6 +6,7 @@ use App\Models\Evento;
 use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\Trabalhador;
+use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -38,13 +39,13 @@ class EventoService
             ->whereHas('evento')
             ->with(array_merge($relacoesBase, ['equipe:idt_equipe,des_equipe']))
             ->get()
-            ->map(fn($t) => $this->formataTimeline($t, 'Trabalhador'));
+            ->map(fn ($t) => $this->formataTimeline($t, 'Trabalhador'));
 
         $participacoes = Participante::where('idt_pessoa', $pessoa->idt_pessoa)
             ->whereHas('evento')
             ->with($relacoesBase)
             ->get()
-            ->map(fn($p) => $this->formataTimeline($p, 'Participante'));
+            ->map(fn ($p) => $this->formataTimeline($p, 'Participante'));
 
         $timeline = $trabalhos->concat($participacoes)->sortByDesc('date');
 
@@ -54,9 +55,9 @@ class EventoService
     private function agruparEventosPorAno(Collection $eventos): array
     {
         return $eventos
-            ->groupBy(fn($entry) => \Carbon\Carbon::parse($entry['date'])->year) // Agrupa por ano
+            ->groupBy(fn ($entry) => Carbon::parse($entry['date'])->year) // Agrupa por ano
             ->sortKeysDesc() // Garante o mais recente primeiro
-            ->map(fn($yearEntries, $year) => [
+            ->map(fn ($yearEntries, $year) => [
                 'year' => $year,
                 'events' => $yearEntries->values()->all(),
             ])
@@ -67,7 +68,7 @@ class EventoService
     private function formataTimeline($model, string $type): array
     {
         // Verifica se o relacionamento 'evento' existe
-        if (!$model->evento) {
+        if (! $model->evento) {
             return [
                 'type' => $type,
                 'date' => null,
@@ -103,7 +104,7 @@ class EventoService
 
     public function fotoUpload(Evento $evento, ?UploadedFile $file): void
     {
-        if (!$file) {
+        if (! $file) {
             return;
         }
 

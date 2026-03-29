@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use App\Models\Ficha;
+use App\Models\FichaSGM;
 use App\Models\TipoResponsavel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FichaSGMFactory extends Factory
 {
-    protected $model = \App\Models\FichaSGM::class;
+    protected $model = FichaSGM::class;
 
     public function definition(): array
     {

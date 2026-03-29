@@ -13,7 +13,7 @@ class TipoSituacaoController extends Controller
 
     public function index()
     {
-        $situacoes = \App\Models\TipoSituacao::all();
+        $situacoes = TipoSituacao::all();
 
         return view('configuracoes.TipoSituacaoList', compact('situacoes'));
 

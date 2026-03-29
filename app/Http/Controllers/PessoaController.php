@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PessoaRequest;
 use App\Models\Pessoa;
+use App\Models\PessoaFoto;
 use App\Models\TipoRestricao;
 use App\Services\UserService;
 use App\Traits\LogContext;
@@ -216,7 +217,7 @@ class PessoaController extends Controller
             $caminho = $arquivo->store('fotos/pessoa', 'public');
 
             if ($caminho) {
-                $fotoExistente = \App\Models\PessoaFoto::where('idt_pessoa', $pessoa->idt_pessoa)->first();
+                $fotoExistente = PessoaFoto::where('idt_pessoa', $pessoa->idt_pessoa)->first();
 
                 if ($fotoExistente) {
                     // Deleta o arquivo físico antigo

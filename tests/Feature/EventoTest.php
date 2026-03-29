@@ -8,6 +8,7 @@ use App\Models\TipoEquipe;
 use App\Models\TipoMovimento;
 use App\Models\Trabalhador;
 use App\Services\EventoService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -812,8 +813,8 @@ describe('Evento Model', function () {
             'dat_termino' => '2023-01-17',
         ]);
 
-        expect($evento->dat_inicio)->toBeInstanceOf(\Carbon\Carbon::class)
-            ->and($evento->dat_termino)->toBeInstanceOf(\Carbon\Carbon::class);
+        expect($evento->dat_inicio)->toBeInstanceOf(Carbon::class)
+            ->and($evento->dat_termino)->toBeInstanceOf(Carbon::class);
     });
 
     test('busca por descrição do evento', function () {

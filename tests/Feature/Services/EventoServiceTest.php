@@ -3,6 +3,7 @@
 use App\Models\Evento;
 use App\Models\Participante;
 use App\Models\Pessoa;
+use App\Models\TipoMovimento;
 use App\Models\Trabalhador;
 use App\Services\EventoService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -13,7 +14,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->service = new EventoService;
-    $this->movimento = \App\Models\TipoMovimento::factory()->create();
+    $this->movimento = TipoMovimento::factory()->create();
     $this->pessoa = Pessoa::factory()->create();
 });
 

@@ -12,8 +12,8 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class EventoController extends Controller
@@ -32,30 +32,30 @@ class EventoController extends Controller
         $eventos = Evento::query()
             ->with(['movimento:idt_movimento,des_sigla'])
             ->withCount([
-                'participantes as participantes_count' => fn($q) => $q->whereNull('tip_cor_troca'),
-                'participantes as inscritos_count' => fn($q) => $q->whereNotNull('tip_cor_troca'),
+                'participantes as participantes_count' => fn ($q) => $q->whereNull('tip_cor_troca'),
+                'participantes as inscritos_count' => fn ($q) => $q->whereNotNull('tip_cor_troca'),
 
                 // contar IDs de pessoas únicos para evitar duplicidade por múltiplas equipes
-                'voluntarios as voluntarios_count' => fn($q) => $q
+                'voluntarios as voluntarios_count' => fn ($q) => $q
                     ->select(DB::raw('count(distinct(idt_pessoa))'))
                     ->whereNull('idt_trabalhador'),
 
-                'voluntarios as trabalhadores_count' => fn($q) => $q
+                'voluntarios as trabalhadores_count' => fn ($q) => $q
                     ->select(DB::raw('count(distinct(idt_pessoa))'))
                     ->whereNotNull('idt_trabalhador'),
             ])
             ->when($pessoa, function ($q) use ($pessoa) {
                 $q->withExists([
-                    'participantes as ja_inscrito_participante' => fn($q) => $q
-                        ->where('idt_pessoa', $pessoa->idt_pessoa)
+                    'participantes as ja_inscrito_participante' => fn ($q) => $q
+                        ->where('idt_pessoa', $pessoa->idt_pessoa),
                 ])
                     ->withExists([
-                        'voluntarios as ja_inscrito_voluntario' => fn($q) => $q
-                            ->where('idt_pessoa', $pessoa->idt_pessoa)
+                        'voluntarios as ja_inscrito_voluntario' => fn ($q) => $q
+                            ->where('idt_pessoa', $pessoa->idt_pessoa),
                     ]);
             })
-            ->when($request->search, fn($q) => $q->search($request->search))
-            ->when($request->idt_movimento, fn($q) => $q->movimento($request->idt_movimento))
+            ->when($request->search, fn ($q) => $q->search($request->search))
+            ->when($request->idt_movimento, fn ($q) => $q->movimento($request->idt_movimento))
             ->orderBy('dat_inicio', 'desc')
             ->paginate(12)
             ->withQueryString();
@@ -160,7 +160,7 @@ class EventoController extends Controller
     /**
      * Remove o evento do banco de dados.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function destroy(Evento $evento)
     {
@@ -173,7 +173,7 @@ class EventoController extends Controller
         ]));
 
         try {
-            //deleta a foto e o evento    
+            // deleta a foto e o evento
             $this->eventoService->fotoDelete($evento);
 
             $duration = round((microtime(true) - $start) * 1000, 2);
