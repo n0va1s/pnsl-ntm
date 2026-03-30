@@ -2,5 +2,5 @@
     <x-app-logo-icon class="size-10 fill-current text-white dark:text-black" />
 </div>
 <div class="ms-1 grid flex-1 text-start text-sm">
-    <span class="mb-0.5 truncate leading-tight font-semibold">Não Tenhais Medo</span>
+    <span class="mb-0.5 truncate leading-tight font-semibold">Movimento Canônico</span>
 </div>

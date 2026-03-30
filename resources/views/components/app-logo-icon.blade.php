@@ -1,2 +1,11 @@
-<img src="https://i.imgur.com/pKzoj0J.png" {{ $attributes->merge(['class' => 'block dark:hidden']) }} alt="Logo Claro">
-<img src="https://i.imgur.com/c74GSoI.png" {{ $attributes->merge(['class' => 'hidden dark:block']) }} alt="Logo Escuro">
+{{-- Versão para Modo Claro --}}
+<img
+    src="{{ asset('img/logo-claro.png') }}"
+    {{ $attributes->merge(['class' => 'block dark:hidden h-16 w-auto']) }}
+    alt="Logo Movimento Canônico">
+
+{{-- Versão para Modo Escuro --}}
+<img
+    src="{{ asset('img/logo-claro.png') }}"
+    {{ $attributes->merge(['class' => 'hidden dark:block h-16 w-auto']) }}
+    alt="Logo Movimento Canônico (Modo Escuro)">

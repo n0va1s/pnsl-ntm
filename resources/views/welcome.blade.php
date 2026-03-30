@@ -1,4 +1,4 @@
-<x-layouts.public :title="'Não Tenhais Medo'">
+<x-layouts.public :title="'Movimento Canônico'">
     <div>
         <x-session-alert />
     </div>

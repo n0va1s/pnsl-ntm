@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo(a) ao NTM da Paróquia Nossa Senhora do Lago</title>
+    <title>Um prazer ter vc por aqui</title>
 </head>
 
 <body

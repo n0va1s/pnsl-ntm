@@ -68,7 +68,7 @@ test('pagina inicial possui titulo correto', function () {
     $response = $this->get(route('home'));
 
     $response->assertStatus(200);
-    $response->assertSee('<title>Não Tenhais Medo</title>', false);
+    $response->assertSee('<title>Movimento Canônico</title>', false);
 });
 
 // ==========================================
