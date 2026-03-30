@@ -68,16 +68,28 @@ jobs:
           password: ${{ secrets.PASS }}
           local-dir: ./
           server-dir: public_html/movimento/
-          # IMPORTANTE: Removi bootstrap/cache do exclude para enviar os arquivos de cache gerados
+          # 1. Aumenta o timeout para evitar quedas em arquivos grandes
+          timeout: 900000
+          # 2. Mantém apenas uma conexão por vez (mais lento, porém muito mais estável no FTP da Hostinger)
+          protocol: ftp
+          # 3. Lista de exclusão otimizada
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
+            **/tests/**
+            storage/app/**
             storage/framework/sessions/**
             storage/framework/cache/**
             storage/logs/**
             .env
-            tests/**
             phpunit.xml
             .github/**
             README.md
+            composer.json
+            composer.lock
+            package.json
+            package-lock.json
+            vite.config.js
+            # Exclua caches de desenvolvimento se existirem
+            storage/debugbar/**
