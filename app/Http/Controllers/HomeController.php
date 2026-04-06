@@ -77,7 +77,7 @@ class HomeController extends Controller
             'duration_ms' => $duration,
         ]));
 
-        return redirect()->route('home')->with('message', 'Recebemos seu contato. Em breve retornaremos!');
+        return redirect()->route('home')->with('success', 'Recebemos seu contato. Em breve retornaremos!');
     }
 
     public function fichaVem()

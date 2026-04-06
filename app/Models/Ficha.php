@@ -45,6 +45,18 @@ class Ficha extends Model
         'ind_restricao' => 'boolean',
     ];
 
+    protected static function booted()
+    {
+        static::created(function ($ficha) {
+            $ficha->analises()->create([
+                'idt_situacao' => 1, // cadastrada
+                'txt_observacao' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
+    }
+
     public function getRouteKeyName()
     {
         return 'idt_ficha';

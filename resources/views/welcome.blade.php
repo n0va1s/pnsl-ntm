@@ -274,13 +274,6 @@
         <!-- Seção 40% -->
         <div class="md:col-span-2">
             <section class="max-w-3xl mx-auto mt-8 px-4">
-                @if (session('message'))
-                    <div class="max-w-3xl mx-auto mt-6 px-4">
-                        <div class="bg-green-50 dark:bg-green-900 text-green-800 dark:text-green-200 p-4 rounded-lg">
-                            <p class="font-semibold">{{ session('message') }}</p>
-                        </div>
-                    </div>
-                @endif
                 <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Entre em Contato</h2>
 
                 <form action="{{ route('home.contato') }}" method="POST"

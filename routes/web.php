@@ -18,8 +18,23 @@ use App\Http\Controllers\TipoResponsavelController;
 use App\Http\Controllers\TipoRestricaoController;
 use App\Http\Controllers\TipoSituacaoController;
 use App\Http\Controllers\TrabalhadorController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+
+Route::get('/limpar-tudo', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+
+    return "Configurações recarregadas! Tente acessar a home agora.";
+});
+
+Route::get('/otimizar-tudo', function () {
+    Artisan::call('optimize');
+
+    return "Optimize realizado! Tente acessar a home agora.";
+});
 
 Route::get(
     '/',
@@ -168,4 +183,4 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
