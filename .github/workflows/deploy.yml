@@ -1,94 +1,93 @@
-/*
-name: Deploy movimento.canonico.com.br
+# name: Deploy movimento.canonico.com.br
 
-on:
-  push:
-    branches: ["main"]
+# on:
+#   push:
+#     branches: ["main"]
 
-jobs:
-  build-and-test:
-    name: Lint e Qualidade
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.4"
-          extensions: mbstring, xml, ctype, iconv, sqlite3
-      - name: Install Dependencies
-        run: composer install --optimize-autoloader
-      - name: Run Lint (Pint)
-        run: vendor/bin/pint --test
+# jobs:
+#   build-and-test:
+#     name: Lint e Qualidade
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Setup PHP
+#         uses: shivammathur/setup-php@v2
+#         with:
+#           php-version: "8.4"
+#           extensions: mbstring, xml, ctype, iconv, sqlite3
+#       - name: Install Dependencies
+#         run: composer install --optimize-autoloader
+#       - name: Run Lint (Pint)
+#         run: vendor/bin/pint --test
 
-  deploy:
-    name: Deploy para Hostinger
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main'
+#   deploy:
+#     name: Deploy para Hostinger
+#     runs-on: ubuntu-latest
+#     needs: build-and-test
+#     if: github.ref == 'refs/heads/main'
 
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout do código
+#         uses: actions/checkout@v4
 
-      - name: Configurar PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.4"
-          extensions: mbstring, xml, ctype, iconv, mysql, zip
+#       - name: Configurar PHP
+#         uses: shivammathur/setup-php@v2
+#         with:
+#           php-version: "8.4"
+#           extensions: mbstring, xml, ctype, iconv, mysql, zip
 
-      - name: Instalar Dependências PHP (Produção)
-        run: composer install --no-dev --optimize-autoloader --no-interaction
+#       - name: Instalar Dependências PHP (Produção)
+#         run: composer install --no-dev --optimize-autoloader --no-interaction
 
-      - name: Otimização do Laravel (Pre-build Cache)
-        run: |
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+#       - name: Otimização do Laravel (Pre-build Cache)
+#         run: |
+#           php artisan config:cache
+#           php artisan route:cache
+#           php artisan view:cache
 
-      - name: Instalar Node.js e Build Assets (Vite + PWA)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
+#       - name: Instalar Node.js e Build Assets (Vite + PWA)
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: "20"
+#           cache: "npm"
 
-      - name: Build Assets
-        run: |
-          npm install
-          rm -rf public/build
-          npm run build
+#       - name: Build Assets
+#         run: |
+#           npm install
+#           rm -rf public/build
+#           npm run build
 
-      - name: Sync FTP para Hostinger
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          password: ${{ secrets.PASS }}
-          local-dir: ./
-          server-dir: ./movimento/
-          timeout: 900000
-          protocol: ftp
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/docs/**
-            **/tests/**
-            storage/app/**
-            storage/framework/sessions/**
-            storage/framework/cache/**
-            storage/logs/**
-            .env*
-            .editorconfig
-            .gitattributes
-            .gitignore
-            analyze-coverage
-            coverage
-            phpunit
-            README.md
-            package.json
-            package-lock.json
-            vite.config.js
-            composer.*
-            storage/debugbar/**
-*/
+#       - name: Sync FTP para Hostinger
+#         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+#         with:
+#           server: ${{ secrets.HOST }}
+#           username: ${{ secrets.USER }}
+#           password: ${{ secrets.PASS }}
+#           local-dir: ./
+#           server-dir: ./movimento/
+#           timeout: 900000
+#           protocol: ftp
+#           exclude: |
+#             **/.git*
+#             **/.git*/**
+#             **/node_modules/**
+#             **/docs/**
+#             **/tests/**
+#             storage/app/**
+#             storage/framework/sessions/**
+#             storage/framework/cache/**
+#             storage/logs/**
+#             .env*
+#             .editorconfig
+#             .gitattributes
+#             .gitignore
+#             analyze-coverage
+#             coverage
+#             phpunit
+#             README.md
+#             package.json
+#             package-lock.json
+#             vite.config.js
+#             composer.*
+#             storage/debugbar/**
+
