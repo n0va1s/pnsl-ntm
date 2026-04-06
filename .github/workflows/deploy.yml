@@ -69,7 +69,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASS }}
           local-dir: ./
-          server-dir: public_html/movimento/
+          server-dir: ./movimento/
           timeout: 900000
           protocol: ftp
           exclude: |
