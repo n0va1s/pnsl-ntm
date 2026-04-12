@@ -106,26 +106,23 @@ class FichaVemController extends Controller
 
         $data = $vemRequest->only([
             'idt_evento',
+            'idt_pessoa',
+            'tip_genero',
             'nom_candidato',
             'nom_apelido',
             'dat_nascimento',
+            'tel_candidato',
+            'eml_candidato',
             'des_endereco',
+            'tam_camiseta',
+            'tip_como_soube',
+            'ind_catolico',
+            'ind_toca_instrumento',
+            'ind_consentimento',
+            'ind_aprovado',
+            'ind_restricao',
+            'txt_observacao',
         ]);
-
-        // Map request para os nomes corretos do schema
-        $data['tip_genero'] = $vemRequest->input('tip_genero', 'M');
-        $data['tel_candidato'] = $vemRequest->input('tel_candidato');
-        $data['eml_candidato'] = $vemRequest->input('eml_candidato', null);
-
-        // Campos obrigatórios com defaults
-        $data['tam_camiseta'] = $vemRequest->input('tam_camiseta', 'M');
-        $data['tip_como_soube'] = $vemRequest->input('tip_como_soube', null);
-        $data['ind_catolico'] = false;
-        $data['ind_toca_instrumento'] = false;
-        $data['ind_consentimento'] = false;
-        $data['ind_aprovado'] = false;
-        $data['ind_restricao'] = false;
-        $data['txt_observacao'] = null;
 
         $ficha = Ficha::create($data);
 
@@ -137,9 +134,18 @@ class FichaVemController extends Controller
                 'des_onde_estuda',
                 'des_mora_quem',
                 'nom_pai',
+                'eml_pai',
                 'tel_pai',
                 'nom_mae',
                 'tel_mae',
+                'eml_mae',
+                'nom_responsavel',
+                'tel_responsavel',
+                'eml_responsavel',
+                'ind_batizado',
+                'ind_primeira_comunhao',
+                'ind_crismado',
+                'nom_paroquia',
             ]);
 
             $ficha->fichaVem()->create($vemData);

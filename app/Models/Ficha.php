@@ -62,8 +62,6 @@ class Ficha extends Model
         return 'idt_ficha';
     }
 
-    // RELACIONAMENTOS
-
     public function evento()
     {
         return $this->belongsTo(Evento::class, 'idt_evento');
