@@ -23,6 +23,8 @@ class Evento extends Model
         'num_evento',
         'dat_inicio',
         'dat_termino',
+        'dat_limite_inscricao',
+        'qtd_vaga',
         'val_camiseta',
         'val_trabalhador',
         'val_venista',
@@ -33,6 +35,8 @@ class Evento extends Model
 
     protected $casts = [
         'idt_movimento' => 'integer',
+        'dat_limite_inscricao' => 'date',
+        'qtd_vaga' => 'integer',
         'dat_inicio' => 'date',
         'dat_termino' => 'date',
     ];

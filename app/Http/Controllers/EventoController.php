@@ -139,7 +139,12 @@ class EventoController extends Controller
         try {
             DB::beginTransaction();
             $data = $request->validated();
+
+            $data['dat_limite_inscricao'] = $data['dat_limite_inscricao'] ?? null;
+            $data['qtd_vaga'] = $data['qtd_vaga'] ?? null;
+
             $evento->update($data);
+
             $this->eventoService->fotoUpload($evento, $request->file('med_foto'));
             DB::commit();
 

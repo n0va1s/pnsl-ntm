@@ -16,9 +16,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     const ROLE_USER = 'user';
-
     const ROLE_ADMIN = 'admin';
-
     const ROLE_COORDENADOR = 'coord';
 
     public function isAdmin(): bool
@@ -47,6 +45,7 @@ class User extends Authenticatable
                 $user->pessoa()->create([
                     'nom_pessoa' => $user->name,
                     'eml_pessoa' => $user->email,
+                    'tel_pessoa' => $user->phone,
                     'dat_nascimento' => '1900-01-01',
                 ]);
             } else {
@@ -65,6 +64,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
     ];
 
@@ -99,7 +99,7 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 }

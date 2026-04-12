@@ -12,6 +12,7 @@ class EventoFactory extends Factory
 
     public function definition(): array
     {
+        $dataLimite = $this->faker->dateTimeBetween('-2 year', '+1 month');
         $dataInicio = $this->faker->dateTimeBetween('-1 year', '+1 month');
         $dataTermino = (clone $dataInicio)->modify('+3 days');
 
@@ -21,6 +22,8 @@ class EventoFactory extends Factory
             'num_evento' => $this->faker->numberBetween(1, 99),
             'dat_inicio' => $dataInicio->format('Y-m-d'),
             'dat_termino' => $dataTermino->format('Y-m-d'),
+            'dat_limite_inscricao' => $dataLimite->format('Y-m-d'),
+            'qtd_vaga' => $this->faker->randomNumber(40, 50),
             'val_camiseta' => $this->faker->randomNumber(2, 40),
             'val_trabalhador' => $this->faker->randomNumber(2, 45),
             'val_venista' => $this->faker->randomNumber(2, 50),

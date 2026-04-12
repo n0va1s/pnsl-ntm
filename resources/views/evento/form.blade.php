@@ -117,6 +117,41 @@
                         </p>
                     </div>
 
+                    <!-- Data Limite Inscrição -->
+                    <div class="flex flex-col">
+                        <label for="dat_limite_inscricao" class="mb-1 font-medium text-gray-700 dark:text-gray-300">
+                            Data Limite para Inscrição
+                        </label>
+
+                        <input type="date" id="dat_limite_inscricao" name="dat_limite_inscricao"
+                            value="{{ old('dat_limite_inscricao', optional($evento->dat_limite_inscricao)->format('Y-m-d')) }}"
+                            aria-describedby="dat_limite_inscricao_error"
+                            class="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500
+                            @error('dat_limite_inscricao') border-red-500 @enderror">
+
+                        @error('dat_limite_inscricao')
+                            <p id="dat_limite_inscricao_error" class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Quantidade de Vagas -->
+                    <div class="flex flex-col">
+                        <label for="qtd_vaga" class="mb-1 font-medium text-gray-700 dark:text-gray-300">
+                            Quantidade de Vagas
+                        </label>
+
+                        <input type="number" id="qtd_vaga" name="qtd_vaga"
+                            min="0" step="1"
+                            value="{{ old('qtd_vaga', $evento->qtd_vaga ?? '') }}"
+                            aria-describedby="qtd_vaga_error"
+                            class="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500
+                            @error('qtd_vaga') border-red-500 @enderror">
+
+                        @error('qtd_vaga')
+                            <p id="qtd_vaga_error" class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Data de Início -->
                     <div>
                         <label for="dat_inicio" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">

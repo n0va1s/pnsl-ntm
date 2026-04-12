@@ -10,11 +10,11 @@
                 Sistema de Gestão de Movimentos Paroquiais
             </h2>
             <p class="max-w-2xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
-                Bem-vindo! Este sistema foi criado para facilitar o cadastro e a organização dos encontros
-                promovidos
-                pela Paraóquia Nossa Senhora do Lago, como o VEM, ECC e Segue-Me.
+                Bem-vindo!
+                Este sistema foi criado para facilitar o cadastro e
+                a organização de encontros paroquiais como: VEM, ECC e Segue-Me.
                 <br><br>
-                A sigla NTM significa "Não tenhais medo!", frase várias vezes repetida pelo Papa João Paulo II e
+                "Não tenhais medo!", frase várias vezes repetida pelo Papa João Paulo II e
                 Francisco para encorajar os jovens de todo o mundo para que não tenham medo de buscar a Cristo.
             </p>
         </div>
@@ -137,7 +137,7 @@
                     <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Jovens com Cristo</p>
                 </div>
                 <a
-                    class="mt-4 inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-md transition">
+                    class="mt-4 inline-block bg-gray-600 hover:bg-gray-700 text-white font-semibold px-4 py-2 rounded-md transition">
                     Ficha do Segue-Me (Em breve)
                 </a>
             </div>
@@ -152,7 +152,7 @@
                     <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Casais com Cristo</p>
                 </div>
                 <a
-                    class="mt-4 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md transition">
+                    class="mt-4 inline-block bg-gray-600 hover:bg-gray-700 text-white font-semibold px-4 py-2 rounded-md transition">
                     Ficha do ECC (Em breve)
                 </a>
             </div>
@@ -164,33 +164,141 @@
         <!-- FAQ VEM -->
         <section class="max-w-full bg-blue-50 dark:bg-blue-900 rounded-xl p-6 shadow">
             <h4 class="font-bold text-blue-600 mb-8 dark:text-blue-400">Perguntas Frequentes - VEM</h4>
+
             <div class="space-y-4">
+                <!-- Quem pode participar -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary
-                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Quem pode participar do VEM?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </summary>
-                    <p class="mt-2 text-gray-700 dark:text-gray-100">Jovens solteiros entre 12 e 15 anos que
-                        desejam iniciar sua caminhada cristã.</p>
+                    <p class="mt-2 text-gray-700 dark:text-gray-100">
+                        Jovens entre 12 e 15 anos que desejam iniciar sua caminhada cristã.
+                    </p>
                 </details>
+
+                <!-- Quantos encontros -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary
-                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
-                        Quanto tempo acontece o VEM?
+                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        Quantos encontros tem no ano?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </summary>
-                    <p class="mt-2 text-gray-700 dark:text-gray-100">O VEM é um movimento que acontece há mais de
-                        30 anos.</p>
+                    <p class="mt-2 text-gray-700 dark:text-gray-100">
+                        O VEM realiza 1 encontro por ano.
+                    </p>
+                </details>
+
+                <!-- Pós encontro -->
+                <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        Como funciona o pós encontro?
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <p class="mt-2 text-gray-700 dark:text-gray-100">
+                        Após o VEM, realizamos encontros temáticos e momentos de espiritualização para continuar o crescimento na fé dos jovens.
+                    </p>
+                </details>
+
+                <!-- Taxa -->
+                <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        Tem que pagar?
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <p class="mt-2 text-gray-700 dark:text-gray-100">
+                        Há uma taxa para ajudar nos custos com alimentação e materiais. Caso não consiga pagar, informe durante a confirmação — seu filho(a) não deixará de participar por esse motivo.
+                    </p>
+                </details>
+
+                <!-- Precisa ser católico -->
+                <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        Precisa ser católico?
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <p class="mt-2 text-gray-700 dark:text-gray-100">
+                        O VEM é baseado nos valores e princípios católicos. Jovens de outras religiões são bem-vindos, desde que estejam abertos a participar e ouvir.
+                    </p>
+                </details>
+
+                <!-- Primeira comunhão -->
+                <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        Precisa ter feito primeira comunhão ou crisma?
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <p class="mt-2 text-gray-700 dark:text-gray-100">
+                        Não é necessário ter feito a primeira comunhão ou crisma.
+                    </p>
+                </details>
+
+                <!-- Pré-VEM -->
+                <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        Se eu não puder ir no Pré-VEM, ainda posso participar do encontro?
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <p class="mt-2 text-gray-700 dark:text-gray-100">
+                        Infelizmente não. O Pré-VEM é um momento essencial para formação e integração dos grupos. Caso não possa participar, avise a equipe responsável pela sua confirmação.
+                    </p>
+                </details>
+
+                <!-- Como peço reembolso -->
+                <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        Como peço reembolso?
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <p class="mt-2 text-gray-700 dark:text-gray-100">
+                        - até 10 dias antes do encontro: reembolso de 100% <br />
+                        - entre 9 e 5 dias antes do encontro: reembolso de 50% <br />
+                        - entre 4 e 1 dia antes do encontro: reembolso de 25% <br />
+                        - forma: pix para a mesma conta que pagou a taxa (enviar comprovante)
+                    </p>
+                </details>
+
+                <!-- Criterios de selecao -->
+                <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
+                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                        Quais os critérios de seleção
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <p class="mt-2 text-gray-700 dark:text-gray-100">
+                        1) Pais trabalhando no encontro <br />
+                        2) Preferência pelos mais velhos <br />
+                        3) Paroquianos do Lago Norte
+                    </p>
                 </details>
             </div>
         </section>
+
         <!-- FAQ Segue-Me -->
         <section class="max-w-full bg-orange-50 dark:bg-orange-900 rounded-xl p-6 shadow">
             <h4 class="font-bold text-orange-600 mb-8 dark:text-orange-400">Perguntas Frequentes - Segue-Me</h4>

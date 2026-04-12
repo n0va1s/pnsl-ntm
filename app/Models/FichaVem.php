@@ -19,9 +19,24 @@ class FichaVem extends Model
         'des_onde_estuda',
         'des_mora_quem',
         'nom_pai',
+        'eml_pai',
         'tel_pai',
         'nom_mae',
         'tel_mae',
+        'eml_mae',
+        'nom_responsavel',
+        'tel_responsavel',
+        'eml_responsavel',
+        'ind_batizado',
+        'ind_primeira_comunhao',
+        'ind_crismado',
+        'nom_paroquia',
+    ];
+
+    protected $casts = [
+        'ind_batizado'          => 'boolean',
+        'ind_primeira_comunhao' => 'boolean',
+        'ind_crismado'          => 'boolean',
     ];
 
     public function ficha()

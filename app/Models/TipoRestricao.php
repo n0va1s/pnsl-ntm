@@ -30,4 +30,17 @@ class TipoRestricao extends Model
     {
         return $this->hasMany(PessoaSaude::class, 'idt_restricao');
     }
+
+    public function getDescricao(): string
+    {
+        return match ($this->tip_restricao) {
+            'ALE' => 'Alergia',
+            'INT' => 'Intolerância',
+            'MED' => 'Restrição Médica',
+            'OUT' => 'Outras',
+            'PNE' => 'Necessidade Especial',
+            'VEG' => 'Causa',
+            default => $this->tip_restricao,
+        };
+    }
 }

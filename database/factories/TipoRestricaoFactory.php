@@ -30,9 +30,13 @@ class TipoRestricaoFactory extends Factory
             ['des_restricao' => 'Ovo', 'tip_restricao' => 'ALE'],
             ['des_restricao' => 'Castanhas', 'tip_restricao' => 'ALE'],
             ['des_restricao' => 'Frutos do Mar', 'tip_restricao' => 'ALE'],
+            ['des_restricao' => 'Visual', 'tip_restricao' => 'PNE'],
             ['des_restricao' => 'Motor', 'tip_restricao' => 'PNE'],
             ['des_restricao' => 'Auditivo', 'tip_restricao' => 'PNE'],
             ['des_restricao' => 'Neurodivergente', 'tip_restricao' => 'PNE'],
+            ['des_restricao' => 'Diabetes', 'tip_restricao' => 'MED'],
+            ['des_restricao' => 'Pressão', 'tip_restricao' => 'MED'],
+            ['des_restricao' => 'Outra', 'tip_restricao' => 'MED'],
             ['des_restricao' => 'Vegano', 'tip_restricao' => 'VEG'],
             ['des_restricao' => 'Vegeteariano', 'tip_restricao' => 'VEG'],
         ];
