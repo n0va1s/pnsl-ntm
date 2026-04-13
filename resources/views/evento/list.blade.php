@@ -104,10 +104,10 @@
 
                                 @if ($evento->tip_evento == 'E')
                                     <div class="{{ $evento->tip_evento == 'E' ? '' : 'w-1/2' }}">
-                                        <x-evento-card label="Participantes" :count="$evento->participantes_count" :href="route('participantes.index', ['evento' => $evento->idt_evento])"
+                                        <x-evento-card label="Fichas" :count="$evento->fichas_count"
                                             icon="heroicon-o-user-group" color="blue" />
                                     </div>
-                                    <x-evento-card label="Inscritos" :count="$evento->inscritos_count" :href="route('quadrante.list', ['evento' => $evento->idt_evento])"
+                                    <x-evento-card label="Confirmados" :count="$evento->inscritos_count" :href="route('quadrante.list', ['evento' => $evento->idt_evento])"
                                         icon="heroicon-o-check-circle" color="zinc" />
                                     <x-evento-card label="Voluntários" :count="$evento->voluntarios_count" :href="route('montagem.list', ['evento' => $evento->idt_evento])"
                                         icon="heroicon-o-hand-raised" color="green" />

@@ -32,6 +32,7 @@ class EventoController extends Controller
         $eventos = Evento::query()
             ->with(['movimento:idt_movimento,des_sigla'])
             ->withCount([
+                'fichas as fichas_count',
                 'participantes as participantes_count' => fn($q) => $q->whereNull('tip_cor_troca'),
                 'participantes as inscritos_count' => fn($q) => $q->whereNotNull('tip_cor_troca'),
 

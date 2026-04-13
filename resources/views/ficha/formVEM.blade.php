@@ -35,7 +35,7 @@
                     <x-heroicon-o-currency-dollar class="w-5 h-5 text-yellow-500 shrink-0" aria-hidden="true" />
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Taxa</p>
-                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">R$ 50,00</p>
+                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">R$ 120,00</p>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@
                     <x-heroicon-o-beaker class="w-5 h-5 text-cyan-500 shrink-0 mt-0.5" aria-hidden="true" />
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Lembrete</p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Leve sua garrafinha! 💧</p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Leve sua garrafinha</p>
                     </div>
                 </div>
             </div>
