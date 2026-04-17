@@ -30,15 +30,13 @@ class Pessoa extends Model
         'eml_pessoa',
         'tam_camiseta',
         'tip_genero',
-        'ind_toca_violao',
-        'ind_consentimento',
+        'tip_estado_civil',
+        'tip_habilidade',
         'ind_restricao',
     ];
 
     protected $casts = [
         'dat_nascimento' => 'date',
-        'ind_toca_violao' => 'boolean',
-        'ind_consentimento' => 'boolean',
         'ind_restricao' => 'boolean',
     ];
 

@@ -23,7 +23,7 @@ class EventoFactory extends Factory
             'dat_inicio' => $dataInicio->format('Y-m-d'),
             'dat_termino' => $dataTermino->format('Y-m-d'),
             'dat_limite_inscricao' => $dataLimite->format('Y-m-d'),
-            'qtd_vaga' => $this->faker->randomNumber(40, 50),
+            'qtd_vaga' => $this->faker->numberBetween(40, 60),
             'val_camiseta' => $this->faker->randomNumber(2, 40),
             'val_trabalhador' => $this->faker->randomNumber(2, 45),
             'val_venista' => $this->faker->randomNumber(2, 50),

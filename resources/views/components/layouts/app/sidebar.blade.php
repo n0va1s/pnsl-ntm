@@ -34,7 +34,7 @@
                 @endif
                 <flux:navlist.item icon="clock" :href="route('timeline.index')"
                     :current="request()->routeIs('timeline.index')" wire:navigate>
-                    {{ __('Linha do Tempo') }}
+                    {{ __('Aura') }}
                 </flux:navlist.item>
                 <flux:navlist.item icon="calendar" :href="route('eventos.index')"
                     :current="request()->routeIs('eventos.index')" wire:navigate>

@@ -9,7 +9,9 @@
 
         {{-- Grid de Estatísticas (Totalizadores) --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <x-dashboard-stat-card title="Eventos Ativos" :value="$qtdEventosAtivos" icon="heroicon-o-calendar" color="blue" />
+            <a href="{{ route('eventos.index') }}">
+                <x-dashboard-stat-card title="Eventos Ativos" :value="$qtdEventosAtivos" icon="heroicon-o-calendar" color="blue" />
+            </a>
             <x-dashboard-stat-card title="Total de Fichas" :value="$qtdFichasCadastradas" icon="heroicon-o-clipboard-document"
                 color="yellow" />
             <x-dashboard-stat-card title="Participantes" :value="$qtdParticipantesCadastrados" icon="heroicon-o-users" color="green" />
@@ -54,7 +56,7 @@
                                     </div>
                                 </div>
 
-                                <a href="{{ route('eventos.edit', $evento) }}"
+                                <a href="{{ route('eventos.index') }}"
                                     class="p-2 text-gray-400 hover:text-blue-600 transition-colors">
                                     <x-heroicon-s-chevron-right class="w-5 h-5" />
                                 </a>

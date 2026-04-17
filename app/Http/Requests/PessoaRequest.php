@@ -21,9 +21,9 @@ class PessoaRequest extends FormRequest
             'des_endereco' => ['nullable', 'string', 'min:10', 'max:255'],
             'eml_pessoa' => ['required', 'email', 'max:255'],
             'tam_camiseta' => ['required', 'string', 'in:PP,P,M,G,GG,EG'],
-            'tip_genero' => ['required', 'string', 'in:M,F,O'], // m=masculino, f=feminino, n=não informado
-            'ind_toca_violao' => ['boolean'],
-            'ind_consentimento' => ['boolean'],
+            'tip_genero' => ['required', 'string', 'in:M,F'], // m=masculino, f=feminino
+            'tip_estado_civil' => ['nullable', 'string', 'in:S,C,E,U,M,D,V'],
+            'tip_habilidade' => ['nullable', 'string', 'in:V,S,C,M,A,T,F'],
             'ind_restricao' => ['boolean'],
             'med_foto' => ['nullable', 'image', 'max:5120'], // até 5MB
             'idt_parceiro' => ['nullable', 'exists:pessoa,idt_pessoa'],
@@ -55,8 +55,11 @@ class PessoaRequest extends FormRequest
             'tam_camiseta.required' => 'Informe o tamanho da camiseta.',
             'tam_camiseta.in' => 'O tamanho da camiseta deve ser válido (ex: P, M, G, GG).',
 
-            'tip_genero.required' => 'Informe o gênero.',
-            'tip_genero.in' => 'Gênero inválido.',
+            'tip_genero.required' => 'Informe o sexo.',
+            'tip_genero.in' => 'Sexo inválido.',
+
+            'tip_estado_civil.in' => 'Estado civil inválido.',
+            'tip_habilidade.in' => 'Habilidade inválida.',
 
             'med_foto.image' => 'O arquivo deve ser uma imagem.',
             'med_foto.mimes' => 'A imagem deve estar nos formatos: jpeg, png, jpg, webp.',

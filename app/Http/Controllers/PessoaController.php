@@ -45,6 +45,8 @@ class PessoaController extends Controller
             'nom_apelido',
             'tel_pessoa',
             'eml_pessoa',
+            'tip_estado_civil',
+            'tip_habilidade',
             'created_at'
         )
             ->with([

@@ -403,10 +403,10 @@
                             </div>
                         </div>
 
-                        {{-- Responsável alternativo --}}
+                        {{-- Responsável --}}
                         <div class="border-t border-gray-200 dark:border-zinc-600 pt-5">
                             <p class="font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Responsável alternativo
+                                Responsável
                                 <span class="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">(caso não more com os pais)</span>
                             </p>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-2">
