@@ -81,9 +81,20 @@
                                 <td class="p-3 text-gray-900 dark:text-gray-200">{{ $pessoa->nom_pessoa }}</td>
                                 <td class="p-3 text-gray-900 dark:text-gray-200">{{ $pessoa->nom_apelido }}</td>
                                 <td class="p-3 text-gray-700 dark:text-gray-300">{{ $pessoa->tel_pessoa }}</td>
+                                @php
+                                    $estadosCivis = [
+                                        'S' => 'Solteiro(a)',
+                                        'C' => 'Casado(a)',
+                                        'E' => 'Casado(a) em 2ª União',
+                                        'U' => 'União Estável',
+                                        'M' => 'Casado(a) somente 1 participará',
+                                        'D' => 'Divorciado(a)',
+                                        'V' => 'Viúvo(a)'
+                                    ];
+                                @endphp
 
                                 <td class="p-3 text-gray-700 dark:text-gray-300">
-                                    {{ $pessoa->parceiro_exists ? 'Sim' : 'Não' }}
+                                    {{ $estadosCivis[$pessoa->tip_estado_civil] ?? 'Não informado' }}
                                 </td>
                                 <td class="p-3 flex items-center gap-2 justify-center">
                                     <a href="{{ route('pessoas.edit', $pessoa) }}"

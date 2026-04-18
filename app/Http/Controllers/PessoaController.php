@@ -52,11 +52,10 @@ class PessoaController extends Controller
             ->with([
                 'foto:idt_pessoa,med_foto',
             ])
-            ->withExists('parceiro') // parceiro_exists
             ->when($search, function ($query, $search) {
                 return $query->searchByName($search);
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('nom_pessoa')
             ->paginate(10)
             ->withQueryString();
 
@@ -83,9 +82,14 @@ class PessoaController extends Controller
             'txt_restricao'
         )->get();
 
-        $pessoasDisponiveis = Pessoa::whereNull('idt_parceiro')
+        $sexoOposto = (auth()->user()->pessoa->tip_genero === 'M') ? 'F' : 'M';
+
+        $pessoasDisponiveis = Pessoa::query()
+            ->whereIn('tip_estado_civil', ['C', 'E', 'U'])
+            ->where('idt_pessoa', '!=', auth()->user()->pessoa->idt_pessoa)
+            ->where('tip_genero', $sexoOposto)
             ->orderBy('nom_pessoa')
-            ->get();
+            ->pluck('nom_pessoa', 'idt_pessoa');
 
         $duration = round((microtime(true) - $start) * 1000, 2);
         Log::notice('Dados obtidos', array_merge($context, [

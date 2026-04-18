@@ -23,11 +23,9 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::get('/limpar-tudo', function () {
-    Artisan::call('config:clear');
-    Artisan::call('cache:clear');
-    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
 
-    return "Configurações recarregadas! Tente acessar a home agora.";
+    return "Clear realziado! Tente acessar a home agora.";
 });
 
 Route::get('/otimizar-tudo', function () {
@@ -71,6 +69,7 @@ Route::middleware(['auth'])->group(function () {
         '/contatos',
         [ContatoController::class, 'index']
     )->name('contatos.index');
+
     Route::delete(
         '/contatos/{id}',
         [ContatoController::class, 'destroy']
@@ -96,7 +95,7 @@ Route::middleware(['auth'])->group(function () {
         [TrabalhadorController::class, 'index']
     )->name('trabalhadores.index')->middleware(['manager']);
 
-    Route::post(
+    Route::get(
         '/trabalhadores/create',
         [TrabalhadorController::class, 'create']
     )->name('trabalhadores.create');
@@ -148,6 +147,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('fichas/sgm/approve/{id}', [FichaSGMController::class, 'approve'])
         ->name('sgm.approve');
 
+    Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
+
     Route::resources([
         'eventos' => EventoController::class,
         'pessoas' => PessoaController::class,
@@ -155,8 +156,6 @@ Route::middleware(['auth'])->group(function () {
         'fichas/ecc' => FichaEccController::class,
         'fichas/sgm' => FichaSGMController::class,
     ]);
-
-    Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
 
     // Somente admin e coord
     Route::middleware(['manager'])->group(function () {

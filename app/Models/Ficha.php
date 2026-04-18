@@ -33,6 +33,8 @@ class Ficha extends Model
         'ind_consentimento',
         'ind_aprovado',
         'ind_restricao',
+        'usu_inclusao',
+        'usu_alteracao',
         'txt_observacao',
     ];
 
@@ -47,6 +49,19 @@ class Ficha extends Model
 
     protected static function booted()
     {
+        static::creating(function ($ficha) {
+            if (auth()->check()) {
+                $ficha->usu_inclusao = auth()->name();
+                $ficha->usu_alteracao = auth()->name();
+            }
+        });
+
+        static::updating(function ($ficha) {
+            if (auth()->check()) {
+                $ficha->usu_alteracao = auth()->name();
+            }
+        });
+
         static::created(function ($ficha) {
             $ficha->analises()->create([
                 'idt_situacao' => 1, // cadastrada

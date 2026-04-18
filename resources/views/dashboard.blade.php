@@ -4,7 +4,7 @@
         {{-- Cabeçalho de Boas-vindas --}}
         <div>
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Olá, {{ Auth::user()->name }}!</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-1">Aqui está o resumo das atividades do sistema hoje.</p>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Essa é a força da sua comunidade</p>
         </div>
 
         {{-- Grid de Estatísticas (Totalizadores) --}}
