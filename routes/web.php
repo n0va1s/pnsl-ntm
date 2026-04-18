@@ -23,9 +23,11 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::get('/limpar-tudo', function () {
-    Artisan::call('optimize:clear');
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
 
-    return "Clear realziado! Tente acessar a home agora.";
+    return "Configurações recarregadas! Tente acessar a home agora.";
 });
 
 Route::get('/otimizar-tudo', function () {
@@ -46,6 +48,7 @@ Route::post(
 
 // Area Administrativa
 Route::middleware(['auth'])->group(function () {
+
     Route::get('/vem', [HomeController::class, 'fichaVem'])
         ->name('home.ficha.vem');
     Route::get('/ecc', [HomeController::class, 'fichaEcc'])
@@ -69,7 +72,6 @@ Route::middleware(['auth'])->group(function () {
         '/contatos',
         [ContatoController::class, 'index']
     )->name('contatos.index');
-
     Route::delete(
         '/contatos/{id}',
         [ContatoController::class, 'destroy']
@@ -89,6 +91,22 @@ Route::middleware(['auth'])->group(function () {
         '/participantes/{evento}/{pessoa}',
         [EventoController::class, 'confirm']
     )->name('participantes.confirm');
+
+
+    Route::get('fichas/vem/approve/{id}', [FichaVemController::class, 'approve'])
+        ->name('vem.approve');
+    Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
+        ->name('ecc.approve');
+    Route::get('fichas/sgm/approve/{id}', [FichaSGMController::class, 'approve'])
+        ->name('sgm.approve');
+
+    Route::resources([
+        'eventos' => EventoController::class,
+        'pessoas' => PessoaController::class,
+        'fichas/vem' => FichaVemController::class,
+        'fichas/ecc' => FichaEccController::class,
+        'fichas/sgm' => FichaSGMController::class,
+    ]);
 
     Route::get(
         '/trabalhadores',
@@ -140,22 +158,7 @@ Route::middleware(['auth'])->group(function () {
         [TrabalhadorController::class, 'generate']
     )->name('quadrante.list');
 
-    Route::get('fichas/vem/approve/{id}', [FichaVemController::class, 'approve'])
-        ->name('vem.approve');
-    Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
-        ->name('ecc.approve');
-    Route::get('fichas/sgm/approve/{id}', [FichaSGMController::class, 'approve'])
-        ->name('sgm.approve');
-
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
-
-    Route::resources([
-        'eventos' => EventoController::class,
-        'pessoas' => PessoaController::class,
-        'fichas/vem' => FichaVemController::class,
-        'fichas/ecc' => FichaEccController::class,
-        'fichas/sgm' => FichaSGMController::class,
-    ]);
 
     // Somente admin e coord
     Route::middleware(['manager'])->group(function () {

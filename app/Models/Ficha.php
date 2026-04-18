@@ -51,14 +51,14 @@ class Ficha extends Model
     {
         static::creating(function ($ficha) {
             if (auth()->check()) {
-                $ficha->usu_inclusao = auth()->name();
-                $ficha->usu_alteracao = auth()->name();
+                $ficha->usu_inclusao = auth()->id();
+                $ficha->usu_alteracao = auth()->id();
             }
         });
 
         static::updating(function ($ficha) {
             if (auth()->check()) {
-                $ficha->usu_alteracao = auth()->name();
+                $ficha->usu_alteracao = auth()->id();
             }
         });
 

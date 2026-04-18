@@ -4,6 +4,8 @@ namespace Database\Factories;
 
 use App\Models\Evento;
 use App\Models\Ficha;
+use App\Models\Pessoa;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FichaFactory extends Factory
@@ -13,15 +15,27 @@ class FichaFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_evento' => Evento::factory(),
-            'tip_genero' => $this->faker->randomElement(['M', 'F', 'O']),
+            'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento,
+            'idt_pessoa' => Pessoa::inRandomOrder()->first()?->idt_pessoa ?? Pessoa::factory(),
+            'tip_genero' => $this->faker->randomElement(['M', 'F']),
             'nom_candidato' => $this->faker->name(),
             'nom_apelido' => $this->faker->firstName(),
-            'dat_nascimento' => $this->faker->date('Y-m-d', '-12 years'),
+            'dat_nascimento' => $this->faker->date('Y-m-d', '-15 years'),
+            'tel_candidato' => $this->faker->phoneNumber(),
             'eml_candidato' => $this->faker->safeEmail(),
+            'des_endereco' => $this->faker->address(),
             'tam_camiseta' => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
+            'tip_como_soube' => $this->faker->word(),
+            'ind_catolico' => $this->faker->boolean(),
+            'ind_toca_instrumento' => $this->faker->boolean(),
             'ind_consentimento' => true,
-            'ind_restricao' => false,
+            'ind_aprovado' => false,
+            'ind_restricao' => $this->faker->boolean(),
+            'txt_observacao' => $this->faker->sentence(),
+
+            // Campos de Auditoria
+            'usu_inclusao' => User::factory(),
+            'usu_alteracao' => User::factory(),
         ];
     }
 }
