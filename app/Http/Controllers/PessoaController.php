@@ -114,8 +114,15 @@ class PessoaController extends Controller
             'email' => $request->input('eml_pessoa'),
         ]));
 
-        // Pega o ID do usuário conforme o email informado no cadastro da pessoa
         $data = $request->validated();
+
+        // Validador de idade
+        if (isset($data['dat_nascimento'])) {
+            $dataNascimento = \Carbon\Carbon::parse($data['dat_nascimento']);
+            $data['menor_idade'] = $dataNascimento->age < 18;
+        }
+
+        // Pega o ID do usuário conforme o email informado no cadastro da pessoa
         $user = $this->userService::getUsuarioByEmail($request->input('eml_pessoa'));
         if ($user) {
             $data['idt_usuario'] = $user->id;
@@ -159,6 +166,7 @@ class PessoaController extends Controller
             'pessoa_id' => $pessoa->idt_pessoa,
             'restricoes_registradas' => $countRestricoes,
             'duration_ms' => $duration,
+            'menor_de_idade' => $data['menor_idade'] ?? false,
         ]));
 
         return redirect()->route('pessoas.index')->with('success', 'Pessoa criada com sucesso.');
@@ -210,11 +218,19 @@ class PessoaController extends Controller
         ]));
 
         $pessoa = Pessoa::with(['foto', 'usuario', 'restricoes'])->findOrFail($id);
-        $user = $this->userService::getUsuarioByEmail($request->input('eml_pessoa'));
         $data = $request->validated();
-        if ($user) {
+
+        // Validador de idade
+        if (isset($data['dat_nascimento'])) {
+            $dataNascimento = \Carbon\Carbon::parse($data['dat_nascimento']);
+            $data['menor_idade'] = $dataNascimento->age < 18;
+        }
+
+        $user = $this->userService::getUsuarioByEmail($request->input('eml_pessoa'));
+        if ($user) { 
             $data['idt_usuario'] = $user->id;
         }
+
         $pessoa->update($data);
 
         // Foto
@@ -263,6 +279,7 @@ class PessoaController extends Controller
             'pessoa_id' => $id,
             'restricoes_atualizadas' => $countRestricoes,
             'duration_ms' => $duration,
+            'menor_de_idade' => $data['menor_idade'] ?? false,
         ]));
 
         return redirect()->route('dashboard')->with('success', 'Pessoa atualizada com sucesso.');

@@ -98,6 +98,9 @@ return new class extends Migration
             $table->string('nom_apelido', 255)->index()->nullable();
             $table->string('tel_pessoa', 20)->nullable();
             $table->date('dat_nascimento')->index();
+            $table->boolean('menor_idade')->default(false);
+            $table->string('nom_responsavel', 255)->nullable();
+            $table->string('tel_responsavel', 20)->nullable();
             $table->string('des_endereco', 255)->nullable();
             $table->string('eml_pessoa', 255)->index();
             $table->string('tam_camiseta', 3)->nullable();
