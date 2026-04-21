@@ -22,7 +22,7 @@ class PessoaRequest extends FormRequest
             'eml_pessoa' => ['required', 'email', 'max:255'],
             'tam_camiseta' => ['required', 'string', 'in:PP,P,M,G,GG,EG'],
             'tip_genero' => ['required', 'string', 'in:M,F'], // m=masculino, f=feminino
-            'tip_estado_civil' => ['nullable', 'string', 'in:S,C,E,U,M,D,V'],
+            'tip_estado_civil' => ['required', 'string', 'in:S,C,E,U,M,D,V'], //'S' => 'Solteiro(a)','C' => 'Casado(a)','E' => 'Casado(a) em 2ª União','U' => 'União Estável', 'M' => 'Casado(a) somente 1 participará', 'D' => 'Divorciado(a)','V' => 'Viúvo(a)',
             'tip_habilidade' => ['nullable', 'string', 'in:V,S,C,M,A,T,F'],
             'ind_restricao' => ['boolean'],
             'med_foto' => ['nullable', 'image', 'max:5120'], // até 5MB
@@ -43,7 +43,7 @@ class PessoaRequest extends FormRequest
             'dat_nascimento.required' => 'A data de nascimento é obrigatória.',
             'dat_nascimento.date' => 'A data de nascimento deve ser uma data válida.',
             'dat_nascimento.before' => 'A data de nascimento deve ser anterior a hoje.',
-            'dat_nascimento.after' => 'A data de nascimento deve ser posterior a 01/01/1900.',
+            'dat_nascimento.after' => 'A data de nascimento deve ser posterior a 01/01/1925.',
 
             'des_endereco.min' => 'O endereço deve conter pelo menos 10 caracteres.',
             'des_endereco.max' => 'O endereço não pode ter mais de 255 caracteres.',
@@ -58,6 +58,7 @@ class PessoaRequest extends FormRequest
             'tip_genero.required' => 'Informe o sexo.',
             'tip_genero.in' => 'Sexo inválido.',
 
+            'tip_estado_civil.required' => 'Informe o estado civil.',
             'tip_estado_civil.in' => 'Estado civil inválido.',
             'tip_habilidade.in' => 'Habilidade inválida.',
 
