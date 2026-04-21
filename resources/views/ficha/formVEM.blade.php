@@ -194,7 +194,7 @@
                             <select name="idt_evento" id="idt_evento" required x-bind:disabled="bloqueado"
                                 aria-required="true"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('idt_evento') border-red-500 @enderror">
-                                <option value="">Selecione um evento</option>
+                                <option value="" disabled {{ old('idt_evento', $ficha->idt_evento) ? '' : 'selected' }}>Selecione um evento</option>
                                 @foreach ($eventos as $evento)
                                     <option value="{{ $evento->idt_evento }}"
                                         {{ old('idt_evento', $ficha->idt_evento) == $evento->idt_evento ? 'selected' : '' }}>
@@ -216,8 +216,8 @@
                             </label>
                             <select name="tip_genero" id="tip_genero" required x-bind:disabled="bloqueado"
                                 aria-required="true"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_genero') border-red-500 @enderror">
-                                <option value="">Selecione o sexo</option>
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_genero') border-red-500 @enderror"">
+                                <option value="" disabled {{ old('tip_genero', $ficha->tip_genero) ? '' : 'selected' }}>Selecione o sexo</option>
                                 <option value="M"
                                     {{ old('tip_genero', $ficha->tip_genero) == 'M' ? 'selected' : '' }}>Masculino
                                 </option>
@@ -339,7 +339,7 @@
                             <select name="tam_camiseta" id="tam_camiseta" required x-bind:disabled="bloqueado"
                                 aria-required="true"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tam_camiseta') border-red-500 @enderror">
-                                <option value="">Selecione o tamanho</option>
+                                <option value="" disabled {{ old('tam_camiseta', $ficha->tam_camiseta) ? '' : 'selected' }}>Selecione o tamanho</option>
                                 @foreach (['PP', 'P', 'M', 'G', 'GG', 'EG'] as $tamanho)
                                     <option value="{{ $tamanho }}"
                                         {{ old('tam_camiseta', $ficha->tam_camiseta) == $tamanho ? 'selected' : '' }}>
@@ -360,7 +360,7 @@
                             </label>
                             <select name="tip_como_soube" id="tip_como_soube" x-bind:disabled="bloqueado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_como_soube') border-red-500 @enderror">
-                                <option value="">Selecione uma opção</option>
+                                <option value="" disabled {{ old('tip_como_soube', $ficha->tip_como_soube) ? '' : 'selected' }}>Selecione uma opção</option>
                                 <option value="IND"
                                     {{ old('tip_como_soube', $ficha->tip_como_soube) == 'IND' ? 'selected' : '' }}>
                                     Indicação</option>
@@ -524,7 +524,7 @@
                                 <select name="idt_falar_com" id="idt_falar_com" required x-bind:disabled="bloqueado"
                                     aria-required="true"
                                     class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('idt_falar_com') border-red-500 @enderror">
-                                    <option value="">Selecione</option>
+                                    <option value="" disabled {{ old('idt_falar_com', optional($ficha->fichaVem)->idt_falar_com) ? '' : 'selected' }}>Selecione</option>
                                     @foreach ($responsaveis as $responsavel)
                                         <option value="{{ $responsavel->idt_responsavel }}"
                                             {{ old('idt_falar_com', optional($ficha->fichaVem)->idt_falar_com) == $responsavel->idt_responsavel ? 'selected' : '' }}>

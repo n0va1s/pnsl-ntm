@@ -265,7 +265,7 @@ class PessoaController extends Controller
             'duration_ms' => $duration,
         ]));
 
-        return redirect()->route('dashboard')->with('success', 'Pessoa atualizada com sucesso.');
+        return redirect()->route('dashboard')->with('success', 'Dados atualizados com sucesso.');
     }
 
     public function destroy($id): RedirectResponse
