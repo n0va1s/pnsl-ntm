@@ -26,6 +26,9 @@ class Pessoa extends Model
         'nom_apelido',
         'tel_pessoa',
         'dat_nascimento',
+        'menor_idade',
+        'nom_responsavel',
+        'tel_responsavel',
         'des_endereco',
         'eml_pessoa',
         'tam_camiseta',
@@ -38,6 +41,7 @@ class Pessoa extends Model
     protected $casts = [
         'dat_nascimento' => 'date',
         'ind_restricao' => 'boolean',
+        'menor_idade' => 'boolean',
     ];
 
     protected static function booted()

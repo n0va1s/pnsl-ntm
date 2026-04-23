@@ -18,6 +18,9 @@ class PessoaRequest extends FormRequest
             'nom_apelido' => ['nullable', 'string', 'max:255'],
             'tel_pessoa' => ['nullable', 'regex:/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/'],
             'dat_nascimento' => ['required', 'date', 'before:today', 'after:1925-01-01'],
+            'menor_idade' => ['boolean'],
+            'nom_responsavel' => ['required_if:menor_idade,true', 'nullable', 'string', 'max:255'],
+            'tel_responsavel' => ['required_if:menor_idade,true', 'nullable', 'regex:/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/'],
             'des_endereco' => ['nullable', 'string', 'min:10', 'max:255'],
             'eml_pessoa' => ['required', 'email', 'max:255'],
             'tam_camiseta' => ['required', 'string', 'in:PP,P,M,G,GG,EG'],
@@ -44,6 +47,11 @@ class PessoaRequest extends FormRequest
             'dat_nascimento.date' => 'A data de nascimento deve ser uma data válida.',
             'dat_nascimento.before' => 'A data de nascimento deve ser anterior a hoje.',
             'dat_nascimento.after' => 'A data de nascimento deve ser posterior a 01/01/1900.',
+
+            'nom_responsavel.required_if' => 'O nome do responsável é obrigatório para menores de idade.',
+
+            'tel_responsavel.required_if' => 'O telefone do responsável é obrigatório para menores de idade.',
+            'tel_responsavel.regex' => 'O telefone do responsável deve estar em um formato válido.',
 
             'des_endereco.min' => 'O endereço deve conter pelo menos 10 caracteres.',
             'des_endereco.max' => 'O endereço não pode ter mais de 255 caracteres.',
