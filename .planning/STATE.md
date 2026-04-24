@@ -30,15 +30,16 @@ Iniciado em: 2026-04-21
 
 ## Current Phase
 
-**Phase 1 — Fundação de dados e modelos de equipe (aguardando checkpoint humano — Task 9)**
+**Phase 2 — Autorização escopada (Gate/Policy nativos): COMPLETA**
 
-Tasks 1-8 completas (8/9). Task 9 requer verificação manual dual-driver MySQL.
+3/3 tasks completas. EquipePolicy, AuthServiceProvider, User helpers — todos implementados e testados.
 
-Parado em: `.planning/phases/01-fundacao-dados-modelos/PLAN.md` — Task 9 checkpoint:human-verify
+Próximo: Phase 3 — CRUD de equipes (Flux/Volt)
 
 ## Completed Phases
 
-_(nenhuma — Phase 1 em andamento, aguardando checkpoint T9)_
+- **Phase 1 — Fundação de dados e modelos de equipe**: Tasks 1-8 completas (T9 checkpoint:human-verify pendente MySQL); summary em `01-01-SUMMARY.md`
+- **Phase 2 — Autorização escopada**: 3/3 tasks completas; summary em `02-01-SUMMARY.md`
 
 ## Key Artifacts
 
@@ -47,6 +48,7 @@ _(nenhuma — Phase 1 em andamento, aguardando checkpoint T9)_
 - `.planning/ROADMAP.md` — 5 fases, 43/43 requisitos mapeados
 - `.planning/codebase/` — snapshots de arquitetura/stack/integrações
 - `.planning/phases/01-fundacao-dados-modelos/01-01-SUMMARY.md` — summary das tasks 1-8
+- `.planning/phases/02-autorizacao-escopada/02-01-SUMMARY.md` — summary Phase 2
 
 ## Decisions Made
 
@@ -59,19 +61,23 @@ _(nenhuma — Phase 1 em andamento, aguardando checkpoint T9)_
 - D-07: `createMovimentos()` não reusado — testes chamam `seed(EquipeVEMSeeder::class)` explicitamente
 - D-09: `withTimestamps()` NÃO usado em User::equipes() — pivot usa `dat_*` manual via booted()
 - AsPivot trait resolve `fromRawAttributes`/`setPivotKeys` para `using()` em BelongsToMany
+- D-10: `before()` retorna null (não false) para não-coord-geral — false bloquearia admin flat também (RBAC-10)
+- D-11: `update()` retorna Response (não bool) — mensagem pt_BR no HTTP 403
+- D-12: `assignMembers()` retorna false explícito — documentação de intenção + testabilidade unitária
+- D-13: Import de `Equipe` removido de User.php por pint — mesmo namespace App\Models, redundante
 
 ## Blockers
 
-- Task 9 (checkpoint:human-verify): Verificação dual-driver MySQL pendente
-- FichaTest (5 tests pré-existentes): `FOREIGN KEY constraint failed` em ficha_analise — não relacionado ao milestone atual
+- Task 9 Phase 1 (checkpoint:human-verify): Verificação dual-driver MySQL pendente
+- TrabalhadorTest (4 falhas pré-existentes): `FOREIGN KEY constraint failed` em tabela `evento` — não relacionado ao milestone atual
 - GD extension não instalada no XAMPP dev: impede `migrate:fresh --seed` completo (EventoSeeder usa GD)
 
 ## Progress
 
-Phase: 1 of 5 (Fundação de dados e modelos de equipe)
-Plan: 1 of 1 (8/9 tasks complete)
-Status: Awaiting checkpoint T9 (MySQL dual-driver verification)
-Progress: [█░░░░░░░░░] 15% (tasks 1-8 done; T9 pending human)
+Phase: 2 of 5 (Autorização escopada — COMPLETA)
+Plan: 1 of 1 (3/3 tasks complete)
+Status: Phase 2 complete — pronto para Phase 3 CRUD
+Progress: [██░░░░░░░░] 35% (Phase 1 tasks 1-8 + Phase 2 completas)
 
 ---
-*Last updated: 2026-04-23 — Tasks 1-8 completas, 49 testes verdes, aguardando checkpoint T9*
+*Last updated: 2026-04-24 — Phase 2 completa: EquipePolicy, AuthServiceProvider, User helpers implementados; 27 testes Equipe verdes*
