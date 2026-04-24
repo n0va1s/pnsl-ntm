@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -32,6 +33,20 @@ class User extends Authenticatable
     public function pessoa()
     {
         return $this->hasOne(Pessoa::class, 'idt_usuario', 'id');
+    }
+
+    /**
+     * Equipes VEM às quais o usuário pertence via pivot equipe_usuario.
+     * Vínculos soft-deleted são excluídos pelo whereNull no pivot.
+     * D-09: withTimestamps() NÃO usado — pivot usa dat_* manual via booted().
+     * RBAC-05: pivot traz papel (castado para PapelEquipe) e colunas de auditoria.
+     */
+    public function equipes(): BelongsToMany
+    {
+        return $this->belongsToMany(Equipe::class, 'equipe_usuario', 'user_id', 'idt_equipe')
+            ->using(EquipeUsuario::class)
+            ->withPivot(['papel', 'usr_inclusao', 'usr_alteracao', 'dat_inclusao', 'dat_alteracao'])
+            ->whereNull('equipe_usuario.deleted_at');
     }
 
     protected static function boot()
