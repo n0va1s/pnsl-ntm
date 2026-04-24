@@ -18,6 +18,7 @@ use App\Http\Controllers\TipoResponsavelController;
 use App\Http\Controllers\TipoRestricaoController;
 use App\Http\Controllers\TipoSituacaoController;
 use App\Http\Controllers\TrabalhadorController;
+use App\Models\Equipe;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -27,13 +28,13 @@ Route::get('/limpar-tudo', function () {
     Artisan::call('cache:clear');
     Artisan::call('view:clear');
 
-    return "Configurações recarregadas! Tente acessar a home agora.";
+    return 'Configurações recarregadas! Tente acessar a home agora.';
 });
 
 Route::get('/otimizar-tudo', function () {
     Artisan::call('optimize');
 
-    return "Optimize realizado! Tente acessar a home agora.";
+    return 'Optimize realizado! Tente acessar a home agora.';
 });
 
 Route::get(
@@ -91,7 +92,6 @@ Route::middleware(['auth'])->group(function () {
         '/participantes/{evento}/{pessoa}',
         [EventoController::class, 'confirm']
     )->name('participantes.confirm');
-
 
     Route::get('fichas/vem/approve/{id}', [FichaVemController::class, 'approve'])
         ->name('vem.approve');
@@ -183,6 +183,17 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+
+    Volt::route('/equipes', 'equipes.index')
+        ->name('equipes.index');
+
+    Volt::route('/equipes/create', 'equipes.create')
+        ->name('equipes.create')
+        ->can('create', Equipe::class);
+
+    Volt::route('/equipes/{equipe}/edit', 'equipes.edit')
+        ->name('equipes.edit')
+        ->can('update', 'equipe');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

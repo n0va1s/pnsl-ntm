@@ -113,14 +113,14 @@ Plans:
 
 **Depends on**: Phase 2 (policy e helpers precisam existir para guardar as rotas)
 
-**Requirements**: EQUIPE-04, EQUIPE-05, EQUIPE-06, EQUIPE-07, EQUIPE-08, EQUIPE-09, EQUIPE-10
+**Requirements**: EQUIPE-04, EQUIPE-05, EQUIPE-06, EQUIPE-07, EQUIPE-09, EQUIPE-10
 
 **Success Criteria** (what must be TRUE):
   1. `coord-geral` logado acessa `/equipes` e vê a lista de equipes filtrada pelo seu `idt_movimento` (= VEM neste marco); a tela usa Flux components coerentes com o resto da UI
   2. `coord-geral` consegue criar uma nova equipe com `nome` (≤60), `slug` único (auto-gerado se omitido) e `descricao` (≤500), e o registro persiste corretamente
   3. `coord-geral` consegue editar uma equipe existente e alternar o campo `ativo` entre true/false, afetando `Equipe::ativas()`
   4. Usuários sem papel `coord-geral` (ex.: `coord-equipe-h`, `membro-equipe`, `user`) recebem 403 ao acessar `equipes.create`, `equipes.edit` ou rotas de escrita; `membros` da equipe podem apenas ler (`equipes.index`/`equipes.show`)
-  5. Arquivar equipe aplica `SoftDeletes` preservando registros em `equipe_usuario` (histórico intacto) e a equipe pode ser restaurada; a validação H+M (máx 1 `coord-equipe-h` + 1 `coord-equipe-m`) aparece em `FormRequest` e bloqueia duplicação já no submit
+  5. Arquivar equipe aplica `SoftDeletes` preservando registros em `equipe_usuario` (histórico intacto) e a equipe pode ser restaurada
 
 **Plans**: 4 planos
 
@@ -157,13 +157,13 @@ Plans:
 
 **Depends on**: Phase 3 (CRUD de equipes em produção) e Phase 2 (policy)
 
-**Requirements**: ATRIB-01, ATRIB-02, ATRIB-03, ATRIB-04, ATRIB-05, ATRIB-06, ATRIB-07, ATRIB-08, TEST-04
+**Requirements**: EQUIPE-08, ATRIB-01, ATRIB-02, ATRIB-03, ATRIB-04, ATRIB-05, ATRIB-06, ATRIB-07, ATRIB-08, TEST-04
 
 **Success Criteria** (what must be TRUE):
   1. `coord-geral` acessa `/equipes/{equipe}/atribuir`; qualquer outro papel recebe 403 via Gate/Policy
   2. A listagem de pessoas elegíveis filtra por `idt_movimento = VEM`; quando o slot alvo é `coord-equipe-h` ou `coord-equipe-m`, filtra adicionalmente por sexo masculino/feminino na `Pessoa` vinculada
   3. As três ações (Atribuir, Alterar papel, Remover) funcionam end-to-end: criam/atualizam/soft-deletam linha em `equipe_usuario` e preenchem `usr_inclusao`/`dat_inclusao` ou `usr_alteracao`/`dat_alteracao` com o ID e timestamp do usuário autenticado
-  4. Tentar atribuir um 2º `coord-equipe-h` (ou 2º `coord-equipe-m`) à mesma equipe retorna erro de validação com mensagem clara em pt_BR, sem criar o registro (Feature test cobre `TEST-04`)
+  4. Tentar atribuir um 2º `coord-equipe-h` (ou 2º `coord-equipe-m`) à mesma equipe retorna erro de validação com mensagem clara em pt_BR, sem criar o registro (EQUIPE-08 + ATRIB-06; Feature test cobre `TEST-04`)
   5. O perfil da pessoa (`settings.profile` ou página equivalente) exibe a lista "Equipes" com nome da equipe + papel atual; soft-deletes na pivot não aparecem (apenas vínculos ativos)
 
 **Plans**: TBD
@@ -262,7 +262,7 @@ Mapeamento completo dos 43 requisitos v1 para as fases do roadmap.
 | EQUIPE-05 | Phase 3 | Pending |
 | EQUIPE-06 | Phase 3 | Pending |
 | EQUIPE-07 | Phase 3 | Pending |
-| EQUIPE-08 | Phase 3 | Pending |
+| EQUIPE-08 | Phase 4 | Pending |
 | EQUIPE-09 | Phase 3 | Pending |
 | EQUIPE-10 | Phase 3 | Pending |
 | ATRIB-01 | Phase 4 | Pending |

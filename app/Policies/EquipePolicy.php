@@ -46,6 +46,15 @@ class EquipePolicy
     }
 
     /**
+     * Criar equipe: exclusivo de coord-geral, autorizado pelo before().
+     * Este método explicita a habilidade usada nas rotas/FormRequests de Phase 3.
+     */
+    public function create(User $user): bool
+    {
+        return false;
+    }
+
+    /**
      * Editar equipe: coord-geral já interceptado em before().
      * Método só é alcançado por não-coord-geral — coord-equipe-h/m da própria equipe.
      * Retorna Response para mensagem pt_BR na resposta 403. RBAC-07.

@@ -29,7 +29,7 @@ Requisitos commitados para o marco v1.1. Cada um mapeia para uma fase do roadmap
 - [ ] **EQUIPE-05**: Volt component `equipes.index` — lista equipes filtradas por movimento do usuário logado
 - [ ] **EQUIPE-06**: Volt component `equipes.create` — formulário de criação restrito a `coord-geral`
 - [ ] **EQUIPE-07**: Volt component `equipes.edit` — edição + toggle ativar/desativar, restrito a `coord-geral`
-- [ ] **EQUIPE-08**: Regra de validação: cada equipe aceita **no máximo** 1 `coord-equipe-h` e 1 `coord-equipe-m` simultaneamente (enforce via `FormRequest` + teste)
+- [ ] **EQUIPE-08**: Regra de validação: cada equipe aceita **no máximo** 1 `coord-equipe-h` e 1 `coord-equipe-m` simultaneamente (enforce runtime na atribuição de membros via Phase 4, junto de ATRIB-06 + TEST-04)
 - [ ] **EQUIPE-09**: Rotas `equipes.*` com middleware `auth` e autorização via `EquipePolicy`
 - [ ] **EQUIPE-10**: Arquivamento via soft-delete preservando histórico da pivot e permitindo restauração
 
@@ -137,7 +137,7 @@ Mapeamento requisito → fase. Preenchido por `gsd-roadmapper` em 2026-04-21.
 | EQUIPE-05 | Phase 3 | Pending |
 | EQUIPE-06 | Phase 3 | Pending |
 | EQUIPE-07 | Phase 3 | Pending |
-| EQUIPE-08 | Phase 3 | Pending |
+| EQUIPE-08 | Phase 4 | Pending |
 | EQUIPE-09 | Phase 3 | Pending |
 | EQUIPE-10 | Phase 3 | Pending |
 | ATRIB-01 | Phase 4 | Pending |

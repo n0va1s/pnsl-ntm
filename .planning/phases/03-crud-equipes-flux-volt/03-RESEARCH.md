@@ -105,9 +105,8 @@ app/Http/Requests/
 └── EquipeUpdateRequest.php # FormRequest: validacao para update com ignore(slug)
 
 tests/Feature/Equipes/
-├── EquipeCrudTest.php          # EQUIPE-05, EQUIPE-06, EQUIPE-07, EQUIPE-09
-├── EquipeArquivamentoTest.php  # EQUIPE-10
-└── EquipeHMValidationTest.php  # EQUIPE-08
+├── EquipeCrudTest.php          # EQUIPE-04, EQUIPE-05, EQUIPE-06, EQUIPE-07, EQUIPE-09
+└── EquipeArquivamentoTest.php  # EQUIPE-10
 ```
 
 ### Pattern 1: Volt SFC com authorize() no mount()
@@ -372,11 +371,11 @@ $this->equipe = Equipe::factory()->create(['idt_movimento' => $this->vem->idt_mo
 
 **How to avoid:** Em arquivos fora de `App\Models` (ex: Volt SFCs, testes, FormRequests), sempre declarar `use App\Models\Equipe;` explicitamente. Em arquivos dentro de `App\Models`, nao adicionar — Pint vai remover.
 
-### Pitfall 6: EQUIPE-08 (validacao H+M) e responsabilidade de Phase 3 vs Phase 4
+### Pitfall 6: EQUIPE-08 (validacao H+M) pertence a Phase 4
 
-**What goes wrong:** EQUIPE-08 diz "cada equipe aceita maximo 1 coord-equipe-h e 1 coord-equipe-m". Isso parece uma regra de atribuicao (Phase 4), mas o REQUIREMENTS lista em Phase 3 (FormRequest) e o ROADMAP diz "aparece em `FormRequest` e bloqueia duplicacao ja no submit".
+**What goes wrong:** EQUIPE-08 diz "cada equipe aceita maximo 1 coord-equipe-h e 1 coord-equipe-m". Tentar aplicar isso em Phase 3 cria uma validacao falsa, porque os formularios de create/edit de equipe nao escrevem papel de usuario na pivot.
 
-**Clarificacao:** EQUIPE-08 em Phase 3 significa: o `EquipeStoreRequest`/`EquipeUpdateRequest` deve ter a regra **documentada** e o teste `EquipeHMValidationTest.php` deve verificar que nenhum segundo coord-equipe-h/m pode ser atribuido via submit do formulario. Mas o formulario de equipe (create/edit) **nao atribui membros** — atribuicao e Phase 4. O `EquipeHMValidationTest.php` em Phase 3 provavelmente testa a validacao de que a equipe nao excede os limites ao ser criada/editada com dados que incluiriam coords duplicados. Recomendacao: implementar a regra de validacao H+M no FormRequest e no teste, mas o formulario de equipe em si nao oferece campo para atribuir coord-h/m diretamente — isso e Phase 4. O teste valida a regra de negocio no FormRequest/service layer.
+**Clarificacao:** EQUIPE-08 foi movido para Phase 4, junto de ATRIB-06 e TEST-04. Phase 3 nao deve criar `EquipeHMValidationTest.php` nem comentario de enforcement em FormRequest. A validacao real deve acontecer no fluxo de atribuicao/troca de papel, onde existem `equipe_id`, `user_id` e `papel`.
 
 ---
 
@@ -560,20 +559,20 @@ new class extends Component {
 
 ## Open Questions
 
-1. **Slug editavel ou apenas auto-gerado?**
+1. **[RESOLVED] Slug editavel ou apenas auto-gerado?**
    - What we know: O mutator `setNomEquipeAttribute` auto-gera slug apenas quando `des_slug` esta vazio
-   - What's unclear: O formulario de criacao/edicao deve expor campo `des_slug` para edicao manual?
-   - Recommendation: Incluir campo `des_slug` readonly (auto-preenchido via Alpine.js) no create, editavel no edit — permite correcao manual sem forca-la.
+   - Decision: O formulario permite informar `des_slug`, mas ele continua opcional. Quando omitido, o mutator do model gera o slug a partir de `nom_equipe`.
+   - Rationale: Mantem o fluxo simples para CRUD comum e preserva a capacidade de correcao manual em casos de acento, abreviacao ou colisao.
 
-2. **Index mostra equipes arquivadas para coord-geral?**
+2. **[RESOLVED] Index mostra equipes arquivadas para coord-geral?**
    - What we know: `Equipe::ativas()` filtra `ind_ativa = true`; `Equipe::withTrashed()` inclui soft-deleted
-   - What's unclear: O index deve mostrar apenas ativas, ou ativas + arquivadas com badge de status?
-   - Recommendation: Mostrar todas (ativas + arquivadas) para coord-geral com badge/indicador visual — alinhado com o criterio de sucesso 1 do ROADMAP que menciona filtro por `idt_movimento`, nao por `ind_ativa`.
+   - Decision: O index de coord-geral mostra equipes ativas, inativas e arquivadas do movimento, com indicador visual de status e acao de restaurar quando aplicavel.
+   - Rationale: Phase 3 precisa provar arquivamento e restauracao; esconder soft-deleted impediria o fluxo de restauracao na propria UI.
 
-3. **EQUIPE-08 em Phase 3: o que exatamente testar?**
+3. **[RESOLVED] EQUIPE-08 em Phase 3: o que exatamente testar?**
    - What we know: Formulario de equipe (create/edit) nao atribui membros; atribuicao e Phase 4
-   - What's unclear: O `EquipeHMValidationTest.php` deve testar o FormRequest em isolamento ou um fluxo HTTP?
-   - Recommendation: Testar que `EquipeStoreRequest`/`EquipeUpdateRequest` tem a regra documentada via Unit test do FormRequest rules(); o teste HTTP de "bloquear 2o coord-equipe-h" pertence tecnicamente a Phase 4. Em Phase 3, criar o arquivo de teste com placeholder para Phase 4.
+   - Decision: EQUIPE-08 foi formalmente movido para Phase 4, junto de ATRIB-06 e TEST-04. Phase 3 nao cria `EquipeHMValidationTest.php` nem placeholder.
+   - Rationale: A regra H+M depende da operacao de atribuir/trocar papel em `equipe_usuario`; o CRUD da entidade `Equipe` nao recebe papel de membro e nao consegue aplicar essa regra de forma real.
 
 ---
 
@@ -608,7 +607,6 @@ new class extends Component {
 | EQUIPE-05 | index renderiza equipes do movimento do usuario logado | Feature | `./vendor/bin/pest tests/Feature/Equipes/EquipeCrudTest.php` | Nao - Wave 0 |
 | EQUIPE-06 | create acessivel apenas por coord-geral; salva corretamente | Feature | `./vendor/bin/pest tests/Feature/Equipes/EquipeCrudTest.php` | Nao - Wave 0 |
 | EQUIPE-07 | edit funciona; toggle ind_ativa persiste | Feature | `./vendor/bin/pest tests/Feature/Equipes/EquipeCrudTest.php` | Nao - Wave 0 |
-| EQUIPE-08 | validacao H+M documentada no FormRequest | Feature | `./vendor/bin/pest tests/Feature/Equipes/EquipeHMValidationTest.php` | Nao - Wave 0 |
 | EQUIPE-09 | rotas retornam 403 para papeis nao autorizados | Feature | `./vendor/bin/pest tests/Feature/Equipes/EquipeCrudTest.php` | Nao - Wave 0 |
 | EQUIPE-10 | soft-delete preserva pivot equipe_usuario; restauracao funciona | Feature | `./vendor/bin/pest tests/Feature/Equipes/EquipeArquivamentoTest.php` | Nao - Wave 0 |
 
@@ -620,7 +618,6 @@ new class extends Component {
 ### Wave 0 Gaps
 - [ ] `tests/Feature/Equipes/EquipeCrudTest.php` — EQUIPE-04, EQUIPE-05, EQUIPE-06, EQUIPE-07, EQUIPE-09
 - [ ] `tests/Feature/Equipes/EquipeArquivamentoTest.php` — EQUIPE-10
-- [ ] `tests/Feature/Equipes/EquipeHMValidationTest.php` — EQUIPE-08
 
 ---
 
