@@ -122,7 +122,13 @@ Plans:
   4. Usuários sem papel `coord-geral` (ex.: `coord-equipe-h`, `membro-equipe`, `user`) recebem 403 ao acessar `equipes.create`, `equipes.edit` ou rotas de escrita; `membros` da equipe podem apenas ler (`equipes.index`/`equipes.show`)
   5. Arquivar equipe aplica `SoftDeletes` preservando registros em `equipe_usuario` (histórico intacto) e a equipe pode ser restaurada; a validação H+M (máx 1 `coord-equipe-h` + 1 `coord-equipe-m`) aparece em `FormRequest` e bloqueia duplicação já no submit
 
-**Plans**: TBD
+**Plans**: 4 planos
+
+Plans:
+- [ ] 03-01-PLAN.md — EquipeStoreRequest + EquipeUpdateRequest (FormRequests com validação escopada)
+- [ ] 03-02-PLAN.md — Rotas equipes.* + Volt SFC equipes.index (listagem, arquivar, restaurar)
+- [ ] 03-03-PLAN.md — Volt SFC equipes.create + equipes.edit (formulários de criação/edição)
+- [ ] 03-04-PLAN.md — Feature tests EquipeCrudTest + EquipeArquivamentoTest + EquipeHMValidationTest
 
 **Artifacts**:
 - `app/Http/Requests/EquipeStoreRequest.php`
@@ -130,13 +136,10 @@ Plans:
 - `resources/views/livewire/equipes/index.blade.php` (Volt SFC)
 - `resources/views/livewire/equipes/create.blade.php` (Volt SFC)
 - `resources/views/livewire/equipes/edit.blade.php` (Volt SFC)
-- `resources/views/livewire/equipes/show.blade.php` (Volt SFC, opcional)
-- Rotas `equipes.*` em `routes/web.php` dentro do grupo `auth`/`verified` com `can:` ou `authorize`
+- Rotas `equipes.*` em `routes/web.php` dentro do grupo `auth` com `->can()`
 - `tests/Feature/Equipes/EquipeCrudTest.php`
 - `tests/Feature/Equipes/EquipeArquivamentoTest.php`
 - `tests/Feature/Equipes/EquipeHMValidationTest.php`
-
-**Plans**: TBD
 
 **UI hint**: yes
 
