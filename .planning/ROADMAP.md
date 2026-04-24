@@ -84,7 +84,11 @@ Este marco estabelece a fundação da gestão de equipes VEM: introduz um RBAC e
   4. `OnlyManagerMiddleware` (alias `manager`) continua retornando 403 para `role = user` e liberando `configuracoes.*` para `role ∈ {admin, coord}` — smoke test Pest verde
   5. Unit tests da `EquipePolicy` cobrem as 4 habilidades (cenários autorizado/negado para `coord-geral`, `coord-equipe-h/m`, `membro-equipe`, não-membro); Feature tests mostram que `membro-equipe` e `user` recebem 403 ao acessar endpoints protegidos pela policy
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — EquipePolicy + AuthServiceProvider + User helpers (isCoordenadorGeral/De/Membro)
+- [ ] 02-02-PLAN.md — Testes Unit/Feature da policy + smoke test OnlyManagerMiddleware
 
 **Artifacts**:
 - `app/Policies/EquipePolicy.php`
@@ -297,7 +301,7 @@ Mapeamento completo dos 43 requisitos v1 para as fases do roadmap.
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1. Fundação de dados e modelos | v1.1 | 0/TBD | Not started | - |
-| 2. Autorização escopada (Gate/Policy) | v1.1 | 0/TBD | Not started | - |
+| 2. Autorização escopada (Gate/Policy) | v1.1 | 0/2 | Planned | - |
 | 3. CRUD de equipes (Flux/Volt) | v1.1 | 0/TBD | Not started | - |
 | 4. Atribuição de membros e coordenadores | v1.1 | 0/TBD | Not started | - |
 | 5. Hardening, regressão e qualidade | v1.1 | 0/TBD | Not started | - |
