@@ -1,0 +1,78 @@
+# ==========================================================
+# .claudeignore — pnsl-ntm (Laravel 12 + Livewire + Pest + Vite 6 + Tailwind 4 + PWA)
+# Anti-thrashing: evita que Claude leia arquivos gigantes/gerados
+# ==========================================================
+
+# --- Base comum ---
+node_modules/
+.git/
+.DS_Store
+*.log
+logs/
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+composer.lock
+.env
+.env.*
+!.env.example
+
+# --- Laravel/PHP ---
+vendor/
+bootstrap/cache/
+storage/app/
+storage/logs/
+storage/framework/
+storage/debugbar/
+.phpunit.cache
+.phpunit.result.cache
+public/build/
+public/hot
+public/storage
+public/mix-manifest.json
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+
+# --- Vite/Frontend build ---
+dist/
+build/
+.vite/
+*.min.js
+*.min.css
+
+# --- PWA gerados ---
+public/sw.js
+public/workbox-*.js
+public/registerSW.js
+public/manifest.webmanifest
+
+# --- Testes/coverage ---
+coverage/
+.nyc_output/
+
+# --- IDE/OS ---
+.idea/
+.vscode/
+*.swp
+*.swo
+Thumbs.db
+
+# --- Binários/media grandes ---
+*.sqlite
+*.sqlite-journal
+*.db
+*.pdf
+*.zip
+*.tar.gz
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.mp4
+*.woff
+*.woff2
+*.ttf
+*.eot

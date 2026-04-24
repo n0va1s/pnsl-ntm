@@ -13,7 +13,7 @@ Este marco estabelece a fundação da gestão de equipes VEM: introduz um RBAC e
 
 - [x] **v1.0 MVP** — Base em produção (Pessoas, Fichas VEM/ECC/SGM, Eventos, Presenças, Gamificação, PWA, deploy FTP)
 - [ ] **v1.1 Gestão de Equipes VEM (Fundação)** — Phases 1-5 (em andamento)
-- [ ] **v1.2 Espaços de Equipe** — diferido (comunicados, eventos internos)
+- [ ] **v1.2 Espaços de Equipe + Presenças + Crachás** — diferido (eventos internos de equipe, registro de presença → score, crachás padronizados)
 - [ ] **v1.3 Gamificação Score 0-100** — diferido (rubrica thinkworklab)
 - [ ] **v1.4 Módulo Vendinha** — diferido
 - [ ] **v1.5 Análise de IA para Vendinha** — diferido
@@ -306,3 +306,37 @@ Mapeamento completo dos 43 requisitos v1 para as fases do roadmap.
 
 *Roadmap generated: 2026-04-21*
 *Covers milestone v1.1 — Gestão de Equipes VEM (Fundação). Marcos v1.2+ (Espaços, Score 0-100, Vendinha, IA) são v2 Requirements em REQUIREMENTS.md e serão roadmappeados em marcos futuros.*
+
+---
+
+## v1.2 Scope Preview — Espaços de Equipe + Presenças + Crachás
+
+> Expandido em 2026-04-23. Roadmap detalhado será gerado após conclusão de v1.1.
+
+### Feature A — Eventos Internos de Equipe
+- Coordenador de equipe cria evento interno (reunião, ensaio, etc.) no espaço da sua equipe
+- Campos: nome, data, tipo, descrição
+- Modelo proposto: `equipe_evento` (FK: `equipe_id`, `user_id` criador)
+
+### Feature B — Registro de Presença em Eventos de Equipe
+- Coordenador registra presença dos membros da sua equipe no evento criado
+- Presença alimenta diretamente o score de gamificação do membro
+- Modelo proposto: `equipe_evento_presenca` (FK: `equipe_evento_id`, `user_id`, `ind_presente`, `registrado_por`)
+- Integração: ao marcar presença → `Gamificacao::create()` ou disparo de evento/observer
+- Dados já existentes: `Presenca` legada para eventos principais continua intacta
+
+### Feature C — Sistema de Crachás (Badges)
+- UI Volt/Flux para geração de crachás de trabalhadores do evento
+- Tamanho padronizado: 85,6mm × 54mm (cartão de crédito) ou A4 (6 por página)
+- **Dados que já existem no schema** (sem nova migration necessária):
+  - `tip_cor_troca` → `participante.tip_cor_troca` (cor da troca do evento)
+  - Alergias → `pessoa_saude` + `tipo_restricao` (ja mapeado no schema)
+  - Casais → `nom_conjuge` + `nom_apelido_conjuge` (ficha VEM/ECC/SGM)
+- Campos no crachá:
+  - Nome + apelido
+  - Foto (se houver)
+  - Equipe + papel
+  - Cor da troca (badge colorido)
+  - Flag de alergias (ícone de alerta se houver restrição)
+  - Nome do cônjuge (se trabalhador casado)
+- Output: HTML imprimível (CSS @print) ou PDF via `barryvdh/laravel-dompdf`
