@@ -63,11 +63,13 @@ class Ficha extends Model
         });
 
         static::created(function ($ficha) {
+            $situacaoCadastrada = TipoSituacao::firstOrCreate([
+                'des_situacao' => 'Cadastrada',
+            ]);
+
             $ficha->analises()->create([
-                'idt_situacao' => 1, // cadastrada
-                'txt_observacao' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'idt_situacao' => $situacaoCadastrada->idt_situacao,
+                'txt_analise' => null,
             ]);
         });
     }

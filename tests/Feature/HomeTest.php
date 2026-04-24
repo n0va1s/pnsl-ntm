@@ -99,7 +99,7 @@ test('visitante pode enviar formulario de contato com dados validos', function (
 
     $response
         ->assertRedirect(route('home'))
-        ->assertSessionHas('message');
+        ->assertSessionHas('success');
 
     $this->assertDatabaseHas('contato', [
         'nom_contato' => 'João da Silva',
