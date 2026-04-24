@@ -18,10 +18,10 @@ class EquipeFactory extends Factory
         return [
             'idt_movimento' => TipoMovimento::where('des_sigla', 'VEM')->value('idt_movimento')
                 ?? TipoMovimento::factory()->create(['des_sigla' => 'VEM'])->idt_movimento,
-            'nom_equipe'    => ucfirst($nome),
-            'des_slug'      => Str::slug($nome),
+            'nom_equipe' => ucfirst($nome),
+            'des_slug' => Str::slug($nome),
             'des_descricao' => $this->faker->sentence(),
-            'ind_ativa'     => true,
+            'ind_ativa' => true,
         ];
     }
 
@@ -49,10 +49,10 @@ class EquipeFactory extends Factory
 
         return array_map(fn ($n) => [
             'idt_movimento' => $idtVEM,
-            'nom_equipe'    => $n,
-            'des_slug'      => Str::slug($n),
+            'nom_equipe' => $n,
+            'des_slug' => Str::slug($n),
             'des_descricao' => null,
-            'ind_ativa'     => true,
+            'ind_ativa' => true,
         ], $nomes);
     }
 

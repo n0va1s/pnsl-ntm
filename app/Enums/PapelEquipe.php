@@ -6,7 +6,7 @@ namespace App\Enums;
 // D-05: values em snake_case; D-05: labels em pt_BR
 enum PapelEquipe: string
 {
-    case CoordGeral   = 'coord_geral';
+    case CoordGeral = 'coord_geral';
     case CoordEquipeH = 'coord_equipe_h';
     case CoordEquipeM = 'coord_equipe_m';
     case MembroEquipe = 'membro_equipe';
@@ -14,7 +14,7 @@ enum PapelEquipe: string
     public function label(): string
     {
         return match ($this) {
-            self::CoordGeral   => 'Coordenador Geral',
+            self::CoordGeral => 'Coordenador Geral',
             self::CoordEquipeH => 'Coordenador de Equipe H',
             self::CoordEquipeM => 'Coordenador de Equipe M',
             self::MembroEquipe => 'Membro de Equipe',
@@ -41,7 +41,7 @@ enum PapelEquipe: string
         return match ($this) {
             self::CoordEquipeH => 'M',
             self::CoordEquipeM => 'F',
-            default            => null,
+            default => null,
         };
     }
 }

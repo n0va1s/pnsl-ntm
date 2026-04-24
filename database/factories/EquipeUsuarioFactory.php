@@ -16,8 +16,8 @@ class EquipeUsuarioFactory extends Factory
     {
         return [
             'idt_equipe' => Equipe::factory(),
-            'user_id'    => User::factory(),
-            'papel'      => PapelEquipe::MembroEquipe,
+            'user_id' => User::factory(),
+            'papel' => PapelEquipe::MembroEquipe,
             // usr_* e dat_* preenchidos via booted() hook do model
         ];
     }

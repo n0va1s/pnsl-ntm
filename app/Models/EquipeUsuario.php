@@ -44,8 +44,8 @@ class EquipeUsuario extends Model
     ];
 
     protected $casts = [
-        'papel'         => PapelEquipe::class,
-        'dat_inclusao'  => 'datetime',
+        'papel' => PapelEquipe::class,
+        'dat_inclusao' => 'datetime',
         'dat_alteracao' => 'datetime',
     ];
 

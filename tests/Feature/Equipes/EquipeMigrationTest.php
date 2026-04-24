@@ -95,13 +95,16 @@ describe('Migration equipes', function () {
     });
 
     test('migration de equipes e reversivel', function () {
-        // Rollback only the equipes migration (step=1 prevents hitting the pre-existing
-        // SQLite FK drop limitation in the legacy usu_inclusao migration)
-        Artisan::call('migrate:rollback', ['--step' => 1]);
+        // Rollback ambas as migrations novas (equipe_usuario primeiro, depois equipes).
+        // step=2 garante que equipes seja derrubada independente da ordem de execucao dos testes.
+        // Nao vai alem pois a proxima migration (usu_inclusao legacy) tem bug de rollback no SQLite.
+        Artisan::call('migrate:rollback', ['--step' => 2]);
         expect(Schema::hasTable('equipes'))->toBeFalse();
+        expect(Schema::hasTable('equipe_usuario'))->toBeFalse();
 
-        // Restore so next tests work fine
+        // Restaurar para nao quebrar outros testes
         Artisan::call('migrate');
         expect(Schema::hasTable('equipes'))->toBeTrue();
+        expect(Schema::hasTable('equipe_usuario'))->toBeTrue();
     });
 });
