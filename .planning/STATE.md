@@ -30,13 +30,15 @@ Iniciado em: 2026-04-21
 
 ## Current Phase
 
-**Phase 1 — Fundação de dados e modelos de equipe (not started)**
+**Phase 1 — Fundação de dados e modelos de equipe (aguardando checkpoint humano — Task 9)**
 
-Próximo passo: rodar `/gsd-plan-phase 1` para decompor a fase em planos executáveis.
+Tasks 1-8 completas (8/9). Task 9 requer verificação manual dual-driver MySQL.
+
+Parado em: `.planning/phases/01-fundacao-dados-modelos/PLAN.md` — Task 9 checkpoint:human-verify
 
 ## Completed Phases
 
-_(nenhuma)_
+_(nenhuma — Phase 1 em andamento, aguardando checkpoint T9)_
 
 ## Key Artifacts
 
@@ -44,12 +46,32 @@ _(nenhuma)_
 - `.planning/REQUIREMENTS.md` — 43 REQ-IDs do milestone v1.1 com traceability completa
 - `.planning/ROADMAP.md` — 5 fases, 43/43 requisitos mapeados
 - `.planning/codebase/` — snapshots de arquitetura/stack/integrações
+- `.planning/phases/01-fundacao-dados-modelos/01-01-SUMMARY.md` — summary das tasks 1-8
+
+## Decisions Made
+
+- D-01: `EquipeUsuario extends Model + AsPivot` (não `Pivot`) — SoftDeletes exige Model no Laravel 12
+- D-02: Novo padrão de auditoria `usr_*/dat_*` para equipe_usuario; usu_* legado (Ficha) não alterado
+- D-03: PK `idt_X` para novas tabelas; `user_id` permanece default (FK para users.id)
+- D-04: Tabela plural `equipes` (exigência REQUIREMENTS EQUIPE-01)
+- D-05: Enum values snake_case (`coord_geral`), labels pt_BR
+- D-06: Unique `(user_id, idt_equipe)` a nível de DB; restauração pós soft-delete via app (Phase 4)
+- D-07: `createMovimentos()` não reusado — testes chamam `seed(EquipeVEMSeeder::class)` explicitamente
+- D-09: `withTimestamps()` NÃO usado em User::equipes() — pivot usa `dat_*` manual via booted()
+- AsPivot trait resolve `fromRawAttributes`/`setPivotKeys` para `using()` em BelongsToMany
+
+## Blockers
+
+- Task 9 (checkpoint:human-verify): Verificação dual-driver MySQL pendente
+- FichaTest (5 tests pré-existentes): `FOREIGN KEY constraint failed` em ficha_analise — não relacionado ao milestone atual
+- GD extension não instalada no XAMPP dev: impede `migrate:fresh --seed` completo (EventoSeeder usa GD)
 
 ## Progress
 
 Phase: 1 of 5 (Fundação de dados e modelos de equipe)
-Status: Ready to plan
-Progress: [░░░░░░░░░░] 0%
+Plan: 1 of 1 (8/9 tasks complete)
+Status: Awaiting checkpoint T9 (MySQL dual-driver verification)
+Progress: [█░░░░░░░░░] 15% (tasks 1-8 done; T9 pending human)
 
 ---
-*Last updated: 2026-04-21 após geração do roadmap (5 fases, coverage 43/43)*
+*Last updated: 2026-04-23 — Tasks 1-8 completas, 49 testes verdes, aguardando checkpoint T9*
