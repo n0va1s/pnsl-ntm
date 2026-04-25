@@ -76,10 +76,12 @@
                 </div>
                 <div
                     class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
-                    <x-heroicon-o-device-phone-mobile class="w-5 h-5 text-cyan-500 shrink-0 mt-0.5" aria-hidden="true" />
+                    <x-heroicon-o-device-phone-mobile class="w-5 h-5 text-cyan-500 shrink-0 mt-0.5"
+                        aria-hidden="true" />
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Foco</p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Deixe o celular de lado e viva o momento </p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Deixe o celular de lado e viva o
+                            momento </p>
                     </div>
                 </div>
             </div>
@@ -498,7 +500,7 @@
                     </div>
                 </div>
 
-                <!-- Dados do Segue-me -->
+
                 <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
                     <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Escolaridade</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -565,9 +567,9 @@
                     </div>
                 </div>
 
-                <!-- Dados do Segue-me -->
+
                 <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Escolaridade</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Religião</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Religião -->
                         <div>
@@ -653,15 +655,6 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-
-
-
-
 
                 <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
                     <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Quem convidou você para
