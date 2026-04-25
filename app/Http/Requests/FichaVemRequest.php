@@ -38,7 +38,7 @@ class FichaVemRequest extends FichaRequest
 
     public function messages(): array
     {
-        return [
+        return array_merge(parent::messages(), [
             'idt_falar_com.required'         => 'Informe com quem devemos falar em caso de necessidade.',
             'des_onde_estuda.required'       => 'Informe onde o candidato estuda.',
             'des_mora_quem.required'         => 'Informe com quem o candidato mora.',
@@ -48,6 +48,6 @@ class FichaVemRequest extends FichaRequest
             'eml_pai.email'                  => 'O e-mail do pai deve ser um endereço válido.',
             'eml_mae.email'                  => 'O e-mail da mãe deve ser um endereço válido.',
             'eml_responsavel.email'          => 'O e-mail do responsável deve ser um endereço válido.',
-        ];
+        ]);
     }
 }

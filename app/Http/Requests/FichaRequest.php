@@ -72,6 +72,9 @@ class FichaRequest extends FormRequest
             'tip_como_soube.max' => 'O campo "Como soube do encontro" deve ter no máximo 3 caracteres.',
 
             'txt_observacao.string' => 'As observações devem ser um texto.',
+
+            'ind_consentimento.required' => 'O consentimento é obrigatório.',
+            'ind_consentimento.accepted' => 'O consentimento deve ser aceito.',
         ];
     }
 }
