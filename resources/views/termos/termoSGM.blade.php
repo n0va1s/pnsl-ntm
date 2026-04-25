@@ -146,7 +146,7 @@
                 <p class="doc-subitem"><strong>6.2</strong> A Paróquia Nossa Senhora do Lago reserva-se o direito de recusar inscrições que não atendam aos critérios do movimento ou que apresentem inconsistências nas informações fornecidas.</p>
 
                 <p class="doc-article-title">7. Desistência e Cancelamento</p>
-                <p class="doc-subitem"><strong>7.1</strong> Em caso de desistência, o participante ou seu responsável compromete-se a comunicar a coordenação com antecedência mínima de [X dias], para que a vaga possa ser redistribuída a candidatos em lista de espera.</p>
+                <p class="doc-subitem"><strong>7.1</strong> Em caso de desistência, o participante ou seu responsável compromete-se a comunicar a coordenação com antecedência mínima de 15 dias, para que a vaga possa ser redistribuída a candidatos em lista de espera.</p>
                 <p class="doc-subitem"><strong>7.2</strong> Eventuais critérios para reembolso de taxas de inscrição, se aplicável, serão definidos e comunicados no regulamento específico de cada edição do encontro.</p>
 
                 <p class="doc-article-title">8. Alterações nos Termos</p>
@@ -351,7 +351,7 @@
                 pdf.text('MOVIMENTO SEGUE-ME', pageW / 2, 7, { align: 'center' });
                 pdf.setFontSize(9);
                 pdf.setFont('helvetica', 'normal');
-                pdf.text('Documentos Legais e Consentimento Unificado', pageW / 2, 13, { align: 'center' });
+                pdf.text('Documentos Legais e Consentimento', pageW / 2, 13, { align: 'center' });
                 y = 26;
                 hr([29, 78, 216]);
 
@@ -395,7 +395,7 @@
                 subItem('6.2  A Paróquia Nossa Senhora do Lago reserva-se o direito de recusar inscrições que não atendam aos critérios do movimento ou que apresentem inconsistências nas informações fornecidas.');
 
                 articleTitle('7. DESISTÊNCIA E CANCELAMENTO');
-                subItem('7.1  Em caso de desistência, o participante ou seu responsável compromete-se a comunicar a coordenação com antecedência mínima de [X dias], para que a vaga possa ser redistribuída a candidatos em lista de espera.');
+                subItem('7.1  Em caso de desistência, o participante ou seu responsável compromete-se a comunicar a coordenação com antecedência mínima de 15 dias, para que a vaga possa ser redistribuída a candidatos em lista de espera.');
                 subItem('7.2  Eventuais critérios para reembolso de taxas de inscrição, se aplicável, serão definidos e comunicados no regulamento específico de cada edição do encontro.');
 
                 articleTitle('8. ALTERAÇÕES NOS TERMOS');
