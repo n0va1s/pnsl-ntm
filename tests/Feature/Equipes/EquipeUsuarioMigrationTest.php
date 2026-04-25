@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -51,7 +52,7 @@ describe('Migration equipe_usuario', function () {
             'idt_equipe' => $equipeId,
             'user_id' => $user1->id,
             'papel' => 'coord_geral',
-        ]))->toThrow(\Illuminate\Database\QueryException::class);
+        ]))->toThrow(QueryException::class);
     });
 
     test('apagar equipe cascata vinculos', function () {

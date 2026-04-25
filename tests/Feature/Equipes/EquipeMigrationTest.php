@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -67,7 +68,7 @@ describe('Migration equipes', function () {
             'ind_ativa' => true,
             'created_at' => now(),
             'updated_at' => now(),
-        ]))->toThrow(\Illuminate\Database\QueryException::class);
+        ]))->toThrow(QueryException::class);
     });
 
     test('equipes aceita soft delete', function () {

@@ -19,8 +19,8 @@ describe('EquipeUsuario pivot model', function () {
     test('cast do papel resolve para enum PapelEquipe', function () {
         $ev = EquipeUsuario::create([
             'idt_equipe' => $this->equipe->idt_equipe,
-            'user_id'    => $this->membro->id,
-            'papel'      => PapelEquipe::MembroEquipe->value,
+            'user_id' => $this->membro->id,
+            'papel' => PapelEquipe::MembroEquipe->value,
         ]);
 
         $fresh = EquipeUsuario::find($ev->idt_equipe_usuario);
@@ -34,8 +34,8 @@ describe('EquipeUsuario pivot model', function () {
 
         $ev = EquipeUsuario::create([
             'idt_equipe' => $this->equipe->idt_equipe,
-            'user_id'    => $this->membro->id,
-            'papel'      => PapelEquipe::MembroEquipe->value,
+            'user_id' => $this->membro->id,
+            'papel' => PapelEquipe::MembroEquipe->value,
         ]);
 
         expect($ev->usr_inclusao)->toBeNull();
@@ -48,8 +48,8 @@ describe('EquipeUsuario pivot model', function () {
 
         $ev = EquipeUsuario::create([
             'idt_equipe' => $this->equipe->idt_equipe,
-            'user_id'    => $this->membro->id,
-            'papel'      => PapelEquipe::MembroEquipe->value,
+            'user_id' => $this->membro->id,
+            'papel' => PapelEquipe::MembroEquipe->value,
         ]);
 
         expect($ev->usr_inclusao)->toBe($autor->id);
@@ -62,8 +62,8 @@ describe('EquipeUsuario pivot model', function () {
 
         $ev = EquipeUsuario::create([
             'idt_equipe' => $this->equipe->idt_equipe,
-            'user_id'    => $this->membro->id,
-            'papel'      => PapelEquipe::MembroEquipe->value,
+            'user_id' => $this->membro->id,
+            'papel' => PapelEquipe::MembroEquipe->value,
         ]);
 
         $idInclusao = $ev->usr_inclusao;
@@ -83,8 +83,8 @@ describe('EquipeUsuario pivot model', function () {
     test('SoftDeletes preserva o registro com deleted_at', function () {
         $ev = EquipeUsuario::create([
             'idt_equipe' => $this->equipe->idt_equipe,
-            'user_id'    => $this->membro->id,
-            'papel'      => PapelEquipe::MembroEquipe->value,
+            'user_id' => $this->membro->id,
+            'papel' => PapelEquipe::MembroEquipe->value,
         ]);
 
         $id = $ev->idt_equipe_usuario;
@@ -96,13 +96,13 @@ describe('EquipeUsuario pivot model', function () {
     });
 
     test('incrementing e true e primary key e idt_equipe_usuario', function () {
-        $ev = new EquipeUsuario();
+        $ev = new EquipeUsuario;
         expect($ev->getIncrementing())->toBeTrue();
         expect($ev->getKeyName())->toBe('idt_equipe_usuario');
     });
 
     test('timestamps public prop e false', function () {
-        $ev = new EquipeUsuario();
+        $ev = new EquipeUsuario;
         expect($ev->timestamps)->toBeFalse();
     });
 });

@@ -28,7 +28,7 @@ describe('EquipeFactory', function () {
     });
 
     test('defaults() retorna 11 entradas com slugs corretos para acentos', function () {
-        $factory = new EquipeFactory();
+        $factory = new EquipeFactory;
         $defaults = $factory->defaults();
 
         expect($defaults)->toHaveCount(11);

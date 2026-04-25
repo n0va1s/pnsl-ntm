@@ -62,9 +62,9 @@ describe('User::equipes() relacao', function () {
         $user->equipes()->attach($equipe->idt_equipe, ['papel' => PapelEquipe::CoordEquipeH->value]);
 
         $this->assertDatabaseHas('equipe_usuario', [
-            'user_id'    => $user->id,
+            'user_id' => $user->id,
             'idt_equipe' => $equipe->idt_equipe,
-            'papel'      => 'coord_equipe_h',
+            'papel' => 'coord_equipe_h',
         ]);
     });
 

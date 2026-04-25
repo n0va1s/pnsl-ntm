@@ -61,7 +61,7 @@ describe('Equipe model', function () {
     });
 
     test('mutator de nom_equipe seta des_slug automaticamente', function () {
-        $equipe = new Equipe();
+        $equipe = new Equipe;
         $equipe->idt_movimento = $this->vem->idt_movimento;
         $equipe->nom_equipe = 'Emaús';
         $equipe->save();
