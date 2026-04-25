@@ -100,16 +100,14 @@ class FichaSGMController extends Controller
         $data = $fichaRequest->validated();
         $ficha = Ficha::create($data);
 
-        if ($fichaRequest->filled('nom_mae')) {
-            $sgmData = $sgmRequest->validated();
-            $ficha->fichaSGM()->create($sgmData);
-        }
+        $sgmData = $sgmRequest->validated();
+        $ficha->fichaSGM()->create($sgmData);
 
         if ($fichaRequest->filled('restricoes')) {
             foreach ($fichaRequest->restricoes as $idt_restricao => $value) {
                 if ($value) {
                     $ficha->fichaSaude()->create([
-                        'idt_resticao' => $idt_restricao,
+                        'idt_restricao' => $idt_restricao,
                         'txt_complemento' => $fichaRequest->input("complementos.$idt_restricao"),
                     ]);
                 }
@@ -135,7 +133,7 @@ class FichaSGMController extends Controller
 
         return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
+            'eventos' => Evento::where('idt_movimento', TipoMovimento::SegueMe)->get(),
             'movimentopadrao' => TipoMovimento::SegueMe,
         ]));
     }
@@ -150,7 +148,7 @@ class FichaSGMController extends Controller
 
         return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
-            'eventos' => Evento::where('idt_movimento', TipoMovimento::VEM)->get(),
+            'eventos' => Evento::where('idt_movimento', TipoMovimento::SegueMe)->get(),
             'movimentopadrao' => TipoMovimento::SegueMe,
         ]));
     }
@@ -174,15 +172,13 @@ class FichaSGMController extends Controller
         $fichaData = $fichaRequest->validated();
         $ficha->update($fichaData);
 
-        if ($fichaRequest->filled('nom_mae') || $fichaRequest->filled('nom_pai')) {
-            $sgmData = $sgmRequest->validated();
-            $sgmData['idt_ficha'] = $ficha->idt_ficha;
+        $sgmData = $sgmRequest->validated();
+        $sgmData['idt_ficha'] = $ficha->idt_ficha;
 
-            if ($ficha->fichaSGM) {
-                $ficha->fichaSGM()->update($sgmData);
-            } else {
-                $ficha->fichaSGM()->create($sgmData);
-            }
+        if ($ficha->fichaSGM) {
+            $ficha->fichaSGM()->update($sgmData);
+        } else {
+            $ficha->fichaSGM()->create($sgmData);
         }
 
         if ($fichaRequest->filled('idt_situacao')) {
@@ -203,11 +199,11 @@ class FichaSGMController extends Controller
 
         $ficha->fichaSaude()->delete();
 
-        if ($fichaRequest->filled('ind_restricoes') == 1) {
+        if ($fichaRequest->input('ind_restricao') == 1) {
             foreach ($fichaRequest->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
                     $ficha->fichaSaude()->create([
-                        'idt_resticao' => $idt_restricao,
+                        'idt_restricao' => $idt_restricao,
                         'txt_complemento' => $fichaRequest->input("complementos.$idt_restricao"),
                     ]);
                 }
