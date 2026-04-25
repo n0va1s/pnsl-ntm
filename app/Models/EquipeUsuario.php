@@ -64,6 +64,14 @@ class EquipeUsuario extends Model
                 $model->dat_alteracao = now();
             }
         });
+
+        static::deleting(function (self $model): void {
+            if (auth()->check()) {
+                $model->usr_alteracao = auth()->id();
+                $model->dat_alteracao = now();
+                $model->saveQuietly();
+            }
+        });
     }
 
     // Relations

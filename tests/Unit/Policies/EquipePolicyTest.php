@@ -176,15 +176,14 @@ describe('EquipePolicy', function () {
             expect($this->policy->assignMembers($semVinculo, $this->equipe))->toBeFalse();
         });
 
-        it('coord-geral pode atribuir membros (via before() no Gate, não via método direto)', function () {
+        it('coord-geral pode atribuir membros via Gate e método direto', function () {
             $coordGeral = User::factory()->create(['role' => 'user']);
             $coordGeral->equipes()->attach($this->equipe->idt_equipe, [
                 'papel' => PapelEquipe::CoordGeral->value,
             ]);
-            // Via Gate (inclui before()): deve ser true
+
             expect($coordGeral->can('assignMembers', $this->equipe))->toBeTrue();
-            // Via método direto (não passa por before()): deve ser false
-            expect($this->policy->assignMembers($coordGeral, $this->equipe))->toBeFalse();
+            expect($this->policy->assignMembers($coordGeral, $this->equipe))->toBeTrue();
         });
 
     });

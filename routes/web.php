@@ -194,6 +194,9 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('/equipes/{equipe}/edit', 'equipes.edit')
         ->name('equipes.edit')
         ->can('update', 'equipe');
+
+    Volt::route('/equipes/{equipe}/atribuir', 'equipes.atribuir')
+        ->name('equipes.atribuir');
 });
 
 require __DIR__.'/auth.php';

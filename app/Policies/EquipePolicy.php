@@ -67,12 +67,12 @@ class EquipePolicy
     }
 
     /**
-     * Atribuir membros: exclusivo de coord-geral (before() garante).
-     * Este método só é alcançado se before() retornou null — nunca para coord-geral.
-     * Mantido explícito para documentação e testes unitários. RBAC-07, ATRIB-01.
+     * Atribuir membros: exclusivo de coord-geral.
+     * Mantido explícito para rotas/componentes, documentação e testes unitários.
+     * RBAC-07, ATRIB-01.
      */
     public function assignMembers(User $user, Equipe $equipe): bool
     {
-        return false;
+        return $user->isCoordenadorGeral();
     }
 }

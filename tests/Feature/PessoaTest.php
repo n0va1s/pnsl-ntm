@@ -315,16 +315,16 @@ test('scopeSearchByName funciona com like no sqlite', function () {
     config(['database.default' => 'sqlite']);
 
     Pessoa::factory()->create([
-        'nom_pessoa' => 'Carlos Silva',
-        'nom_apelido' => 'Carlão',
+        'nom_pessoa' => 'Pessoa BuscaUnica Alfa',
+        'nom_apelido' => 'ApelidoBuscaUnica',
     ]);
 
     Pessoa::factory()->create([
         'nom_pessoa' => 'Maria Souza',
     ]);
 
-    $result = Pessoa::searchByName('Carl')->get();
+    $result = Pessoa::searchByName('BuscaUnica')->get();
 
     expect($result)->toHaveCount(1)
-        ->and($result->first()->nom_pessoa)->toBe('Carlos Silva');
+        ->and($result->first()->nom_pessoa)->toBe('Pessoa BuscaUnica Alfa');
 });
