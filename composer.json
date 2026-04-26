@@ -32,12 +32,14 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Modules\\FitnessChallenge\\": "modules/fitness-challenge/src/",
+            "Modules\\Vendinha\\": "modules/vendinha/src/",
             "Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Modules\\FitnessChallenge\\Tests\\": "modules/fitness-challenge/tests/",
+            "Modules\\Vendinha\\Tests\\": "modules/vendinha/tests/",
             "Tests\\": "tests/"
         }
     },

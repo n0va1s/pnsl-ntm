@@ -46,6 +46,12 @@
                         {{ __('GraceRats') }}
                     </flux:navlist.item>
                 @endif
+                @if (app(\Modules\Vendinha\Services\VendinhaAccessService::class)->canAccess(Auth::user()))
+                    <flux:navlist.item icon="shopping-bag" :href="route('vendinha.dashboard')"
+                        :current="request()->routeIs('vendinha.*')" wire:navigate>
+                        {{ __('Vendinha') }}
+                    </flux:navlist.item>
+                @endif
                 <flux:navlist.item icon="user"
                     :href="route('pessoas.edit', ['pessoa' => Auth::user()->pessoa?->idt_pessoa])"
                     :current="request()->routeIs('pessoas.edit')" wire:navigate>

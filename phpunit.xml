@@ -15,11 +15,15 @@
         <testsuite name="FitnessChallengeUnit">
             <directory>modules/fitness-challenge/tests/Unit</directory>
         </testsuite>
+        <testsuite name="VendinhaFeature">
+            <directory>modules/vendinha/tests/Feature</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
             <directory>app</directory>
             <directory>modules/fitness-challenge/src</directory>
+            <directory>modules/vendinha/src</directory>
         </include>
     </source>
     <php>
