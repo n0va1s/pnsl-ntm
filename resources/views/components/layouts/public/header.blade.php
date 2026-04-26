@@ -20,9 +20,10 @@
             <flux:navbar.item icon="home" :href="route('home')" :current="request()->routeIs('home')" wire:navigate>
                 {{ __('Início') }}
             </flux:navbar.item>
+            <flux:spacer />
             <flux:navbar.item icon="arrow-right-end-on-rectangle" :href="route('login')"
                 :current="request()->routeIs('login')" wire:navigate>
-                {{ __('Login') }}
+                {{ __('Logar') }}
             </flux:navbar.item>
             <flux:navbar.item icon="user-plus" :href="route('register')" :current="request()->routeIs('register')"
                 wire:navigate>
@@ -48,7 +49,7 @@
                 </flux:navlist.item>
                 <flux:navlist.item icon="arrow-right-end-on-rectangle" :href="route('login')"
                     :current="request()->routeIs('login')" wire:navigate>
-                    {{ __('Login') }}
+                    {{ __('Logar') }}
                 </flux:navlist.item>
                 <flux:navlist.item icon="user-plus" :href="route('register')"
                     :current="request()->routeIs('register')" wire:navigate>
