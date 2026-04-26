@@ -102,4 +102,13 @@ class User extends Authenticatable
             ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
+
+    public function routeNotificationForTelegram()
+    {
+        if ($this->role === 'admin') {
+            return env('TELEGRAM_CHAT_IDS');
+        }
+
+        return null;
+    }
 }
