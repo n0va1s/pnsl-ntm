@@ -13,6 +13,7 @@
 | Scoring flexivel | `ScoringServiceTest` | Todos os modos basicos e `hustle_points` calculam corretamente |
 | CRUD desafio/convite | `FitnessChallengeApiTest` | Criador cria desafio e participante entra por convite |
 | Check-in/feed/social | `FitnessChallengeApiTest` | Check-in calcula score, atualiza participante, permite like e comentario |
+| Barreira de midia | `FitnessMediaModerationTest` | Check-in pendente nao aparece/pontua; termos sexuais sao bloqueados; upload valido fica em quarentena; usuario comum nao modera |
 | Leaderboard | `FitnessChallengeApiTest` | Ranking individual e por times retorna ordem/pontos esperados |
 
 ## Evidencia inicial
@@ -37,6 +38,17 @@
 - `C:/xampp/php/php.exe vendor/bin/pint tests/Feature/Equipes/EquipeMigrationTest.php tests/Feature/Equipes/EquipeUsuarioMigrationTest.php modules/fitness-challenge --test` PASS
 - `C:/xampp/php/php.exe vendor/bin/pest` PASS: 332 testes, 841 assertions
 
+## Evidencia adicional - moderacao de midia
+
+- Decisao de seguranca: provas de treino ficam `pending` por padrao via `FITNESS_CHALLENGE_REQUIRE_MANUAL_MEDIA_REVIEW=true`.
+- Check-ins pendentes nao entram no feed publico, nao aceitam like/comentario e nao alteram `total_score`/leaderboard.
+- Admin/coord podem aprovar via `POST /api/fitness/moderation/check-ins/{checkIn}/approve`; aprovacao calcula score e credita participante/time.
+- Admin/coord podem rejeitar via `POST /api/fitness/moderation/check-ins/{checkIn}/reject`; rejeicao revoga pontuacao se houver.
+- `C:/xampp/php/php.exe vendor/bin/pest modules/fitness-challenge/tests --stop-on-failure` PASS: 15 testes, 64 assertions
+- `C:/xampp/php/php.exe artisan route:list --name=fitness` PASS: 19 rotas
+- `C:/xampp/php/php.exe vendor/bin/pest tests/Feature/Equipes/EquipeMigrationTest.php tests/Feature/Equipes/EquipeUsuarioMigrationTest.php modules/fitness-challenge/tests --stop-on-failure` PASS: 25 testes, 84 assertions
+- `C:/xampp/php/php.exe vendor/bin/pest` PASS: 336 testes, 867 assertions
+
 ## Resultado GSD/Nyquist
 
-Todos os requisitos desta fatia possuem teste automatizado ou gate executado. A limitacao restante e funcional, nao de validacao: upload real de arquivos, thumbnails de video, frontend Livewire e notificacoes por hooks ficam fora desta primeira fatia e devem virar proximas fases do addon.
+Todos os requisitos desta fatia possuem teste automatizado ou gate executado. A limitacao restante e funcional, nao de validacao: thumbnails de video, frontend Livewire e notificacoes por hooks ficam fora desta primeira fatia e devem virar proximas fases do addon.

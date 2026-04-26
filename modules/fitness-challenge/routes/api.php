@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\FitnessChallenge\Http\Controllers\ChallengeController;
 use Modules\FitnessChallenge\Http\Controllers\CheckInController;
+use Modules\FitnessChallenge\Http\Controllers\CheckInModerationController;
 use Modules\FitnessChallenge\Http\Controllers\LeaderboardController;
 use Modules\FitnessChallenge\Http\Controllers\TeamController;
 
@@ -19,6 +20,9 @@ Route::post('challenges/{challenge}/check-ins', [CheckInController::class, 'stor
 Route::delete('check-ins/{checkIn}', [CheckInController::class, 'destroy'])->name('check-ins.destroy');
 Route::post('check-ins/{checkIn}/like', [CheckInController::class, 'like'])->name('check-ins.like');
 Route::post('check-ins/{checkIn}/comments', [CheckInController::class, 'comment'])->name('check-ins.comments.store');
+Route::get('moderation/check-ins', [CheckInModerationController::class, 'index'])->name('moderation.check-ins.index');
+Route::post('moderation/check-ins/{checkIn}/approve', [CheckInModerationController::class, 'approve'])->name('moderation.check-ins.approve');
+Route::post('moderation/check-ins/{checkIn}/reject', [CheckInModerationController::class, 'reject'])->name('moderation.check-ins.reject');
 
 Route::get('challenges/{challenge}/leaderboard', [LeaderboardController::class, 'individual'])->name('leaderboard.individual');
 Route::get('challenges/{challenge}/leaderboard/teams', [LeaderboardController::class, 'teams'])->name('leaderboard.teams');

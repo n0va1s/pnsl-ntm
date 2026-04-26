@@ -30,11 +30,18 @@ class FitnessCheckIn extends Model
         'steps',
         'activity_type',
         'score',
+        'moderation_status',
+        'moderation_reason',
+        'moderated_by',
+        'moderated_at',
+        'score_awarded_at',
     ];
 
     protected $casts = [
         'distance_km' => 'float',
         'score' => 'float',
+        'moderated_at' => 'datetime',
+        'score_awarded_at' => 'datetime',
     ];
 
     public function challenge(): BelongsTo
@@ -50,6 +57,11 @@ class FitnessCheckIn extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(FitnessTeam::class, 'fitness_team_id');
+    }
+
+    public function moderator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'moderated_by');
     }
 
     public function comments(): HasMany

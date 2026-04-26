@@ -10,6 +10,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     config(['fitness-challenge.enabled' => true]);
+    config(['fitness-challenge.media.require_manual_review' => true]);
 });
 
 it('cria desafio com participante criador e permite entrada por convite', function () {
@@ -38,8 +39,8 @@ it('cria desafio com participante criador e permite entrada por convite', functi
         ->assertJsonPath('data.user_id', $guest->id);
 });
 
-it('registra check-in calcula score atualiza ranking e permite interacoes sociais', function () {
-    $creator = User::factory()->create();
+it('registra check-in, exige moderacao antes de pontuar e permite interacoes sociais apos aprovacao', function () {
+    $creator = User::factory()->create(['role' => User::ROLE_ADMIN]);
     $participant = User::factory()->create();
 
     $challenge = FitnessChallenge::create([
@@ -66,15 +67,24 @@ it('registra check-in calcula score atualiza ranking e permite interacoes sociai
             'activity_type' => 'corrida',
         ])
         ->assertCreated()
-        ->assertJsonPath('data.score', 6.4);
+        ->assertJsonPath('data.score', 0)
+        ->assertJsonPath('data.moderation_status', 'pending');
 
     $checkIn = FitnessCheckIn::findOrFail($checkInResponse->json('data.id'));
 
-    expect((float) $challenge->participants()->where('user_id', $participant->id)->first()->total_score)->toBe(6.4);
+    expect((float) $challenge->participants()->where('user_id', $participant->id)->first()->total_score)->toBe(0.0);
 
     $this->actingAs($creator)
         ->postJson(route('fitness.challenges.join', $challenge->invite_code))
         ->assertCreated();
+
+    $this->actingAs($creator)
+        ->postJson(route('fitness.moderation.check-ins.approve', $checkIn))
+        ->assertOk()
+        ->assertJsonPath('data.score', 6.4)
+        ->assertJsonPath('data.moderation_status', 'approved');
+
+    $checkIn->refresh();
 
     $this->actingAs($creator)
         ->postJson(route('fitness.check-ins.like', $checkIn))
@@ -95,7 +105,7 @@ it('registra check-in calcula score atualiza ranking e permite interacoes sociai
 });
 
 it('cria time e atualiza ranking por equipes', function () {
-    $creator = User::factory()->create();
+    $creator = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
     $challenge = FitnessChallenge::create([
         'created_by' => $creator->id,
@@ -122,11 +132,16 @@ it('cria time e atualiza ranking por equipes', function () {
         ->assertOk()
         ->assertJsonPath('data.fitness_team_id', $teamResponse->json('data.id'));
 
-    $this->postJson(route('fitness.check-ins.store', $challenge), [
+    $checkInResponse = $this->postJson(route('fitness.check-ins.store', $challenge), [
         'title' => 'Sessao concluida',
         'media_path' => 'fitness/provas/sessao.webp',
         'media_type' => 'image',
     ])->assertCreated();
+
+    $checkIn = FitnessCheckIn::findOrFail($checkInResponse->json('data.id'));
+
+    $this->postJson(route('fitness.moderation.check-ins.approve', $checkIn))
+        ->assertOk();
 
     $this->getJson(route('fitness.leaderboard.teams', $challenge))
         ->assertOk()

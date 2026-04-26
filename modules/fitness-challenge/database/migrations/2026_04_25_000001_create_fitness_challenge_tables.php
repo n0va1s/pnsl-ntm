@@ -65,10 +65,16 @@ return new class extends Migration
             $table->unsignedInteger('steps')->nullable();
             $table->string('activity_type')->nullable();
             $table->decimal('score', 12, 2)->default(0);
+            $table->string('moderation_status', 24)->default('pending');
+            $table->text('moderation_reason')->nullable();
+            $table->foreignId('moderated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('moderated_at')->nullable();
+            $table->timestamp('score_awarded_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->index(['fitness_challenge_id', 'created_at']);
+            $table->index('moderation_status');
         });
 
         Schema::create('fitness_check_in_likes', function (Blueprint $table) {

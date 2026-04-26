@@ -14,6 +14,7 @@ Criar a primeira fatia funcional do addon de desafios fitness, inspirado no GymR
 - Modulo isolado em `modules/fitness-challenge/`.
 - Feature flag `FEATURE_FITNESS_CHALLENGE`.
 - Migrations, models, scoring service, leaderboard service e API principal.
+- Barreira de seguranca de midia para impedir que provas intimas/comprometedoras aparecam ou pontuem sem revisao.
 - Testes unitarios do scoring e testes feature dos endpoints principais.
 
 ## Decisoes
@@ -28,7 +29,9 @@ Criar a primeira fatia funcional do addon de desafios fitness, inspirado no GymR
   - `tests/Pest.php`: inclui os testes do modulo no bootstrap Laravel.
 - As rotas sao registradas pelo service provider sob `/api/fitness`, com middleware `web`, `auth` e `fitness.enabled`.
 - Quando a feature flag esta desligada, o middleware retorna 404 silencioso.
-- Check-ins exigem `title`, `media_path` e `media_type`; upload real/thumbnail/FFmpeg fica para fase frontend/midia.
+- Check-ins exigem `title` e prova de midia (`media` upload real ou `media_path` legado). Por padrao entram como `pending`, nao aparecem no feed, nao aceitam like/comentario e nao pontuam ate aprovacao por admin/coord.
+- Rejeitado: fingir deteccao perfeita de pornografia sem servico especializado/dependencia. A protecao entregue combina validacao de MIME/tamanho, bloqueio de termos explicitamente sexuais/comprometedores e quarentena com revisao manual.
+- Upload de imagem/video usa o disk configuravel `FITNESS_CHALLENGE_MEDIA_DISK`; videos ainda nao geram thumbnail automatico porque isso exigiria FFmpeg/servico externo.
 - Likes foram modelados como tabela relacional (`fitness_check_in_likes`) em vez de array JSON para preservar integridade e consultas.
 
 ## Entregaveis
@@ -40,6 +43,7 @@ Criar a primeira fatia funcional do addon de desafios fitness, inspirado no GymR
 - `modules/fitness-challenge/src/Models/*`
 - `modules/fitness-challenge/src/Services/*`
 - `modules/fitness-challenge/src/Enums/ScoringType.php`
+- `modules/fitness-challenge/src/Enums/ModerationStatus.php`
 - `modules/fitness-challenge/database/migrations/2026_04_25_000001_create_fitness_challenge_tables.php`
 - `modules/fitness-challenge/routes/api.php`
 - `modules/fitness-challenge/tests/*`
