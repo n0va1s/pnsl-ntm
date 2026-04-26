@@ -18,7 +18,7 @@ it('renderiza dashboard frontend quando addon esta ativo', function () {
     $this->actingAs($user)
         ->get(route('desafios.index'))
         ->assertOk()
-        ->assertSee('Desafios')
+        ->assertSee('GraceRats')
         ->assertSee($challenge->name);
 });
 
@@ -60,7 +60,7 @@ it('renderiza telas principais do desafio', function () {
     $this->actingAs($user)
         ->get(route('desafios.app.profile'))
         ->assertOk()
-        ->assertSee('Historico de desafios');
+        ->assertSee('Historico GraceRats');
 });
 
 function frontendChallengeFor(User $user): FitnessChallenge

@@ -29,10 +29,10 @@ new class extends Component
 <section class="w-full space-y-6">
     <div class="flex items-center justify-between gap-4">
         <div>
-            <flux:heading size="xl">{{ __('Historico de desafios') }}</flux:heading>
+            <flux:heading size="xl">{{ __('Historico GraceRats') }}</flux:heading>
             <flux:subheading>{{ __('Seus registros enviados para desafios.') }}</flux:subheading>
         </div>
-        <flux:button href="{{ route('desafios.index') }}" wire:navigate variant="ghost">{{ __('Desafios') }}</flux:button>
+        <flux:button href="{{ route('desafios.index') }}" wire:navigate variant="ghost">{{ __('GraceRats') }}</flux:button>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">

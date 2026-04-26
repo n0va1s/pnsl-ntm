@@ -52,7 +52,7 @@ new class extends Component
 <section class="w-full space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">{{ __('Desafios') }}</flux:heading>
+            <flux:heading size="xl">{{ __('GraceRats') }}</flux:heading>
             <flux:subheading>{{ __('Registre cumprimentos, acompanhe desafios e dispute pontuacao com o grupo.') }}</flux:subheading>
         </div>
 
@@ -107,7 +107,7 @@ new class extends Component
             </article>
         @empty
             <div class="border border-zinc-200 p-6 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400 lg:col-span-2">
-                {{ __('Voce ainda nao participa de Desafios.') }}
+                {{ __('Voce ainda nao participa de desafios no GraceRats.') }}
             </div>
         @endforelse
     </div>

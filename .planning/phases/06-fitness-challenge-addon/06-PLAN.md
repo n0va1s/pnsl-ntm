@@ -1,4 +1,4 @@
-# Phase 6 Plan - Addon de Desafios
+# Phase 6 Plan - GraceRats
 
 **Criado:** 2026-04-25
 **Status:** DONE
@@ -6,12 +6,12 @@
 
 ## Goal
 
-Criar a primeira fatia funcional do addon de desafios com comprovacao e pontuacao, inspirado no fluxo social/gamificado do GymRats, mas aplicavel a qualquer desafio criado no sistema, como rezar o terco por 60 dias.
+Criar a primeira fatia funcional do GraceRats: addon de desafios com comprovacao e pontuacao, inspirado no fluxo social/gamificado do GymRats, mas aplicavel a qualquer desafio criado no sistema, como rezar o terco por 60 dias.
 
 ## Escopo desta fatia
 
-- Backend core do addon de desafios.
-- Frontend Livewire/Volt basico do addon de desafios.
+- Backend core do GraceRats.
+- Frontend Livewire/Volt basico do GraceRats.
 - Modulo isolado em `modules/fitness-challenge/`.
 - Feature flag `FEATURE_CHALLENGES_ADDON`.
 - Migrations, models, scoring service, leaderboard service e API principal.
@@ -22,7 +22,7 @@ Criar a primeira fatia funcional do addon de desafios com comprovacao e pontuaca
 ## Decisoes
 
 - A especificacao original usa TypeScript/Express/React, mas o projeto real e Laravel 12 + Livewire/Volt. A implementacao foi adaptada para PHP/Laravel mantendo os conceitos.
-- O modulo tecnico continua em `modules/fitness-challenge/` com namespace `Modules\FitnessChallenge` para evitar renomeacao estrutural grande no PR empilhado; a experiencia, rotas publicas e textos foram generalizados para "Desafios".
+- O modulo tecnico continua em `modules/fitness-challenge/` com namespace `Modules\FitnessChallenge` para evitar renomeacao estrutural grande no PR empilhado; a experiencia, rotas publicas e textos foram generalizados e o branding visivel ficou como "GraceRats".
 - Integrações fora do modulo sao minimas e explicitas:
   - `composer.json`: autoload PSR-4 do modulo.
   - `bootstrap/providers.php`: registra `FitnessChallengeServiceProvider`.

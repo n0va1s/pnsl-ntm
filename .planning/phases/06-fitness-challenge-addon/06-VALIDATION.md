@@ -1,4 +1,4 @@
-# Phase 6 Validation - Addon de Desafios
+# Phase 6 Validation - GraceRats
 
 **Criado:** 2026-04-25
 **Status:** PASS
@@ -62,10 +62,10 @@
 
 ## Evidencia adicional - generalizacao para desafios nao fitness
 
-- Decisao do produto: o addon serve desafios arbitrarios, como "rezar o terco todo dia por 60 dias", e nao apenas desafios fitness.
+- Decisao do produto: GraceRats serve desafios arbitrarios, como "rezar o terco todo dia por 60 dias", e nao apenas desafios fitness.
 - Rotas publicas/API trocadas de `/fitness` e `/api/fitness` para `/desafios`, `/perfil/desafios` e `/api/desafios`.
 - Feature flag publica trocada para `FEATURE_CHALLENGES_ADDON`; flags antigas `FEATURE_FITNESS_CHALLENGE` e `FITNESS_CHALLENGE_*` continuam como fallback de compatibilidade na config.
-- Textos do frontend trocam "treino/check-in/fitness" por "registro/cumprimento/desafios".
+- Textos do frontend trocam "treino/check-in/fitness" por "registro/cumprimento/desafios" e exibem o branding GraceRats.
 - O namespace/tabelas internos `FitnessChallenge`/`fitness_*` foram mantidos nesta PR para evitar renomeacao estrutural ampla e preservar o diff empilhado; essa e uma decisao tecnica, nao de produto.
 - `C:/xampp/php/php.exe vendor/bin/pint .env.example routes/web.php resources/views/components/layouts/app/sidebar.blade.php resources/views/livewire/desafios modules/fitness-challenge --test` PASS
 - `C:/xampp/php/php.exe artisan route:list --name=desafios` PASS: 25 rotas

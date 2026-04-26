@@ -43,7 +43,7 @@
                 @if (config('fitness-challenge.enabled'))
                     <flux:navlist.item icon="trophy" :href="route('desafios.index')"
                         :current="request()->routeIs('desafios.*')" wire:navigate>
-                        {{ __('Desafios') }}
+                        {{ __('GraceRats') }}
                     </flux:navlist.item>
                 @endif
                 <flux:navlist.item icon="user"
