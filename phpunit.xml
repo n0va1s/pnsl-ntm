@@ -10,11 +10,16 @@
         </testsuite>
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
+            <directory>modules/fitness-challenge/tests/Feature</directory>
+        </testsuite>
+        <testsuite name="FitnessChallengeUnit">
+            <directory>modules/fitness-challenge/tests/Unit</directory>
         </testsuite>
     </testsuites>
     <source>
         <include>
             <directory>app</directory>
+            <directory>modules/fitness-challenge/src</directory>
         </include>
     </source>
     <php>
@@ -28,5 +33,6 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="FEATURE_FITNESS_CHALLENGE" value="false"/>
     </php>
 </phpunit>

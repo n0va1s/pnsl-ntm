@@ -96,14 +96,16 @@ describe('Migration equipes', function () {
     });
 
     test('migration de equipes e reversivel', function () {
-        // Rollback ambas as migrations novas (equipe_usuario primeiro, depois equipes).
-        // step=2 garante que equipes seja derrubada independente da ordem de execucao dos testes.
-        // Nao vai alem pois a proxima migration (usu_inclusao legacy) tem bug de rollback no SQLite.
-        Artisan::call('migrate:rollback', ['--step' => 2]);
+        Artisan::call('migrate:rollback', [
+            '--path' => 'database/migrations/2026_04_21_000002_create_equipe_usuario_table.php',
+        ]);
+        Artisan::call('migrate:rollback', [
+            '--path' => 'database/migrations/2026_04_21_000001_create_equipes_table.php',
+        ]);
+
         expect(Schema::hasTable('equipes'))->toBeFalse();
         expect(Schema::hasTable('equipe_usuario'))->toBeFalse();
 
-        // Restaurar para nao quebrar outros testes
         Artisan::call('migrate');
         expect(Schema::hasTable('equipes'))->toBeTrue();
         expect(Schema::hasTable('equipe_usuario'))->toBeTrue();

@@ -131,14 +131,16 @@ describe('Migration equipe_usuario', function () {
     });
 
     test('migrations sao reversiveis na ordem correta', function () {
-        // Rollback steps 1 and 2 (equipe_usuario and equipes)
-        Artisan::call('migrate:rollback', ['--step' => 1]);
+        Artisan::call('migrate:rollback', [
+            '--path' => 'database/migrations/2026_04_21_000002_create_equipe_usuario_table.php',
+        ]);
         expect(Schema::hasTable('equipe_usuario'))->toBeFalse();
 
-        Artisan::call('migrate:rollback', ['--step' => 1]);
+        Artisan::call('migrate:rollback', [
+            '--path' => 'database/migrations/2026_04_21_000001_create_equipes_table.php',
+        ]);
         expect(Schema::hasTable('equipes'))->toBeFalse();
 
-        // Restore migrations
         Artisan::call('migrate');
         expect(Schema::hasTable('equipes'))->toBeTrue();
         expect(Schema::hasTable('equipe_usuario'))->toBeTrue();

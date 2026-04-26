@@ -23,7 +23,7 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
-    ->in('Feature', 'Unit');
+    ->in('Feature', 'Unit', '../modules/fitness-challenge/tests/Feature', '../modules/fitness-challenge/tests/Unit');
 
 /*
 |--------------------------------------------------------------------------
