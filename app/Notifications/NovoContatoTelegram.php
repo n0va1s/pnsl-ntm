@@ -38,7 +38,6 @@ class NovoContatoTelegram extends Notification
             . *Email:* {$this->contato->eml_contato}\n
             . *Movimento:* {$this->contato->movimento->nom_movimento}\n
             . *Mensagem:* {$this->contato->txt_mensagem}")
-            // ->button('Ver na Plataforma', route('contatos.index'));
-            ->button('Ver na Plataforma', 'https://google.com');
+            ->button('Ver na Plataforma', route('contatos.index'));
     }
 }
