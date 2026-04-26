@@ -24,7 +24,7 @@ enum ScoringType: string
     public function label(): string
     {
         return match ($this) {
-            self::TotalWorkouts => 'Total de treinos',
+            self::TotalWorkouts => 'Total de registros',
             self::TotalMinutes => 'Total de minutos',
             self::TotalCalories => 'Total de calorias',
             self::TotalDistance => 'Total de distancia',

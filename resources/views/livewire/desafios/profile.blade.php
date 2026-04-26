@@ -29,15 +29,15 @@ new class extends Component
 <section class="w-full space-y-6">
     <div class="flex items-center justify-between gap-4">
         <div>
-            <flux:heading size="xl">{{ __('Historico fitness') }}</flux:heading>
-            <flux:subheading>{{ __('Seus treinos enviados para desafios.') }}</flux:subheading>
+            <flux:heading size="xl">{{ __('Historico de desafios') }}</flux:heading>
+            <flux:subheading>{{ __('Seus registros enviados para desafios.') }}</flux:subheading>
         </div>
-        <flux:button href="{{ route('fitness.index') }}" wire:navigate variant="ghost">{{ __('Desafios') }}</flux:button>
+        <flux:button href="{{ route('desafios.index') }}" wire:navigate variant="ghost">{{ __('Desafios') }}</flux:button>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
         <div class="border border-zinc-200 p-4 dark:border-zinc-700">
-            <span class="text-sm text-zinc-500">{{ __('Check-ins') }}</span>
+            <span class="text-sm text-zinc-500">{{ __('Registros') }}</span>
             <strong class="block text-2xl">{{ $totalCheckIns }}</strong>
         </div>
         <div class="border border-zinc-200 p-4 dark:border-zinc-700">
@@ -50,7 +50,7 @@ new class extends Component
         <table class="w-full text-left text-sm">
             <thead class="bg-zinc-50 text-xs font-semibold uppercase text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300">
                 <tr>
-                    <th class="px-4 py-3">{{ __('Treino') }}</th>
+                    <th class="px-4 py-3">{{ __('Registro') }}</th>
                     <th class="px-4 py-3">{{ __('Desafio') }}</th>
                     <th class="px-4 py-3">{{ __('Status') }}</th>
                     <th class="px-4 py-3">{{ __('Pontos') }}</th>
@@ -66,7 +66,7 @@ new class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-6 text-center text-zinc-500">{{ __('Nenhum treino registrado.') }}</td>
+                        <td colspan="4" class="px-4 py-6 text-center text-zinc-500">{{ __('Nenhum registro enviado.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

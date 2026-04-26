@@ -41,9 +41,9 @@
                     {{ __('Eventos') }}
                 </flux:navlist.item>
                 @if (config('fitness-challenge.enabled'))
-                    <flux:navlist.item icon="trophy" :href="route('fitness.index')"
-                        :current="request()->routeIs('fitness.*')" wire:navigate>
-                        {{ __('Fitness') }}
+                    <flux:navlist.item icon="trophy" :href="route('desafios.index')"
+                        :current="request()->routeIs('desafios.*')" wire:navigate>
+                        {{ __('Desafios') }}
                     </flux:navlist.item>
                 @endif
                 <flux:navlist.item icon="user"

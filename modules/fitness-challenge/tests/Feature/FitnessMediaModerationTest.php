@@ -16,15 +16,15 @@ beforeEach(function () {
     Storage::fake('local');
 });
 
-it('mantem check-ins pendentes fora do feed e do ranking ate aprovacao', function () {
+it('mantem registros pendentes fora do feed e do ranking ate aprovacao', function () {
     $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
     $participant = User::factory()->create(['role' => User::ROLE_USER]);
     $challenge = fitnessChallengeFor($admin, $participant);
 
     $response = $this->actingAs($participant)
-        ->postJson(route('fitness.check-ins.store', $challenge), [
-            'title' => 'Treino honesto',
-            'media_path' => 'fitness/provas/treino-honesto.webp',
+        ->postJson(route('desafios.check-ins.store', $challenge), [
+            'title' => 'Registro honesto',
+            'media_path' => 'desafios/provas/registro-honesto.webp',
             'media_type' => 'image',
             'duration_minutes' => 45,
         ])
@@ -35,36 +35,36 @@ it('mantem check-ins pendentes fora do feed e do ranking ate aprovacao', functio
     $checkIn = FitnessCheckIn::findOrFail($response->json('data.id'));
 
     $this->actingAs($participant)
-        ->getJson(route('fitness.check-ins.index', $challenge))
+        ->getJson(route('desafios.check-ins.index', $challenge))
         ->assertOk()
         ->assertJsonCount(0, 'data');
 
     $this->actingAs($participant)
-        ->getJson(route('fitness.leaderboard.individual', $challenge))
+        ->getJson(route('desafios.leaderboard.individual', $challenge))
         ->assertOk()
         ->assertJsonPath('data.0.total_score', 0);
 
     $this->actingAs($admin)
-        ->postJson(route('fitness.moderation.check-ins.approve', $checkIn))
+        ->postJson(route('desafios.moderation.check-ins.approve', $checkIn))
         ->assertOk()
         ->assertJsonPath('data.moderation_status', 'approved')
         ->assertJsonPath('data.score', 45);
 
     $this->actingAs($participant)
-        ->getJson(route('fitness.check-ins.index', $challenge))
+        ->getJson(route('desafios.check-ins.index', $challenge))
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
 
-it('bloqueia termos sexuais ou comprometedores antes de criar check-in', function () {
+it('bloqueia termos sexuais ou comprometedores antes de criar registro', function () {
     $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
     $participant = User::factory()->create(['role' => User::ROLE_USER]);
     $challenge = fitnessChallengeFor($admin, $participant);
 
     $this->actingAs($participant)
-        ->postJson(route('fitness.check-ins.store', $challenge), [
-            'title' => 'foto nude pos treino',
-            'media_path' => 'fitness/provas/nude.webp',
+        ->postJson(route('desafios.check-ins.store', $challenge), [
+            'title' => 'foto nude no desafio',
+            'media_path' => 'desafios/provas/nude.webp',
             'media_type' => 'image',
             'duration_minutes' => 30,
         ])
@@ -80,7 +80,7 @@ it('permite upload de imagem valida e salva em quarentena pendente', function ()
     $challenge = fitnessChallengeFor($admin, $participant);
 
     $response = $this->actingAs($participant)
-        ->postJson(route('fitness.check-ins.store', $challenge), [
+        ->postJson(route('desafios.check-ins.store', $challenge), [
             'title' => 'Musculacao concluida',
             'media' => UploadedFile::fake()->createWithContent(
                 'prova.png',
@@ -95,23 +95,23 @@ it('permite upload de imagem valida e salva em quarentena pendente', function ()
     Storage::disk('local')->assertExists($response->json('data.media_path'));
 });
 
-it('impede usuario comum de moderar check-ins', function () {
+it('impede usuario comum de moderar registros', function () {
     $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
     $participant = User::factory()->create(['role' => User::ROLE_USER]);
     $other = User::factory()->create(['role' => User::ROLE_USER]);
     $challenge = fitnessChallengeFor($admin, $participant);
 
     $response = $this->actingAs($participant)
-        ->postJson(route('fitness.check-ins.store', $challenge), [
-            'title' => 'Treino para revisar',
-            'media_path' => 'fitness/provas/revisar.webp',
+        ->postJson(route('desafios.check-ins.store', $challenge), [
+            'title' => 'Registro para revisar',
+            'media_path' => 'desafios/provas/revisar.webp',
             'media_type' => 'image',
         ]);
 
     $checkIn = FitnessCheckIn::findOrFail($response->json('data.id'));
 
     $this->actingAs($other)
-        ->postJson(route('fitness.moderation.check-ins.approve', $checkIn))
+        ->postJson(route('desafios.moderation.check-ins.approve', $checkIn))
         ->assertForbidden();
 });
 

@@ -92,7 +92,7 @@ new class extends Component
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
             <flux:heading size="xl">{{ $challenge->name }}</flux:heading>
-            <flux:subheading>{{ $challenge->description ?: __('Desafio fitness') }}</flux:subheading>
+            <flux:subheading>{{ $challenge->description ?: __('Desafio') }}</flux:subheading>
             <div class="mt-3 flex flex-wrap gap-2">
                 <flux:badge color="zinc">{{ $challenge->invite_code }}</flux:badge>
                 <flux:badge color="{{ $challenge->is_team_challenge ? 'blue' : 'zinc' }}">
@@ -102,19 +102,19 @@ new class extends Component
         </div>
 
         <div class="flex flex-wrap gap-2">
-            <flux:button href="{{ route('fitness.app.check-ins.create', $challenge) }}" wire:navigate variant="primary">{{ __('Registrar treino') }}</flux:button>
-            <flux:button href="{{ route('fitness.app.ranking', $challenge) }}" wire:navigate variant="ghost">{{ __('Ranking') }}</flux:button>
+            <flux:button href="{{ route('desafios.app.check-ins.create', $challenge) }}" wire:navigate variant="primary">{{ __('Registrar cumprimento') }}</flux:button>
+            <flux:button href="{{ route('desafios.app.ranking', $challenge) }}" wire:navigate variant="ghost">{{ __('Ranking') }}</flux:button>
         </div>
     </div>
 
     <div class="grid gap-5 xl:grid-cols-[1fr_320px]">
         <div class="space-y-4">
             @forelse ($feed as $checkIn)
-                <article class="border border-zinc-200 p-5 dark:border-zinc-700" wire:key="fitness-feed-{{ $checkIn->id }}">
+                <article class="border border-zinc-200 p-5 dark:border-zinc-700" wire:key="desafios-feed-{{ $checkIn->id }}">
                     <div class="flex items-start justify-between gap-3">
                         <div>
                             <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">{{ $checkIn->title }}</h3>
-                            <p class="text-sm text-zinc-500">{{ $checkIn->user?->name }} · {{ $checkIn->created_at->diffForHumans() }}</p>
+                            <p class="text-sm text-zinc-500">{{ $checkIn->user?->name }} - {{ $checkIn->created_at->diffForHumans() }}</p>
                         </div>
                         <flux:badge color="green">{{ (float) $checkIn->score }} pts</flux:badge>
                     </div>
@@ -131,7 +131,7 @@ new class extends Component
                     </div>
 
                     <div class="mt-4 flex flex-wrap items-center gap-2">
-                        <flux:button wire:click="like({{ $checkIn->id }})" size="sm" variant="filled">{{ __('Cheer') }} · {{ $checkIn->likes_count }}</flux:button>
+                        <flux:button wire:click="like({{ $checkIn->id }})" size="sm" variant="filled">{{ __('Cheer') }} - {{ $checkIn->likes_count }}</flux:button>
                     </div>
 
                     <div class="mt-4 space-y-2">
@@ -147,7 +147,7 @@ new class extends Component
                 </article>
             @empty
                 <div class="border border-zinc-200 p-6 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
-                    {{ __('Nenhum check-in aprovado ainda.') }}
+                    {{ __('Nenhum registro aprovado ainda.') }}
                 </div>
             @endforelse
         </div>

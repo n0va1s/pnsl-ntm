@@ -29,7 +29,7 @@ new class extends Component
             <flux:heading size="xl">{{ __('Ranking') }}</flux:heading>
             <flux:subheading>{{ $challenge->name }}</flux:subheading>
         </div>
-        <flux:button href="{{ route('fitness.app.challenges.show', $challenge) }}" wire:navigate variant="ghost">{{ __('Voltar') }}</flux:button>
+        <flux:button href="{{ route('desafios.app.challenges.show', $challenge) }}" wire:navigate variant="ghost">{{ __('Voltar') }}</flux:button>
     </div>
 
     <div class="grid gap-5 lg:grid-cols-2">

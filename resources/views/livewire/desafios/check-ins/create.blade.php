@@ -69,19 +69,19 @@ new class extends Component
             $awards->award($checkIn, $scoring);
         }
 
-        session()->flash('success', 'Check-in enviado para revisao.');
-        $this->redirect(route('fitness.app.challenges.show', $this->challenge), navigate: true);
+        session()->flash('success', 'Registro enviado para revisao.');
+        $this->redirect(route('desafios.app.challenges.show', $this->challenge), navigate: true);
     }
 }; ?>
 
 <section class="w-full max-w-3xl space-y-6">
     <div>
-        <flux:heading size="xl">{{ __('Registrar treino') }}</flux:heading>
+        <flux:heading size="xl">{{ __('Registrar cumprimento') }}</flux:heading>
         <flux:subheading>{{ $challenge->name }}</flux:subheading>
     </div>
 
     <form wire:submit="save" class="space-y-5 border border-zinc-200 p-5 dark:border-zinc-700">
-        <flux:input wire:model="title" label="{{ __('Titulo do treino') }}" />
+        <flux:input wire:model="title" label="{{ __('Titulo do registro') }}" />
         <flux:textarea wire:model="description" label="{{ __('Descricao') }}" />
 
         <label class="block text-sm">
@@ -93,7 +93,7 @@ new class extends Component
         </label>
 
         <div class="grid gap-4 sm:grid-cols-2">
-            <flux:input wire:model="activity_type" label="{{ __('Tipo de atividade') }}" />
+            <flux:input wire:model="activity_type" label="{{ __('Tipo de acao') }}" />
             <flux:input wire:model="duration_minutes" type="number" min="0" label="{{ __('Duracao em minutos') }}" />
             <flux:input wire:model="distance_km" type="number" min="0" step="0.01" label="{{ __('Distancia em km') }}" />
             <flux:input wire:model="calories" type="number" min="0" label="{{ __('Calorias') }}" />
@@ -103,8 +103,8 @@ new class extends Component
         <flux:callout>{{ __('A prova fica em revisao antes de aparecer no feed ou pontuar.') }}</flux:callout>
 
         <div class="flex gap-2">
-            <flux:button type="submit" variant="primary">{{ __('Enviar check-in') }}</flux:button>
-            <flux:button href="{{ route('fitness.app.challenges.show', $challenge) }}" wire:navigate variant="ghost">{{ __('Cancelar') }}</flux:button>
+            <flux:button type="submit" variant="primary">{{ __('Enviar registro') }}</flux:button>
+            <flux:button href="{{ route('desafios.app.challenges.show', $challenge) }}" wire:navigate variant="ghost">{{ __('Cancelar') }}</flux:button>
         </div>
     </form>
 </section>

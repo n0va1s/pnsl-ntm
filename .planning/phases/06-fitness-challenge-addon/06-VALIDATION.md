@@ -1,4 +1,4 @@
-# Phase 6 Validation - Addon Fitness Challenge
+# Phase 6 Validation - Addon de Desafios
 
 **Criado:** 2026-04-25
 **Status:** PASS
@@ -8,13 +8,13 @@
 | Requisito | Verificacao | Evidencia esperada |
 |-----------|-------------|--------------------|
 | Addon isolado | Revisao de caminhos + autoload | Codigo de dominio fica em `modules/fitness-challenge/`; integracoes core sao explicitas |
-| Feature flag | `FeatureFlagTest` | `FEATURE_FITNESS_CHALLENGE=false` retorna 404; true libera rotas |
+| Feature flag | `FeatureFlagTest` | `FEATURE_CHALLENGES_ADDON=false` retorna 404; true libera rotas |
 | Migrations/models | Feature tests com `RefreshDatabase` | Tabelas sob prefixo `fitness_*` criam desafios, participantes, times, check-ins, likes e comentarios |
 | Scoring flexivel | `ScoringServiceTest` | Todos os modos basicos e `hustle_points` calculam corretamente |
 | CRUD desafio/convite | `FitnessChallengeApiTest` | Criador cria desafio e participante entra por convite |
 | Check-in/feed/social | `FitnessChallengeApiTest` | Check-in calcula score, atualiza participante, permite like e comentario |
 | Barreira de midia | `FitnessMediaModerationTest` | Check-in pendente nao aparece/pontua; termos sexuais sao bloqueados; upload valido fica em quarentena; usuario comum nao modera |
-| Frontend Livewire | `FitnessFrontendTest` | Rotas `/fitness`, criacao, detalhe, check-in, ranking e historico renderizam quando a flag esta ativa; flag desligada retorna 404 |
+| Frontend Livewire | `FitnessFrontendTest` | Rotas `/desafios`, criacao, detalhe, registro, ranking e historico renderizam quando a flag esta ativa; flag desligada retorna 404 |
 | Leaderboard | `FitnessChallengeApiTest` | Ranking individual e por times retorna ordem/pontos esperados |
 
 ## Evidencia inicial
@@ -56,6 +56,20 @@
 - Nomes web usam prefixo `fitness.app.*`, exceto `fitness.index`, para evitar colisao com a API.
 - `C:/xampp/php/php.exe vendor/bin/pint routes/web.php resources/views/components/layouts/app/sidebar.blade.php resources/views/livewire/fitness modules/fitness-challenge/tests/Feature/FitnessFrontendTest.php --test` PASS
 - `C:/xampp/php/php.exe artisan route:list --name=fitness` PASS: 25 rotas
+- `C:/xampp/php/php.exe vendor/bin/pest modules/fitness-challenge/tests --stop-on-failure` PASS: 18 testes, 79 assertions
+- `C:/xampp/php/php.exe vendor/bin/pest tests/Feature/Equipes/EquipeMigrationTest.php tests/Feature/Equipes/EquipeUsuarioMigrationTest.php modules/fitness-challenge/tests --stop-on-failure` PASS: 28 testes, 99 assertions
+- `C:/xampp/php/php.exe vendor/bin/pest` PASS: 339 testes, 882 assertions
+
+## Evidencia adicional - generalizacao para desafios nao fitness
+
+- Decisao do produto: o addon serve desafios arbitrarios, como "rezar o terco todo dia por 60 dias", e nao apenas desafios fitness.
+- Rotas publicas/API trocadas de `/fitness` e `/api/fitness` para `/desafios`, `/perfil/desafios` e `/api/desafios`.
+- Feature flag publica trocada para `FEATURE_CHALLENGES_ADDON`; flags antigas `FEATURE_FITNESS_CHALLENGE` e `FITNESS_CHALLENGE_*` continuam como fallback de compatibilidade na config.
+- Textos do frontend trocam "treino/check-in/fitness" por "registro/cumprimento/desafios".
+- O namespace/tabelas internos `FitnessChallenge`/`fitness_*` foram mantidos nesta PR para evitar renomeacao estrutural ampla e preservar o diff empilhado; essa e uma decisao tecnica, nao de produto.
+- `C:/xampp/php/php.exe vendor/bin/pint .env.example routes/web.php resources/views/components/layouts/app/sidebar.blade.php resources/views/livewire/desafios modules/fitness-challenge --test` PASS
+- `C:/xampp/php/php.exe artisan route:list --name=desafios` PASS: 25 rotas
+- `C:/xampp/php/php.exe artisan route:list --path=fitness` PASS esperado sem rotas: nenhuma rota publica `/fitness` restante
 - `C:/xampp/php/php.exe vendor/bin/pest modules/fitness-challenge/tests --stop-on-failure` PASS: 18 testes, 79 assertions
 - `C:/xampp/php/php.exe vendor/bin/pest tests/Feature/Equipes/EquipeMigrationTest.php tests/Feature/Equipes/EquipeUsuarioMigrationTest.php modules/fitness-challenge/tests --stop-on-failure` PASS: 28 testes, 99 assertions
 - `C:/xampp/php/php.exe vendor/bin/pest` PASS: 339 testes, 882 assertions

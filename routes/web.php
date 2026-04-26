@@ -198,24 +198,24 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('/equipes/{equipe}/atribuir', 'equipes.atribuir')
         ->name('equipes.atribuir');
 
-    Route::middleware('fitness.enabled')->group(function () {
-        Volt::route('/fitness', 'fitness.index')
-            ->name('fitness.index');
+    Route::middleware('challenges.enabled')->group(function () {
+        Volt::route('/desafios', 'desafios.index')
+            ->name('desafios.index');
 
-        Volt::route('/fitness/challenges/new', 'fitness.create')
-            ->name('fitness.app.challenges.create');
+        Volt::route('/desafios/novo', 'desafios.create')
+            ->name('desafios.app.challenges.create');
 
-        Volt::route('/fitness/challenges/{challenge}', 'fitness.show')
-            ->name('fitness.app.challenges.show');
+        Volt::route('/desafios/{challenge}', 'desafios.show')
+            ->name('desafios.app.challenges.show');
 
-        Volt::route('/fitness/challenges/{challenge}/checkin', 'fitness.check-ins.create')
-            ->name('fitness.app.check-ins.create');
+        Volt::route('/desafios/{challenge}/registro', 'desafios.check-ins.create')
+            ->name('desafios.app.check-ins.create');
 
-        Volt::route('/fitness/challenges/{challenge}/ranking', 'fitness.ranking')
-            ->name('fitness.app.ranking');
+        Volt::route('/desafios/{challenge}/ranking', 'desafios.ranking')
+            ->name('desafios.app.ranking');
 
-        Volt::route('/profile/fitness', 'fitness.profile')
-            ->name('fitness.app.profile');
+        Volt::route('/perfil/desafios', 'desafios.profile')
+            ->name('desafios.app.profile');
     });
 });
 

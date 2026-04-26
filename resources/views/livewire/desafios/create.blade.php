@@ -53,7 +53,7 @@ new class extends Component
             'joined_at' => now(),
         ]);
 
-        $this->redirect(route('fitness.app.challenges.show', $challenge), navigate: true);
+        $this->redirect(route('desafios.app.challenges.show', $challenge), navigate: true);
     }
 
     private function inviteCode(): string
@@ -68,7 +68,7 @@ new class extends Component
 
 <section class="w-full max-w-3xl space-y-6">
     <div>
-        <flux:heading size="xl">{{ __('Novo desafio fitness') }}</flux:heading>
+        <flux:heading size="xl">{{ __('Novo desafio') }}</flux:heading>
         <flux:subheading>{{ __('Configure como as pessoas vao farmar pontuacao.') }}</flux:subheading>
     </div>
 
@@ -82,12 +82,12 @@ new class extends Component
         </div>
 
         <flux:select wire:model="scoring_type" label="{{ __('Pontuacao') }}">
-            <option value="total_workouts">{{ __('1 ponto por treino') }}</option>
-            <option value="total_minutes">{{ __('Minutos treinados') }}</option>
+            <option value="total_workouts">{{ __('1 ponto por registro') }}</option>
+            <option value="total_minutes">{{ __('Minutos dedicados') }}</option>
             <option value="total_calories">{{ __('Calorias') }}</option>
             <option value="total_distance">{{ __('Distancia') }}</option>
             <option value="total_steps">{{ __('Passos') }}</option>
-            <option value="hustle_points">{{ __('Hustle points') }}</option>
+            <option value="hustle_points">{{ __('Pontos por tipo de acao') }}</option>
         </flux:select>
 
         <div class="grid gap-4 sm:grid-cols-2">
@@ -100,7 +100,7 @@ new class extends Component
 
         <div class="flex gap-2">
             <flux:button type="submit" variant="primary">{{ __('Criar desafio') }}</flux:button>
-            <flux:button href="{{ route('fitness.index') }}" wire:navigate variant="ghost">{{ __('Cancelar') }}</flux:button>
+            <flux:button href="{{ route('desafios.index') }}" wire:navigate variant="ghost">{{ __('Cancelar') }}</flux:button>
         </div>
     </form>
 </section>

@@ -16,9 +16,9 @@ it('renderiza dashboard frontend quando addon esta ativo', function () {
     $challenge = frontendChallengeFor($user);
 
     $this->actingAs($user)
-        ->get(route('fitness.index'))
+        ->get(route('desafios.index'))
         ->assertOk()
-        ->assertSee('Desafios Fitness')
+        ->assertSee('Desafios')
         ->assertSee($challenge->name);
 });
 
@@ -28,39 +28,39 @@ it('retorna 404 silencioso no frontend quando addon esta desativado', function (
     $user = User::factory()->create(['role' => User::ROLE_USER]);
 
     $this->actingAs($user)
-        ->get(route('fitness.index'))
+        ->get(route('desafios.index'))
         ->assertNotFound();
 });
 
-it('renderiza telas principais do desafio fitness', function () {
+it('renderiza telas principais do desafio', function () {
     $user = User::factory()->create(['role' => User::ROLE_USER]);
     $challenge = frontendChallengeFor($user);
 
     $this->actingAs($user)
-        ->get(route('fitness.app.challenges.create'))
+        ->get(route('desafios.app.challenges.create'))
         ->assertOk()
-        ->assertSee('Novo desafio fitness');
+        ->assertSee('Novo desafio');
 
     $this->actingAs($user)
-        ->get(route('fitness.app.challenges.show', $challenge))
+        ->get(route('desafios.app.challenges.show', $challenge))
         ->assertOk()
         ->assertSee($challenge->name)
-        ->assertSee('Registrar treino');
+        ->assertSee('Registrar cumprimento');
 
     $this->actingAs($user)
-        ->get(route('fitness.app.check-ins.create', $challenge))
+        ->get(route('desafios.app.check-ins.create', $challenge))
         ->assertOk()
         ->assertSee('Foto ou video da prova');
 
     $this->actingAs($user)
-        ->get(route('fitness.app.ranking', $challenge))
+        ->get(route('desafios.app.ranking', $challenge))
         ->assertOk()
         ->assertSee('Ranking');
 
     $this->actingAs($user)
-        ->get(route('fitness.app.profile'))
+        ->get(route('desafios.app.profile'))
         ->assertOk()
-        ->assertSee('Historico fitness');
+        ->assertSee('Historico de desafios');
 });
 
 function frontendChallengeFor(User $user): FitnessChallenge

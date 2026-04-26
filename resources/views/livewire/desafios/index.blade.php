@@ -52,13 +52,13 @@ new class extends Component
 <section class="w-full space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">{{ __('Desafios Fitness') }}</flux:heading>
-            <flux:subheading>{{ __('Registre treinos, acompanhe desafios e dispute pontuacao com o grupo.') }}</flux:subheading>
+            <flux:heading size="xl">{{ __('Desafios') }}</flux:heading>
+            <flux:subheading>{{ __('Registre cumprimentos, acompanhe desafios e dispute pontuacao com o grupo.') }}</flux:subheading>
         </div>
 
         <div class="flex gap-2">
-            <flux:button href="{{ route('fitness.app.profile') }}" wire:navigate variant="ghost">{{ __('Historico') }}</flux:button>
-            <flux:button href="{{ route('fitness.app.challenges.create') }}" wire:navigate variant="primary">{{ __('Novo desafio') }}</flux:button>
+            <flux:button href="{{ route('desafios.app.profile') }}" wire:navigate variant="ghost">{{ __('Historico') }}</flux:button>
+            <flux:button href="{{ route('desafios.app.challenges.create') }}" wire:navigate variant="primary">{{ __('Novo desafio') }}</flux:button>
         </div>
     </div>
 
@@ -100,14 +100,14 @@ new class extends Component
                 </dl>
 
                 <div class="mt-5 flex flex-wrap gap-2">
-                    <flux:button href="{{ route('fitness.app.challenges.show', $challenge) }}" wire:navigate>{{ __('Abrir') }}</flux:button>
-                    <flux:button href="{{ route('fitness.app.check-ins.create', $challenge) }}" wire:navigate variant="filled">{{ __('Check-in') }}</flux:button>
-                    <flux:button href="{{ route('fitness.app.ranking', $challenge) }}" wire:navigate variant="ghost">{{ __('Ranking') }}</flux:button>
+                    <flux:button href="{{ route('desafios.app.challenges.show', $challenge) }}" wire:navigate>{{ __('Abrir') }}</flux:button>
+                    <flux:button href="{{ route('desafios.app.check-ins.create', $challenge) }}" wire:navigate variant="filled">{{ __('Registro') }}</flux:button>
+                    <flux:button href="{{ route('desafios.app.ranking', $challenge) }}" wire:navigate variant="ghost">{{ __('Ranking') }}</flux:button>
                 </div>
             </article>
         @empty
             <div class="border border-zinc-200 p-6 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400 lg:col-span-2">
-                {{ __('Voce ainda nao participa de desafios fitness.') }}
+                {{ __('Voce ainda nao participa de Desafios.') }}
             </div>
         @endforelse
     </div>

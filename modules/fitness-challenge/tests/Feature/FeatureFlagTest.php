@@ -11,7 +11,7 @@ it('retorna 404 silencioso quando o addon esta desativado', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
-        ->getJson(route('fitness.challenges.index'))
+        ->getJson(route('desafios.challenges.index'))
         ->assertNotFound();
 });
 
@@ -21,7 +21,7 @@ it('permite acessar rotas quando o addon esta ativado', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
-        ->getJson(route('fitness.challenges.index'))
+        ->getJson(route('desafios.challenges.index'))
         ->assertOk()
         ->assertJson(['data' => []]);
 });

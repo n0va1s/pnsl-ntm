@@ -21,10 +21,11 @@ class FitnessChallengeServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         Route::aliasMiddleware('fitness.enabled', RequireFitnessChallenge::class);
+        Route::aliasMiddleware('challenges.enabled', RequireFitnessChallenge::class);
 
-        Route::middleware(['web', 'auth', 'fitness.enabled'])
-            ->prefix('api/fitness')
-            ->name('fitness.')
+        Route::middleware(['web', 'auth', 'challenges.enabled'])
+            ->prefix('api/desafios')
+            ->name('desafios.')
             ->group(__DIR__.'/../routes/api.php');
     }
 }
