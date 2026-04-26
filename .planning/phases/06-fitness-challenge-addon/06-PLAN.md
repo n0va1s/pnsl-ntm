@@ -11,11 +11,13 @@ Criar a primeira fatia funcional do addon de desafios fitness, inspirado no GymR
 ## Escopo desta fatia
 
 - Backend core do addon.
+- Frontend Livewire/Volt basico do addon.
 - Modulo isolado em `modules/fitness-challenge/`.
 - Feature flag `FEATURE_FITNESS_CHALLENGE`.
 - Migrations, models, scoring service, leaderboard service e API principal.
 - Barreira de seguranca de midia para impedir que provas intimas/comprometedoras aparecam ou pontuem sem revisao.
 - Testes unitarios do scoring e testes feature dos endpoints principais.
+- Testes feature das rotas/telas principais do frontend.
 
 ## Decisoes
 
@@ -32,6 +34,8 @@ Criar a primeira fatia funcional do addon de desafios fitness, inspirado no GymR
 - Check-ins exigem `title` e prova de midia (`media` upload real ou `media_path` legado). Por padrao entram como `pending`, nao aparecem no feed, nao aceitam like/comentario e nao pontuam ate aprovacao por admin/coord.
 - Rejeitado: fingir deteccao perfeita de pornografia sem servico especializado/dependencia. A protecao entregue combina validacao de MIME/tamanho, bloqueio de termos explicitamente sexuais/comprometedores e quarentena com revisao manual.
 - Upload de imagem/video usa o disk configuravel `FITNESS_CHALLENGE_MEDIA_DISK`; videos ainda nao geram thumbnail automatico porque isso exigiria FFmpeg/servico externo.
+- As telas Volt ficam em `resources/views/livewire/fitness/` porque este e o ponto de descoberta do stack atual. A logica de dominio continua no modulo `modules/fitness-challenge/`.
+- As rotas web usam nomes `fitness.app.*` para nao colidir com os nomes da API `fitness.challenges.*`.
 - Likes foram modelados como tabela relacional (`fitness_check_in_likes`) em vez de array JSON para preservar integridade e consultas.
 
 ## Entregaveis
@@ -47,6 +51,9 @@ Criar a primeira fatia funcional do addon de desafios fitness, inspirado no GymR
 - `modules/fitness-challenge/database/migrations/2026_04_25_000001_create_fitness_challenge_tables.php`
 - `modules/fitness-challenge/routes/api.php`
 - `modules/fitness-challenge/tests/*`
+- `resources/views/livewire/fitness/*`
+- `resources/views/components/layouts/app/sidebar.blade.php`
+- `routes/web.php`
 
 ## Gates
 

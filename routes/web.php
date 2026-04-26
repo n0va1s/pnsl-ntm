@@ -197,6 +197,26 @@ Route::middleware(['auth'])->group(function () {
 
     Volt::route('/equipes/{equipe}/atribuir', 'equipes.atribuir')
         ->name('equipes.atribuir');
+
+    Route::middleware('fitness.enabled')->group(function () {
+        Volt::route('/fitness', 'fitness.index')
+            ->name('fitness.index');
+
+        Volt::route('/fitness/challenges/new', 'fitness.create')
+            ->name('fitness.app.challenges.create');
+
+        Volt::route('/fitness/challenges/{challenge}', 'fitness.show')
+            ->name('fitness.app.challenges.show');
+
+        Volt::route('/fitness/challenges/{challenge}/checkin', 'fitness.check-ins.create')
+            ->name('fitness.app.check-ins.create');
+
+        Volt::route('/fitness/challenges/{challenge}/ranking', 'fitness.ranking')
+            ->name('fitness.app.ranking');
+
+        Volt::route('/profile/fitness', 'fitness.profile')
+            ->name('fitness.app.profile');
+    });
 });
 
 require __DIR__.'/auth.php';

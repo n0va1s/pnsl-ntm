@@ -40,6 +40,12 @@
                     :current="request()->routeIs('eventos.index')" wire:navigate>
                     {{ __('Eventos') }}
                 </flux:navlist.item>
+                @if (config('fitness-challenge.enabled'))
+                    <flux:navlist.item icon="trophy" :href="route('fitness.index')"
+                        :current="request()->routeIs('fitness.*')" wire:navigate>
+                        {{ __('Fitness') }}
+                    </flux:navlist.item>
+                @endif
                 <flux:navlist.item icon="user"
                     :href="route('pessoas.edit', ['pessoa' => Auth::user()->pessoa?->idt_pessoa])"
                     :current="request()->routeIs('pessoas.edit')" wire:navigate>
