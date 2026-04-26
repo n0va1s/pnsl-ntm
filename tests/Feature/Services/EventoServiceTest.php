@@ -7,7 +7,6 @@ use App\Models\TipoMovimento;
 use App\Models\Trabalhador;
 use App\Services\EventoService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
@@ -69,7 +68,7 @@ describe('EventoService', function () {
     test('upload de foto do evento', function () {
         Storage::fake('public');
         $evento = Evento::factory()->create(['idt_movimento' => $this->movimento->idt_movimento]);
-        $file = UploadedFile::fake()->image('evento.jpg');
+        $file = fakeTestImage('evento.png');
 
         $this->service->fotoUpload($evento, $file);
 
@@ -81,7 +80,7 @@ describe('EventoService', function () {
     test('exclui evento com foto', function () {
         Storage::fake('public');
         $evento = Evento::factory()->create(['idt_movimento' => $this->movimento->idt_movimento]);
-        $file = UploadedFile::fake()->image('evento.jpg');
+        $file = fakeTestImage('evento.png');
         $this->service->fotoUpload($evento, $file);
 
         $this->service->excluirEventoComFoto($evento);

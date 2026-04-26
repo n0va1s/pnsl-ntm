@@ -16,8 +16,8 @@ class TrabalhadorFactory extends Factory
     {
         return [
             'idt_pessoa' => Pessoa::factory(),
-            'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento,
-            'idt_equipe' => TipoEquipe::inRandomOrder()->first()?->idt_equipe,
+            'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento ?? Evento::factory(),
+            'idt_equipe' => TipoEquipe::inRandomOrder()->first()?->idt_equipe ?? TipoEquipe::factory(),
             'ind_coordenador' => $this->faker->boolean(20),
             'ind_primeira_vez' => $this->faker->boolean(50),
             'ind_avaliacao' => $this->faker->boolean(30),

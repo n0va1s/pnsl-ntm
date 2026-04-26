@@ -34,9 +34,9 @@ class FichaVem extends Model
     ];
 
     protected $casts = [
-        'ind_batizado'          => 'boolean',
+        'ind_batizado' => 'boolean',
         'ind_primeira_comunhao' => 'boolean',
-        'ind_crismado'          => 'boolean',
+        'ind_crismado' => 'boolean',
     ];
 
     public function ficha()

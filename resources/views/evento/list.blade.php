@@ -92,6 +92,14 @@
                                 <x-heroicon-o-tag class="w-4 h-4 mr-2" />
                                 {{ $evento->tipo_descricao }}
                             </div>
+
+                            @if ($evento->txt_informacao)
+                                <div class="flex items-start text-gray-600 dark:text-gray-300 text-sm">
+                                    <x-heroicon-o-information-circle
+                                        class="icone-informacao w-4 h-4 mr-2 mt-0.5 text-blue-500" />
+                                    <span>{{ $evento->txt_informacao }}</span>
+                                </div>
+                            @endif
                         </div>
                     </div>
 

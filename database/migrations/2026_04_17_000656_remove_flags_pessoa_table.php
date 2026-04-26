@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('pessoa', function (Blueprint $table) {
             $table->dropColumn([
                 'ind_toca_violao',
-                'ind_consentimento'
+                'ind_consentimento',
             ]);
             $table->char('tip_estado_civil', 1)->nullable()->after('tip_genero');
             $table->char('tip_habilidade', 1)->nullable()->after('tip_estado_civil');

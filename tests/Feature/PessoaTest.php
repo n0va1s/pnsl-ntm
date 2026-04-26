@@ -7,7 +7,6 @@ use App\Models\TipoRestricao;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -110,7 +109,7 @@ test('pode criar pessoa com restricoes de saude e foto', function () {
     $data['ind_restricao'] = 1;
     $data['restricoes'] = [$restricao->idt_restricao => 1];
     $data['complementos'] = [$restricao->idt_restricao => $complemento];
-    $data['med_foto'] = UploadedFile::fake()->image('foto_perfil.jpg');
+    $data['med_foto'] = fakeTestImage('foto_perfil.png');
 
     $this->actingAs($this->user)->post(route('pessoas.store'), $data)
         ->assertRedirect(route('pessoas.index'))
@@ -276,7 +275,6 @@ test('nao cria usuario se pessoa ja possui idt_usuario', function () {
         'idt_usuario' => $this->user->id,
     ]);
 
-    $pessoa->skip_user_creation = true;
     $pessoa->save();
 
     Mail::assertNothingSent();
@@ -317,16 +315,16 @@ test('scopeSearchByName funciona com like no sqlite', function () {
     config(['database.default' => 'sqlite']);
 
     Pessoa::factory()->create([
-        'nom_pessoa' => 'Carlos Silva',
-        'nom_apelido' => 'Carlão',
+        'nom_pessoa' => 'Pessoa BuscaUnica Alfa',
+        'nom_apelido' => 'ApelidoBuscaUnica',
     ]);
 
     Pessoa::factory()->create([
         'nom_pessoa' => 'Maria Souza',
     ]);
 
-    $result = Pessoa::searchByName('Carl')->get();
+    $result = Pessoa::searchByName('BuscaUnica')->get();
 
     expect($result)->toHaveCount(1)
-        ->and($result->first()->nom_pessoa)->toBe('Carlos Silva');
+        ->and($result->first()->nom_pessoa)->toBe('Pessoa BuscaUnica Alfa');
 });

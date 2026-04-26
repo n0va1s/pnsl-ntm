@@ -6,8 +6,10 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 
-new class extends Component {
+new class extends Component
+{
     public string $name = '';
+
     public string $email = '';
 
     /**
@@ -27,14 +29,14 @@ new class extends Component {
         $user = Auth::user();
 
         $validated = $this->validate([
-            'name'  => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($user->id)
+                Rule::unique(User::class)->ignore($user->id),
             ],
         ]);
 
@@ -58,6 +60,7 @@ new class extends Component {
 
         if ($user->hasVerifiedEmail()) {
             $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+
             return;
         }
 
@@ -129,6 +132,27 @@ new class extends Component {
                 </x-action-message>
             </div>
         </form>
+
+        <section class="mt-10 border-t border-zinc-200 pt-10 dark:border-zinc-700">
+            <flux:heading size="lg">Equipes</flux:heading>
+
+            <div class="mt-4 space-y-3">
+                @forelse (auth()->user()->equipes()->orderBy('nom_equipe')->get() as $equipe)
+                    <div class="flex items-center justify-between rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+                        <div>
+                            <div class="font-medium text-zinc-900 dark:text-zinc-100">{{ $equipe->nom_equipe }}</div>
+                            <div class="text-sm text-zinc-500 dark:text-zinc-400">{{ $equipe->movimento?->des_sigla }}</div>
+                        </div>
+
+                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            {{ $equipe->pivot->papel->label() }}
+                        </span>
+                    </div>
+                @empty
+                    <flux:text>Voce ainda nao possui equipes atribuidas.</flux:text>
+                @endforelse
+            </div>
+        </section>
 
         <div class="mt-10 border-t border-zinc-200 pt-10 dark:border-zinc-700">
             <livewire:settings.delete-user-form />
