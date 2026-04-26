@@ -54,6 +54,9 @@ describe('FichaVemController', function () {
             'idt_falar_com' => $this->responsavel->idt_responsavel,
             'des_onde_estuda' => 'Escola',
             'des_mora_quem' => 'Pais',
+            'ind_batizado' => true,
+            'ind_primeira_comunhao' => true,
+            'ind_crismado' => false,
         ])
             ->assertSessionHas('success');
 
@@ -85,6 +88,9 @@ describe('FichaVemController', function () {
             'tel_pai' => '11977777777',
             'nom_mae' => 'Mae Pedro',
             'tel_mae' => '11866666666',
+            'ind_batizado' => true,
+            'ind_primeira_comunhao' => true,
+            'ind_crismado' => false,
 
             'restricoes' => [
                 $this->restricoes[0]->idt_restricao => true,
@@ -140,6 +146,9 @@ describe('FichaVemController', function () {
             'tel_mae' => '11888888888',
             'idt_falar_com' => $this->responsavel->idt_responsavel,
             'des_onde_estuda' => 'Outra Escola',
+            'ind_batizado' => true,
+            'ind_primeira_comunhao' => true,
+            'ind_crismado' => true,
             'des_mora_quem' => 'Avós',
         ])
             ->assertSessionHas('success');

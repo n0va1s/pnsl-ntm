@@ -21,3 +21,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Claude Code context checkpoint (local)
+CONTEXT.md

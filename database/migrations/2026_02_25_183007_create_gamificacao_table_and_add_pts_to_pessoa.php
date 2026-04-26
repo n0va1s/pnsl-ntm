@@ -34,6 +34,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('pessoa', function (Blueprint $table) {
+            $table->dropColumn('qtd_pontos_total');
+        });
+
         Schema::dropIfExists('gamificacao');
     }
 };

@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         Schema::disableForeignKeyConstraints();
         $this->call([
             DominiosSeeder::class,
+            EquipeVEMSeeder::class,  // Fase 1: 11 equipes VEM — depende de DominiosSeeder (tipo_movimento)
             EventoSeeder::class,
             PessoaSeeder::class,
             FichaSeeder::class,

@@ -16,13 +16,14 @@ use App\Models\Pessoa;
 use App\Models\TipoMovimento;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
-    ->in('Feature', 'Unit');
+    ->in('Feature', 'Unit', '../modules/fitness-challenge/tests/Feature', '../modules/fitness-challenge/tests/Unit', '../modules/vendinha/tests/Feature');
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,10 @@ expect()->extend('toBeOne', function () {
 afterEach(function () {
     // Limpa cache se necessário
     Cache::flush();
+});
+
+beforeEach(function () {
+    $this->withoutVite();
 });
 
 function createUser(): User
@@ -115,4 +120,11 @@ function createPessoa(): Pessoa
     return Pessoa::factory()->create([
         'idt_parceiro' => null,
     ]);
+}
+
+function fakeTestImage(string $name = 'image.png'): UploadedFile
+{
+    $png1x1 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=';
+
+    return UploadedFile::fake()->createWithContent($name, base64_decode($png1x1));
 }

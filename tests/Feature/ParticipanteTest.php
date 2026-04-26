@@ -63,6 +63,7 @@ test('usuario pode buscar participantes por nome', function () {
     Participante::factory()->create([
         'idt_evento' => $evento->idt_evento,
         'idt_pessoa' => $pessoa->idt_pessoa,
+        'tip_cor_troca' => null,
     ]);
 
     $response = $this->actingAs($this->user)

@@ -17,6 +17,13 @@ use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
+function fakeEventoImage(string $name = 'evento.png'): UploadedFile
+{
+    $png1x1 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=';
+
+    return UploadedFile::fake()->createWithContent($name, base64_decode($png1x1));
+}
+
 beforeEach(function () {
     // Garantir que não há transações ativas
     if (DB::transactionLevel() > 0) {
@@ -306,7 +313,7 @@ describe('EventoService - Upload de Foto', function () {
                 'tip_evento' => 'A',
             ]
         );
-        $file = UploadedFile::fake()->image('evento.jpg');
+        $file = fakeEventoImage('evento.png');
 
         $this->eventoService->fotoUpload($evento, $file);
         $evento->refresh();
@@ -324,7 +331,7 @@ describe('EventoService - Upload de Foto', function () {
         );
         $evento->foto()->create(['med_foto' => 'fotos/evento/antiga.jpg']);
 
-        $file = UploadedFile::fake()->image('nova.jpg');
+        $file = fakeEventoImage('nova.png');
 
         $this->eventoService->fotoUpload($evento, $file);
 
@@ -569,7 +576,7 @@ describe('EventoController - Store', function () {
             'num_evento' => 'EV002',
             'dat_inicio' => '2024-01-15',
             'dat_termino' => '2024-01-17',
-            'med_foto' => UploadedFile::fake()->image('evento.jpg'),
+            'med_foto' => fakeEventoImage('evento.png'),
             'tip_evento' => 'A',
         ];
 
@@ -663,7 +670,7 @@ describe('EventoController - Update', function () {
             'val_trabalhador' => 50.00,
             'val_venista' => 150.00,
             'val_entrada' => 30.00,
-            'med_foto' => UploadedFile::fake()->image('nova.jpg'),
+            'med_foto' => fakeEventoImage('nova.png'),
             'tip_evento' => 'P',
             'ind_camiseta_pediu' => true,
             'ind_camiseta_pagou' => true,
@@ -796,6 +803,8 @@ describe('Evento Model', function () {
             'num_evento',
             'dat_inicio',
             'dat_termino',
+            'dat_limite_inscricao',
+            'qtd_vaga',
             'val_camiseta',
             'val_trabalhador',
             'val_venista',
