@@ -138,6 +138,11 @@ class PessoaController extends Controller
         if ($request->input('idt_parceiro')) {
             $pessoa->idt_parceiro = $request->input('idt_parceiro');
             $pessoa->save();
+
+            Pessoa::where('idt_pessoa', $request->input('idt_parceiro'))->update([
+                'idt_parceiro' => $pessoa->idt_pessoa,
+                'tip_estado_civil' => $pessoa->tip_estado_civil
+            ]);
         }
 
         // Saude
@@ -204,18 +209,51 @@ class PessoaController extends Controller
     {
         $start = microtime(true);
         $context = $this->getLogContext($request);
+
         Log::info('Tentativa de atualização de pessoa', array_merge($context, [
             'pessoa_id' => $id,
             'nome' => $request->input('nom_pessoa'),
         ]));
 
         $pessoa = Pessoa::with(['foto', 'usuario', 'restricoes'])->findOrFail($id);
-        $user = $this->userService::getUsuarioByEmail($request->input('eml_pessoa'));
+
         $data = $request->validated();
+
+
+        $user = $this->userService::getUsuarioByEmail($request->input('eml_pessoa'));
         if ($user) {
             $data['idt_usuario'] = $user->id;
+
         }
-        $pessoa->update($data);
+
+
+        // Parceiro
+        $parceiroAntigoId = $pessoa->getOriginal('idt_parceiro');
+        $novoParceiroId = $data['idt_parceiro'] ?? null;
+        Log::debug('3. Verificando troca de parceiro', array_merge($context, [
+            'parceiroAntigoId' => $parceiroAntigoId,
+            'novoParceiroId' => $novoParceiroId,
+        ]));
+
+        if ($parceiroAntigoId && $parceiroAntigoId != $novoParceiroId) {
+            Pessoa::where('idt_pessoa', $parceiroAntigoId)->update([
+                'idt_parceiro' => null,
+                'tip_estado_civil' => 'S' // Volta o antigo cônjuge para Solteiro(a)
+            ]);
+
+        }
+
+        $updateResult = $pessoa->update($data);
+
+
+        // Se definiu um novo parceiro, atualiza o registro dele também
+        if ($novoParceiroId) {
+            Pessoa::where('idt_pessoa', $novoParceiroId)->update([
+                'idt_parceiro' => $pessoa->idt_pessoa,
+                'tip_estado_civil' => $pessoa->tip_estado_civil
+            ]);
+
+        }
 
         // Foto
         if ($request->hasFile('med_foto')) {
@@ -238,11 +276,8 @@ class PessoaController extends Controller
             }
         }
 
-        // Parceiro
-        if ($request->input('idt_parceiro')) {
-            $pessoa->idt_parceiro = $request->input('idt_parceiro');
-            $pessoa->save();
-        }
+
+
 
         // Saude
         $countRestricoes = 0;
