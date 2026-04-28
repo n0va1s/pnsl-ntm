@@ -29,7 +29,6 @@ class FichaRequest extends FormRequest
             'ind_consentimento' => 'required|accepted',
             'ind_restricao' => 'required|boolean',
             'txt_observacao' => 'nullable|string',
-            'idt_situacao' => ['nullable', 'exists:tipo_situacao,idt_situacao'],
             'txt_analise' => ['nullable', 'string'],
         ];
     }

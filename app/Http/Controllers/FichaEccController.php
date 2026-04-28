@@ -45,7 +45,7 @@ class FichaEccController extends Controller
             $evento = Evento::find($eventoId);
         }
 
-        $fichas = Ficha::with(['fichaEcc', 'fichaSaude', 'analises.situacao'])
+        $fichas = Ficha::with(['fichaEcc', 'fichaSaude'])
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('nom_candidato', 'like', "%{$search}%")
@@ -165,7 +165,7 @@ class FichaEccController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Visualização de ficha ECC', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaEcc', 'fichaSaude', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaEcc', 'fichaSaude'])->find($id);
         $ultimaAnalise = $ficha->analises()->latest('created_at')->first();
 
         return view('ficha.formECC', array_merge($this->fichaService::dadosFixosFicha($ficha), [
@@ -183,7 +183,7 @@ class FichaEccController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de edição de ficha ECC', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaEcc', 'fichaSaude', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaEcc', 'fichaSaude'])->find($id);
         $ultimaAnalise = $ficha->analises()->latest('created_at')->first();
 
         return view('ficha.formECC', array_merge($this->fichaService::dadosFixosFicha($ficha), [
@@ -238,20 +238,6 @@ class FichaEccController extends Controller
             }
         }
 
-        if ($eccRequest->filled('idt_situacao')) {
-            $situacao = $eccRequest->input('idt_situacao');
-            $analise = $ficha->analises()->where('idt_situacao', $situacao)->first();
-
-            if ($analise) {
-                $analise->update(['txt_analise' => $eccRequest->input('txt_analise')]);
-            } else {
-                $ficha->analises()->create([
-                    'idt_situacao' => $situacao,
-                    'txt_analise' => $eccRequest->input('txt_analise'),
-                ]);
-            }
-        }
-
         $duration = round((microtime(true) - $start) * 1000, 2);
 
         Log::notice('Ficha ECC atualizada com sucesso', array_merge($context, [
@@ -260,27 +246,6 @@ class FichaEccController extends Controller
         ]));
 
         return redirect()->route('ecc.index')->with('success', 'Ficha ECC atualizada com sucesso.');
-    }
-
-    public function approve($id)
-    {
-        $start = microtime(true);
-        $context = $this->getLogContext(request());
-
-        Log::warning('Tentativa de atualização de aprovação de ficha', array_merge($context, [
-            'ficha_id' => $id,
-        ]));
-
-        $this->fichaService::atualizarAprovacaoFicha($id);
-
-        $duration = round((microtime(true) - $start) * 1000, 2);
-
-        Log::notice('Aprovação de ficha atualizada com sucesso', array_merge($context, [
-            'ficha_id' => $id,
-            'duration_ms' => $duration,
-        ]));
-
-        return redirect()->route('ecc.index')->with('success', 'Aprovação atualizada com sucesso!');
     }
 
     /**

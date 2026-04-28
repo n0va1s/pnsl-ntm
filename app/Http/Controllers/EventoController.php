@@ -31,32 +31,18 @@ class EventoController extends Controller
 
         $eventos = Evento::query()
             ->with(['movimento:idt_movimento,des_sigla'])
-            ->withCount([
-                'fichas as fichas_count',
-                'participantes as participantes_count' => fn($q) => $q->whereNull('tip_cor_troca'),
-                'participantes as inscritos_count' => fn($q) => $q->whereNotNull('tip_cor_troca'),
-
-                // contar IDs de pessoas únicos para evitar duplicidade por múltiplas equipes
-                'voluntarios as voluntarios_count' => fn($q) => $q
-                    ->select(DB::raw('count(distinct(idt_pessoa))'))
-                    ->whereNull('idt_trabalhador'),
-
-                'voluntarios as trabalhadores_count' => fn($q) => $q
-                    ->select(DB::raw('count(distinct(idt_pessoa))'))
-                    ->whereNotNull('idt_trabalhador'),
-            ])
             ->when($pessoa, function ($q) use ($pessoa) {
                 $q->withExists([
-                    'participantes as ja_inscrito_participante' => fn($q) => $q
+                    'participantes as ja_inscrito_participante' => fn ($q) => $q
                         ->where('idt_pessoa', $pessoa->idt_pessoa),
                 ])
                     ->withExists([
-                        'voluntarios as ja_inscrito_voluntario' => fn($q) => $q
+                        'voluntarios as ja_inscrito_voluntario' => fn ($q) => $q
                             ->where('idt_pessoa', $pessoa->idt_pessoa),
                     ]);
             })
-            ->when($request->search, fn($q) => $q->search($request->search))
-            ->when($request->idt_movimento, fn($q) => $q->movimento($request->idt_movimento))
+            ->when($request->search, fn ($q) => $q->search($request->search))
+            ->when($request->idt_movimento, fn ($q) => $q->movimento($request->idt_movimento))
             ->orderBy('dat_inicio', 'desc')
             ->paginate(12)
             ->withQueryString();

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\ComoSoube;
+use App\Enums\Genero;
+use App\Enums\TamanhoCamiseta;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -39,12 +42,15 @@ class Ficha extends Model
     ];
 
     protected $casts = [
-        'dat_nascimento' => 'date',
+        'dat_nascimento' => 'date:Y-m-d',
         'ind_catolico' => 'boolean',
         'ind_toca_instrumento' => 'boolean',
         'ind_consentimento' => 'boolean',
         'ind_aprovado' => 'boolean',
         'ind_restricao' => 'boolean',
+        'tip_como_soube' => ComoSoube::class,
+        'tam_camiseta' => TamanhoCamiseta::class,
+        'tip_genero' => Genero::class,
     ];
 
     protected static function booted()
@@ -60,15 +66,6 @@ class Ficha extends Model
             if (auth()->check()) {
                 $ficha->usu_alteracao = auth()->id();
             }
-        });
-
-        static::created(function ($ficha) {
-            $ficha->analises()->create([
-                'idt_situacao' => 1, // cadastrada
-                'txt_observacao' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
         });
     }
 
@@ -105,11 +102,6 @@ class Ficha extends Model
     public function fichaSaude()
     {
         return $this->hasMany(FichaSaude::class, 'idt_ficha');
-    }
-
-    public function analises()
-    {
-        return $this->hasMany(FichaAnalise::class, 'idt_ficha');
     }
 
     public function getDataNascimentoFormatada()

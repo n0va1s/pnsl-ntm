@@ -9,7 +9,6 @@ use App\Models\PessoaSaude;
 use App\Models\TipoMovimento;
 use App\Models\TipoResponsavel;
 use App\Models\TipoRestricao;
-use App\Models\TipoSituacao;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -19,17 +18,11 @@ class FichaService
     {
         $cacheKey = "dados_ficha_form_{$ficha->idt_ficha}";
 
-        return Cache::remember($cacheKey, 60 * 60, function () use ($ficha) {
-            $ultimaAnalise = $ficha->analises()->with('situacao')->orderByDesc('created_at')->first();
-
+        return Cache::remember($cacheKey, 60 * 60, function () {
             return [
-                'situacoes' => TipoSituacao::select('idt_situacao', 'des_situacao')->get(),
                 'movimentos' => TipoMovimento::select('idt_movimento', 'des_sigla', 'nom_movimento')->get(),
                 'responsaveis' => TipoResponsavel::select('idt_responsavel', 'des_responsavel')->get(),
                 'restricoes' => TipoRestricao::select('idt_restricao', 'tip_restricao', 'des_restricao')->get(),
-                'ultimaSituacao' => $ultimaAnalise?->situacao ?? TipoSituacao::CADASTRADA,
-                'ultimaAnalise' => $ultimaAnalise,
-
             ];
         });
     }

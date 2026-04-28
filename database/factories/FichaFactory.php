@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\ComoSoube;
+use App\Enums\Genero;
+use App\Enums\TamanhoCamiseta;
 use App\Models\Evento;
 use App\Models\Ficha;
 use App\Models\Pessoa;
@@ -17,15 +20,15 @@ class FichaFactory extends Factory
         return [
             'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento,
             'idt_pessoa' => Pessoa::inRandomOrder()->first()?->idt_pessoa ?? Pessoa::factory(),
-            'tip_genero' => $this->faker->randomElement(['M', 'F']),
+            'tip_genero' => $this->faker->randomElement(Genero::cases()),
             'nom_candidato' => $this->faker->name(),
             'nom_apelido' => $this->faker->firstName(),
             'dat_nascimento' => $this->faker->date('Y-m-d', '-15 years'),
-            'tel_candidato' => $this->faker->phoneNumber(),
+            'tel_candidato' => $this->faker->numerify('619########'),
             'eml_candidato' => $this->faker->safeEmail(),
             'des_endereco' => $this->faker->address(),
-            'tam_camiseta' => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
-            'tip_como_soube' => $this->faker->word(),
+            'tam_camiseta' => $this->faker->randomElement(TamanhoCamiseta::cases())->value,
+            'tip_como_soube' => $this->faker->randomElement(ComoSoube::cases())->value,
             'ind_catolico' => $this->faker->boolean(),
             'ind_toca_instrumento' => $this->faker->boolean(),
             'ind_consentimento' => true,
@@ -34,8 +37,8 @@ class FichaFactory extends Factory
             'txt_observacao' => $this->faker->sentence(),
 
             // Campos de Auditoria
-            'usu_inclusao' => User::factory(),
-            'usu_alteracao' => User::factory(),
+            'usu_inclusao' => User::inRandomOrder()->first()?->id ?? User::factory(),
+            'usu_alteracao' => User::inRandomOrder()->first()?->id ?? User::factory(),
         ];
     }
 }

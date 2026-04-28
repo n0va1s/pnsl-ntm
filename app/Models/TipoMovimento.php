@@ -37,6 +37,11 @@ class TipoMovimento extends Model
         return $this->hasMany(Evento::class, 'idt_movimento');
     }
 
+    public function equipes()
+    {
+        return $this->hasMany(TipoEquipe::class, 'idt_movimento');
+    }
+
     /**
      * Accessor para formatar a data de início
      */

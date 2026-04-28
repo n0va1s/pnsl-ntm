@@ -11,6 +11,8 @@ class FichaEcc extends Model
 
     protected $table = 'ficha_ecc';
 
+    protected $primaryKey = 'idt_ficha';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,7 +25,7 @@ class FichaEcc extends Model
     ];
 
     protected $casts = [
-        'dat_nascimento_conjuge' => 'date',
+        'dat_nascimento_conjuge' => 'date:Y-m-d',
     ];
 
     public function ficha()

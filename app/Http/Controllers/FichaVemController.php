@@ -44,7 +44,7 @@ class FichaVemController extends Controller
             $evento = Evento::find($eventoId);
         }
 
-        $fichas = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])
+        $fichas = Ficha::with(['fichaVem', 'fichaSaude'])
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('nom_candidato', 'like', "%{$search}%")
@@ -179,7 +179,7 @@ class FichaVemController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Visualização de ficha VEM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude'])->find($id);
 
         return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -196,7 +196,7 @@ class FichaVemController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de edição de ficha VEM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude'])->find($id);
 
         return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -220,9 +220,10 @@ class FichaVemController extends Controller
             'candidato' => $vemRequest->input('nom_candidato'),
         ]));
 
-        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises'])->findOrFail($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude'])->findOrFail($id);
 
         $vemData = $vemRequest->validated();
+
         $ficha->update($vemData);
 
         // Nao usei o UpdateOrCreate porque a chave e composta
@@ -237,23 +238,6 @@ class FichaVemController extends Controller
                 $ficha->fichaVem()->create($vemData);
             }
         }
-
-        if ($vemRequest->filled('idt_situacao')) {
-            $situacao = $vemRequest->input('idt_situacao');
-            $analise = $ficha->analises()->where('idt_situacao', $situacao)->first();
-            // A ficha ja tem a situacao
-            if ($analise) {
-                $analise->update([
-                    'txt_analise' => $vemRequest->input('txt_analise'),
-                ]);
-            } else {
-                $ficha->analises()->create([
-                    'idt_situacao' => $situacao,
-                    'txt_analise' => $vemRequest->input('txt_analise'),
-                ]);
-            }
-        }
-
         $ficha->fichaSaude()->delete();
         // filled() avalia se o campo existe no request e nao se foi marcado ou desmarcado
         // por isso estou testando diretamente o campo
@@ -277,26 +261,6 @@ class FichaVemController extends Controller
         return redirect()->route('vem.index')->with('success', 'Ficha atualizada com sucesso!');
     }
 
-    public function approve($id)
-    {
-        $start = microtime(true);
-        $context = $this->getLogContext(request());
-
-        Log::warning('Tentativa de atualização de aprovação de ficha VEM', array_merge($context, [
-            'ficha_id' => $id,
-        ]));
-
-        $this->fichaService::atualizarAprovacaoFicha($id);
-
-        $duration = round((microtime(true) - $start) * 1000, 2);
-        Log::notice('Aprovação de ficha VEM atualizada com sucesso', array_merge($context, [
-            'ficha_id' => $id,
-            'duration_ms' => $duration,
-        ]));
-
-        return redirect()->route('vem.index')->with('success', 'Aprovação atualizada com sucesso!');
-    }
-
     /**
      * Remover ficha.
      */
@@ -310,7 +274,7 @@ class FichaVemController extends Controller
         ]));
 
         try {
-            // FichaVem, FichaSaude e FichaAnalise são deletadas por cascata
+            // FichaVem e FichaSaude são deletadas por cascade
             // Soft delete
             Ficha::find($id)->delete();
 

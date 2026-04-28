@@ -93,9 +93,9 @@
                                 <div class="flex-1">
                                     <p class="text-sm font-bold text-gray-900 dark:text-white">
                                         {{ $ficha->nom_candidato }}</p>
-                                    <p class="text-xs text-gray-500">Inscrito em: {{ $ficha->evento->des_evento }}</p>
+                                    <p class="text-xs text-gray-500">Inscrito em: {{ $ficha->evento?->des_evento ?? 'Evento não encontrado' }}</p>
                                 </div>
-                                <x-badge-movimento :sigla="$ficha->evento->movimento?->des_sigla" />
+                                <x-badge-movimento :sigla="$ficha->evento->movimento?->des_sigla ?? 'Sem Sigla' " />
                             </div>
                         @empty
                             <p class="text-center py-8 text-sm text-gray-500">Nenhuma ficha recente.</p>

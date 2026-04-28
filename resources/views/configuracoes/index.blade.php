@@ -51,17 +51,6 @@
             </a>
 
             <!-- Card 5 -->
-            <a href="{{ route('situacao.index') }}"
-                class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
-                <div class="flex flex-col items-center justify-center h-full">
-                    <x-heroicon-o-clipboard-document-check class="w-12 h-12 text-yellow-600 mb-4" />
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Tipos de Situações</h2>
-                    <p class="text-gray-600 dark:text-gray-400 mt-2 text-sm">Defina as situações da ficha: cadastrada,
-                        aprovada, rejeitada, etc.</p>
-                </div>
-            </a>
-
-            <!-- Card 6 -->
             <a href="{{ route('role.index') }}"
                 class="block bg-white dark:bg-zinc-600 rounded-xl shadow hover:shadow-lg transition p-6 text-center">
                 <div class="flex flex-col items-center justify-center h-full">

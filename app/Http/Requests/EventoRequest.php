@@ -34,6 +34,9 @@ class EventoRequest extends FormRequest
             'med_foto' => 'nullable|image|max:2048',
             'tip_evento' => 'required|string|max:1',
             'txt_informacao' => 'nullable|string|max:3000',
+            'val_receita' => 'nullable|numeric|min:0',
+            'val_depesa' => 'nullable|numeric|min:0',
+            'txt_relatorio' => 'nullable|string|max:3000',
         ];
     }
 
@@ -63,8 +66,7 @@ class EventoRequest extends FormRequest
             'val_entrada.numeric' => 'O valor de entrada deve ser um número.',
             'med_foto.image' => 'O arquivo deve ser uma imagem.',
             'med_foto.max' => 'O tamanho da imagem não pode exceder 2MB.',
-            'ind_pos_encontro.required' => 'O campo pós encontro é obrigatório.',
-            'ind_pos_encontro.boolean' => 'O campo pós encontro deve ser verdadeiro ou falso.',
+            'tip_evento.required' => 'O campo tipo de evento é obrigatório.',
         ];
     }
 }

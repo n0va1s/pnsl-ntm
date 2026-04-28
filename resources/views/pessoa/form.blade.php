@@ -82,8 +82,11 @@
                         <label for="tam_camiseta" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Tamanho da Camiseta <span class="text-red-600">*</span></label>
                         <select id="tam_camiseta" name="tam_camiseta" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
                             <option value="">Selecione o tamanho</option>
-                            @foreach (['PP', 'P', 'M', 'G', 'GG', 'EG'] as $tamanho)
-                                <option value="{{ $tamanho }}" {{ old('tam_camiseta', $pessoa->tam_camiseta) == $tamanho ? 'selected' : '' }}>{{ $tamanho }}</option>
+                            @foreach(\App\Enums\TamanhoCamiseta::cases() as $tamanho)
+                                <option value="{{ $tamanho->value }}"
+                                    {{ old('tam_camiseta', $pessoa->tam_camiseta->value) == $tamanho->value ? 'selected' : '' }}>
+                                    {{ $tamanho->value }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -91,9 +94,12 @@
                     <div>
                         <label for="tip_genero" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Sexo <span class="text-red-600">*</span></label>
                         <select id="tip_genero" name="tip_genero" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
-                            <option value="">Selecione o sexo</option>
-                            <option value="M" {{ old('tip_genero', $pessoa->tip_genero) == 'M' ? 'selected' : '' }}>Masculino</option>
-                            <option value="F" {{ old('tip_genero', $pessoa->tip_genero) == 'F' ? 'selected' : '' }}>Feminino</option>
+                            @foreach(\App\Enums\Genero::cases() as $genero)
+                                <option value="{{ $genero->value }}"
+                                    {{ old('tip_genero', $pessoa->tip_genero->value) == $genero->value ? 'selected' : '' }}>
+                                    {{ $genero->label() }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -102,13 +108,13 @@
 
                         <div>
                             <label for="tip_estado_civil" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Estado Civil <span class="text-red-600">*</span></label>
-                            @php
-                                $estadosCivis = ['S' => 'Solteiro(a)', 'C' => 'Casado(a)', 'E' => 'Casado(a) em 2ª União', 'U' => 'União Estável', 'M' => 'Casado(a) somente 1 participará', 'D' => 'Divorciado(a)', 'V' => 'Viúvo(a)'];
-                            @endphp
                             <select id="tip_estado_civil" name="tip_estado_civil" x-model="estadoCivil" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
                                 <option value="">Selecione o estado civil</option>
-                                @foreach ($estadosCivis as $sigla => $descricao)
-                                    <option value="{{ $sigla }}">{{ $descricao }}</option>
+                                @foreach(\App\Enums\EstadoCivil::cases() as $estadoCivil)
+                                    <option value="{{ $estadoCivil->value }}"
+                                        {{ old('tip_estado_civil', $pessoa->tip_estado_civil->value) == $estadoCivil->value ? 'selected' : '' }}>
+                                        {{ $estadoCivil->label() }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -142,17 +148,13 @@
 
                         <div>
                             <label for="tip_habilidade" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Habilidade Principal</label>
-                            @php
-                                $habilidades = [
-                                    'V' => 'Toco violão', 'S' => 'Toco outro instrumento', 'C' => 'Sei cantar',
-                                    'M' => 'Trabalho com mídias sociais', 'A' => 'Crio material audiovisual',
-                                    'T' => 'Desenvolvo APPs ou Sites', 'F' => 'Fotografo', 'O' => 'Outra habilidade'
-                                ];
-                            @endphp
                             <select id="tip_habilidade" name="tip_habilidade" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
                                 <option value="">Selecione uma habilidade</option>
-                                @foreach ($habilidades as $sigla => $label)
-                                    <option value="{{ $sigla }}" {{ old('tip_habilidade', $pessoa->tip_habilidade) == $sigla ? 'selected' : '' }}>{{ $label }}</option>
+                                @foreach(\App\Enums\HabilidadePrincipal::cases() as $habilidade)
+                                    <option value="{{ $habilidade->value }}"
+                                        {{ old('tip_habilidade', $pessoa->tip_habilidade->value) == $habilidade->value ? 'selected' : '' }}>
+                                        {{ $habilidade->label() }}
+                                    </option>
                                 @endforeach
                             </select>
                             <p id="dat_termino_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -162,30 +164,88 @@
 
                     </div>
                 </div>
-
                 <div x-data="{ mostrarRestricoes: {{ old('ind_restricao', $pessoa->ind_restricao ?? false) ? 'true' : 'false' }} }">
-                    <label class="flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors border-amber-300 bg-amber-50 hover:bg-amber-100 dark:border-amber-500 dark:bg-amber-900/20">
-                        <div class="pt-0.5">
-                            <input type="checkbox" name="ind_restricao" value="1" x-model="mostrarRestricoes" class="w-5 h-5 rounded border-amber-400 text-amber-500 focus:ring-amber-400">
+                    <label
+                        class="flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors
+                        border-amber-300 bg-amber-50 hover:bg-amber-100
+                        dark:border-amber-500 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
+                        aria-describedby="saude-hint">
+                        <div class="flex items-center pt-0.5">
+                            <input type="hidden" name="ind_restricao" value="0">
+                            <input type="checkbox" name="ind_restricao" value="1" x-model="mostrarRestricoes"
+                                x-bind:disabled="bloqueado"
+                                {{ old('ind_restricao', $pessoa->ind_restricao) ? 'checked' : '' }}
+                                class="w-5 h-5 rounded border-amber-400 text-amber-500 focus:ring-amber-400">
                         </div>
-                        <div class="flex-1">
-                            <span class="block font-semibold text-amber-800 dark:text-amber-300">Informações de saúde</span>
-                            <span class="text-sm text-amber-700 dark:text-amber-400">Alergias, restrições alimentares ou necessidades especiais?</span>
+                        <div>
+                            <span class="block font-semibold text-amber-800 dark:text-amber-300">
+                                Informações de saúde
+                            </span>
+                            <span id="saude-hint" class="text-sm text-amber-700 dark:text-amber-400">
+                                Há alguma informação sobre sua saúde que julga importante sabermos? (alergias,
+                                restrições alimentares, necessidades especiais)
+                            </span>
                         </div>
-                        <x-heroicon-o-heart class="w-6 h-6 text-amber-400 ml-auto shrink-0" />
+                        <x-heroicon-o-heart class="w-6 h-6 text-amber-400 dark:text-amber-500 ml-auto shrink-0"
+                            aria-hidden="true" />
                     </label>
 
-                    <div x-show="mostrarRestricoes" x-transition class="mt-3 bg-gray-50 dark:bg-zinc-800/50 border border-gray-200 dark:border-zinc-700 rounded-md p-4">
-                        <h3 class="text-base font-medium mb-4 text-gray-900 dark:text-gray-100 border-b dark:border-zinc-700 pb-2">Especifique as Restrições</h3>
-                        <div class="space-y-5">
+                    <div x-show="mostrarRestricoes" x-transition
+                        class="mt-3 bg-gray-50 dark:bg-zinc-700 rounded-md p-4" role="region"
+                        aria-label="Restrições e Alergias">
+                        <h3 class="text-base sm:text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">
+                            Restrições e Alergias
+                        </h3>
+                        <div class="space-y-4">
+                            @php
+                                $relacaoSaude = $pessoa->restricoes ?? collect();
+                                
+                                $restricoesSelecionadas = $relacaoSaude->pluck('idt_restricao')->toArray();
+                                
+                                $complementos = $relacaoSaude->mapWithKeys(function ($item) {
+                                    return [$item->idt_restricao => $item->pivot->txt_complemento ?? ''];
+                                })->toArray();
+                            @endphp
+
                             @foreach ($restricoes as $restricao)
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-3">
-                                        <input type="checkbox" name="restricoes[{{ $restricao->idt_restricao }}]" id="restricao_{{ $restricao->idt_restricao }}" value="1" {{ in_array($restricao->idt_restricao, $pessoa->restricoes->pluck('idt_restricao')->toArray()) ? 'checked' : '' }} class="w-4 h-4 text-blue-600 rounded">
-                                        <label for="restricao_{{ $restricao->idt_restricao }}" class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ $restricao->des_restricao }}</label>
+                                @php
+                                    $checked = in_array($restricao->idt_restricao, $restricoesSelecionadas);
+                                    $complemento = old(
+                                        "complementos.{$restricao->idt_restricao}",
+                                        $complementos[$restricao->idt_restricao] ?? '',
+                                    );
+                                @endphp
+
+                                <div class="space-y-2" 
+                                    x-data="{ 
+                                        selecionado: {{ $checked ? 'true' : 'false' }},
+                                        texto: '{{ addslashes($complemento) }}' 
+                                    }">
+                                    
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" 
+                                            name="restricoes[{{ $restricao->idt_restricao }}]"
+                                            id="restricao_{{ $restricao->idt_restricao }}" 
+                                            value="1"
+                                            x-model="selecionado"
+                                            class="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2" />
+                                        
+                                        <label for="restricao_{{ $restricao->idt_restricao }}"
+                                            class="text-gray-800 dark:text-gray-100 flex items-center gap-2 cursor-pointer">
+                                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 dark:bg-zinc-600 dark:text-gray-300">
+                                                {{ $restricao->getTipo() }}
+                                            </span>
+                                            <span class="text-sm">{{ $restricao->des_restricao }}</span>
+                                        </label>
                                     </div>
-                                    <input type="text" name="complementos[{{ $restricao->idt_restricao }}]" value="{{ old("complementos.{$restricao->idt_restricao}", $pessoa->restricoes->where('idt_restricao', $restricao->idt_restricao)->first()->txt_complemento ?? '') }}"
-                                        placeholder="Detalhes adicionais..." class="w-full px-3 py-2 text-sm rounded-md border dark:bg-zinc-900 dark:text-gray-100" />
+
+                                    <input type="text" 
+                                        name="complementos[{{ $restricao->idt_restricao }}]"
+                                        x-model="texto"
+                                        @input="if(texto.trim().length > 0) selecionado = true"
+                                        placeholder="Complemento ou detalhes adicionais"
+                                        maxlength="255" 
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800" />
                                 </div>
                             @endforeach
                         </div>
