@@ -715,7 +715,7 @@
                                             name="restricoes[{{ $restricao->idt_restricao }}]"
                                             id="restricao_{{ $restricao->idt_restricao }}" 
                                             value="1"
-                                            x-model="selecionado" {{-- Sincroniza com o estado do Alpine --}}
+                                            x-model="selecionado"
                                             class="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2" />
                                         
                                         <label for="restricao_{{ $restricao->idt_restricao }}"
