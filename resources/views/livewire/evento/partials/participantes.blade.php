@@ -26,7 +26,6 @@ new class extends Component {
         return [
             'participantes' => \App\Models\Participante::where('idt_evento', $this->evento->idt_evento)
                 ->with('pessoa.foto')
-                ->where('tip_evento', '=', 'E')
                 ->when($this->search, function ($query) {
                     $query->whereHas('pessoa', function ($q) {
                         $q->where('nom_pessoa', 'like', '%' . $this->search . '%')

@@ -79,7 +79,6 @@ class PessoaController extends Controller
             'idt_restricao',
             'tip_restricao',
             'des_restricao',
-            'txt_restricao'
         )->get();
 
         $meuId = auth()->user()->pessoa->idt_pessoa;

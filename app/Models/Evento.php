@@ -30,12 +30,15 @@ class Evento extends Model
         'val_camiseta',
         'val_trabalhador',
         'val_venista',
+        'val_entrada',
         'val_receita',
-        'val_depesa',
+        'val_despesa',
         'tip_evento',
         'tip_faixa_etaria',
         'txt_informacao',
         'txt_relatorio',
+        'med_foto',
+        'med_logo',
     ];
 
     protected $casts = [

@@ -52,39 +52,10 @@
                         </p>
                     </div>
 
-                    <!-- Foto Oficial -->
-                    <div class="mb-6">
-                        <label for="med_foto" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Foto Oficial
-                        </label>
-
-                        {{-- Exibe a foto existente se houver e estiver no modo de edição --}}
-                        @if (isset($evento) && $evento->foto)
-                            <div class="mb-4">
-                                <img src="{{ asset('storage/' . $evento->foto->med_foto) }}" alt="Foto do evento"
-                                    class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600">
-                            </div>
-                        @endif
-
-                        {{-- Campo de upload --}}
-                        <input type="file" id="med_foto" name="med_foto" maxlength="255"
-                            aria-describedby="med_foto_help med_foto_error"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-        @error('med_foto') border-red-500 @enderror" />
-
-                        @error('med_foto')
-                            <p id="med_foto_error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-
-                        <p id="med_foto_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            Tamanho máximo: 2 Mb. Formatos aceitos: JPG, PNG.
-                        </p>
-                    </div>
-
-                    <!-- Descrição do Evento -->
+                    <!-- Título do Evento -->
                     <div>
                         <label for="des_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Descrição do Evento <span class="text-red-600">*</span>
+                            Título do Evento <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="des_evento" name="des_evento" maxlength="255"
                             value="{{ old('des_evento', $evento->des_evento ?? '') }}" placeholder="Ex: VEM 2025"
@@ -99,6 +70,76 @@
                         </p>
                     </div>
 
+                    <!-- Foto Oficial -->
+                    <div>
+                        <label for="med_foto" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Foto Oficial
+                        </label>
+
+                        {{-- Exibe a foto existente se houver e estiver no modo de edição --}}
+                        @if (isset($evento) && $evento->foto)
+                            <div class="mb-4 flex flex-col items-center justify-center w-48 h-32 rounded border-2 border-dashed border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50">
+                                <img src="{{ asset('storage/' . $evento->foto->med_foto) }}" alt="Foto do evento"
+                                    class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600">
+                            </div>
+                        @else
+                            <div class="mb-4 flex flex-col items-center justify-center w-48 h-32 rounded border-2 border-dashed border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50">
+                                <x-heroicon-o-photo class="w-8 h-8 text-gray-400 dark:text-zinc-500" />
+                                <span class="mt-2 text-xs font-medium text-gray-500 dark:text-zinc-400">
+                                    Nenhuma imagem ainda
+                                </span>
+                            </div>
+                        @endif
+
+                        <input type="file" id="med_foto" name="med_foto" maxlength="255"
+                            aria-describedby="med_foto_help med_foto_error"
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+        @error('med_foto') border-red-500 @enderror" />
+
+                        @error('med_foto')
+                            <p id="med_foto_error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+
+                        <p id="med_foto_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Tamanho máximo: 2 Mb. Formatos aceitos: JPG, PNG.
+                        </p>
+                    </div>
+
+                    <!-- Logo/Padroeiro -->
+                    <div>
+                        <label for="med_logo" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Logo/Padroeiro(a)
+                        </label>
+
+                       @if (isset($evento) && $evento->logo)
+                            <div class="mb-4 flex flex-col items-center justify-center w-48 h-32 rounded border-2 border-dashed border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50">
+                                <img src="{{ asset('storage/' . $evento->foto->med_logo) }}" alt="Logo ou Padroeiro do evento"
+                                    class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600">
+                            </div>
+                        @else
+                            <div class="mb-4 flex flex-col items-center justify-center w-48 h-32 rounded border-2 border-dashed border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50">
+                                <x-heroicon-o-photo class="w-8 h-8 text-gray-400 dark:text-zinc-500" />
+                                <span class="mt-2 text-xs font-medium text-gray-500 dark:text-zinc-400">
+                                    Nenhuma imagem ainda
+                                </span>
+                            </div>
+                        @endif
+
+                        <input type="file" id="med_logo" name="med_logo" maxlength="255"
+                            aria-describedby="med_logo_help med_logo_error"
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+        @error('med_logo') border-red-500 @enderror" />
+
+                        @error('med_logo')
+                            <p id="med_logo_error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+
+                        <p id="med_logo_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Tamanho máximo: 2 Mb. Formatos aceitos: JPG, PNG.
+                        </p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Número do Evento -->
                     <div>
                         <label for="num_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -117,6 +158,48 @@
                         </p>
                     </div>
 
+                    <!-- Faixa Etária -->
+                     <div>
+                        <label for="tip_faixa_etaria" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Faixa Etária <span class="text-red-600">*</span>
+                        </label>
+                        <select name="tip_faixa_etaria" 
+                                id="tip_faixa_etaria" 
+                                required 
+                                x-bind:disabled="bloqueado"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_evento') border-red-500 @enderror">
+                            <option value="">Selecione a faixa etária</option>
+                            @foreach(\App\Enums\FaixaEtaria::cases() as $faixa)
+                                <option value="{{ $faixa->value }}"
+                                    {{ old('tip_faixa_etaria', $evento->tip_faixa_etaria->value) == $faixa->value ? 'selected' : '' }}>
+                                    {{ $faixa->label() }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('tip_faixa_etaria')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Quantidade de Vagas -->
+                    <div>
+                        <label for="qtd_vaga" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Quantidade de Vagas
+                        </label>
+
+                        <input type="number" id="qtd_vaga" name="qtd_vaga"
+                            min="0" step="1"
+                            value="{{ old('qtd_vaga', $evento->qtd_vaga ?? '') }}"
+                            aria-describedby="qtd_vaga_error"
+                            class="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500
+                            @error('qtd_vaga') border-red-500 @enderror">
+
+                        @error('qtd_vaga')
+                            <p id="qtd_vaga_error" class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Data Limite Inscrição -->
                     <div class="flex flex-col">
                         <label for="dat_limite_inscricao" class="mb-1 font-medium text-gray-700 dark:text-gray-300">
@@ -131,24 +214,6 @@
 
                         @error('dat_limite_inscricao')
                             <p id="dat_limite_inscricao_error" class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Quantidade de Vagas -->
-                    <div class="flex flex-col">
-                        <label for="qtd_vaga" class="mb-1 font-medium text-gray-700 dark:text-gray-300">
-                            Quantidade de Vagas
-                        </label>
-
-                        <input type="number" id="qtd_vaga" name="qtd_vaga"
-                            min="0" step="1"
-                            value="{{ old('qtd_vaga', $evento->qtd_vaga ?? '') }}"
-                            aria-describedby="qtd_vaga_error"
-                            class="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500
-                            @error('qtd_vaga') border-red-500 @enderror">
-
-                        @error('qtd_vaga')
-                            <p id="qtd_vaga_error" class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -184,115 +249,94 @@
                             Deve ser igual ou posterior à data de início
                         </p>
                     </div>
-                    <div class="mt-6">
+                </div>
+                <div x-data="{ 
+                    tipoEvento: '{{ old('tip_evento', $evento->tip_evento->value ?? $evento->tip_evento) }}' 
+                }">
+                    <div>
                         <label for="tip_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Tipo <span class="text-red-600">*</span>
                         </label>
-                        <select name="tip_evento" id="tip_evento" required x-bind:disabled="bloqueado"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
-                            @error('tip_evento') border-red-500 @enderror">
+                        <select name="tip_evento" 
+                                id="tip_evento" 
+                                required 
+                                x-model="tipoEvento" {{-- Vincula o select ao Alpine --}}
+                                x-bind:disabled="bloqueado"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_evento') border-red-500 @enderror">
                             <option value="">Selecione o tipo</option>
-                            <option value="E"
-                                {{ old('tip_evento', $evento->tip_evento) == 'E' ? 'selected' : '' }}>Encontro Anual
-                            </option>
-                            <option value="P"
-                                {{ old('tip_evento', $evento->tip_evento) == 'P' ? 'selected' : '' }}>Pós-Encontro
-                            </option>
-                            <option value="D"
-                                {{ old('tip_evento', $evento->tip_evento) == 'D' ? 'selected' : '' }}>Desafio</option>
+                            @foreach(\App\Enums\TipoEvento::cases() as $tipo)
+                                <option value="{{ $tipo->value }}">{{ $tipo->label() }}</option>
+                            @endforeach
                         </select>
                         @error('tip_evento')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    @if ($evento->tip_evento == 'P')
-                        <div class="mb-6">
+                    {{-- CAMPOS DINÂMICOS --}}
+                    
+                    <div x-show="tipoEvento === 'P'" 
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform -translate-y-2"
+                        class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
+                        
+                        <div>
                             <label for="val_entrada" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 R$ Entrada
                             </label>
-                            <input type="text" id="val_entrada" name="val_entrada" maxlength="10"
-                                value="{{ old('val_entrada', $evento->val_entrada) }}" placeholder="Ex: 30.00"
-                                aria-describedby="val_entrada_help val_entrada_error"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
-@error('val_entrada') border-red-500 @enderror" />
+                            <input type="text" id="val_entrada" name="val_entrada"
+                                value="{{ old('val_entrada', $evento->val_entrada) }}" 
+                                placeholder="Ex: 30.00"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 @error('val_entrada') border-red-500 @enderror" />
                             @error('val_entrada')
-                                <p id="val_entrada_error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                            <p id="val_entrada_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                Valor da entrada no evento
-                            </p>
                         </div>
-                    @else
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                            <!-- Trabalhador -->
-                            <div class="flex flex-col justify-end h-full">
-                                <label for="val_trabalhador"
-                                    class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    R$ Trabalhador
-                                </label>
-                                <input type="text" id="val_trabalhador" name="val_trabalhador" maxlength="10"
-                                    value="{{ old('val_trabalhador', $evento->val_trabalhador) }}"
-                                    placeholder="Ex: 50.00"
-                                    aria-describedby="val_trabalhador_help val_trabalhador_error"
-                                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
-@error('val_trabalhador') border-red-500 @enderror" />
-                                @error('val_trabalhador')
-                                    <p id="val_trabalhador_error" class="mt-1 text-sm text-red-600">{{ $message }}
-                                    </p>
-                                @enderror
-                                <p id="val_trabalhador_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                    Contribuição dos trabalhadores
-                                </p>
-                            </div>
+                    </div>
 
-                            <!-- Venista -->
-                            <div class="flex flex-col justify-end h-full">
-                                <label for="val_venista"
-                                    class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    R$ Participante
-                                </label>
-                                <input type="text" id="val_venista" name="val_venista" maxlength="10"
-                                    value="{{ old('val_venista', $evento->val_venista) }}" placeholder="Ex: 80.00"
-                                    aria-describedby="val_venista_help val_venista_error"
-                                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
-@error('val_venista') border-red-500 @enderror" />
-                                @error('val_venista')
-                                    <p id="val_venista_error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                                <p id="val_venista_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                    Contribuição do participante
-                                </p>
-                            </div>
-
-                            <!-- Camiseta -->
-                            <div class="flex flex-col justify-end h-full">
-                                <label for="val_camiseta"
-                                    class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    R$ Camiseta
-                                </label>
-                                <input type="text" id="val_camiseta" name="val_camiseta" maxlength="10"
-                                    value="{{ old('val_camiseta', $evento->val_camiseta) }}" placeholder="Ex: 30.00"
-                                    aria-describedby="val_camiseta_help val_camiseta_error"
-                                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
-@error('val_camiseta') border-red-500 @enderror" />
-                                @error('val_camiseta')
-                                    <p id="val_camiseta_error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                                <p id="val_camiseta_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                    Valor da camiseta (opcional)
-                                </p>
-                            </div>
+                    <div x-show="tipoEvento !== 'P' && tipoEvento !== ''" 
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform -translate-y-2"
+                        class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
+                        
+                        <div class="flex flex-col justify-end">
+                            <label for="val_trabalhador" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                R$ Trabalhador
+                            </label>
+                            <input type="text" id="val_trabalhador" name="val_trabalhador"
+                                value="{{ old('val_trabalhador', $evento->val_trabalhador) }}"
+                                placeholder="Ex: 50.00"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 @error('val_trabalhador') border-red-500 @enderror" />
                         </div>
-                    @endif
+
+                        <div class="flex flex-col justify-end">
+                            <label for="val_venista" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                R$ Participante
+                            </label>
+                            <input type="text" id="val_venista" name="val_venista"
+                                value="{{ old('val_venista', $evento->val_venista) }}"
+                                placeholder="Ex: 80.00"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 @error('val_venista') border-red-500 @enderror" />
+                        </div>
+
+                        <div class="flex flex-col justify-end">
+                            <label for="val_camiseta" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                R$ Camiseta
+                            </label>
+                            <input type="text" id="val_camiseta" name="val_camiseta"
+                                value="{{ old('val_camiseta', $evento->val_camiseta) }}"
+                                placeholder="Ex: 30.00"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 @error('val_camiseta') border-red-500 @enderror" />
+                        </div>
+                    </div>
                 </div>
                 <div class="w-full">
                     <label for="txt_informacao" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Outras Informações
                     </label>
                     <textarea id="txt_informacao" name="txt_informacao" rows="4"
-                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('txt_observacao') border-red-500 @enderror"
-                        placeholder="Digite aqui outras informações relevantes...">{{ old('txt_observacao', $evento->txt_observacao ?? '') }}</textarea>
+                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('txt_informacao') border-red-500 @enderror"
+                        placeholder="Digite aqui outras informações relevantes...">{{ old('txt_informacao', $evento->txt_informacao ?? '') }}</textarea>
                     @error('txt_informacao')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror

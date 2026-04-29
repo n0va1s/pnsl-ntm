@@ -51,56 +51,78 @@
                         <input type="text" id="nom_apelido" name="nom_apelido" maxlength="255"
                             value="{{ old('nom_apelido', $pessoa->nom_apelido) }}"
                             placeholder="Como prefere ser chamado"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_apelido') border-red-500 @enderror" />
+                        @error('nom_apelido')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="tel_pessoa" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Telefone</label>
                         <input type="tel" id="tel_pessoa" name="tel_pessoa" value="{{ old('tel_pessoa', $pessoa->tel_pessoa) }}" placeholder="(99) 99999-9999"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100" />
+                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('tel_pessoa') border-red-500 @enderror" />
+                        @error('tel_pessoa')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="dat_nascimento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Data de Nascimento <span class="text-red-600">*</span></label>
                         <input type="date" id="dat_nascimento" name="dat_nascimento" value="{{ old('dat_nascimento', $pessoa->getDataNascimentoFormatada()) }}"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100" />
+                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('dat_nascimento') border-red-500 @enderror" />
+                        @error('dat_nascimento')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="eml_pessoa" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Email <span class="text-red-600">*</span></label>
                         <input type="email" id="eml_pessoa" name="eml_pessoa" value="{{ old('eml_pessoa', $pessoa->eml_pessoa) }}"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100" />
+                           class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('eml_pessoa') border-red-500 @enderror" />
+                        @error('eml_pessoa')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="des_endereco" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Endereço</label>
                         <input type="text" id="des_endereco" name="des_endereco" value="{{ old('des_endereco', $pessoa->des_endereco) }}"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100" />
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 
+                            @error('des_endereco') border-red-500 @enderror"/>
+                        @error('des_endereco')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="tam_camiseta" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Tamanho da Camiseta <span class="text-red-600">*</span></label>
-                        <select id="tam_camiseta" name="tam_camiseta" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
+                        <select id="tam_camiseta" name="tam_camiseta" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('tam_camiseta') border-red-500 @enderror">
                             <option value="">Selecione o tamanho</option>
                             @foreach(\App\Enums\TamanhoCamiseta::cases() as $tamanho)
                                 <option value="{{ $tamanho->value }}"
-                                    {{ old('tam_camiseta', $pessoa->tam_camiseta->value) == $tamanho->value ? 'selected' : '' }}>
-                                    {{ $tamanho->value }}
+                                    {{ old('tam_camiseta', $pessoa->tam_camiseta?->value) == $tamanho->value ? 'selected' : '' }}>
+                                    {{ $tamanho->label() }}
                                 </option>
                             @endforeach
                         </select>
+                        @error('tam_camiseta')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="tip_genero" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Sexo <span class="text-red-600">*</span></label>
-                        <select id="tip_genero" name="tip_genero" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
+                        <select id="tip_genero" name="tip_genero" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('tip_genero') border-red-500 @enderror">
                             @foreach(\App\Enums\Genero::cases() as $genero)
                                 <option value="{{ $genero->value }}"
-                                    {{ old('tip_genero', $pessoa->tip_genero->value) == $genero->value ? 'selected' : '' }}>
+                                    {{ old('tip_genero', $pessoa->tip_genero) == $genero->value ? 'selected' : '' }}>
                                     {{ $genero->label() }}
                                 </option>
                             @endforeach
                         </select>
+                        @error('tip_genero')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -108,25 +130,31 @@
 
                         <div>
                             <label for="tip_estado_civil" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Estado Civil <span class="text-red-600">*</span></label>
-                            <select id="tip_estado_civil" name="tip_estado_civil" x-model="estadoCivil" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
+                            <select id="tip_estado_civil" name="tip_estado_civil" x-model="estadoCivil" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('tip_estado_civil') border-red-500 @enderror">
                                 <option value="">Selecione o estado civil</option>
                                 @foreach(\App\Enums\EstadoCivil::cases() as $estadoCivil)
                                     <option value="{{ $estadoCivil->value }}"
-                                        {{ old('tip_estado_civil', $pessoa->tip_estado_civil->value) == $estadoCivil->value ? 'selected' : '' }}>
+                                        {{ old('tip_estado_civil', $pessoa->tip_estado_civil) == $estadoCivil->value ? 'selected' : '' }}>
                                         {{ $estadoCivil->label() }}
                                     </option>
                                 @endforeach
                             </select>
+                            @error('tip_estado_civil')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div x-show="['C', 'E', 'U'].includes(estadoCivil)" x-cloak>
                             <label for="idt_parceiro" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Cônjuge</label>
-                            <select id="idt_parceiro" name="idt_parceiro" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100">
+                            <select id="idt_parceiro" name="idt_parceiro" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('idt_parceiro') border-red-500 @enderror">
                                 <option value="">Selecione o(a) cônjuge</option>
                                 @foreach ($pessoasDisponiveis as $id => $nome)
                                     <option value="{{ $id }}" {{ old('idt_parceiro', $pessoa->idt_parceiro) == $id ? 'selected' : '' }}>{{ $nome }}</option>
                                 @endforeach
                             </select>
+                            @error('idt_parceiro')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -135,31 +163,40 @@
                             <div class="flex-1">
                                 <label for="med_foto" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Foto para o Carômetro</label>
                                 <input type="file" id="med_foto" name="med_foto" accept="image/*"
-                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300" />
+                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300 @error('med_foto') border-red-500 @enderror" />
+                                @error('med_foto')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
                             @if ($pessoa->exists && $pessoa->foto)
                                 <div class="mb-4">
                                     <img src="{{ asset('storage/' . $pessoa->foto->med_foto) }}"
                                         alt="Foto de {{ $pessoa->nom_pessoa }}"
-                                        class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600">
+                                        class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600 @error('med_foto') border-red-500 @enderror">
+                                    @error('med_foto')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             @endif
                         </div>
 
                         <div>
                             <label for="tip_habilidade" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Habilidade Principal</label>
-                            <select id="tip_habilidade" name="tip_habilidade" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
+                            <select id="tip_habilidade" name="tip_habilidade" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 @error('tip_habilidade') border-red-500 @enderror">
                                 <option value="">Selecione uma habilidade</option>
                                 @foreach(\App\Enums\HabilidadePrincipal::cases() as $habilidade)
                                     <option value="{{ $habilidade->value }}"
-                                        {{ old('tip_habilidade', $pessoa->tip_habilidade->value) == $habilidade->value ? 'selected' : '' }}>
+                                        {{ old('tip_habilidade', $pessoa->tip_habilidade) == $habilidade->value ? 'selected' : '' }}>
                                         {{ $habilidade->label() }}
                                     </option>
                                 @endforeach
                             </select>
+                            @error('tip_habilidade')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                             <p id="dat_termino_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            São habilidades que precisamos no momento
-                        </p>
+                                São habilidades que precisamos no momento
+                            </p>
                         </div>
 
                     </div>

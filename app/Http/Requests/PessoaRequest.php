@@ -7,6 +7,7 @@ use App\Enums\Genero;
 use App\Enums\HabilidadePrincipal;
 use App\Enums\TamanhoCamiseta;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class PessoaRequest extends FormRequest
@@ -24,13 +25,20 @@ class PessoaRequest extends FormRequest
             'tel_pessoa' => ['nullable', 'regex:/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/'],
             'dat_nascimento' => ['required', 'date', 'before:today', 'after:1925-01-01'],
             'des_endereco' => ['nullable', 'string', 'min:10', 'max:255'],
-            'eml_pessoa' => ['required', 'email', 'max:255'],
+            'eml_pessoa' => ['required', 'email', 'max:255', 
+                Rule::unique('pessoa', 'eml_pessoa')->ignore($this->pessoa)
+            ],
             'tam_camiseta' => ['required', new Enum(TamanhoCamiseta::class)],
             'tip_genero' => ['required', new Enum(Genero::class)],
             'tip_estado_civil' => ['nullable', new Enum(EstadoCivil::class)],
             'tip_habilidade' => ['nullable', new Enum(HabilidadePrincipal::class)],
             'idt_parceiro' => ['nullable', 'exists:pessoa,idt_pessoa'],
             'med_foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'ind_restricao'  => ['nullable', 'boolean'],
+            'restricoes'     => ['nullable', 'array'],
+            'restricoes.*'   => ['boolean'],
+            'complementos'   => ['nullable', 'array'],
+            'complementos.*' => ['nullable', 'string', 'max:255'],
         ];
     }
 

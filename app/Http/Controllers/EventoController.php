@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class EventoController extends Controller
@@ -75,7 +76,37 @@ class EventoController extends Controller
     public function store(EventoRequest $request): RedirectResponse
     {
         try {
-            $evento = $this->eventoService->criarEventoComFoto($request->validated(), $request->file('med_foto'));
+            $dados = $request->validated();
+            $evento = Evento::create($dados);
+
+            // Prepara o nome customizado: "2026-04-11-nome-do-evento"
+            $dataInicio = $evento->dat_inicio->format('Y-m-d');
+            $tituloSlug = Str::slug($evento->des_evento); // trim, lowercase e hífens automáticos
+            $nomeArquivoBase = "{$dataInicio}-{$tituloSlug}";
+
+            // Upload da Foto Oficial
+            if ($request->hasFile('med_foto')) {
+                $fileService->upload(
+                    model: $evento,
+                    file: $request->file('med_foto'),
+                    relationName: 'foto',
+                    column: 'med_foto',
+                    path: 'eventos/fotos',
+                    customName: $nomeArquivoBase . '-oficial' // Sufixo para diferenciar se necessário
+                );
+            }
+
+        // Upload da Logo/Padroeira
+            if ($request->hasFile('med_logo')) {
+                $fileService->upload(
+                    model: $evento,
+                    file: $request->file('med_logo'),
+                    relationName: 'foto',
+                    column: 'med_logo',
+                    path: 'eventos/logos',
+                    customName: $nomeArquivoBase . '-logo'
+                );
+            }
 
             Log::notice('Evento criado', ['evento_id' => $evento->id]);
 
@@ -92,6 +123,7 @@ class EventoController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Visualização de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
 
+        $evento->load('foto');
         $movimentos = TipoMovimento::all();
 
         return view('evento.form', compact('movimentos', 'evento'));
@@ -104,7 +136,8 @@ class EventoController extends Controller
     {
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de edição de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
-
+        
+        $evento->load('foto');
         $movimentos = TipoMovimento::all();
 
         return view('evento.form', compact('movimentos', 'evento'));
@@ -125,14 +158,38 @@ class EventoController extends Controller
 
         try {
             DB::beginTransaction();
-            $data = $request->validated();
+            $dados = $request->validated();
+            $evento->update($dados);
 
-            $data['dat_limite_inscricao'] = $data['dat_limite_inscricao'] ?? null;
-            $data['qtd_vaga'] = $data['qtd_vaga'] ?? null;
+            // Prepara o nome customizado: "2026-04-11-nome-do-evento"
+            $dataInicio = $evento->dat_inicio->format('Y-m-d');
+            $tituloSlug = Str::slug($evento->des_evento); // trim, lowercase e hífens automáticos
+            $nomeArquivoBase = "{$dataInicio}-{$tituloSlug}";
 
-            $evento->update($data);
+            // Upload da Foto Oficial (se enviada)
+            if ($request->hasFile('med_foto')) {
+                $fileService->upload(
+                    model: $evento,
+                    file: $request->file('med_foto'),
+                    relationName: 'foto',
+                    column: 'med_foto',
+                    path: 'eventos/fotos',
+                    customName: $nomeArquivoBase . '-oficial' // Sufixo para diferenciar se necessário
+                );
+            }
 
-            $this->eventoService->fotoUpload($evento, $request->file('med_foto'));
+            // Upload da Logo/Padroeira (se enviada)
+            if ($request->hasFile('med_logo')) {
+                $fileService->upload(
+                    model: $evento,
+                    file: $request->file('med_logo'),
+                    relationName: 'foto',
+                    column: 'med_logo',
+                    path: 'eventos/logos',
+                    customName: $nomeArquivoBase . '-logo'
+                );
+            }
+
             DB::commit();
 
             $duration = round((microtime(true) - $start) * 1000, 2);
