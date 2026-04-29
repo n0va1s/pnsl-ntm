@@ -14,14 +14,15 @@ new class extends Component {
 
     public function atualizarAprovacao(int $fichaId): void
     {
-        $ficha = \App\Models\Ficha::find($fichaId);
-        if ($ficha) {
-            $ficha->ind_aprovado = ! $ficha->ind_aprovado;
-            $ficha->save();
+        $ficha = \App\Services\FichaService::atualizarAprovacaoFicha($fichaId);
 
-            $status = $ficha->ind_aprovado ? 'aprovada' : 'pendente';
-            $this->dispatch('notify', message: "Ficha de {$ficha->nom_apelido} foi {$status}.");
-        }
+        $status = $ficha->ind_aprovado ? 'aprovada' : 'colocada como pendente';
+        $visual = $ficha->ind_aprovado ? 'sucesso' : 'info';
+
+        $this->dispatch('notify', 
+            message: "A ficha de {$ficha->nom_apelido} foi {$status}.",
+            type: $visual
+        );
     }
 
     public function with(): array

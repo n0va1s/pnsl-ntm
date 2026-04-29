@@ -27,43 +27,34 @@ class FichaService
         });
     }
 
-    private static function processarAprovacao(Ficha $ficha): void
+    public static function atualizarAprovacaoFicha(int $id): Ficha
     {
-        $pessoa = self::criarOuAtualizarPessoaAPartirDaFicha($ficha);
-
-        $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
-
-        self::criarPessoaSaude(
-            $pessoa->idt_pessoa,
-            $ficha->fichaSaude->map(fn ($r) => [
-                'idt_restricao' => $r->idt_restricao,
-                'txt_complemento' => $r->txt_complemento,
-            ])->toArray()
-        );
-
-        self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
-    }
-
-    private static function processarReprovacao(Ficha $ficha): void
-    {
-        optional(Pessoa::find($ficha->idt_pessoa))->delete();
-    }
-
-    public static function atualizarAprovacaoFicha($id): bool
-    {
+        // Carregamos a ficha com a relação de saúde
         $ficha = Ficha::with('fichaSaude')->findOrFail($id);
 
-        // Alterna o valor de aprovado
-        $ficha->ind_aprovado = ! $ficha->ind_aprovado;
-
         return DB::transaction(function () use ($ficha) {
+            // 1. Inverte o status
+            $ficha->ind_aprovado = ! $ficha->ind_aprovado;
+            $ficha->save();
+
             if ($ficha->ind_aprovado) {
-                self::processarAprovacao($ficha);
+                // 2. Se aprovou: Cria Pessoa -> Saúde -> Participante
+                $pessoa = self::criarOuAtualizarPessoaAPartirDaFicha($ficha);
+                
+                // Vincula a pessoa à ficha
+                $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
+
+                self::criarPessoaSaude(
+                    $pessoa->idt_pessoa, 
+                    $ficha->fichaSaude->toArray() 
+                );
+
+                self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
             } else {
-                self::processarReprovacao($ficha);
+                self::removerParticipante($ficha->idt_pessoa, $ficha->idt_evento);
             }
 
-            return true;
+            return $ficha;
         });
     }
 
@@ -84,7 +75,11 @@ class FichaService
         ];
 
         if ($ficha->eml_candidato) {
-            $dados['idt_usuario'] = UserService::getUsuarioByEmail($ficha->eml_candidato);
+            $usuario = UserService::getUsuarioByEmail($ficha->eml_candidato);
+            
+            if ($usuario) {
+                $dados['idt_usuario'] = $usuario->id; 
+            }
         }
 
         return Pessoa::updateOrCreate(
@@ -93,8 +88,11 @@ class FichaService
         );
     }
 
-    private static function criarPessoaSaude($idt_pessoa, array $restricoes): void
+    private static function criarPessoaSaude(int $idt_pessoa, array $restricoes): void
     {
+        // Limpa restrições antigas antes de inserir para evitar duplicidade em re-aprovações
+        PessoaSaude::where('idt_pessoa', $idt_pessoa)->delete();
+
         foreach ($restricoes as $restricao) {
             PessoaSaude::create([
                 'idt_pessoa' => $idt_pessoa,
@@ -104,11 +102,22 @@ class FichaService
         }
     }
 
-    private static function criarParticipante($idt_pessoa, $idt_evento): void
+    private static function criarParticipante(int $idt_pessoa, int $idt_evento): void
     {
-        Participante::create([
-            'idt_pessoa' => $idt_pessoa,
-            'idt_evento' => $idt_evento,
-        ]);
+        Participante::updateOrCreate(
+            [
+                'idt_pessoa' => $idt_pessoa, 
+                'idt_evento' => $idt_evento
+            ]
+        );
+    }
+
+    private static function removerParticipante(?int $idt_pessoa, int $idt_evento): void
+    {
+        if ($idt_pessoa) {
+            Participante::where('idt_pessoa', $idt_pessoa)
+                ->where('idt_evento', $idt_evento)
+                ->delete();
+        }
     }
 }

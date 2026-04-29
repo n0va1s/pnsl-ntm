@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\Evento;
+use App\Enums\TipoEvento;
 use Livewire\Volt\Component;
+use Livewire\Attributes\Computed;
 
 new class extends Component {
     public Evento $evento;
@@ -9,27 +11,87 @@ new class extends Component {
 
     public function mount(Evento $evento): void
     {
-        $this->evento = $evento->loadCount([
+        $this->evento = $evento->load(['movimento'])->loadCount([
             'fichas',
             'participantes',
             'trabalhadores',
-            // Conta pessoas DISTINTAS, não linhas — 1 pessoa em 3 equipes = 1 voluntário
             'voluntarios as voluntarios_count' => fn($q) => $q->whereNull('idt_trabalhador')->distinct('idt_pessoa'),
         ]);
     }
 
     public function setTab(string $tab): void
     {
-        $this->activeTab = $tab;
+        if (array_key_exists($tab, $this->tabs)) {
+            $this->activeTab = $tab;
+        }
+    }
+    
+    #[Computed]
+    public function tabs(): array
+    {
+        $isEncontro = $this->evento->tip_evento === TipoEvento::ENCONTRO;
+
+        $todasAbas = [
+            'resumo'       => ['icon' => 'chart-bar',      'label' => 'Resumo'],
+            'participantes'=> ['icon' => 'user-group',    'label' => 'Participantes'],
+            'fichas'       => ['icon' => 'document-text', 'label' => 'Fichas',        'encontro_only' => true],
+            'voluntarios'  => ['icon' => 'hand-raised',   'label' => 'Voluntários',   'encontro_only' => true],
+            'trabalhadores'=> ['icon' => 'briefcase',     'label' => 'Trabalhadores', 'encontro_only' => true],
+            'crachas'      => ['icon' => 'identification','label' => 'Crachás'],
+            'quadrante'    => ['icon' => 'table-cells',   'label' => 'Quadrante',     'encontro_only' => true],            
+            'presenca'     => ['icon' => 'finger-print',  'label' => 'Presença'],
+            'contas'       => ['icon' => 'banknotes',     'label' => 'Prestação de Contas'],
+        ];
+
+        return array_filter($todasAbas, function ($aba) use ($isEncontro) {
+            return !($aba['encontro_only'] ?? false) || $isEncontro;
+        });
     }
 }; ?>
 
 <section class="w-full">
     {{-- Cabeçalho do Evento --}}
-    <header class="mb-8">
-        <flux:heading size="xl">{{ $evento->des_evento }}</flux:heading>
-        <flux:heading size="lg">{{ $evento->movimento->des_sigla }}</flux:heading>
-        <flux:subheading>Painel de Controle</flux:subheading>
+    <header class="mb-8 space-y-2">
+        <div class="flex items-center gap-3">
+            <flux:heading size="xl">{{ $evento->des_evento }}</flux:heading>
+            
+            {{-- Badge de Movimento --}}
+            @php
+                $color = match(strtoupper($evento->movimento->des_sigla)) {
+                    'VEM'      => 'blue',
+                    'ECC'      => 'green',
+                    'SEGUE-ME' => 'orange',
+                    default    => 'zinc',
+                };
+            @endphp
+            <flux:badge :color="$color" inset="top bottom" size="sm" class="uppercase font-bold">
+                {{ $evento->movimento->des_sigla }}
+            </flux:badge>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-zinc-500 dark:text-zinc-400">
+            {{-- Tipo de Evento via Enum --}}
+            <div class="flex items-center gap-3">
+                <flux:icon.tag class="size-4" />
+                <span>{{ $evento->tip_evento?->label() ?? 'Evento' }}</span>
+            </div>
+
+            {{-- Datas do Evento --}}
+            <div class="flex items-center gap-3">
+                <flux:icon.calendar class="size-4" />
+                <span>
+                    @if($evento->dat_inicio->format('Y-m-d') === $evento->dat_termino->format('Y-m-d'))
+                        {{ $evento->dat_inicio->format('d/m/Y') }}
+                    @else
+                        {{ $evento->dat_inicio->format('d/m') }} a {{ $evento->dat_termino->format('d/m/Y') }}
+                    @endif
+                </span>
+            </div>
+        </div>
+
+        <flux:separator variant="subtle" />
+        
+        <flux:subheading class="mt-4">Painel de Controle</flux:subheading>
     </header>
 
     <div class="flex flex-col md:flex-row gap-8">
@@ -37,19 +99,10 @@ new class extends Component {
         <aside class="w-full md:w-64 space-y-1">
             <nav class="flex flex-col gap-1">
                 <flux:navlist>
-                    @foreach ([
-                        'resumo'       => ['icon' => 'chart-bar',    'label' => 'Resumo'],
-                        'fichas'       => ['icon' => 'document-text','label' => 'Fichas'],
-                        'participantes'=> ['icon' => 'user-group',   'label' => 'Participantes'],
-                        'voluntarios'  => ['icon' => 'hand-raised',  'label' => 'Voluntários'],
-                        'trabalhadores'=> ['icon' => 'briefcase',    'label' => 'Trabalhadores'],
-                        'presenca'     => ['icon' => 'finger-print', 'label' => 'Presença'],
-                        'quadrante'    => ['icon' => 'table-cells',  'label' => 'Quadrante'],
-                        'crachas'      => ['icon' => 'identification', 'label' => 'Crachás'],
-                        'contas'       => ['icon' => 'banknotes',    'label' => 'Prestação de Contas'],
-                    ] as $tab => $meta)
+                    @foreach ($this->tabs as $tab => $meta)
                         <flux:navlist.item
                             wire:click="setTab('{{ $tab }}')"
+                            wire:loading.attr="disabled"
                             :variant="$activeTab === '{{ $tab }}' ? 'bullet' : 'ghost'"
                             icon="{{ $meta['icon'] }}"
                             class="cursor-pointer"
@@ -61,60 +114,34 @@ new class extends Component {
             </nav>
         </aside>
 
-        {{-- Conteúdo Dinâmico --}}
         <main class="flex-1 bg-white dark:bg-zinc-800 p-6 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm relative">
-
-            {{-- Overlay "Processando..." exibido enquanto o Livewire carrega a aba --}}
-            <div
-                wire:loading
-                wire:target="setTab"
-                class="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm"
-            >
-                <div class="flex items-center gap-3 text-zinc-500 dark:text-zinc-400">
-                    <svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                    </svg>
-                    <span class="text-sm font-medium">Processando...</span>
-                </div>
+    
+        {{-- Loading Overlay --}}
+        <div wire:loading wire:target="setTab" class="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm">
+            <div class="flex items-center gap-3 text-zinc-500 dark:text-zinc-400">
+                <flux:icon.arrow-path class="h-5 w-5 animate-spin" />
+                <span class="text-sm font-medium">Processando...</span>
             </div>
+        </div>
 
-            @if($activeTab === 'resumo')
-                <livewire:evento.partials.resumo :evento="$evento" />
-            @endif
-
-            @if($activeTab === 'fichas')
-                <livewire:evento.partials.fichas :evento="$evento" />
-            @endif
-
-            @if($activeTab === 'participantes')
-                <livewire:evento.partials.participantes :evento="$evento" />
-            @endif
-
-            @if($activeTab === 'voluntarios')
-                <livewire:evento.partials.voluntarios :evento="$evento" />
-            @endif
-
-            @if($activeTab === 'trabalhadores')
-                <livewire:evento.partials.trabalhadores :evento="$evento" />
-            @endif
-
-            @if($activeTab === 'presenca')
-                <livewire:evento.partials.presenca :evento="$evento" />
-            @endif
-
-            @if($activeTab === 'quadrante')
-                <livewire:evento.partials.quadrante :evento="$evento" />
-            @endif
-
-            @if($activeTab === 'crachas')
-                <livewire:evento.partials.crachas :evento="$evento" />
-            @endif
-
-            @if($activeTab === 'contas')
-                <livewire:evento.partials.contas :evento="$evento" />
-            @endif
-
-        </main>
+        {{-- Renderização Dinâmica Segura --}}
+        @if(array_key_exists($activeTab, $this->tabs))
+            @switch($activeTab)
+                @case('resumo') <livewire:evento.partials.resumo :evento="$evento" /> @break
+                @case('fichas') <livewire:evento.partials.fichas :evento="$evento" /> @break
+                @case('participantes') <livewire:evento.partials.participantes :evento="$evento" /> @break
+                @case('voluntarios') <livewire:evento.partials.voluntarios :evento="$evento" /> @break
+                @case('trabalhadores') <livewire:evento.partials.trabalhadores :evento="$evento" /> @break
+                @case('presenca') <livewire:evento.partials.presenca :evento="$evento" /> @break
+                @case('quadrante') <livewire:evento.partials.quadrante :evento="$evento" /> @break
+                @case('crachas') <livewire:evento.partials.crachas :evento="$evento" /> @break
+                @case('contas') <livewire:evento.partials.contas :evento="$evento" /> @break
+            @endswitch
+        @else
+            <div class="p-4 text-zinc-500 italic">
+                Esta funcionalidade não está disponível para este tipo de evento.
+            </div>
+        @endif
+    </main>
     </div>
 </section>

@@ -14,11 +14,9 @@ new class extends Component {
 
     public function atualizarTroca(int $participanteId, string $novaCor): void
     {
-        $participante = \App\Models\Participante::find($participanteId);
-        if ($participante) {
-            $participante->update(['tip_cor_troca' => $novaCor]);
-            $this->dispatch('notify', message: "Troca de {$participante->pessoa->nom_apelido} atualizada!");
-        }
+        $participante = \App\Models\Participante::with('pessoa')->findOrFail($participanteId);
+        $participante->update(['tip_cor_troca' => $novaCor]);
+        $this->dispatch('notify', message: "A cor da troca de {$participante->pessoa->nom_apelido} agora é " . ucfirst($novaCor) . "!");
     }
 
     public function with(): array
@@ -82,10 +80,8 @@ new class extends Component {
                     <flux:table.cell>
                         <flux:select
                             wire:change="atualizarTroca({{ $p->idt_participante }}, $event.target.value)"
-                            variant="listbox"
                             size="sm"
-                            class="w-32"
-                        >
+                            class="w-32">
                             @foreach (['azul', 'amarela', 'verde', 'vermelha', 'laranja'] as $cor)
                                 <option value="{{ $cor }}" @selected(strtolower($p->tip_cor_troca) === $cor)>
                                     {{ ucfirst($cor) }}
