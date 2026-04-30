@@ -47,7 +47,7 @@ class TipoMovimentoController extends Controller
     {
         $tipo = TipoMovimento::findOrFail($id);
 
-        return view('configuracoes.TipoMovimentoShow', compact('tipo'));
+        return view('configuracoes.TipoMovimentoForm', compact('tipo'));
     }
 
     public function update(Request $request, $id)

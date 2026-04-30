@@ -84,7 +84,7 @@ class TrabalhadorController extends Controller
             'trabalhadores',
             'search',
             'evento',
-            'equipes', // Variável agora garantida
+            'equipes',
             'idt_equipe'
         ));
     }
@@ -96,13 +96,18 @@ class TrabalhadorController extends Controller
         $eventoId = $request->get('evento');
         Log::info('Acesso ao formulário de candidatura de trabalhador', array_merge($context, ['evento_id' => $eventoId]));
 
-        $evento = null;
-        if ($eventoId) {
-            $evento = Evento::find($eventoId);
+        if($eventoId){
+            $evento = Evento::findOrFail($eventoId);
+        } else {
+            $evento = new Evento();
         }
 
-        $equipes = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
+        if ($evento) {
+            $equipes = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
             ->select('idt_equipe', 'des_grupo')->get();
+        } else {
+            $equipes = TipoEquipe::all();
+        }
 
         $duration = round((microtime(true) - $start) * 1000, 2);
 
