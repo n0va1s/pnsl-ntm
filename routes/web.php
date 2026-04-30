@@ -36,6 +36,11 @@ Route::get('/otimizar-tudo', function () {
     return 'Optimize realizado! Tente acessar a home agora.';
 });
 
+Route::get('/storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Link simbólico criado com sucesso!';
+});
+
 Route::get(
     '/',
     [HomeController::class, 'index']

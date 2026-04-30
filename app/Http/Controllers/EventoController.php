@@ -7,8 +7,8 @@ use App\Models\Evento;
 use App\Models\Pessoa;
 use App\Models\TipoMovimento;
 use App\Services\EventoService;
+use App\Services\ArquivoService;
 use App\Traits\LogContext;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +22,8 @@ class EventoController extends Controller
     use LogContext;
 
     public function __construct(
-        protected EventoService $eventoService
+        protected EventoService $eventoService,
+        protected ArquivoService $arquivoService
     ) {}
 
     public function index(Request $request): View
@@ -76,6 +77,8 @@ class EventoController extends Controller
     public function store(EventoRequest $request): RedirectResponse
     {
         try {
+            DB::beginTransaction();
+
             $dados = $request->validated();
             $evento = Evento::create($dados);
 
@@ -86,7 +89,7 @@ class EventoController extends Controller
 
             // Upload da Foto Oficial
             if ($request->hasFile('med_foto')) {
-                $fileService->upload(
+                $this->arquivoService->upload(
                     model: $evento,
                     file: $request->file('med_foto'),
                     relationName: 'foto',
@@ -96,25 +99,37 @@ class EventoController extends Controller
                 );
             }
 
-        // Upload da Logo/Padroeira
+            // Upload da Logo/Padroeira
             if ($request->hasFile('med_logo')) {
-                $fileService->upload(
+                $this->arquivoService->upload(
                     model: $evento,
                     file: $request->file('med_logo'),
-                    relationName: 'foto',
+                    relationName: 'logo',
                     column: 'med_logo',
                     path: 'eventos/logos',
                     customName: $nomeArquivoBase . '-logo'
                 );
             }
 
-            Log::notice('Evento criado', ['evento_id' => $evento->id]);
+            DB::commit();
 
-            return redirect()->route('eventos.index')->with('success', 'Evento criado com sucesso!');
-        } catch (\Exception $e) {
-            Log::error('Falha ao criar evento', ['error' => $e->getMessage()]);
+            Log::notice('Evento criado', ['evento_id' => $evento->idt_evento]);
 
-            return back()->with('error', 'Erro ao processar cadastro.')->withInput();
+            return redirect()
+                ->route('eventos.index')
+                ->with('success', 'Evento criado com sucesso!');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            
+            Log::error('Falha ao criar evento', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return back()
+                ->with('error', 'Erro ao processar cadastro.')
+                ->withInput();
         }
     }
 
@@ -137,7 +152,7 @@ class EventoController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de edição de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
         
-        $evento->load('foto');
+        $evento->load('foto', 'logo');
         $movimentos = TipoMovimento::all();
 
         return view('evento.form', compact('movimentos', 'evento'));
@@ -158,32 +173,42 @@ class EventoController extends Controller
 
         try {
             DB::beginTransaction();
+            
+            // Valida e obtém os dados
             $dados = $request->validated();
+
+            // Remove os campos para não tentar atualiza med_foto na tabela evento
+            unset($dados['med_foto']);
+            unset($dados['med_logo']);
+
             $evento->update($dados);
 
             // Prepara o nome customizado: "2026-04-11-nome-do-evento"
-            $dataInicio = $evento->dat_inicio->format('Y-m-d');
-            $tituloSlug = Str::slug($evento->des_evento); // trim, lowercase e hífens automáticos
+            $dataInicio = $evento->dat_inicio instanceof \Carbon\Carbon || method_exists($evento->dat_inicio, 'format')
+                ? $evento->dat_inicio->format('Y-m-d')
+                : now()->format('Y-m-d');
+
+            $tituloSlug = Str::slug($evento->des_evento); 
             $nomeArquivoBase = "{$dataInicio}-{$tituloSlug}";
 
             // Upload da Foto Oficial (se enviada)
             if ($request->hasFile('med_foto')) {
-                $fileService->upload(
+                $this->arquivoService->upload(
                     model: $evento,
                     file: $request->file('med_foto'),
                     relationName: 'foto',
                     column: 'med_foto',
                     path: 'eventos/fotos',
-                    customName: $nomeArquivoBase . '-oficial' // Sufixo para diferenciar se necessário
+                    customName: $nomeArquivoBase . '-oficial'
                 );
             }
 
             // Upload da Logo/Padroeira (se enviada)
             if ($request->hasFile('med_logo')) {
-                $fileService->upload(
+                $this->arquivoService->upload(
                     model: $evento,
                     file: $request->file('med_logo'),
-                    relationName: 'foto',
+                    relationName: 'logo',
                     column: 'med_logo',
                     path: 'eventos/logos',
                     customName: $nomeArquivoBase . '-logo'
@@ -202,7 +227,8 @@ class EventoController extends Controller
             return redirect()
                 ->route('eventos.index')
                 ->with('success', 'Evento atualizado com sucesso!');
-        } catch (\Exception $e) {
+            
+        } catch (\Throwable $e) {
             DB::rollBack();
 
             $duration = round((microtime(true) - $start) * 1000, 2);
@@ -210,8 +236,9 @@ class EventoController extends Controller
                 'evento_id' => $evento->idt_evento,
                 'exception' => get_class($e),
                 'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'duration_ms' => $duration,
-                'input_data' => $request->validated(),
             ]));
 
             return redirect()

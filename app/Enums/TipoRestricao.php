@@ -16,12 +16,25 @@ enum TipoRestricao: string
     {
         return match ($this) {
             self::INT => 'Intolerância',
-            self::ALE => 'Alimentar',
+            self::ALE => 'Alergia',
             self::CUT => 'Cutânea',
             self::RES => 'Respiratória',
-            self::PNE => 'Portador de Necessidades Especiais',
-            self::VEG => 'Vegetarianismo',
+            self::PNE => 'PNE',
+            self::VEG => 'Vegetariano',
             self::MED => 'Medicação',
+        };
+    }
+
+    public function icon(): string
+    {
+        return match ($this) {
+            self::INT => '🥛',
+            self::ALE => '🌿',
+            self::CUT => '🩹',
+            self::RES => '💨',
+            self::PNE => '♿',
+            self::VEG => '🥗',
+            self::MED => '💊',
         };
     }
 

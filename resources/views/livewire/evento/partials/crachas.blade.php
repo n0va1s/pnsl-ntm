@@ -82,8 +82,8 @@ new class extends Component {
             style="border-color: {{ $pessoa['grupo_cor'] }}; width: 8.6cm; height: 5.4cm; page-break-inside: avoid;">
 
             {{-- Lateral: Imagem --}}
-            <div class="shrink-0 bg-zinc-50 border-r" style="width: 2.2cm; border-color: {{ $pessoa['grupo_cor'] }}44;">
-                <img src="{{ asset('img/santateresinha.png') }}"
+           <div class="shrink-0 bg-zinc-50 border-r" style="width: 2.2cm; border-color: {{ $pessoa['grupo_cor'] }}44;">
+                <img src="{{ asset($evento->foto->med_logo) }}"
                     class="w-full h-full object-cover object-top grayscale opacity-80" />
             </div>
 
@@ -111,17 +111,23 @@ new class extends Component {
 
                 {{-- Rodapé: Restrições --}}
                 <div class="flex flex-wrap gap-1 mt-auto pt-2 border-t border-zinc-100">
-                    @foreach($pessoa['restricoes'] as $r)
+                @foreach($pessoa['restricoes'] as $r)
                     @php
-                    $icon = match($r->tip_restricao) {
-                    'ALE' => '🌿', 'INT' => '🥛', 'MED' => '💊', 'VEG' => '🥗', default => '⚠️'
-                    };
+                        $tipoRestricao = $r->tip_restricao instanceof \App\Enums\TipoRestricao
+                            ? $r->tip_restricao
+                            : \App\Enums\TipoRestricao::tryFrom($r->tip_restricao);
                     @endphp
-                    <span
-                        class="bg-red-50 text-red-700 text-[8px] font-bold px-1.5 py-0.5 rounded border border-red-100">
-                        {{ $icon }} {{ $r->tip_restricao }}
+
+                    <span class="bg-red-50 text-red-700 text-[8px] font-bold px-1.5 py-0.5 rounded border border-red-100 flex items-center gap-1">
+                        @if($tipoRestricao)
+                            <span>{{ $tipoRestricao->icon() }}</span>
+                            <span>{{ $tipoRestricao->label() }}</span>
+                        @else
+                            <span>⚠️</span>
+                            <span>{{ $r->tip_restricao }}</span>
+                        @endif
                     </span>
-                    @endforeach
+                @endforeach
                 </div>
             </div>
         </div>

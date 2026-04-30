@@ -91,7 +91,7 @@ class Pessoa extends Model
     public function restricoes()
     {
         return $this->belongsToMany(TipoRestricao::class, 'pessoa_saude', 'idt_pessoa', 'idt_restricao')
-            ->withPivot('txt_complemento') // IMPORTANTE para o sync gravar o texto
+            ->withPivot('txt_complemento')
             ->withTimestamps();
     }
 

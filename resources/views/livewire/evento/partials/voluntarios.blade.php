@@ -1,28 +1,55 @@
 <?php
 
 use App\Models\Evento;
+use App\Models\Voluntario;
+use App\Models\TipoEquipe;
+use App\Models\Trabalhador;
+use App\Models\Pessoa;
+use Illuminate\Support\Facades\DB;
 use Livewire\Volt\Component;
 
 new class extends Component {
     public Evento $evento;
     public string $search = '';
+    public array $selectedEquipes = [];
 
     public function mount(Evento $evento): void
     {
         $this->evento = $evento;
     }
 
-    public function confirmarTrabalhador(int $idtPessoa, int $idtEquipe, int $idtVoluntario): void
+    public function confirmarTrabalhador(int $idtPessoa): void
     {
-        \Illuminate\Support\Facades\DB::transaction(function () use ($idtPessoa, $idtEquipe, $idtVoluntario) {
-            $trabalhador = \App\Models\Trabalhador::create([
+        $idtEquipe = $this->selectedEquipes[$idtPessoa] ?? null;
+
+        if (!$idtEquipe) {
+            $this->dispatch('notify', message: 'Selecione uma equipe antes de aprovar.');
+            return;
+        }
+
+        DB::transaction(function () use ($idtPessoa, $idtEquipe) {
+            $trabalhador = Trabalhador::create([
                 'idt_evento'  => $this->evento->idt_evento,
                 'idt_pessoa'  => $idtPessoa,
                 'idt_equipe'  => $idtEquipe,
             ]);
 
-            \App\Models\Voluntario::where('idt_voluntario', $idtVoluntario)
-                ->update(['idt_trabalhador' => $trabalhador->idt_trabalhador]);
+            $voluntarioExistente = Voluntario::where('idt_evento', $this->evento->idt_evento)
+                ->where('idt_pessoa', $idtPessoa)
+                ->where('idt_equipe', $idtEquipe)
+                ->whereNull('idt_trabalhador')
+                ->first();
+
+            if ($voluntarioExistente) {
+                $voluntarioExistente->update(['idt_trabalhador' => $trabalhador->idt_trabalhador]);
+            } else {
+                Voluntario::create([
+                    'idt_evento'      => $this->evento->idt_evento,
+                    'idt_pessoa'      => $idtPessoa,
+                    'idt_equipe'      => $idtEquipe,
+                    'idt_trabalhador' => $trabalhador->idt_trabalhador,
+                ]);
+            }
         });
 
         $this->dispatch('notify', message: 'Voluntário confirmado como trabalhador!');
@@ -35,6 +62,10 @@ new class extends Component {
                 ->whereHas('voluntarios', function ($query) {
                     $query->where('idt_evento', $this->evento->idt_evento)
                         ->whereNull('idt_trabalhador');
+                })
+                ->whereDoesntHave('voluntarios', function ($query) {
+                    $query->where('idt_evento', $this->evento->idt_evento)
+                        ->whereNotNull('idt_trabalhador');
                 })
                 ->with(['voluntarios' => function ($query) {
                     $query->where('idt_evento', $this->evento->idt_evento)
@@ -49,6 +80,7 @@ new class extends Component {
                 })
                 ->orderBy('nom_pessoa')
                 ->paginate(12),
+            'equipes' => TipoEquipe::where('idt_movimento', $this->evento->movimento->idt_movimento)->get(),
         ];
     }
 }; ?>
@@ -78,7 +110,7 @@ new class extends Component {
                         :initials="substr($pessoa->nom_pessoa, 0, 2)"
                         size="sm"
                     />
-                    <h3 class="font-bold text-zinc-900 dark:text-white leading-tight">{{ $pessoa->nom_pessoa }}</h3>
+                    <h3 class="font-bold text-zinc-900 dark:text-white leading-tight mt-2">{{ $pessoa->nom_pessoa }}</h3>
                     @if($pessoa->nom_apelido)
                         <p class="text-sm text-zinc-500 italic">"{{ $pessoa->nom_apelido }}"</p>
                     @endif
@@ -96,34 +128,46 @@ new class extends Component {
                 </div>
 
                 <div class="p-4 border-t border-zinc-100 dark:border-zinc-700">
-                    <p class="text-[10px] font-bold uppercase text-zinc-400 mb-2 tracking-wider">Interesses e Habilidades:</p>
+                    <p class="text-[10px] font-bold uppercase text-zinc-400 mb-2 tracking-wider">Equipes que se candidatou:</p>
                     <div class="space-y-3">
-                        @foreach ($pessoa->voluntarios as $inscricao)
+                        @forelse ($pessoa->voluntarios as $inscricao)
                             <div class="bg-white dark:bg-zinc-800 p-2 rounded border border-zinc-200 dark:border-zinc-700 shadow-sm">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">
-                                        {{ $inscricao->equipe->des_grupo }}
-                                    </span>
-                                    <flux:button
-                                        size="xs"
-                                        variant="ghost"
-                                        icon="check"
-                                        wire:click="confirmarTrabalhador({{ $pessoa->idt_pessoa }}, {{ $inscricao->idt_equipe }}, {{ $inscricao->idt_voluntario }})"
-                                        tooltip="Confirmar nesta equipe"
-                                    />
-                                </div>
+                                <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase block mb-1">
+                                    {{ $inscricao->equipe->des_grupo }}
+                                </span>
                                 @if($inscricao->txt_habilidade)
                                     <p class="text-xs text-zinc-500 leading-relaxed italic border-t border-zinc-100 dark:border-zinc-700 mt-1 pt-1">
                                         "{{ $inscricao->txt_habilidade }}"
                                     </p>
                                 @endif
                             </div>
-                        @endforeach
+                        @empty
+                            <p class="text-xs text-zinc-400">Nenhuma inscrição registrada para este evento.</p>
+                        @endforelse
                     </div>
                 </div>
 
+                <div class="p-4 border-t border-zinc-100 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50 flex flex-col gap-2">
+                    <p class="text-[10px] font-bold uppercase text-zinc-400 mb-0.5 tracking-wider">Aprovar candidato:</p>
+                    <select wire:model="selectedEquipes.{{ $pessoa->idt_pessoa }}" class="w-full p-2 text-xs border border-zinc-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Selecione a equipe...</option>
+                        @foreach ($equipes as $equipe)
+                            <option value="{{ $equipe->idt_equipe }}">{{ $equipe->des_grupo }}</option>
+                        @endforeach
+                    </select>
+                    
+                    <flux:button 
+                        size="sm" 
+                        variant="primary" 
+                        class="w-full text-xs justify-center" 
+                        icon="check"
+                        wire:click="confirmarTrabalhador({{ $pessoa->idt_pessoa }})"
+                    >
+                        Aprovar
+                    </flux:button>
+                </div>
+
                 <div class="p-3 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-700 flex justify-between gap-2">
-                    <flux:button size="sm" variant="ghost" class="w-full text-xs" icon="user">Ver Perfil</flux:button>
                     <flux:button size="sm" variant="ghost" color="red" class="w-full text-xs" icon="trash">Recusar</flux:button>
                 </div>
             </div>

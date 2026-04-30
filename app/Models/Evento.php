@@ -100,6 +100,14 @@ class Evento extends Model
     }
 
     /**
+     * Define o relacionamento de um evento com a sua logo.
+     */
+    public function logo()
+    {
+        return $this->hasOne(EventoFoto::class, 'idt_evento');
+    }
+
+    /**
      * Scope para busca insensível a maiúsculas e minúsculas nos campos des_evento e num_evento.
      *
      * @return Builder

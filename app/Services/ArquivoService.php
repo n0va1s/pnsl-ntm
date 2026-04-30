@@ -6,7 +6,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Model;
 
-class AquivoService
+class ArquivoService
 {
     /**
      * Upload genérico de arquivos.

@@ -70,73 +70,88 @@
                         </p>
                     </div>
 
-                    <!-- Foto Oficial -->
                     <div>
-                        <label for="med_foto" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Foto Oficial
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Foto Oficial</label>
+                        
+                        <div class="flex flex-col items-center justify-center mb-6">
+                            <label for="med_foto" class="cursor-pointer group">
+                                <div class="w-48 h-32 rounded border-2 border-dashed 
+                                    @error('med_foto') border-red-500 bg-red-50/10 @else border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50 @enderror
+                                    flex flex-col items-center justify-center overflow-hidden shadow-sm transition hover:shadow hover:border-gray-400 dark:hover:border-zinc-500 p-1">
+                                    
+                                    @if (isset($evento) && $evento->foto && $evento->foto->med_foto)
+                                        <img src="{{ asset('storage/' . $evento->foto->med_foto) }}" alt="Foto do evento"
+                                            class="w-full h-full object-cover rounded shadow border border-gray-300 dark:border-zinc-600">
+                                    @else
+                                        <div class="flex flex-col items-center justify-center p-4 text-center">
+                                            <x-heroicon-o-photo class="w-8 h-8 text-gray-400 dark:text-zinc-500" />
+                                            <span class="mt-2 text-xs font-medium text-gray-500 dark:text-zinc-400">
+                                                Clique para selecionar
+                                            </span>
+                                        </div>
+                                    @endif
 
-                        {{-- Exibe a foto existente se houver e estiver no modo de edição --}}
-                        @if (isset($evento) && $evento->foto)
-                            <div class="mb-4 flex flex-col items-center justify-center w-48 h-32 rounded border-2 border-dashed border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50">
-                                <img src="{{ asset('storage/' . $evento->foto->med_foto) }}" alt="Foto do evento"
-                                    class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600">
-                            </div>
-                        @else
-                            <div class="mb-4 flex flex-col items-center justify-center w-48 h-32 rounded border-2 border-dashed border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50">
-                                <x-heroicon-o-photo class="w-8 h-8 text-gray-400 dark:text-zinc-500" />
-                                <span class="mt-2 text-xs font-medium text-gray-500 dark:text-zinc-400">
-                                    Nenhuma imagem ainda
-                                </span>
-                            </div>
-                        @endif
+                                    <input type="file" id="med_foto" name="med_foto" accept="image/*" class="sr-only"
+                                        onchange="document.getElementById('nome-arquivo-foto').textContent = this.files[0] ? this.files[0].name : 'Nenhum arquivo escolhido'">
+                                </div>
+                            </label>
 
-                        <input type="file" id="med_foto" name="med_foto" maxlength="255"
-                            aria-describedby="med_foto_help med_foto_error"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-        @error('med_foto') border-red-500 @enderror" />
+                            <span id="nome-arquivo-foto" class="mt-2 text-xs text-gray-500 dark:text-zinc-400 text-center truncate max-w-[192px]">
+                                @if (isset($evento) && $evento->foto && $evento->foto->med_foto)
+                                    Imagem atual
+                                @else
+                                    Nenhum arquivo escolhido
+                                @endif
+                            </span>
+                        </div>
 
                         @error('med_foto')
-                            <p id="med_foto_error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            <div class="flex justify-center -mt-4 mb-6">
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            </div>
                         @enderror
-
-                        <p id="med_foto_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            Tamanho máximo: 2 Mb. Formatos aceitos: JPG, PNG.
-                        </p>
                     </div>
 
-                    <!-- Logo/Padroeiro -->
                     <div>
-                        <label for="med_logo" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Logo/Padroeiro(a)
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Logo</label>
+                        
+                        <div class="flex flex-col items-center justify-center mb-6">
+                            <label for="med_logo" class="cursor-pointer group">
+                                <div class="w-48 h-32 rounded border-2 border-dashed 
+                                    @error('med_logo') border-red-500 bg-red-50/10 @else border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50 @enderror
+                                    flex flex-col items-center justify-center overflow-hidden shadow-sm transition hover:shadow hover:border-gray-400 dark:hover:border-zinc-500 p-1">
+                                    
+                                    @if (isset($evento) && $evento->logo && $evento->logo->med_logo)
+                                        <img src="{{ asset('storage/' . $evento->logo->med_logo) }}" alt="Logo do evento"
+                                            class="w-full h-full object-contain rounded shadow border border-gray-300 dark:border-zinc-600">
+                                    @else
+                                        <div class="flex flex-col items-center justify-center p-4 text-center">
+                                            <x-heroicon-o-photo class="w-8 h-8 text-gray-400 dark:text-zinc-500" />
+                                            <span class="mt-2 text-xs font-medium text-gray-500 dark:text-zinc-400">
+                                                Clique para selecionar
+                                            </span>
+                                        </div>
+                                    @endif
 
-                       @if (isset($evento) && $evento->logo)
-                            <div class="mb-4 flex flex-col items-center justify-center w-48 h-32 rounded border-2 border-dashed border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50">
-                                <img src="{{ asset('storage/' . $evento->foto->med_logo) }}" alt="Logo ou Padroeiro do evento"
-                                    class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600">
-                            </div>
-                        @else
-                            <div class="mb-4 flex flex-col items-center justify-center w-48 h-32 rounded border-2 border-dashed border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50">
-                                <x-heroicon-o-photo class="w-8 h-8 text-gray-400 dark:text-zinc-500" />
-                                <span class="mt-2 text-xs font-medium text-gray-500 dark:text-zinc-400">
-                                    Nenhuma imagem ainda
-                                </span>
-                            </div>
-                        @endif
+                                    <input type="file" id="med_logo" name="med_logo" accept="image/*" class="sr-only"
+                                        onchange="document.getElementById('nome-arquivo-logo').textContent = this.files[0] ? this.files[0].name : 'Nenhum arquivo escolhido'">
+                                </div>
+                            </label>
 
-                        <input type="file" id="med_logo" name="med_logo" maxlength="255"
-                            aria-describedby="med_logo_help med_logo_error"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-        @error('med_logo') border-red-500 @enderror" />
+                            <span id="nome-arquivo-logo" class="mt-2 text-xs text-gray-500 dark:text-zinc-400 text-center truncate max-w-[192px]">
+                                @if (isset($evento) && $evento->logo && $evento->logo->med_logo)
+                                    Logo atual
+                                @else
+                                    Nenhum arquivo escolhido
+                                @endif
+                            </span>
+                        </div>
 
                         @error('med_logo')
-                            <p id="med_logo_error" class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            <div class="flex justify-center -mt-4 mb-6">
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            </div>
                         @enderror
-
-                        <p id="med_logo_help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            Tamanho máximo: 2 Mb. Formatos aceitos: JPG, PNG.
-                        </p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -167,11 +182,11 @@
                                 id="tip_faixa_etaria" 
                                 required 
                                 x-bind:disabled="bloqueado"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_evento') border-red-500 @enderror">
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_faixa_etaria') border-red-500 @enderror">
                             <option value="">Selecione a faixa etária</option>
                             @foreach(\App\Enums\FaixaEtaria::cases() as $faixa)
-                                <option value="{{ $faixa->value }}"
-                                    {{ old('tip_faixa_etaria', $evento->tip_faixa_etaria->value) == $faixa->value ? 'selected' : '' }}>
+                                <option value="{{ $faixa->value }}" 
+                                    @selected(old('tip_faixa_etaria', $evento->tip_faixa_etaria instanceof \BackedEnum ? $evento->tip_faixa_etaria->value : $evento->tip_faixa_etaria) == $faixa->value)>
                                     {{ $faixa->label() }}
                                 </option>
                             @endforeach

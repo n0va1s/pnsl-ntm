@@ -19,6 +19,52 @@
         @endif
 
         <div class="mb-6 bg-white dark:bg-zinc-800 rounded-md shadow p-6">
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Foto para o Carômetro
+                </label>
+
+                <div class="flex flex-col items-center justify-center mb-6">
+                    <label for="med_foto" class="cursor-pointer group relative flex flex-col items-center">
+                        <div class="w-32 h-32 rounded-full border-2 border-dashed 
+                            @error('med_foto') border-red-500 bg-red-50/10 @else border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50 @enderror
+                            flex flex-col items-center justify-center overflow-hidden shadow transition hover:shadow-md hover:border-gray-400 dark:hover:border-zinc-500">
+                            
+                            @if ($pessoa->exists && $pessoa->foto && $pessoa->foto->med_foto)
+                                <img src="{{ asset('storage/' . $pessoa->foto->med_foto) }}"
+                                    alt="Foto de {{ $pessoa->nom_pessoa }}"
+                                    class="w-full h-full object-cover">
+                            @else
+                                <div class="flex flex-col items-center justify-center p-4 text-center">
+                                    <x-heroicon-o-photo class="w-8 h-8 text-gray-400 dark:text-zinc-500" />
+                                    <span class="mt-1 text-[10px] font-medium text-gray-500 dark:text-zinc-400 leading-tight">
+                                        Clique para selecionar
+                                    </span>
+                                </div>
+                            @endif
+
+                            <input type="file" id="med_foto" name="med_foto" accept="image/*" class="sr-only"
+                                onchange="document.getElementById('nome-arquivo').textContent = this.files[0] ? this.files[0].name : 'Nenhum arquivo escolhido'">
+                        </div>
+                    </label>
+
+                    <span id="nome-arquivo" class="mt-2 text-xs text-gray-500 dark:text-zinc-400 text-center truncate max-w-[128px]">
+                        @if ($pessoa->exists && $pessoa->foto && $pessoa->foto->med_foto)
+                            Imagem atual
+                        @else
+                            Nenhum arquivo escolhido
+                        @endif
+                    </span>
+                </div>
+
+                @error('med_foto')
+                    <div class="flex justify-center -mt-4 mb-6">
+                        <p class="text-sm text-red-600">{{ $message }}</p>
+                    </div>
+                @enderror
+            </div>
+
             <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100">
                 <x-heroicon-o-user-plus class="text-blue-600 w-6 h-6" /> Dados da Pessoa
             </h2>
@@ -60,7 +106,7 @@
                     <div>
                         <label for="tel_pessoa" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Telefone</label>
                         <input type="tel" id="tel_pessoa" name="tel_pessoa" value="{{ old('tel_pessoa', $pessoa->tel_pessoa) }}" placeholder="(99) 99999-9999"
-                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('tel_pessoa') border-red-500 @enderror" />
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('tel_pessoa') border-red-500 @enderror" />
                         @error('tel_pessoa')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -69,7 +115,7 @@
                     <div>
                         <label for="dat_nascimento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Data de Nascimento <span class="text-red-600">*</span></label>
                         <input type="date" id="dat_nascimento" name="dat_nascimento" value="{{ old('dat_nascimento', $pessoa->getDataNascimentoFormatada()) }}"
-                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('dat_nascimento') border-red-500 @enderror" />
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('dat_nascimento') border-red-500 @enderror" />
                         @error('dat_nascimento')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -78,7 +124,7 @@
                     <div>
                         <label for="eml_pessoa" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Email <span class="text-red-600">*</span></label>
                         <input type="email" id="eml_pessoa" name="eml_pessoa" value="{{ old('eml_pessoa', $pessoa->eml_pessoa) }}"
-                           class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('eml_pessoa') border-red-500 @enderror" />
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('eml_pessoa') border-red-500 @enderror" />
                         @error('eml_pessoa')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -158,35 +204,15 @@
                         </div>
                     </div>
 
+                    {{-- Foto e Habilidade --}}
                     <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
-                        <div class="flex items-center gap-4">
-                            <div class="flex-1">
-                                <label for="med_foto" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Foto para o Carômetro</label>
-                                <input type="file" id="med_foto" name="med_foto" accept="image/*"
-                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300 @error('med_foto') border-red-500 @enderror" />
-                                @error('med_foto')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            @if ($pessoa->exists && $pessoa->foto)
-                                <div class="mb-4">
-                                    <img src="{{ asset('storage/' . $pessoa->foto->med_foto) }}"
-                                        alt="Foto de {{ $pessoa->nom_pessoa }}"
-                                        class="w-48 h-auto rounded shadow border border-gray-300 dark:border-zinc-600 @error('med_foto') border-red-500 @enderror">
-                                    @error('med_foto')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            @endif
-                        </div>
-
                         <div>
                             <label for="tip_habilidade" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Habilidade Principal</label>
                             <select id="tip_habilidade" name="tip_habilidade" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 @error('tip_habilidade') border-red-500 @enderror">
                                 <option value="">Selecione uma habilidade</option>
                                 @foreach(\App\Enums\HabilidadePrincipal::cases() as $habilidade)
                                     <option value="{{ $habilidade->value }}"
-                                        {{ old('tip_habilidade', $pessoa->tip_habilidade) == $habilidade->value ? 'selected' : '' }}>
+                                        {{ old('tip_habilidade', $pessoa->tip_habilidade instanceof \BackedEnum ? $pessoa->tip_habilidade->value : $pessoa->tip_habilidade) == $habilidade->value ? 'selected' : '' }}>
                                         {{ $habilidade->label() }}
                                     </option>
                                 @endforeach
@@ -198,9 +224,9 @@
                                 São habilidades que precisamos no momento
                             </p>
                         </div>
-
                     </div>
                 </div>
+
                 <div x-data="{ mostrarRestricoes: {{ old('ind_restricao', $pessoa->ind_restricao ?? false) ? 'true' : 'false' }} }">
                     <label
                         class="flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors
@@ -236,9 +262,7 @@
                         <div class="space-y-4">
                             @php
                                 $relacaoSaude = $pessoa->restricoes ?? collect();
-                                
                                 $restricoesSelecionadas = $relacaoSaude->pluck('idt_restricao')->toArray();
-                                
                                 $complementos = $relacaoSaude->mapWithKeys(function ($item) {
                                     return [$item->idt_restricao => $item->pivot->txt_complemento ?? ''];
                                 })->toArray();
