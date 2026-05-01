@@ -46,24 +46,25 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('phone');
-        });
-
         Schema::table('ficha_sgm', function (Blueprint $table) {
             $table->dropColumn([
                 'nom_responsavel',
                 'tel_responsavel',
                 'eml_responsavel',
-                'ind_batizado',
-                'ind_primeira_comunhao',
-                'ind_crismado',
+                'ind_batismo',
+                'ind_eucaristia',
+                'ind_crisma',
                 'nom_paroquia',
+                'religiao',
                 'naturalidade',
                 'escolaridade',
                 'curso',
                 'situacao',
                 'instituicao',
+                'part_movimento',
+                'nom_convidou',
+                'tel_convidou',
+                'end_convidou',
             ]);
         });
     }

@@ -232,8 +232,8 @@
                                 <option class="dark:bg-zinc-700" value="">Selecione o sexo</option>
                                 @foreach (\App\Enums\Genero::cases() as $genero)
                                     <option class="dark:bg-zinc-700" value="{{ $genero->value }}"
-                                        {{ old('tip_genero', $ficha->tip_genero) == $genero->value ? 'selected' : '' }}>
-                                        {{ $genero->name }}
+                                        {{ old('tip_genero', $ficha->tip_genero?->value ?? $ficha->tip_genero) == $genero->value ? 'selected' : '' }}>
+                                        {{ $genero->label() }}
                                     </option>
                                 @endforeach
                             </select>
@@ -339,8 +339,8 @@
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tam_camiseta') border-red-500 @enderror">
                                 <option class="dark:bg-zinc-700" value="">Selecione o tamanho</option>
                                 @foreach (\App\Enums\TamanhoCamiseta::cases() as $tamanho)
-                                    <option class="dark:bg-zinc-700" value="{{ $tamanho }}"
-                                        {{ old('tam_camiseta', $ficha->tam_camiseta) == $tamanho ? 'selected' : '' }}>
+                                    <option class="dark:bg-zinc-700" value="{{ $tamanho->value }}"
+                                        {{ old('tam_camiseta', $ficha->tam_camiseta?->value ?? $ficha->tam_camiseta) == $tamanho->value ? 'selected' : '' }}>
                                         {{ $tamanho->value }}
                                     </option>
                                 @endforeach
@@ -634,8 +634,8 @@
                                 <option class="dark:bg-zinc-700" value="">Selecione uma opção</option>
                                 @foreach (\App\Enums\ComoSoube::cases() as $comoSoube)
                                     <option class="dark:bg-zinc-700" value="{{ $comoSoube->value }}"
-                                        {{ old('tip_como_soube', $ficha->tip_como_soube) == $comoSoube->value ? 'selected' : '' }}>
-                                        {{ $comoSoube->value }}
+                                        {{ old('tip_como_soube', $ficha->tip_como_soube?->value ?? $ficha->tip_como_soube) == $comoSoube->value ? 'selected' : '' }}>
+                                        {{ $comoSoube->label() }}
                                     </option>
                                 @endforeach
                             </select>

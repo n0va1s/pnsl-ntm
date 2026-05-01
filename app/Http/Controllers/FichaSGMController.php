@@ -98,6 +98,14 @@ class FichaSGMController extends Controller
         ]));
 
         $data = $fichaRequest->validated();
+
+        // Garante a extração de campos da Ficha que podem não estar mapeados no FichaRequest genérico
+        $data = array_merge($data, $fichaRequest->only([
+            'tip_genero',
+            'tam_camiseta',
+            'tip_como_soube',
+        ]));
+
         $ficha = Ficha::create($data);
 
         $sgmData = $sgmRequest->validated();
@@ -167,9 +175,16 @@ class FichaSGMController extends Controller
             'candidato' => $fichaRequest->input('nom_candidato'),
         ]));
 
-        $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'analises'])->findOrFail($id);
+        $ficha = Ficha::with(['fichaSGM', 'fichaSaude'])->findOrFail($id);
 
         $fichaData = $fichaRequest->validated();
+
+        $fichaData = array_merge($fichaData, $fichaRequest->only([
+            'tip_genero',
+            'tam_camiseta',
+            'tip_como_soube',
+        ]));
+
         $ficha->update($fichaData);
 
         $sgmData = $sgmRequest->validated();
