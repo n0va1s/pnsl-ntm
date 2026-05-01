@@ -11,8 +11,8 @@
             ])->all());
         @endphp
 
-        <div x-data="{ 
-                bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }}, 
+        <div x-data="{
+                bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }},
                 enviando: false,
                 selectedEventoId: '{{ old('idt_evento', $ficha->idt_evento ?? '') }}',
                 eventosData: {{ $eventosJson }},
@@ -88,9 +88,9 @@
         @endif
 
         @if ($eventos->count() > 0)
-            <form method="POST" 
+            <form method="POST"
                 @submit="enviando = true"
-                action="{{ $ficha->exists ? route('vem.update', $ficha) : route('vem.store') }}" 
+                action="{{ $ficha->exists ? route('vem.update', $ficha) : route('vem.store') }}"
                 class="space-y-6" novalidate>
                 @csrf
                 @if ($ficha->exists) @method('PUT') @endif
@@ -128,7 +128,7 @@
                         {{-- Evento --}}
                         <div>
                             <label for="idt_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">Evento</label>
-                            <select name="idt_evento" id="idt_evento" 
+                            <select name="idt_evento" id="idt_evento"
                                 x-model="selectedEventoId"
                                 x-bind:disabled="bloqueado"
                                 required
@@ -456,7 +456,7 @@
                                 <select name="idt_falar_com" id="idt_falar_com" required x-bind:disabled="bloqueado"
                                     aria-required="true"
                                     class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('idt_falar_com') border-red-500 @enderror">
-                                    <option value="">Selecione</option>
+                                    <option value="" disabled {{ old('idt_falar_com', optional($ficha->fichaVem)->idt_falar_com) ? '' : 'selected' }}>Selecione</option>
                                     @foreach ($responsaveis as $responsavel)
                                         <option value="{{ $responsavel->idt_responsavel }}"
                                             {{ old('idt_falar_com', optional($ficha->fichaVem)->idt_falar_com) == $responsavel->idt_responsavel ? 'selected' : '' }}>
@@ -639,20 +639,20 @@
                                     );
                                 @endphp
 
-                                <div class="space-y-2" 
-                                    x-data="{ 
+                                <div class="space-y-2"
+                                    x-data="{
                                         selecionado: {{ $checked ? 'true' : 'false' }},
-                                        texto: '{{ addslashes($complemento) }}' 
+                                        texto: '{{ addslashes($complemento) }}'
                                     }">
-                                    
+
                                     <div class="flex items-center gap-2">
-                                        <input type="checkbox" 
+                                        <input type="checkbox"
                                             name="restricoes[{{ $restricao->idt_restricao }}]"
-                                            id="restricao_{{ $restricao->idt_restricao }}" 
+                                            id="restricao_{{ $restricao->idt_restricao }}"
                                             value="1"
                                             x-model="selecionado"
                                             class="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2" />
-                                        
+
                                         <label for="restricao_{{ $restricao->idt_restricao }}"
                                             class="text-gray-800 dark:text-gray-100 flex items-center gap-2 cursor-pointer">
                                             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 dark:bg-zinc-600 dark:text-gray-300">
@@ -662,12 +662,12 @@
                                         </label>
                                     </div>
 
-                                    <input type="text" 
+                                    <input type="text"
                                         name="complementos[{{ $restricao->idt_restricao }}]"
                                         x-model="texto" {{-- Sincroniza o valor do input com a variável 'texto' --}}
                                         @input="if(texto.trim().length > 0) selecionado = true" {{-- Marca o checkbox ao digitar --}}
                                         placeholder="Complemento ou detalhes adicionais"
-                                        maxlength="255" 
+                                        maxlength="255"
                                         aria-label="Complemento para {{ $restricao->des_restricao }}"
                                         class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800" />
                                 </div>

@@ -19,7 +19,7 @@
         @endif
 
         <div class="mb-6 bg-white dark:bg-zinc-800 rounded-md shadow p-6">
-            
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Foto para o Carômetro
@@ -27,10 +27,10 @@
 
                 <div class="flex flex-col items-center justify-center mb-6">
                     <label for="med_foto" class="cursor-pointer group relative flex flex-col items-center">
-                        <div class="w-32 h-32 rounded-full border-2 border-dashed 
+                        <div class="w-32 h-32 rounded-full border-2 border-dashed
                             @error('med_foto') border-red-500 bg-red-50/10 @else border-gray-300 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-800/50 @enderror
                             flex flex-col items-center justify-center overflow-hidden shadow transition hover:shadow-md hover:border-gray-400 dark:hover:border-zinc-500">
-                            
+
                             @if ($pessoa->exists && $pessoa->foto && $pessoa->foto->med_foto)
                                 <img src="{{ asset('storage/' . $pessoa->foto->med_foto) }}"
                                     alt="Foto de {{ $pessoa->nom_pessoa }}"
@@ -133,7 +133,7 @@
                     <div>
                         <label for="des_endereco" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Endereço</label>
                         <input type="text" id="des_endereco" name="des_endereco" value="{{ old('des_endereco', $pessoa->des_endereco) }}"
-                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 
+                            class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100
                             @error('des_endereco') border-red-500 @enderror"/>
                         @error('des_endereco')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -171,8 +171,7 @@
                         @enderror
                     </div>
 
-                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6"
-                        x-data="{ estadoCivil: '{{ old('tip_estado_civil', $pessoa->tip_estado_civil) }}' }">
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6" x-data="{ estadoCivil: '{{ old('tip_estado_civil', $pessoa->tip_estado_civil) }}' }">
 
                         <div>
                             <label for="tip_estado_civil" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Estado Civil <span class="text-red-600">*</span></label>
@@ -195,8 +194,11 @@
                             <select id="idt_parceiro" name="idt_parceiro" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 @error('idt_parceiro') border-red-500 @enderror">
                                 <option value="">Selecione o(a) cônjuge</option>
                                 @foreach ($pessoasDisponiveis as $id => $nome)
-                                    <option value="{{ $id }}" {{ old('idt_parceiro', $pessoa->idt_parceiro) == $id ? 'selected' : '' }}>{{ $nome }}</option>
+                                    <option value="{{ $id }}"
+                                        {{ old('idt_parceiro', $pessoa->idt_parceiro) == $id ? 'selected' : '' }}>
+                                        {{ $nome }}</option>
                                 @endforeach
+
                             </select>
                             @error('idt_parceiro')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -277,20 +279,20 @@
                                     );
                                 @endphp
 
-                                <div class="space-y-2" 
-                                    x-data="{ 
+                                <div class="space-y-2"
+                                    x-data="{
                                         selecionado: {{ $checked ? 'true' : 'false' }},
-                                        texto: '{{ addslashes($complemento) }}' 
+                                        texto: '{{ addslashes($complemento) }}'
                                     }">
-                                    
+
                                     <div class="flex items-center gap-2">
-                                        <input type="checkbox" 
+                                        <input type="checkbox"
                                             name="restricoes[{{ $restricao->idt_restricao }}]"
-                                            id="restricao_{{ $restricao->idt_restricao }}" 
+                                            id="restricao_{{ $restricao->idt_restricao }}"
                                             value="1"
                                             x-model="selecionado"
                                             class="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2" />
-                                        
+
                                         <label for="restricao_{{ $restricao->idt_restricao }}"
                                             class="text-gray-800 dark:text-gray-100 flex items-center gap-2 cursor-pointer">
                                             <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 dark:bg-zinc-600 dark:text-gray-300">
@@ -300,12 +302,12 @@
                                         </label>
                                     </div>
 
-                                    <input type="text" 
+                                    <input type="text"
                                         name="complementos[{{ $restricao->idt_restricao }}]"
                                         x-model="texto"
                                         @input="if(texto.trim().length > 0) selecionado = true"
                                         placeholder="Complemento ou detalhes adicionais"
-                                        maxlength="255" 
+                                        maxlength="255"
                                         class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800" />
                                 </div>
                             @endforeach
@@ -314,7 +316,8 @@
                 </div>
 
                 <div class="flex gap-3 justify-end">
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    <button type="submit"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                         <x-heroicon-o-check class="w-5 h-5 mr-2" /> Salvar
                     </button>
                 </div>

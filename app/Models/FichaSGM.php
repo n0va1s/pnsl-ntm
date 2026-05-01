@@ -23,6 +23,21 @@ class FichaSGM extends Model
         'tel_pai',
         'nom_mae',
         'tel_mae',
+        'naturalidade',
+        'escolaridade',
+        'situacao',
+        'curso',
+        'instituicao',
+        'religiao',
+        'nom_paroquia',
+        'ind_batismo',
+        'ind_eucaristia',
+        'ind_crisma',
+        'part_movimento',
+        'tip_como_soube',
+        'nom_convidou',
+        'tel_convidou',
+        'end_convidou',
     ];
 
     public function ficha()
