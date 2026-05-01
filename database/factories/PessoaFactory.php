@@ -2,9 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Enums\EstadoCivil;
+use App\Enums\Genero;
+use App\Enums\HabilidadePrincipal;
+use App\Enums\TamanhoCamiseta;
 use App\Models\Pessoa;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 
 class PessoaFactory extends Factory
 {
@@ -17,14 +22,14 @@ class PessoaFactory extends Factory
             'idt_parceiro' => null,
             'nom_pessoa' => $this->faker->name(),
             'nom_apelido' => $this->faker->lastName(),
-            'tip_genero' => $this->faker->randomElement(['M', 'F']),
+            'tip_genero' => $this->faker->randomElement(Genero::cases())->value,
             'tel_pessoa' => $this->faker->numerify('(##) #####-####'),
             'eml_pessoa' => $this->faker->unique()->safeEmail(),
             'des_endereco' => $this->faker->address(),
-            'dat_nascimento' => $this->faker->date('Y-m-d', '-20 years'),
-            'tam_camiseta' => $this->faker->randomElement(['P', 'M', 'G', 'GG']),
-            'tip_habilidade' => $this->faker->randomElement(['V', 'S', 'C', 'M', 'A', 'T', 'F']),
-            'tip_estado_civil' => $this->faker->randomElement(['S', 'C', 'E', 'U', 'M', 'D', 'V']),
+            'dat_nascimento' => Carbon::parse($this->faker->date('Y-m-d', '-20 years'))->format('Y-m-d'),
+            'tam_camiseta' => $this->faker->randomElement(TamanhoCamiseta::cases())->value,
+            'tip_habilidade' => $this->faker->randomElement(HabilidadePrincipal::cases())->value,
+            'tip_estado_civil' => $this->faker->randomElement(EstadoCivil::cases())->value,
             'ind_restricao' => $this->faker->boolean(),
             'qtd_pontos_total' => 0,
         ];

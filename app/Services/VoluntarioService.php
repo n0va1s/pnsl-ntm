@@ -20,67 +20,57 @@ class VoluntarioService
      */
     public function candidatura(array $equipesData, int $eventoId, Pessoa $pessoa): void
     {
-        $equipesSelecionadas = [];
 
-        foreach ($equipesData as $equipeId => $dados) {
-            if (($dados['selecionado'] ?? null) === '1') {
-                $habilidade = trim($dados['habilidade'] ?? '');
+        // 1. Filtrar e validar o formato básico usando Collections
+        $candidaturas = collect($equipesData)
+            ->filter(fn ($dados) => ($dados['selecionado'] ?? null) === '1')
+            ->map(fn ($dados) => trim($dados['habilidade'] ?? ''));
 
-                if ($habilidade === '') {
-                    throw ValidationException::withMessages([
-                        'equipes' => 'A descrição da habilidade é obrigatória para equipes selecionadas.',
-                    ]);
-                }
-
-                if (mb_strlen($habilidade) <= 5) {
-                    throw ValidationException::withMessages([
-                        'equipes' => 'A habilidade deve ter mais de 5 caracteres.',
-                    ]);
-                }
-
-                if (preg_match('/(.)\1{4,}/', $habilidade)) {
-                    throw ValidationException::withMessages([
-                        'equipes' => 'A habilidade não pode conter sequências de caracteres repetidos.',
-                    ]);
-                }
-
-                $equipesSelecionadas[$equipeId] = $habilidade;
-            }
-        }
-
-        $quantidade = count($equipesSelecionadas);
-
+        // 2. Validação de quantidade
+        $quantidade = $candidaturas->count();
         if ($quantidade < 1 || $quantidade > 3) {
             throw ValidationException::withMessages([
                 'equipes' => $quantidade < 1
-                    ? 'Você deve selecionar ao menos 1 equipe.'
-                    : 'Você pode selecionar no máximo 3 equipes.',
+                    ? 'Selecione ao menos 1 equipe.'
+                    : 'Selecione no máximo 3 equipes.',
             ]);
         }
 
-        // Validação de duplicidade
-        foreach (array_keys($equipesSelecionadas) as $equipeId) {
-            $duplicado = Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
-                ->where('idt_evento', $eventoId)
-                ->where('idt_equipe', $equipeId)
-                ->exists();
-
-            if ($duplicado) {
-                throw ValidationException::withMessages([
-                    'equipes' => 'Você já se candidatou para esta equipe neste evento.',
-                ]);
+        // 3. Validação de conteúdo das habilidades (Fail Fast)
+        $candidaturas->each(function ($habilidade) {
+            if (empty($habilidade) || mb_strlen($habilidade) <= 5) {
+                throw ValidationException::withMessages(['equipes' => 'Habilidade inválida ou muito curta.']);
             }
+            if (preg_match('/(.)\1{4,}/', $habilidade)) {
+                throw ValidationException::withMessages(['equipes' => 'A descrição contém caracteres repetidos inválidos.']);
+            }
+        });
+
+        // 4. Validação de duplicidade Otimizada (Uma única query)
+        $equipesIds = $candidaturas->keys()->all();
+        $equipesJaInscritas = Voluntario::where('idt_pessoa', $pessoa->idt_pessoa)
+            ->where('idt_evento', $eventoId)
+            ->whereIn('idt_equipe', $equipesIds)
+            ->exists();
+
+        if ($equipesJaInscritas) {
+            throw ValidationException::withMessages([
+                'equipes' => 'Você já possui inscrição em uma ou mais equipes selecionadas.',
+            ]);
         }
 
-        DB::transaction(function () use ($equipesSelecionadas, $eventoId, $pessoa) {
-            foreach ($equipesSelecionadas as $equipeId => $habilidade) {
-                Voluntario::create([
-                    'idt_pessoa' => $pessoa->idt_pessoa,
-                    'idt_evento' => $eventoId,
-                    'idt_equipe' => $equipeId,
-                    'txt_habilidade' => $habilidade,
-                ]);
-            }
+        // 5. Persistência em lote
+        DB::transaction(function () use ($candidaturas, $eventoId, $pessoa) {
+            $insertData = $candidaturas->map(fn ($habilidade, $equipeId) => [
+                'idt_pessoa' => $pessoa->idt_pessoa,
+                'idt_evento' => $eventoId,
+                'idt_equipe' => $equipeId,
+                'txt_habilidade' => $habilidade,
+                'created_at' => now(), // Importante se usar query builder ou se não for automático
+                'updated_at' => now(),
+            ])->values()->all();
+
+            Voluntario::insert($insertData);
         });
     }
 

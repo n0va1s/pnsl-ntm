@@ -42,7 +42,7 @@ class FichaSGMController extends Controller
             $evento = Evento::find($eventoId);
         }
 
-        $fichas = Ficha::with(['fichaSGM', 'fichaSaude', 'analises.situacao'])
+        $fichas = Ficha::with(['fichaSGM', 'fichaSaude'])
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('nom_candidato', 'like', "%{$search}%")
@@ -129,7 +129,7 @@ class FichaSGMController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Visualização de ficha SGM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaSGM', 'fichaSaude'])->find($id);
 
         return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -144,7 +144,7 @@ class FichaSGMController extends Controller
 
         Log::info('Acesso ao formulário de edição de ficha SGM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaSGM', 'fichaSaude'])->find($id);
 
         return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -181,22 +181,6 @@ class FichaSGMController extends Controller
             $ficha->fichaSGM()->create($sgmData);
         }
 
-        if ($fichaRequest->filled('idt_situacao')) {
-            $situacao = $fichaRequest->input('idt_situacao');
-            $analise = $ficha->analises()->where('idt_situacao', $situacao)->first();
-            // A ficha ja tem a situacao
-            if ($analise) {
-                $analise->update([
-                    'txt_analise' => $fichaRequest->input('txt_analise'),
-                ]);
-            } else {
-                $ficha->analises()->create([
-                    'idt_situacao' => $situacao,
-                    'txt_analise' => $fichaRequest->input('txt_analise'),
-                ]);
-            }
-        }
-
         $ficha->fichaSaude()->delete();
 
         if ($fichaRequest->input('ind_restricao') == 1) {
@@ -218,27 +202,6 @@ class FichaSGMController extends Controller
         ]));
 
         return redirect()->route('sgm.index')->with('success', 'Ficha atualizada com sucesso!');
-    }
-
-    public function approve($id)
-    {
-        $start = microtime(true);
-        $context = $this->getLogContext(request());
-
-        Log::warning('Tentativa de atualização de aprovação de ficha SGM', array_merge($context, [
-            'ficha_id' => $id,
-        ]));
-
-        $this->fichaService::atualizarAprovacaoFicha($id);
-
-        $duration = round((microtime(true) - $start) * 1000, 2);
-
-        Log::notice('Aprovação de ficha SGM atualizada com sucesso', array_merge($context, [
-            'ficha_id' => $id,
-            'duration_ms' => $duration,
-        ]));
-
-        return redirect()->route('sgm.index')->with('success', 'Aprovação atualizada com sucesso!');
     }
 
     public function destroy($id)

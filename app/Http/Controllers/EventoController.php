@@ -7,13 +7,14 @@ use App\Models\Evento;
 use App\Models\Pessoa;
 use App\Models\TipoMovimento;
 use App\Services\EventoService;
+use App\Services\ArquivoService;
 use App\Traits\LogContext;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class EventoController extends Controller
@@ -21,7 +22,8 @@ class EventoController extends Controller
     use LogContext;
 
     public function __construct(
-        protected EventoService $eventoService
+        protected EventoService $eventoService,
+        protected ArquivoService $arquivoService
     ) {}
 
     public function index(Request $request): View
@@ -31,32 +33,18 @@ class EventoController extends Controller
 
         $eventos = Evento::query()
             ->with(['movimento:idt_movimento,des_sigla'])
-            ->withCount([
-                'fichas as fichas_count',
-                'participantes as participantes_count' => fn($q) => $q->whereNull('tip_cor_troca'),
-                'participantes as inscritos_count' => fn($q) => $q->whereNotNull('tip_cor_troca'),
-
-                // contar IDs de pessoas únicos para evitar duplicidade por múltiplas equipes
-                'voluntarios as voluntarios_count' => fn($q) => $q
-                    ->select(DB::raw('count(distinct(idt_pessoa))'))
-                    ->whereNull('idt_trabalhador'),
-
-                'voluntarios as trabalhadores_count' => fn($q) => $q
-                    ->select(DB::raw('count(distinct(idt_pessoa))'))
-                    ->whereNotNull('idt_trabalhador'),
-            ])
             ->when($pessoa, function ($q) use ($pessoa) {
                 $q->withExists([
-                    'participantes as ja_inscrito_participante' => fn($q) => $q
+                    'participantes as ja_inscrito_participante' => fn ($q) => $q
                         ->where('idt_pessoa', $pessoa->idt_pessoa),
                 ])
                     ->withExists([
-                        'voluntarios as ja_inscrito_voluntario' => fn($q) => $q
+                        'voluntarios as ja_inscrito_voluntario' => fn ($q) => $q
                             ->where('idt_pessoa', $pessoa->idt_pessoa),
                     ]);
             })
-            ->when($request->search, fn($q) => $q->search($request->search))
-            ->when($request->idt_movimento, fn($q) => $q->movimento($request->idt_movimento))
+            ->when($request->search, fn ($q) => $q->search($request->search))
+            ->when($request->idt_movimento, fn ($q) => $q->movimento($request->idt_movimento))
             ->orderBy('dat_inicio', 'desc')
             ->paginate(12)
             ->withQueryString();
@@ -89,15 +77,59 @@ class EventoController extends Controller
     public function store(EventoRequest $request): RedirectResponse
     {
         try {
-            $evento = $this->eventoService->criarEventoComFoto($request->validated(), $request->file('med_foto'));
+            DB::beginTransaction();
 
-            Log::notice('Evento criado', ['evento_id' => $evento->id]);
+            $dados = $request->validated();
+            $evento = Evento::create($dados);
 
-            return redirect()->route('eventos.index')->with('success', 'Evento criado com sucesso!');
-        } catch (\Exception $e) {
-            Log::error('Falha ao criar evento', ['error' => $e->getMessage()]);
+            // Prepara o nome customizado: "2026-04-11-nome-do-evento"
+            $dataInicio = $evento->dat_inicio->format('Y-m-d');
+            $tituloSlug = Str::slug($evento->des_evento); // trim, lowercase e hífens automáticos
+            $nomeArquivoBase = "{$dataInicio}-{$tituloSlug}";
 
-            return back()->with('error', 'Erro ao processar cadastro.')->withInput();
+            // Upload da Foto Oficial
+            if ($request->hasFile('med_foto')) {
+                $this->arquivoService->upload(
+                    model: $evento,
+                    file: $request->file('med_foto'),
+                    relationName: 'foto',
+                    column: 'med_foto',
+                    path: 'eventos/fotos',
+                    customName: $nomeArquivoBase . '-oficial' // Sufixo para diferenciar se necessário
+                );
+            }
+
+            // Upload da Logo/Padroeira
+            if ($request->hasFile('med_logo')) {
+                $this->arquivoService->upload(
+                    model: $evento,
+                    file: $request->file('med_logo'),
+                    relationName: 'logo',
+                    column: 'med_logo',
+                    path: 'eventos/logos',
+                    customName: $nomeArquivoBase . '-logo'
+                );
+            }
+
+            DB::commit();
+
+            Log::notice('Evento criado', ['evento_id' => $evento->idt_evento]);
+
+            return redirect()
+                ->route('eventos.index')
+                ->with('success', 'Evento criado com sucesso!');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            
+            Log::error('Falha ao criar evento', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return back()
+                ->with('error', 'Erro ao processar cadastro.')
+                ->withInput();
         }
     }
 
@@ -106,6 +138,7 @@ class EventoController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Visualização de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
 
+        $evento->load('foto');
         $movimentos = TipoMovimento::all();
 
         return view('evento.form', compact('movimentos', 'evento'));
@@ -118,7 +151,8 @@ class EventoController extends Controller
     {
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de edição de evento', array_merge($context, ['evento_id' => $evento->idt_evento]));
-
+        
+        $evento->load('foto', 'logo');
         $movimentos = TipoMovimento::all();
 
         return view('evento.form', compact('movimentos', 'evento'));
@@ -139,14 +173,48 @@ class EventoController extends Controller
 
         try {
             DB::beginTransaction();
-            $data = $request->validated();
+            
+            // Valida e obtém os dados
+            $dados = $request->validated();
 
-            $data['dat_limite_inscricao'] = $data['dat_limite_inscricao'] ?? null;
-            $data['qtd_vaga'] = $data['qtd_vaga'] ?? null;
+            // Remove os campos para não tentar atualiza med_foto na tabela evento
+            unset($dados['med_foto']);
+            unset($dados['med_logo']);
 
-            $evento->update($data);
+            $evento->update($dados);
 
-            $this->eventoService->fotoUpload($evento, $request->file('med_foto'));
+            // Prepara o nome customizado: "2026-04-11-nome-do-evento"
+            $dataInicio = $evento->dat_inicio instanceof \Carbon\Carbon || method_exists($evento->dat_inicio, 'format')
+                ? $evento->dat_inicio->format('Y-m-d')
+                : now()->format('Y-m-d');
+
+            $tituloSlug = Str::slug($evento->des_evento); 
+            $nomeArquivoBase = "{$dataInicio}-{$tituloSlug}";
+
+            // Upload da Foto Oficial (se enviada)
+            if ($request->hasFile('med_foto')) {
+                $this->arquivoService->upload(
+                    model: $evento,
+                    file: $request->file('med_foto'),
+                    relationName: 'foto',
+                    column: 'med_foto',
+                    path: 'eventos/fotos',
+                    customName: $nomeArquivoBase . '-oficial'
+                );
+            }
+
+            // Upload da Logo/Padroeira (se enviada)
+            if ($request->hasFile('med_logo')) {
+                $this->arquivoService->upload(
+                    model: $evento,
+                    file: $request->file('med_logo'),
+                    relationName: 'logo',
+                    column: 'med_logo',
+                    path: 'eventos/logos',
+                    customName: $nomeArquivoBase . '-logo'
+                );
+            }
+
             DB::commit();
 
             $duration = round((microtime(true) - $start) * 1000, 2);
@@ -159,7 +227,8 @@ class EventoController extends Controller
             return redirect()
                 ->route('eventos.index')
                 ->with('success', 'Evento atualizado com sucesso!');
-        } catch (\Exception $e) {
+            
+        } catch (\Throwable $e) {
             DB::rollBack();
 
             $duration = round((microtime(true) - $start) * 1000, 2);
@@ -167,8 +236,9 @@ class EventoController extends Controller
                 'evento_id' => $evento->idt_evento,
                 'exception' => get_class($e),
                 'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'duration_ms' => $duration,
-                'input_data' => $request->validated(),
             ]));
 
             return redirect()

@@ -11,6 +11,8 @@ class FichaSGM extends Model
 
     protected $table = 'ficha_sgm';
 
+    protected $primaryKey = 'idt_ficha';
+
     public $timestamps = false;
 
     protected $fillable = [

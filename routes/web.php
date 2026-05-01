@@ -16,7 +16,6 @@ use App\Http\Controllers\TipoMovimentoController;
 use App\Http\Controllers\TipoPerfilController;
 use App\Http\Controllers\TipoResponsavelController;
 use App\Http\Controllers\TipoRestricaoController;
-use App\Http\Controllers\TipoSituacaoController;
 use App\Http\Controllers\TrabalhadorController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -26,14 +25,20 @@ Route::get('/limpar-tudo', function () {
     Artisan::call('config:clear');
     Artisan::call('cache:clear');
     Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
 
-    return "Configurações recarregadas! Tente acessar a home agora.";
+    return 'Clear realizado! Tente acessar a home agora.';
 });
 
 Route::get('/otimizar-tudo', function () {
     Artisan::call('optimize');
 
-    return "Optimize realizado! Tente acessar a home agora.";
+    return 'Optimize realizado! Tente acessar a home agora.';
+});
+
+Route::get('/storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Link simbólico criado com sucesso!';
 });
 
 Route::get(
@@ -92,14 +97,6 @@ Route::middleware(['auth'])->group(function () {
         [EventoController::class, 'confirm']
     )->name('participantes.confirm');
 
-
-    Route::get('fichas/vem/approve/{id}', [FichaVemController::class, 'approve'])
-        ->name('vem.approve');
-    Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
-        ->name('ecc.approve');
-    Route::get('fichas/sgm/approve/{id}', [FichaSGMController::class, 'approve'])
-        ->name('sgm.approve');
-
     Route::resources([
         'eventos' => EventoController::class,
         'pessoas' => PessoaController::class,
@@ -114,6 +111,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/termo-vem', function () {
         return view('termos.termoVEM');
     })->name('termo.vem');
+    Route::get('fichas/vem/approve/{id}', [FichaVemController::class, 'approve'])
+        ->name('vem.approve');
+    Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
+        ->name('ecc.approve');
+    Route::get('fichas/sgm/approve/{id}', [FichaSGMController::class, 'approve'])
+        ->name('sgm.approve');
 
     Route::get(
         '/trabalhadores',
@@ -183,13 +186,13 @@ Route::middleware(['auth'])->group(function () {
             'configuracoes/movimento' => TipoMovimentoController::class,
             'configuracoes/responsavel' => TipoResponsavelController::class,
             'configuracoes/restricao' => TipoRestricaoController::class,
-            'configuracoes/situacao' => TipoSituacaoController::class,
         ]);
     });
 
+    Volt::route('eventos/{evento}/gerenciamento', 'evento.gerenciamento')->name('eventos.gerenciamento');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -1,8 +1,24 @@
-{{-- resources/views/components/session-alert.blade.php --}}
 @php
-    // Detectamos o tipo e a mensagem diretamente da sessão
-    $type = session('success') ? 'success' : (session('error') ? 'error' : (session('warning') ? 'warning' : (session('info') ? 'info' : null)));
-    $message = session('success') ?? session('error') ?? session('warning') ?? session('info');
+    $type = null;
+    $message = null;
+
+    if (session('success')) {
+        $type = 'success';
+        $message = session('success');
+    } elseif (session('error')) {
+        $type = 'error';
+        $message = session('error');
+    } elseif (session('warning')) {
+        $type = 'warning';
+        $message = session('warning');
+    } elseif (session('info')) {
+        $type = 'info';
+        $message = session('info');
+    } elseif ($errors->any()) { 
+        // Se houver qualquer erro de validação, tratamos como 'error'
+        $type = 'error';
+        $message = $errors->first(); // Pega a primeira mensagem de erro (ex: a da 'equipes')
+    }
 
     $colors = [
         'success' => 'bg-green-600',

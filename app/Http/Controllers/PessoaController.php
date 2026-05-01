@@ -79,15 +79,17 @@ class PessoaController extends Controller
             'idt_restricao',
             'tip_restricao',
             'des_restricao',
-            'txt_restricao'
         )->get();
 
-        $sexoOposto = (auth()->user()->pessoa->tip_genero === 'M') ? 'F' : 'M';
+        $meuId = auth()->user()->pessoa->idt_pessoa;
 
         $pessoasDisponiveis = Pessoa::query()
-            ->whereIn('tip_estado_civil', ['C', 'E', 'U'])
-            ->where('idt_pessoa', '!=', auth()->user()->pessoa->idt_pessoa)
-            ->where('tip_genero', $sexoOposto)
+            ->where(function ($query) use ($meuId) {
+                $query->whereNull('idt_parceiro')
+                    ->orWhere('idt_parceiro', $meuId);
+            })
+            // ->whereIn('tip_estado_civil', ['C', 'E', 'U'])
+            ->where('idt_pessoa', '!=', $meuId)
             ->orderBy('nom_pessoa')
             ->pluck('nom_pessoa', 'idt_pessoa');
 
@@ -204,17 +206,21 @@ class PessoaController extends Controller
     {
         $start = microtime(true);
         $context = $this->getLogContext($request);
+
         Log::info('Tentativa de atualização de pessoa', array_merge($context, [
             'pessoa_id' => $id,
             'nome' => $request->input('nom_pessoa'),
         ]));
 
         $pessoa = Pessoa::with(['foto', 'usuario', 'restricoes'])->findOrFail($id);
+
         $user = $this->userService::getUsuarioByEmail($request->input('eml_pessoa'));
         $data = $request->validated();
+
         if ($user) {
             $data['idt_usuario'] = $user->id;
         }
+
         $pessoa->update($data);
 
         // Foto
@@ -226,11 +232,9 @@ class PessoaController extends Controller
                 $fotoExistente = PessoaFoto::where('idt_pessoa', $pessoa->idt_pessoa)->first();
 
                 if ($fotoExistente) {
-                    // Deleta o arquivo físico antigo
                     if (Storage::disk('public')->exists($fotoExistente->med_foto)) {
                         Storage::disk('public')->delete($fotoExistente->med_foto);
                     }
-
                     $fotoExistente->update(['med_foto' => $caminho]);
                 } else {
                     $pessoa->foto()->create(['med_foto' => $caminho]);
@@ -239,29 +243,38 @@ class PessoaController extends Controller
         }
 
         // Parceiro
-        if ($request->input('idt_parceiro')) {
+        if ($request->filled('idt_parceiro')) {
             $pessoa->idt_parceiro = $request->input('idt_parceiro');
             $pessoa->save();
         }
 
         // Saude
-        $countRestricoes = 0;
-        $pessoa->restricoes()->delete();
-        if ($request->input('ind_restricao') == 1) {
-            foreach ($request->input('restricoes', []) as $idt_restricao => $value) {
-                if ($value) {
-                    $pessoa->restricoes()->create([
-                        'idt_restricao' => $idt_restricao,
-                        'txt_complemento' => $request->input("complementos.$idt_restricao"),
-                    ]);
+        $pessoa->ind_restricao = $request->boolean('ind_restricao');
+        $pessoa->save();
+
+        if ($pessoa->ind_restricao) {
+            $restricoesMarcadas = $request->input('restricoes', []);
+            $complementos = $request->input('complementos', []);
+            $dadosSincronizacao = [];
+
+            foreach ($restricoesMarcadas as $idt_restricao => $valor) {
+                if ($valor) {
+                    $dadosSincronizacao[$idt_restricao] = [
+                        'txt_complemento' => $complementos[$idt_restricao] ?? null,
+                    ];
                 }
-                $countRestricoes++;
             }
+
+            // O sync remove o que não está no array e insere/atualiza o que está
+            $pessoa->restricoes()->sync($dadosSincronizacao);
+        } else {
+            // Se o mestre estiver desmarcado, remove todos os vínculos da pivot
+            $pessoa->restricoes()->detach();
         }
+
         $duration = round((microtime(true) - $start) * 1000, 2);
         Log::notice('Pessoa atualizada com sucesso', array_merge($context, [
             'pessoa_id' => $id,
-            'restricoes_atualizadas' => $countRestricoes,
             'duration_ms' => $duration,
         ]));
 

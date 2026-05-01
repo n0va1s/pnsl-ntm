@@ -9,7 +9,6 @@ use App\Models\PessoaSaude;
 use App\Models\TipoMovimento;
 use App\Models\TipoResponsavel;
 use App\Models\TipoRestricao;
-use App\Models\TipoSituacao;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -19,58 +18,43 @@ class FichaService
     {
         $cacheKey = "dados_ficha_form_{$ficha->idt_ficha}";
 
-        return Cache::remember($cacheKey, 60 * 60, function () use ($ficha) {
-            $ultimaAnalise = $ficha->analises()->with('situacao')->orderByDesc('created_at')->first();
-
+        return Cache::remember($cacheKey, 60 * 60, function () {
             return [
-                'situacoes' => TipoSituacao::select('idt_situacao', 'des_situacao')->get(),
                 'movimentos' => TipoMovimento::select('idt_movimento', 'des_sigla', 'nom_movimento')->get(),
                 'responsaveis' => TipoResponsavel::select('idt_responsavel', 'des_responsavel')->get(),
                 'restricoes' => TipoRestricao::select('idt_restricao', 'tip_restricao', 'des_restricao')->get(),
-                'ultimaSituacao' => $ultimaAnalise?->situacao ?? TipoSituacao::CADASTRADA,
-                'ultimaAnalise' => $ultimaAnalise,
-
             ];
         });
     }
 
-    private static function processarAprovacao(Ficha $ficha): void
+    public static function atualizarAprovacaoFicha(int $id): Ficha
     {
-        $pessoa = self::criarOuAtualizarPessoaAPartirDaFicha($ficha);
-
-        $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
-
-        self::criarPessoaSaude(
-            $pessoa->idt_pessoa,
-            $ficha->fichaSaude->map(fn ($r) => [
-                'idt_restricao' => $r->idt_restricao,
-                'txt_complemento' => $r->txt_complemento,
-            ])->toArray()
-        );
-
-        self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
-    }
-
-    private static function processarReprovacao(Ficha $ficha): void
-    {
-        optional(Pessoa::find($ficha->idt_pessoa))->delete();
-    }
-
-    public static function atualizarAprovacaoFicha($id): bool
-    {
+        // Carregamos a ficha com a relação de saúde
         $ficha = Ficha::with('fichaSaude')->findOrFail($id);
 
-        // Alterna o valor de aprovado
-        $ficha->ind_aprovado = ! $ficha->ind_aprovado;
-
         return DB::transaction(function () use ($ficha) {
+            // 1. Inverte o status
+            $ficha->ind_aprovado = ! $ficha->ind_aprovado;
+            $ficha->save();
+
             if ($ficha->ind_aprovado) {
-                self::processarAprovacao($ficha);
+                // 2. Se aprovou: Cria Pessoa -> Saúde -> Participante
+                $pessoa = self::criarOuAtualizarPessoaAPartirDaFicha($ficha);
+                
+                // Vincula a pessoa à ficha
+                $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
+
+                self::criarPessoaSaude(
+                    $pessoa->idt_pessoa, 
+                    $ficha->fichaSaude->toArray() 
+                );
+
+                self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
             } else {
-                self::processarReprovacao($ficha);
+                self::removerParticipante($ficha->idt_pessoa, $ficha->idt_evento);
             }
 
-            return true;
+            return $ficha;
         });
     }
 
@@ -91,7 +75,11 @@ class FichaService
         ];
 
         if ($ficha->eml_candidato) {
-            $dados['idt_usuario'] = UserService::getUsuarioByEmail($ficha->eml_candidato);
+            $usuario = UserService::getUsuarioByEmail($ficha->eml_candidato);
+            
+            if ($usuario) {
+                $dados['idt_usuario'] = $usuario->id; 
+            }
         }
 
         return Pessoa::updateOrCreate(
@@ -100,8 +88,11 @@ class FichaService
         );
     }
 
-    private static function criarPessoaSaude($idt_pessoa, array $restricoes): void
+    private static function criarPessoaSaude(int $idt_pessoa, array $restricoes): void
     {
+        // Limpa restrições antigas antes de inserir para evitar duplicidade em re-aprovações
+        PessoaSaude::where('idt_pessoa', $idt_pessoa)->delete();
+
         foreach ($restricoes as $restricao) {
             PessoaSaude::create([
                 'idt_pessoa' => $idt_pessoa,
@@ -111,11 +102,22 @@ class FichaService
         }
     }
 
-    private static function criarParticipante($idt_pessoa, $idt_evento): void
+    private static function criarParticipante(int $idt_pessoa, int $idt_evento): void
     {
-        Participante::create([
-            'idt_pessoa' => $idt_pessoa,
-            'idt_evento' => $idt_evento,
-        ]);
+        Participante::updateOrCreate(
+            [
+                'idt_pessoa' => $idt_pessoa, 
+                'idt_evento' => $idt_evento
+            ]
+        );
+    }
+
+    private static function removerParticipante(?int $idt_pessoa, int $idt_evento): void
+    {
+        if ($idt_pessoa) {
+            Participante::where('idt_pessoa', $idt_pessoa)
+                ->where('idt_evento', $idt_evento)
+                ->delete();
+        }
     }
 }

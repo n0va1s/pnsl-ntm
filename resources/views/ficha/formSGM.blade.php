@@ -397,10 +397,10 @@
                 <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
                     <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Responsáveis</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Nome do Pai -->
+                        <!-- Movimento -->
                         <div>
-                            <label for="nom_pai" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Nome do Pai
+                            <label for="idt_movimento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Movimento
                             </label>
                             <input type="text" name="nom_pai" id="nom_pai" x-bind:disabled="bloqueado"
                                 value="{{ old('nom_pai', optional($ficha->fichaSgm)->nom_pai) }}" maxlength="255"
@@ -476,16 +476,19 @@
                                     </option>
                                 @endforeach
                             </select>
-                            @error('idt_falar_com')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @error('idt_movimento')
+                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                             @enderror
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Escolha o movimento para filtrarmais as opções de evento.
+                            </p>
                         </div>
 
-                        <!-- Mora com quem -->
+                        <!-- Evento -->
+
                         <div>
-                            <label for="des_mora_quem"
-                                class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Mora com quem? <span class="text-red-600">*</span>
+                            <label for="idt_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Evento <span class="text-red-600">*</span>
                             </label>
                             <input type="text" name="des_mora_quem" id="des_mora_quem"
                                 x-bind:disabled="bloqueado"
@@ -497,8 +500,6 @@
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
-                    </div>
-                </div>
 
 
                 <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
@@ -926,6 +927,222 @@
                     </p>
                 </div>
             </div>
+
+            <!-- Dados do Segue-me -->
+            <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Responsáveis</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Nome do Pai -->
+                    <div>
+                        <label for="nom_pai" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Nome do Pai
+                        </label>
+                        <input type="text" name="nom_pai" id="nom_pai" x-bind:disabled="bloqueado"
+                            value="{{ old('nom_pai', optional($ficha->fichaVem)->nom_pai) }}" maxlength="255"
+                            placeholder="Nome completo do pai" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                        @error('nom_pai') border-red-500 @enderror" />
+                        @error('nom_pai')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Telefone do Pai -->
+                    <div>
+                        <label for="tel_pai" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Telefone do Pai
+                        </label>
+                        <input type="text" name="tel_pai" id="tel_pai" x-bind:disabled="bloqueado"
+                            value="{{ old('tel_pai', optional($ficha->fichaVem)->tel_pai) }}" maxlength="20"
+                            placeholder="(00) 00000-0000" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                        @error('tel_pai') border-red-500 @enderror" />
+                        @error('tel_pai')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Nome da Mãe -->
+                    <div>
+                        <label for="nom_mae" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Nome da Mãe
+                        </label>
+                        <input type="text" name="nom_mae" id="nom_mae" x-bind:disabled="bloqueado"
+                            value="{{ old('nom_mae', optional($ficha->fichaVem)->nom_mae) }}" maxlength="255"
+                            placeholder="Nome completo da mãe" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                        @error('nom_mae') border-red-500 @enderror" />
+                        @error('nom_mae')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Telefone da Mãe -->
+                    <div>
+                        <label for="tel_mae" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Telefone da Mãe
+                        </label>
+                        <input type="text" name="tel_mae" id="tel_mae" x-bind:disabled="bloqueado"
+                            value="{{ old('tel_mae', optional($ficha->fichaVem)->tel_mae) }}" maxlength="20"
+                            placeholder="(00) 00000-0000" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                        @error('tel_mae') border-red-500 @enderror" />
+                        @error('tel_mae')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Falar com -->
+                    <div>
+                        <label for="idt_falar_com" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Falar com <span class="text-red-600">*</span>
+                        </label>
+                        <select name="idt_falar_com" id="idt_falar_com" required x-bind:disabled="bloqueado" class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
+                        @error('idt_falar_com') border-red-500 @enderror">
+                            <option class="dark:bg-zinc-700" value="">Selecione um responsável</option>
+                            @foreach ($responsaveis as $responsavel)
+                            <option class="dark:bg-zinc-700" value="{{ $responsavel->idt_responsavel }}" {{
+                                old('idt_falar_com', optional($ficha->fichaVem)->idt_falar_com) ==
+                                $responsavel->idt_responsavel
+                                ? 'selected'
+                                : '' }}>
+                                {{ $responsavel->des_responsavel }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('idt_falar_com')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Mora com quem -->
+                    <div>
+                        <label for="des_mora_quem" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Mora com quem? <span class="text-red-600">*</span>
+                        </label>
+                        <input type="text" name="des_mora_quem" id="des_mora_quem" x-bind:disabled="bloqueado"
+                            value="{{ old('des_mora_quem', optional($ficha->fichaVem)->des_mora_quem) }}" required
+                            maxlength="255" placeholder="Ex: Pais, avós, sozinho..." class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                        @error('des_mora_quem') border-red-500 @enderror" />
+                        @error('des_mora_quem')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saúde e Restrições -->
+            <div
+                x-data="{ mostrarRestricoes: {{ old('ind_restricao', $ficha->ind_restricao ?? false) ? 'true' : 'false' }} }">
+                <label class="flex items-center space-x-2">
+                    <input type="hidden" name="ind_restricao" value="0">
+                    <input type="checkbox" name="ind_restricao" value="1" x-model="mostrarRestricoes"
+                        x-bind:disabled="bloqueado" {{ old('ind_restricao', $ficha->ind_restricao) ? 'checked' : '' }}
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-gray-800 dark:text-gray-100">Possui restrição alimentar?</span>
+                </label>
+
+                <div x-show="mostrarRestricoes" x-transition class="mt-4 bg-gray-50 dark:bg-zinc-700 rounded-md p-4">
+                    <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">Restrições
+                        Alimentares</h3>
+                    <div class="space-y-4">
+                        @php
+                        $restricoesSelecionadas = $ficha->fichaSaude->pluck('idt_restricao')->toArray();
+                        $complementos = $ficha->fichaSaude
+                        ->pluck('txt_complemento', 'idt_restricao')
+                        ->toArray();
+                        @endphp
+
+                        @foreach ($restricoes as $restricao)
+                        @php
+                        $checked = in_array($restricao->idt_restricao, $restricoesSelecionadas);
+                        $complemento = old(
+                        "complementos.{$restricao->idt_restricao}",
+                        $complementos[$restricao->idt_restricao] ?? '',
+                        );
+                        @endphp
+
+                        <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" name="restricoes[{{ $restricao->idt_restricao }}]"
+                                    id="restricao_{{ $restricao->idt_restricao }}" value="1" {{ $checked ? 'checked'
+                                    : '' }}
+                                    class="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2" />
+                                <label for="restricao_{{ $restricao->idt_restricao }}"
+                                    class="text-gray-800 dark:text-gray-100 flex items-center space-x-2">
+                                    <span
+                                        class="text-sm font-semibold px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 dark:bg-zinc-600 dark:text-gray-300">
+                                        {{ $restricao->tip_restricao }}
+                                    </span>
+                                    <span>{{ $restricao->des_restricao }}</span>
+                                </label>
+                            </div>
+                            <input type="text" name="complementos[{{ $restricao->idt_restricao }}]"
+                                value="{{ $complemento }}" placeholder="Complemento ou detalhes adicionais"
+                                maxlength="255"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800" />
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consentimentos -->
+            <div class="bg-white dark:bg-zinc-800 rounded-md shadow p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Consentimento</h2>
+                <div class="space-y-3">
+                    <label class="flex items-center space-x-2">
+                        <input type="hidden" name="ind_consentimento" value="0">
+                        <input type="checkbox" name="ind_consentimento" value="1" required x-bind:disabled="bloqueado"
+                            {{ old('ind_consentimento', $ficha->ind_consentimento) ? 'checked' : '' }}
+                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500
+                        @error('ind_consentimento') border-red-500 @enderror">
+                        <span class="text-gray-800 dark:text-gray-100">
+                            Concorda com os termos do encontro? <span class="text-red-600">*</span>
+                        </span>
+                    </label>
+                    @error('ind_consentimento')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mt-6">
+                    <label for="txt_observacao" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Observações
+                    </label>
+                    <textarea name="txt_observacao" id="txt_observacao" rows="4" maxlength="1000"
+                        x-bind:disabled="bloqueado"
+                        placeholder="Inclua observações como remédios contínuos ou outros pontos de atenção"
+                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                    @error('txt_observacao') border-red-500 @enderror">{{ old('txt_observacao', $ficha->txt_observacao) }}</textarea>
+                    @error('txt_observacao')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Máximo de 1000 caracteres</p>
+                </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="flex gap-3 justify-end">
+                <button type="submit" x-bind:disabled="bloqueado"
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                        </path>
+                    </svg>
+                    Salvar
+                </button>
+            </div>
+        </form>
+        @else
+        <div class="col-span-full">
+            <div
+                class="flex flex-col items-center justify-center text-center p-10 mt-4 bg-white dark:bg-zinc-800 rounded-xl shadow border border-dashed border-gray-300 dark:border-zinc-600">
+                <x-heroicon-o-user-group class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
+                <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Nenhum evento disponível no momento
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Em breve abriremos novas inscrições
+                </p>
+            </div>
+        </div>
         @endif
     </section>
 

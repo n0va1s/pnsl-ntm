@@ -121,23 +121,6 @@ describe('FichaEccController', function () {
         ]);
     });
 
-    test('pode aprovar ficha ECC', function () {
-        $ficha = Ficha::factory()->create([
-            'idt_evento' => $this->evento->idt_evento,
-            'ind_aprovado' => false,
-        ]);
-
-        FichaEcc::factory()->create([
-            'idt_ficha' => $ficha->idt_ficha,
-        ]);
-
-        $this->get(route('ecc.approve', $ficha->idt_ficha))
-            ->assertSessionHas('success');
-
-        $ficha->refresh();
-        expect($ficha->ind_aprovado)->toBeTrue();
-    });
-
     test('pode excluir ficha ECC', function () {
         $ficha = Ficha::factory()->create([
             'idt_evento' => $this->evento->idt_evento,

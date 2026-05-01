@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class TrabalhadorController extends Controller
@@ -85,7 +84,7 @@ class TrabalhadorController extends Controller
             'trabalhadores',
             'search',
             'evento',
-            'equipes', // Variável agora garantida
+            'equipes',
             'idt_equipe'
         ));
     }
@@ -97,13 +96,18 @@ class TrabalhadorController extends Controller
         $eventoId = $request->get('evento');
         Log::info('Acesso ao formulário de candidatura de trabalhador', array_merge($context, ['evento_id' => $eventoId]));
 
-        $evento = null;
-        if ($eventoId) {
-            $evento = Evento::find($eventoId);
+        if($eventoId){
+            $evento = Evento::findOrFail($eventoId);
+        } else {
+            $evento = new Evento();
         }
 
-        $equipes = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
+        if ($evento) {
+            $equipes = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
             ->select('idt_equipe', 'des_grupo')->get();
+        } else {
+            $equipes = TipoEquipe::all();
+        }
 
         $duration = round((microtime(true) - $start) * 1000, 2);
 
@@ -124,69 +128,43 @@ class TrabalhadorController extends Controller
             'total_equipes_enviadas' => count($request->input('equipes', [])),
         ]));
 
+        // Logado
+        $pessoa = Auth::user()->pessoa;
+
+        if (! $pessoa) {
+            return back()->with('error', 'Seu cadastro de pessoa não foi encontrado.');
+        }
+
         $dados = $request->validate([
             'idt_evento' => 'required|exists:evento,idt_evento',
             'equipes' => 'required|array',
             'equipes.*.selecionado' => 'nullable|in:1',
             'equipes.*.habilidade' => 'nullable|string|max:500',
-        ], [
-            'idt_evento.required' => 'O evento é obrigatório.',
-            'idt_evento.exists' => 'O evento selecionado não é válido.',
-            'equipes.required' => 'Selecione ao menos uma equipe para se voluntariar.',
-            'equipes.array' => 'As equipes devem ser fornecidas em um formato válido.',
-            'equipes.*.selecionado.in' => 'O valor de seleção para a equipe não é válido.',
-            'equipes.*.habilidade.string' => 'A habilidade deve ser um texto.',
-            'equipes.*.habilidade.max' => 'A habilidade deve ter no máximo :max caracteres.',
         ]);
 
-        try {
-            $pessoa = Auth::user()->pessoa;
-            Log::info('Pessoa autenticada para candidatura', array_merge($context, ['pessoa_id' => $pessoa->idt_pessoa]));
+        // remover as equipes que não foram marcadas
+        $equipesSelecionadas = array_filter($dados['equipes'], function ($item) {
+            return isset($item['selecionado']) && $item['selecionado'] == '1';
+        });
 
-            $this->voluntarioService->candidatura(
-                $dados['equipes'],
-                $dados['idt_evento'],
-                $pessoa
-            );
-
-            $duration = round((microtime(true) - $start) * 1000, 2);
-            Log::notice('Candidaturas de trabalhador enviadas com sucesso', array_merge($context, [
-                'pessoa_id' => $pessoa->idt_pessoa,
-                'evento_id' => $dados['idt_evento'],
-                'duration_ms' => $duration,
-            ]));
-
-            return redirect()
-                ->route('eventos.index')
-                ->with('success', 'Suas candidaturas foram enviadas com sucesso! Entraremos em contato em breve.');
-        } catch (ValidationException $e) {
-            $duration = round((microtime(true) - $start) * 1000, 2);
-            Log::warning('Erro de validação ao registrar candidatura de trabalhador', array_merge($context, [
-                'erros' => $e->errors(),
-                'duration_ms' => $duration,
-            ]));
-
-            return back()->withErrors($e->errors())->withInput();
-        } catch (\DomainException $e) {
-            $duration = round((microtime(true) - $start) * 1000, 2);
-            Log::warning('Erro de validação ao registrar candidatura de trabalhador', array_merge($context, [
-                'erros' => $e->errors(),
-                'duration_ms' => $duration,
-            ]));
-
-            return back()->withErrors([
-                'equipes' => $e->getMessage(),
-            ])->withInput();
-        } catch (\Exception $e) {
-            $duration = round((microtime(true) - $start) * 1000, 2);
-            Log::error('Erro geral ao registrar candidatura de trabalhador', array_merge($context, [
-                'exception' => get_class($e),
-                'message' => $e->getMessage(),
-                'duration_ms' => $duration,
-            ]));
-
-            return back()->with('error', 'Ocorreu um erro ao registrar suas candidaturas. Por favor, tente novamente.')->withInput();
+        if (empty($equipesSelecionadas)) {
+            return back()->withErrors(['equipes' => 'Você precisa selecionar pelo menos uma equipe.'])->withInput();
         }
+
+        $this->voluntarioService->candidatura(
+            $equipesSelecionadas,
+            $dados['idt_evento'],
+            $pessoa
+        );
+
+        $duration = round((microtime(true) - $start) * 1000, 2);
+        Log::notice('Candidatura de trabalhador registrada com sucesso', array_merge($context, [
+            'evento_id' => $dados['idt_evento'],
+            'total_equipes_processadas' => count($equipesSelecionadas),
+            'duration_ms' => $duration,
+        ]));
+
+        return redirect()->route('eventos.index', ['evento' => $dados['idt_evento']])->with('success', 'Candidatura registrada com sucesso!');
     }
 
     public function mount(Request $request): View

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Ficha;
 use App\Models\FichaSGM;
 use App\Models\TipoResponsavel;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -14,7 +13,7 @@ class FichaSGMFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_ficha' => Ficha::factory(),
+            'idt_ficha' => null, // Será preenchido pelo Seeder para evitar recursividade
             'idt_falar_com' => TipoResponsavel::inRandomOrder()->first()?->idt_responsavel,
             'des_mora_quem' => $this->faker->words(3, true),
             'nom_pai' => $this->faker->name('male'),

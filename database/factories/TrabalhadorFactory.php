@@ -15,9 +15,9 @@ class TrabalhadorFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_pessoa' => Pessoa::factory(),
-            'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento,
-            'idt_equipe' => TipoEquipe::inRandomOrder()->first()?->idt_equipe,
+            'idt_pessoa' => Pessoa::inRandomOrder()->first()?->idt_pessoa ?? Pessoa::factory(),
+            'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento ?? Evento::factory(),
+            'idt_equipe' => TipoEquipe::inRandomOrder()->first()?->idt_equipe ?? TipoEquipe::factory(),
             'ind_coordenador' => $this->faker->boolean(20),
             'ind_primeira_vez' => $this->faker->boolean(50),
             'ind_avaliacao' => $this->faker->boolean(30),
@@ -26,6 +26,8 @@ class TrabalhadorFactory extends Factory
             'ind_destaque' => $this->faker->boolean(30),
             'ind_camiseta_pediu' => $this->faker->boolean(),
             'ind_camiseta_pagou' => $this->faker->boolean(),
+            'ind_taxa_pagou' => $this->faker->boolean(),
+            'ind_presente' => $this->faker->boolean(),
         ];
     }
 }
