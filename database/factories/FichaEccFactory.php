@@ -27,6 +27,7 @@ class FichaEccFactory extends Factory
             // ── Cônjuge ───────────────────────────────────────────────────────
             'nom_conjuge'           => $this->faker->name(),
             'nom_apelido_conjuge'   => $this->faker->firstName(),
+            'cpf_conjuge'           => $this->faker->cpf(),
             'tip_genero_conjuge'    => $this->faker->randomElement(Genero::cases())->value,
             'dat_nascimento_conjuge' => Carbon::parse(
                 $this->faker->dateTimeBetween('-70 years', '-20 years')

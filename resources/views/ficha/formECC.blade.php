@@ -1,38 +1,55 @@
 <x-layouts.public :title="'Ficha do ECC'">
     <section class="px-4 py-6 w-full max-w-3xl mx-auto" aria-labelledby="page-title">
+         @php
+            $eventosJson = json_encode((object) $eventos->mapWithKeys(fn($e) => [
+                (string)$e->idt_evento => [
+                    'faixa' => $e->tip_faixa_etaria?->label() ?? 'Livre',
+                    'data_limite' => $e->dat_limite_inscricao?->format('d/m/Y') ?? '--/--/----',
+                    'vaga' => $e->qtd_vaga,
+                    'valor' => number_format($e->val_venista, 2, ',', '.'),
+                    'dat_inicio'  => $e->dat_inicio?->format('d/m/Y') ?? '--/--/----',
+                    'dat_termino' => $e->dat_termino?->format('d/m/Y') ?? '--/--/----'
+                ]
+            ])->all());
+        @endphp
 
         <div x-data="{ 
-                bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }}, 
-                enviando: false,
-                qtdFilhos: {{ old('qtd_filhos', $ficha->fichaEcc?->qtd_filhos ?? 0) }},
-                filhos: {{ Js::from(old('filhos', $ficha->fichaEcc?->filhos?->map(fn($f) => [
-                    'cpf_filho'            => $f->cpf_filho,
-                    'nom_filho'            => $f->nom_filho,
-                    'tel_filho'            => $f->tel_filho,
-                    'eml_filho'            => $f->eml_filho,
-                    'dat_nascimento_filho' => $f->dat_nascimento_filho?->format('Y-m-d'),
-                ])->toArray() ?? [])) }},
-            }">
+            bloqueado: {{ ($ficha->ind_aprovado ?? false) ? 'true' : 'false' }}, 
+            enviando: false,
+            selectedEventoId: '{{ old('idt_evento', $ficha->idt_evento ?? '') }}',
+            eventosData: {{ $eventosJson }},
+            get info() {
+                return this.eventosData[String(this.selectedEventoId)] || { faixa: '---', data_limite: '---', vaga: '---', valor: '0,00' };
+            },
+            qtdFilhos: {{ old('qtd_filhos', $ficha->fichaEcc?->qtd_filhos ?? 0) }},
+            filhos: {{ Js::from(old('filhos', $ficha->fichaEcc?->filhos?->map(fn($f) => [
+                'cpf_filho'            => $f->cpf_filho,
+                'nom_filho'            => $f->nom_filho,
+                'tel_filho'            => $f->tel_filho,
+                'eml_filho'            => $f->eml_filho,
+                'dat_nascimento_filho' => $f->dat_nascimento_filho?->format('Y-m-d'),
+            ])->toArray() ?? [])) }},
+        }">
 
-        {{-- ===== CABE�ALHO ===== --}}
+        {{-- ===== CABEÇALHO ===== --}}
         <div class="mb-6 space-y-4">
             <div>
                 <h1 id="page-title" class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Ficha do ECC</h1>
-                <p class="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">Par�quia Nossa Senhora do Lago</p>
+                <p class="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">Paróquia Nossa Senhora do Lago</p>
             </div>
 
             {{-- Etapas --}}
             <div class="bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-4">
                 <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Como funciona</p>
-                <ol class="flex flex-col sm:flex-row gap-4" aria-label="Etapas do processo de inscri��o">
+                <ol class="flex flex-col sm:flex-row gap-4" aria-label="Etapas do processo de inscrição">
                     <li class="flex-1 flex items-start gap-3">
                         <span
                             class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center justify-center shrink-0"
                             aria-hidden="true">1</span>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Pr�-inscri��o</p>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Pré-inscrição</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Preencha esta ficha e fique
-                                atento �s informa��es enviadas por email</p>
+                                atento às informações enviadas por email</p>
                         </div>
                     </li>
                     <li class="hidden sm:flex items-center text-gray-300 dark:text-zinc-600" aria-hidden="true">
@@ -43,12 +60,12 @@
                             class="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center justify-center shrink-0"
                             aria-hidden="true">2</span>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Sele��o de fichas</p>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Seleção de fichas</p>
                             <ul class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 space-y-0.5"
-                                aria-label="Crit�rios de sele��o">
-                                <li>� Casais comprometidos com a par�quia</li>
-                                <li>� Prefer�ncia por casamentos mais recentes</li>
-                                <li>� Paroquianos do Lago Norte</li>
+                                aria-label="Critérios de seleção">
+                                <li>• Casais comprometidos com a paróquia</li>
+                                <li>• Preferência por casamentos mais recentes</li>
+                                <li>• Paroquianos do Lago Norte</li>
                             </ul>
                         </div>
                     </li>
@@ -60,7 +77,7 @@
                             class="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold flex items-center justify-center shrink-0"
                             aria-hidden="true">3</span>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Confirma��o</p>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Confirmação</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Contato por email ou WhatsApp</p>
                         </div>
                     </li>
@@ -68,7 +85,7 @@
             </div>
         </div>
 
-        {{-- Bot�o voltar (admin) --}}
+        {{-- Botão voltar (admin) --}}
         @if (Auth::user()?->isAdmin())
             <div class="flex justify-end mb-4">
                 <a href="{{ route('ecc.index') }}"
@@ -119,16 +136,16 @@
 
                         {{-- CPF --}}
                         <div>
-                            <label for="cpf_pessoa"
+                            <label for="cpf_candidato"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
-                            <input type="text" name="cpf_pessoa" id="cpf_pessoa"
+                            <input type="text" name="cpf_candidato" id="cpf_candidato"
                                 x-bind:disabled="bloqueado" required maxlength="14" autocomplete="off"
-                                value="{{ old('cpf_pessoa', $ficha->cpf_pessoa) }}"
+                                value="{{ old('cpf_candidato', $ficha->cpf_candidato) }}"
                                 placeholder="000.000.000-00" aria-required="true"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('cpf_pessoa') border-red-500 @enderror" />
-                            @error('cpf_pessoa')
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('cpf_candidato') border-red-500 @enderror" />
+                            @error('cpf_candidato')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                             @enderror
                         </div>
@@ -137,7 +154,7 @@
                         <div>
                             <label for="nom_candidato"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Nome completo <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Nome completo <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <input type="text" name="nom_candidato" id="nom_candidato"
                                 x-bind:disabled="bloqueado" required maxlength="255" autocomplete="name"
@@ -153,7 +170,7 @@
                         <div>
                             <label for="nom_apelido"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Apelido / Nome usual
+                                Apelido 
                             </label>
                             <input type="text" name="nom_apelido" id="nom_apelido"
                                 x-bind:disabled="bloqueado" maxlength="100"
@@ -169,7 +186,7 @@
                         <div>
                             <label for="tip_genero"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Sexo <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Sexo <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <select name="tip_genero" id="tip_genero" required x-bind:disabled="bloqueado"
                                 aria-required="true"
@@ -177,7 +194,7 @@
                                 <option value="">Selecione o sexo</option>
                                 @foreach(\App\Enums\Genero::cases() as $genero)
                                     <option value="{{ $genero->value }}"
-                                        {{ old('tip_genero', $ficha->tip_genero) == $genero->value ? 'selected' : '' }}>
+                                        {{ old('tip_genero', $ficha->tip_genero?->value) == $genero->value ? 'selected' : '' }}>
                                         {{ $genero->label() }}
                                     </option>
                                 @endforeach
@@ -191,7 +208,7 @@
                         <div>
                             <label for="dat_nascimento"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Data de Nascimento <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Data de Nascimento <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <input type="date" name="dat_nascimento" id="dat_nascimento"
                                 x-bind:disabled="bloqueado" required autocomplete="bday"
@@ -223,7 +240,7 @@
                         <div>
                             <label for="eml_candidato"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Email <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Email <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <input type="email" name="eml_candidato" id="eml_candidato"
                                 x-bind:disabled="bloqueado" required maxlength="255" autocomplete="email"
@@ -235,23 +252,23 @@
                             @enderror
                         </div>
 
-                        {{-- Profiss�o --}}
+                        {{-- Profissão --}}
                         <div>
                             <label for="nom_profissao"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Profiss�o
+                                Profissão
                             </label>
                             <input type="text" name="nom_profissao" id="nom_profissao"
                                 x-bind:disabled="bloqueado" maxlength="150"
                                 value="{{ old('nom_profissao', $ficha->nom_profissao) }}"
-                                placeholder="Sua profiss�o"
+                                placeholder="Sua profissão"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_profissao') border-red-500 @enderror" />
                             @error('nom_profissao')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        {{-- � cat�lico? --}}
+                        {{-- É católico? --}}
                         <div class="flex items-center gap-3">
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <input type="hidden" name="ind_catolico" value="0">
@@ -259,7 +276,7 @@
                                     x-bind:disabled="bloqueado"
                                     {{ old('ind_catolico', $ficha->ind_catolico) ? 'checked' : '' }}
                                     class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <span class="font-medium text-gray-700 dark:text-gray-300 text-sm sm:text-base">� cat�lico(a)?</span>
+                                <span class="font-medium text-gray-700 dark:text-gray-300 text-sm sm:text-base">É católico(a)?</span>
                             </label>
                         </div>
 
@@ -274,7 +291,7 @@
                                 <option value="">Selecione uma habilidade</option>
                                 @foreach(\App\Enums\HabilidadePrincipal::cases() as $habilidade)
                                     <option value="{{ $habilidade->value }}"
-                                        {{ old('tip_habilidade', $ficha->tip_habilidade) == $habilidade->value ? 'selected' : '' }}>
+                                        {{ old('tip_habilidade', $ficha->tip_habilidade?->value) == $habilidade->value ? 'selected' : '' }}>
                                         {{ $habilidade->label() }}
                                     </option>
                                 @endforeach
@@ -288,7 +305,7 @@
                         <div>
                             <label for="tam_camiseta"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Tamanho da Camiseta <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Tamanho da Camiseta <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <select name="tam_camiseta" id="tam_camiseta" required x-bind:disabled="bloqueado"
                                 aria-required="true"
@@ -296,7 +313,7 @@
                                 <option value="">Selecione o tamanho</option>
                                 @foreach(\App\Enums\TamanhoCamiseta::cases() as $tamanho)
                                     <option value="{{ $tamanho->value }}"
-                                        {{ old('tam_camiseta', $ficha->tam_camiseta) == $tamanho->value ? 'selected' : '' }}>
+                                        {{ old('tam_camiseta', $ficha->tam_camiseta?->value) == $tamanho->value ? 'selected' : '' }}>
                                         {{ $tamanho->value }}
                                     </option>
                                 @endforeach
@@ -309,18 +326,18 @@
                     </div>
                 </fieldset>
 
-                {{-- ===== DADOS DO(A) C�NJUGE ===== --}}
+                {{-- ===== DADOS DO(A) CÔNJUGE ===== --}}
                 <fieldset class="bg-white dark:bg-zinc-800 rounded-md shadow p-4 sm:p-6">
                     <legend class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                        Dados do(a) C�njuge
+                        Dados do(a) Cônjuge
                     </legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 
-                        {{-- Foto c�njuge --}}
+                        {{-- Foto cônjuge --}}
                         <div class="sm:col-span-2 flex flex-col items-center gap-3">
                             <div class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
                                 @if ($ficha->foto?->med_conjuge)
-                                    <img src="{{ Storage::url($ficha->foto->med_conjuge) }}" alt="Foto do c�njuge" class="w-full h-full object-cover" />
+                                    <img src="{{ Storage::url($ficha->foto->med_conjuge) }}" alt="Foto do cônjuge" class="w-full h-full object-cover" />
                                 @else
                                     <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500" aria-hidden="true" />
                                 @endif
@@ -338,11 +355,11 @@
                             </div>
                         </div>
 
-                        {{-- CPF c�njuge --}}
+                        {{-- CPF cônjuge --}}
                         <div>
                             <label for="cpf_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <input type="text" name="cpf_conjuge" id="cpf_conjuge"
                                 x-bind:disabled="bloqueado" required maxlength="14" autocomplete="off"
@@ -354,11 +371,11 @@
                             @enderror
                         </div>
 
-                        {{-- Nome c�njuge --}}
+                        {{-- Nome cônjuge --}}
                         <div>
                             <label for="nom_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Nome completo <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Nome completo <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <input type="text" name="nom_conjuge" id="nom_conjuge"
                                 x-bind:disabled="bloqueado" required maxlength="255" autocomplete="off"
@@ -370,11 +387,11 @@
                             @enderror
                         </div>
 
-                        {{-- Apelido c�njuge --}}
+                        {{-- Apelido cônjuge --}}
                         <div>
                             <label for="nom_apelido_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Apelido / Nome usual
+                                Apelido 
                             </label>
                             <input type="text" name="nom_apelido_conjuge" id="nom_apelido_conjuge"
                                 x-bind:disabled="bloqueado" maxlength="100"
@@ -386,11 +403,11 @@
                             @enderror
                         </div>
 
-                        {{-- Sexo c�njuge --}}
+                        {{-- Sexo cônjuge --}}
                         <div>
                             <label for="tip_genero_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Sexo <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Sexo <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <select name="tip_genero_conjuge" id="tip_genero_conjuge" required x-bind:disabled="bloqueado"
                                 aria-required="true"
@@ -408,11 +425,11 @@
                             @enderror
                         </div>
 
-                        {{-- Data de Nascimento c�njuge --}}
+                        {{-- Data de Nascimento cônjuge --}}
                         <div>
                             <label for="dat_nascimento_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Data de Nascimento <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Data de Nascimento <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <input type="date" name="dat_nascimento_conjuge" id="dat_nascimento_conjuge"
                                 x-bind:disabled="bloqueado" required autocomplete="off"
@@ -424,7 +441,7 @@
                             @enderror
                         </div>
 
-                        {{-- Celular c�njuge --}}
+                        {{-- Celular cônjuge --}}
                         <div>
                             <label for="tel_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
@@ -440,7 +457,7 @@
                             @enderror
                         </div>
 
-                        {{-- Email c�njuge --}}
+                        {{-- Email cônjuge --}}
                         <div>
                             <label for="eml_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
@@ -456,23 +473,23 @@
                             @enderror
                         </div>
 
-                        {{-- Profiss�o c�njuge --}}
+                        {{-- Profissão cônjuge --}}
                         <div>
                             <label for="nom_profissao_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Profiss�o
+                                Profissão
                             </label>
                             <input type="text" name="nom_profissao_conjuge" id="nom_profissao_conjuge"
                                 x-bind:disabled="bloqueado" maxlength="150"
                                 value="{{ old('nom_profissao_conjuge', $ficha->fichaEcc?->nom_profissao_conjuge) }}"
-                                placeholder="Profiss�o do c�njuge"
+                                placeholder="Profissão do cônjuge"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_profissao_conjuge') border-red-500 @enderror" />
                             @error('nom_profissao_conjuge')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        {{-- � cat�lico? c�njuge --}}
+                        {{-- É católico? cônjuge --}}
                         <div class="flex items-center gap-3">
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <input type="hidden" name="ind_catolico_conjuge" value="0">
@@ -480,11 +497,11 @@
                                     x-bind:disabled="bloqueado"
                                     {{ old('ind_catolico_conjuge', $ficha->fichaEcc?->ind_catolico_conjuge) ? 'checked' : '' }}
                                     class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <span class="font-medium text-gray-700 dark:text-gray-300 text-sm sm:text-base">� cat�lico(a)?</span>
+                                <span class="font-medium text-gray-700 dark:text-gray-300 text-sm sm:text-base">É católico(a)?</span>
                             </label>
                         </div>
 
-                        {{-- Habilidade Principal c�njuge --}}
+                        {{-- Habilidade Principal cônjuge --}}
                         <div>
                             <label for="tip_habilidade_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
@@ -505,11 +522,11 @@
                             @enderror
                         </div>
 
-                        {{-- Tamanho da Camiseta c�njuge --}}
+                        {{-- Tamanho da Camiseta cônjuge --}}
                         <div>
                             <label for="tam_camiseta_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Tamanho da Camiseta <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Tamanho da Camiseta <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <select name="tam_camiseta_conjuge" id="tam_camiseta_conjuge" required x-bind:disabled="bloqueado"
                                 aria-required="true"
@@ -530,10 +547,10 @@
                     </div>
                 </fieldset>
 
-                {{-- ===== INFORMA��ES COMUNS ===== --}}
+                {{-- ===== OUTRAS INFORMAÇÕES ===== --}}
                 <fieldset class="bg-white dark:bg-zinc-800 rounded-md shadow p-4 sm:p-6">
                     <legend class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                        Informa��es Comuns
+                        Outras informações
                     </legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 
@@ -555,7 +572,7 @@
                                 @endforeach
                             </select>
                             <p id="idt_movimento_hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">Filtra as
-                                op��es de evento dispon�veis.</p>
+                                opções de evento disponíveis.</p>
                             @error('idt_movimento')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                             @enderror
@@ -563,26 +580,30 @@
 
                         {{-- Evento --}}
                         <div>
-                            <label for="idt_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">Evento</label>
+                            <label for="idt_evento" ...>Evento</label>
                             <select name="idt_evento" id="idt_evento" 
                                 x-model="selectedEventoId"
                                 x-bind:disabled="bloqueado"
                                 required
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 @error('idt_evento') border-red-500 @enderror">
                                 <option value="">Selecione um evento</option>
                                 @foreach ($eventos as $evento)
-                                    <option value="{{ $evento->idt_evento }}">
+                                    <option value="{{ $evento->idt_evento }}"
+                                        {{ old('idt_evento', $ficha->idt_evento) == $evento->idt_evento ? 'selected' : '' }}>
                                         {{ $evento->des_evento }} - {{ $evento->dat_inicio->format('d/m/Y') }}
                                     </option>
                                 @endforeach
                             </select>
+                            @error('idt_evento')
+                                <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         {{-- Regime / Estado Civil --}}
                         <div>
                             <label for="tip_estado_civil"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Regime <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                Regime <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <select name="tip_estado_civil" id="tip_estado_civil" required x-bind:disabled="bloqueado"
                                 aria-required="true"
@@ -600,16 +621,16 @@
                             @enderror
                         </div>
 
-                        {{-- Par�quia que frequentam --}}
+                        {{-- Paróquia que frequentam --}}
                         <div>
                             <label for="nom_paroquia"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Par�quia que frequentam
+                                Paróquia que frequentam
                             </label>
                             <input type="text" name="nom_paroquia" id="nom_paroquia"
                                 x-bind:disabled="bloqueado" maxlength="150"
                                 value="{{ old('nom_paroquia', $ficha->fichaEcc?->nom_paroquia) }}"
-                                placeholder="Nome da par�quia"
+                                placeholder="Nome da paróquia"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_paroquia') border-red-500 @enderror" />
                             @error('nom_paroquia')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
@@ -624,10 +645,10 @@
                             </label>
                             <select name="tip_como_soube" id="tip_como_soube" x-bind:disabled="bloqueado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_como_soube') border-red-500 @enderror">
-                                <option value="">Selecione uma op��o</option>
+                                <option value="">Selecione uma opção</option>
                                 @foreach(\App\Enums\ComoSoube::cases() as $comoSoube)
                                     <option value="{{ $comoSoube->value }}"
-                                        {{ old('tip_como_soube', $ficha->tip_como_soube) == $comoSoube->value ? 'selected' : '' }}>
+                                        {{ old('tip_como_soube', $ficha->tip_como_soube?->value) == $comoSoube->value ? 'selected' : '' }}>
                                         {{ $comoSoube->label() }}
                                     </option>
                                 @endforeach
@@ -637,16 +658,16 @@
                             @enderror
                         </div>
 
-                        {{-- Endere�o --}}
+                        {{-- Endereço --}}
                         <div class="sm:col-span-2">
                             <label for="des_endereco"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Endere�o
+                                Endereço
                             </label>
                             <input type="text" name="des_endereco" id="des_endereco" x-bind:disabled="bloqueado"
                                 maxlength="255" autocomplete="street-address"
                                 value="{{ old('des_endereco', $ficha->des_endereco) }}"
-                                placeholder="Rua, n�mero, bairro, cidade"
+                                placeholder="Rua, número, bairro, cidade"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('des_endereco') border-red-500 @enderror" />
                             @error('des_endereco')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
@@ -668,11 +689,11 @@
                             @enderror
                         </div>
 
-                        {{-- N� de filhos --}}
+                        {{-- Nº de filhos --}}
                         <div>
                             <label for="qtd_filhos"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                N� de filhos
+                                Nº de filhos
                             </label>
                             <input type="number" name="qtd_filhos" id="qtd_filhos"
                                 x-bind:disabled="bloqueado" min="0" max="20"
@@ -684,20 +705,20 @@
                             @enderror
                         </div>
 
-                        {{-- Fale um pouco sobre voc�s --}}
+                        {{-- Fale um pouco sobre vocês --}}
                         <div class="sm:col-span-2">
                             <label for="txt_observacao"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Falem um pouco sobre voc�s
+                                Falem um pouco sobre vocês
                             </label>
                             <textarea name="txt_observacao" id="txt_observacao" rows="4" maxlength="1000"
                                 x-bind:disabled="bloqueado"
-                                placeholder="Participam de outros movimentos? Quais habilidades voc�s podem contribuir com a par�quia? Moram h� quanto tempo na regi�o?"
+                                placeholder="Participam de outros movimentos? Quais habilidades vocês podem contribuir com a paróquia? Moram há quanto tempo na região?"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm sm:text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('txt_observacao') border-red-500 @enderror">{{ old('txt_observacao', $ficha->txt_observacao) }}</textarea>
                             @error('txt_observacao')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                             @enderror
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">M�ximo de 1000 caracteres</p>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Máximo de 1000 caracteres</p>
                         </div>
 
                     </div>
@@ -713,7 +734,7 @@
                             <template x-for="(filho, index) in Array.from({ length: qtdFilhos })" :key="index">
                                 <div class="border border-gray-200 dark:border-zinc-700 rounded-md p-4">
                                     <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3"
-                                        x-text="`${index + 1}� filho(a)`"></p>
+                                        x-text="`${index + 1}º filho(a)`"></p>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
 
                                         {{-- CPF filho --}}
@@ -787,7 +808,7 @@
                     </fieldset>
                 </div>
 
-                {{-- ===== SA�DE E RESTRI��ES ===== --}}
+                {{-- ===== SAÚDE E RESTRIÇÕES ===== --}}
                 <div x-data="{ mostrarRestricoes: {{ old('ind_restricao', $ficha->ind_restricao ?? false) ? 'true' : 'false' }} }">
                     <label
                         class="flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors
@@ -803,11 +824,11 @@
                         </div>
                         <div>
                             <span class="block font-semibold text-amber-800 dark:text-amber-300">
-                                Informa��es de sa�de
+                                Informações de saúde
                             </span>
                             <span id="saude-hint" class="text-sm text-amber-700 dark:text-amber-400">
-                                H� alguma informa��o sobre sa�de que julgam importante sabermos? (alergias,
-                                restri��es alimentares, necessidades especiais)
+                                Há alguma informação sobre saúde que julgam importante sabermos? (alergias,
+                                restrições alimentares, necessidades especiais)
                             </span>
                         </div>
                         <x-heroicon-o-heart class="w-6 h-6 text-amber-400 dark:text-amber-500 ml-auto shrink-0"
@@ -816,9 +837,9 @@
 
                     <div x-show="mostrarRestricoes" x-transition
                         class="mt-3 bg-gray-50 dark:bg-zinc-700 rounded-md p-4" role="region"
-                        aria-label="Restri��es e Alergias">
+                        aria-label="Restrições e Alergias">
                         <h3 class="text-base sm:text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">
-                            Restri��es e Alergias
+                            Restrições e Alergias
                         </h3>
                         <div class="space-y-4">
                             @php
@@ -889,9 +910,9 @@
                                     class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 @error('ind_consentimento') border-red-500 @enderror">
                             </div>
                             <span class="text-sm sm:text-base text-gray-800 dark:text-gray-100">
-                                Estamos cientes de que <strong>N�O � PERMITIDO</strong> sair durante o encontro nem
+                                Estamos cientes de que <strong>NÃO É PERMITIDO</strong> sair durante o encontro nem
                                 levar o celular para o ECC.
-                                <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigat�rio)</span>
+                                <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </span>
                         </label>
                         @error('ind_consentimento')
@@ -903,20 +924,20 @@
                         <label for="txt_observacao"
                             class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
                             Com sinceridade na resposta (confidencial): quais os maiores problemas / dificuldades e por
-                            que voc�s querem participar do ECC?
+                            que vocês querem participar do ECC?
                         </label>
                         <textarea name="txt_observacao" id="txt_observacao" rows="4" maxlength="1000" x-bind:disabled="bloqueado"
-                            aria-describedby="txt_observacao_hint" placeholder="Escrevam com sinceridade. Essa resposta � confidencial."
+                            aria-describedby="txt_observacao_hint" placeholder="Escrevam com sinceridade. Essa resposta é confidencial."
                             class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-sm sm:text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('txt_observacao') border-red-500 @enderror">{{ old('txt_observacao', $ficha->txt_observacao) }}</textarea>
                         @error('txt_observacao')
                             <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                         @enderror
-                        <p id="txt_observacao_hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">M�ximo de
+                        <p id="txt_observacao_hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">Máximo de
                             1000 caracteres</p>
                     </div>
                 </fieldset>
 
-                {{-- ===== A��ES ===== --}}
+                {{-- ===== AÇÕES ===== --}}
                 <div class="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
                     <button type="submit" x-bind:disabled="bloqueado || enviando"
                         class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
@@ -930,18 +951,94 @@
                                 {{ $ficha->ind_aprovado
                                     ? 'bg-red-500 hover:bg-red-600 focus:ring-red-500'
                                     : 'bg-green-500 hover:bg-green-600 focus:ring-green-500' }}"
-                            aria-label="{{ $ficha->ind_aprovado ? 'Desfazer aprova��o desta ficha' : 'Aprovar esta ficha' }}">
+                            aria-label="{{ $ficha->ind_aprovado ? 'Desfazer aprovação desta ficha' : 'Aprovar esta ficha' }}">
                             @if ($ficha->ind_aprovado)
                                 <x-heroicon-o-x-mark class="w-5 h-5 mr-2" aria-hidden="true" />
                             @else
                                 <x-heroicon-o-check class="w-5 h-5 mr-2" aria-hidden="true" />
                             @endif
-                            {{ $ficha->ind_aprovado ? 'Desfazer aprova��o' : 'Aprovar' }}
+                            {{ $ficha->ind_aprovado ? 'Desfazer aprovação' : 'Aprovar' }}
                         </a>
                     @endif
                 </div>
             </form>
 
+            <fieldset class="bg-white dark:bg-zinc-800 rounded-md shadow p-4 sm:p-6">
+                <legend class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    Resumindo</legend>
+                    {{-- Cards de informações rápidas --}}
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3" role="list" aria-label="Informações do evento">
+                    <div role="listitem" class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
+                        <x-heroicon-o-users class="w-5 h-5 text-blue-500 shrink-0" />
+                        <div>
+                            <p class="text-xs text-gray-500">Público</p>
+                            <p class="text-xs sm:text-sm font-medium" x-text="info.faixa"></p>
+                        </div>
+                    </div>
+
+                    <div role="listitem" class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
+                        <x-heroicon-o-calendar class="w-5 h-5 text-red-500 shrink-0" />
+                        <div>
+                            <p class="text-xs text-gray-500">Inscrições até</p>
+                            <p class="text-xs sm:text-sm font-medium" x-text="info.data_limite"></p>
+                        </div>
+                    </div>
+
+                    <div role="listitem" class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
+                        <x-heroicon-o-ticket class="w-5 h-5 text-green-500 shrink-0" />
+                        <div>
+                            <p class="text-xs text-gray-500">Vagas</p>
+                            <p class="text-xs sm:text-sm font-medium"><span x-text="info.vaga"></span> vagas</p>
+                        </div>
+                    </div>
+
+                    <div role="listitem" class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
+                        <x-heroicon-o-currency-dollar class="w-5 h-5 text-yellow-500 shrink-0" />
+                        <div>
+                            <p class="text-xs text-gray-500">Taxa</p>
+                            <p class="text-xs sm:text-sm font-medium">R$ <span x-text="info.valor"></span></p>
+                        </div>
+                    </div>
+                </div>
+                {{-- Datas, local, roupas, garrafinha --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    <div class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
+                        <x-heroicon-o-calendar-days class="w-5 h-5 text-purple-500 shrink-0 mt-0.5" aria-hidden="true" />
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Datas</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-100">
+                                De <span class="font-semibold" x-text="info.dat_inicio"></span> a <span class="font-semibold" x-text="info.dat_termino"></span> 
+                            </p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
+                        <x-heroicon-o-map-pin class="w-5 h-5 text-rose-500 shrink-0 mt-0.5" aria-hidden="true" />
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Local</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Paróquia Nossa Senhora do Lago
+                            </p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
+                        <x-heroicon-o-sparkles class="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" aria-hidden="true" />
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Roupas</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Leves e adequadas para a capela
+                            </p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
+                        <x-heroicon-o-beaker class="w-5 h-5 text-cyan-500 shrink-0 mt-0.5" aria-hidden="true" />
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Lembrete</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Leve sua garrafinha</p>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
         @else
             <div role="status" aria-live="polite">
                 <div
@@ -949,8 +1046,8 @@
                     <x-heroicon-o-user-group class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4"
                         aria-hidden="true" />
                     <p class="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300">Nenhum evento
-                        dispon�vel no momento</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Em breve abriremos novas inscri��es</p>
+                        disponível no momento</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Em breve abriremos novas inscrições</p>
                 </div>
             </div>
         @endif

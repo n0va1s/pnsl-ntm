@@ -95,6 +95,7 @@ class FichaEccController extends Controller
         $ficha = Ficha::create($request->only([
             'idt_evento',
             'tip_genero',
+            'cpf_candidato',
             'nom_candidato',
             'nom_apelido',
             'dat_nascimento',
@@ -206,9 +207,9 @@ class FichaEccController extends Controller
     public function edit($id)
     {
         Log::info('Acesso ao formulário de edição de ficha ECC', array_merge($this->getLogContext(request()), ['ficha_id' => $id]));
-
+        
         $ficha = Ficha::with(['fichaEcc.filhos', 'fichaSaude', 'foto'])->findOrFail($id);
-
+        
         return view('ficha.formECC', array_merge(
             $this->fichaService::dadosFixosFicha($ficha),
             [
@@ -238,6 +239,7 @@ class FichaEccController extends Controller
         $ficha->update($request->only([
             'idt_evento',
             'tip_genero',
+            'cpf_candidato',
             'nom_candidato',
             'nom_apelido',
             'dat_nascimento',
@@ -248,6 +250,7 @@ class FichaEccController extends Controller
             'tam_camiseta',
             'tip_como_soube',
             'tip_habilidade',
+            'nom_profissao',
             'ind_catolico',
             'ind_toca_instrumento',
             'ind_consentimento',
