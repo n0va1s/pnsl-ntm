@@ -739,7 +739,7 @@
                             @else
                                 <x-heroicon-o-check class="w-5 h-5 mr-2" aria-hidden="true" />
                             @endif
-                            {{ $ficha->ind_aprovado ? 'Desfazer aprovação' : 'Aprovar' }}
+                            {{ $ficha->ind_aprovado ? 'Pendente' : 'Aprovar' }}
                         </a>
                     @endif
                 </div>

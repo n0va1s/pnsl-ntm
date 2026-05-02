@@ -16,7 +16,7 @@ new class extends Component {
     {
         $ficha = \App\Services\FichaService::atualizarAprovacaoFicha($fichaId);
 
-        $status = $ficha->ind_aprovado ? 'aprovada' : 'colocada como pendente';
+        $status = $ficha->ind_aprovado ? 'aprovada' : 'pendente';
         $visual = $ficha->ind_aprovado ? 'sucesso' : 'info';
 
         $this->dispatch('notify', 

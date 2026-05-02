@@ -310,4 +310,11 @@ class FichaVemController extends Controller
                 ->with('error', 'Erro ao tentar excluir a ficha.');
         }
     }
+
+    public function approve($id)
+    {
+        $ficha = FichaService::atualizarAprovacaoFicha($id);
+
+        return redirect()->route('vem.index')->with('success', 'Ficha aprovada com sucesso!');
+    }
 }

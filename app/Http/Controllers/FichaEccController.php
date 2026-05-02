@@ -373,4 +373,11 @@ class FichaEccController extends Controller
             return redirect()->route('ecc.index')->with('error', $msg);
         }
     }
+
+    public function approve($id)
+    {
+        $ficha = FichaService::atualizarAprovacaoFicha($id);
+
+        return redirect()->route('ecc.index')->with('success', 'Ficha aprovada com sucesso!');
+    }
 }
