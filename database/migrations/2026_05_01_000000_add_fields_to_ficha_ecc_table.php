@@ -17,8 +17,7 @@ return new class extends Migration
         Schema::table('ficha_ecc', function (Blueprint $table) {
 
             // ── Cônjuge ──────────────────────────────────────────────────────
-            $table->string('nom_apelido_conjuge', 100)->nullable()->after('nom_conjuge');
-            $table->string('tip_genero_conjuge', 3)->nullable()->after('nom_apelido_conjuge');
+            $table->string('tip_genero_conjuge', 3)->nullable();
             $table->string('eml_conjuge', 255)->nullable()->after('tel_conjuge');
             $table->string('nom_profissao_conjuge', 255)->nullable()->after('eml_conjuge');
             $table->boolean('ind_catolico_conjuge')->default(false)->after('nom_profissao_conjuge');
@@ -32,7 +31,7 @@ return new class extends Migration
         });
 
         // ── Foto do cônjuge em pessoa_foto ────────────────────────────────────
-        Schema::table('ficha_foto', function (Blueprint $table) {
+        Schema::create('ficha_foto', function (Blueprint $table) {
             $table->foreignId('idt_ficha')
                 ->constrained('ficha', 'idt_ficha')
                 ->onDelete('cascade');
@@ -52,7 +51,6 @@ return new class extends Migration
     {
         Schema::table('ficha_ecc', function (Blueprint $table) {
             $table->dropColumn([
-                'nom_apelido_conjuge',
                 'tip_genero_conjuge',
                 'eml_conjuge',
                 'nom_profissao_conjuge',

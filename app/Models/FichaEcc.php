@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\ComoSoube;
 use App\Enums\EstadoCivil;
 use App\Enums\Genero;
 use App\Enums\HabilidadePrincipal;
@@ -23,6 +22,7 @@ class FichaEcc extends Model
     protected $fillable = [
         'idt_ficha',
         // Cônjuge
+        'cpf_conjuge',
         'nom_conjuge',
         'nom_apelido_conjuge',
         'tip_genero_conjuge',

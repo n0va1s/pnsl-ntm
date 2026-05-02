@@ -81,13 +81,13 @@ new class extends Component {
 
                 <flux:table.cell align="end">
                     <div class="flex justify-end gap-2">
-                        <flux:button variant="ghost" size="sm" icon="pencil-square"
-                            href="{{ route('vem.edit', $ficha) }}" title="Editar Ficha" />
+                        <flux:button variant="ghost" size="sm" icon="eye"
+                            href="{{ route('vem.show', $ficha) }}" title="Ver Detalhes" />
 
                         <flux:dropdown>
                             <flux:button variant="ghost" size="sm" icon="ellipsis-vertical" />
                             <flux:menu>
-                                <flux:menu.item icon="eye">Ver Detalhes</flux:menu.item>
+                                <flux:menu.item icon="pencil-square">Alterar</flux:menu.item>
                                 <flux:menu.item icon="printer">Imprimir</flux:menu.item>
                                 <flux:menu.separator />
                                 <flux:menu.item variant="danger" icon="trash"
