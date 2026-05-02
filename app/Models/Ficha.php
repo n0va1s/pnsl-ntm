@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ComoSoube;
+use App\Enums\HabilidadePrincipal;
 use App\Enums\Genero;
 use App\Enums\TamanhoCamiseta;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,9 +29,11 @@ class Ficha extends Model
         'dat_nascimento',
         'tel_candidato',
         'eml_candidato',
+        'nom_profissao',
         'des_endereco',
         'tam_camiseta',
         'tip_como_soube',
+        'tip_habilidade',
         'ind_catolico',
         'ind_toca_instrumento',
         'ind_consentimento',
@@ -49,6 +52,7 @@ class Ficha extends Model
         'ind_aprovado' => 'boolean',
         'ind_restricao' => 'boolean',
         'tip_como_soube' => ComoSoube::class,
+        'tip_habilidade' => HabilidadePrincipal::class,
         'tam_camiseta' => TamanhoCamiseta::class,
         'tip_genero' => Genero::class,
     ];
@@ -102,6 +106,11 @@ class Ficha extends Model
     public function fichaSaude()
     {
         return $this->hasMany(FichaSaude::class, 'idt_ficha');
+    }
+
+    public function foto()
+    {
+        return $this->hasOne(FichaFoto::class, 'idt_ficha');
     }
 
     public function getDataNascimentoFormatada()

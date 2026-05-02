@@ -17,7 +17,7 @@ class FichaRequest extends FormRequest
             'idt_evento' => 'required|exists:evento,idt_evento',
             'tip_genero' => 'required|string|max:3',
             'nom_candidato' => 'required|string|max:255',
-            'nom_apelido' => 'required|string|max:255',
+            'nom_apelido' => 'nullable|string|max:255',
             'dat_nascimento' => 'required|date',
             'tel_candidato' => 'nullable|string|max:20',
             'eml_candidato' => 'required|email|max:255',

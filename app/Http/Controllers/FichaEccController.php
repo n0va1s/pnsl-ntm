@@ -132,8 +132,41 @@ class FichaEccController extends Controller
                 'tel_conjuge',
                 'dat_nascimento_conjuge',
                 'tam_camiseta_conjuge',
+                'nom_profissao',
+                'nom_profissao_conjuge',
+                'des_religiao',
+                'des_religiao_conjuge',
+                'ind_casamento_religioso',
+                'nom_paroquia_casamento',
+                'des_endereco_profissional_ele',
+                'tel_profissional_ele',
+                'des_endereco_profissional_ela',
+                'tel_profissional_ela',
+                'txt_engajamento_paroquial',
+                'txt_habilidades',
+                'num_etapa_1',
+                'dat_etapa_1',
+                'local_etapa_1',
+                'atividades_etapa_1',
+                'num_etapa_2',
+                'dat_etapa_2',
+                'local_etapa_2',
+                'atividades_etapa_2',
+                'num_etapa_3',
+                'dat_etapa_3',
+                'local_etapa_3',
+                'atividades_etapa_3',
             ]);
             $ficha->fichaEcc()->create($eccData);
+
+            // Cria filhos se enviados
+            if ($eccRequest->filled('filhos')) {
+                foreach ($eccRequest->input('filhos') as $filho) {
+                    if (!empty($filho['nom_filho'])) {
+                        $ficha->fichaEcc->filhos()->create($filho);
+                    }
+                }
+            }
         }
 
         if ($eccRequest->filled('restricoes')) {
@@ -226,6 +259,30 @@ class FichaEccController extends Controller
             'tel_conjuge',
             'dat_nascimento_conjuge',
             'tam_camiseta_conjuge',
+            'nom_profissao',
+            'nom_profissao_conjuge',
+            'des_religiao',
+            'des_religiao_conjuge',
+            'ind_casamento_religioso',
+            'nom_paroquia_casamento',
+            'des_endereco_profissional_ele',
+            'tel_profissional_ele',
+            'des_endereco_profissional_ela',
+            'tel_profissional_ela',
+            'txt_engajamento_paroquial',
+            'txt_habilidades',
+            'num_etapa_1',
+            'dat_etapa_1',
+            'local_etapa_1',
+            'atividades_etapa_1',
+            'num_etapa_2',
+            'dat_etapa_2',
+            'local_etapa_2',
+            'atividades_etapa_2',
+            'num_etapa_3',
+            'dat_etapa_3',
+            'local_etapa_3',
+            'atividades_etapa_3',
         ])->toArray();
 
         if (! empty($eccData)) {
@@ -235,6 +292,19 @@ class FichaEccController extends Controller
                 $ficha->fichaEcc()->update($eccData);
             } else {
                 $ficha->fichaEcc()->create($eccData);
+            }
+
+            // Atualiza filhos
+            if ($eccRequest->filled('filhos')) {
+                // Remove filhos antigos
+                $ficha->fichaEcc->filhos()->delete();
+                
+                // Cria novos filhos
+                foreach ($eccRequest->input('filhos') as $filho) {
+                    if (!empty($filho['nom_filho'])) {
+                        $ficha->fichaEcc->filhos()->create($filho);
+                    }
+                }
             }
         }
 
