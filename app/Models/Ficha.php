@@ -24,7 +24,7 @@ class Ficha extends Model
         'idt_evento',
         'idt_pessoa',
         'tip_genero',
-        'cpf_candidato',
+        'num_cpf_candidato',
         'nom_candidato',
         'nom_apelido',
         'dat_nascimento',

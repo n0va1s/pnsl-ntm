@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Ficha;
+use App\Models\FichaEcc;
+use App\Models\FichaEccFilho;
 use App\Models\Participante;
 use App\Models\Pessoa;
 use App\Models\PessoaSaude;
@@ -29,8 +31,8 @@ class FichaService
 
     public static function atualizarAprovacaoFicha(int $id): Ficha
     {
-        // Carregamos a ficha com a relação de saúde
-        $ficha = Ficha::with('fichaSaude')->findOrFail($id);
+        // Carrega a ficha com todas as relações necessárias
+        $ficha = Ficha::with(['fichaSaude', 'fichaEcc.filhos'])->findOrFail($id);
 
         return DB::transaction(function () use ($ficha) {
             // 1. Inverte o status
@@ -38,29 +40,86 @@ class FichaService
             $ficha->save();
 
             if ($ficha->ind_aprovado) {
-                // 2. Se aprovou: Cria Pessoa -> Saúde -> Participante
-                $pessoa = self::criarOuAtualizarPessoaAPartirDaFicha($ficha);
-                
-                // Vincula a pessoa à ficha
-                $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
-
-                self::criarPessoaSaude(
-                    $pessoa->idt_pessoa, 
-                    $ficha->fichaSaude->toArray() 
-                );
-
-                self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
+                self::aprovarFicha($ficha);
             } else {
-                self::removerParticipante($ficha->idt_pessoa, $ficha->idt_evento);
+                self::desaprovarFicha($ficha);
             }
 
-            return $ficha;
+            return $ficha->fresh();
         });
     }
 
-    private static function criarOuAtualizarPessoaAPartirDaFicha(Ficha $ficha): Pessoa
+    /**
+     * Cria Pessoa(s), Saúde e Participante(s) de acordo com o tipo de ficha.
+     *
+     * - VEM / SGM: apenas o candidato torna-se Pessoa.
+     * - ECC: o candidato, o cônjuge e cada filho tornam-se Pessoas independentes.
+     */
+    private static function aprovarFicha(Ficha $ficha): void
+    {
+        $fichaSaude = $ficha->fichaSaude->toArray();
+
+        // ── Candidato (comum a todos os tipos) ───────────────────────────────
+        if ($ficha->num_cpf_candidato) {
+            $pessoa = self::criarPessoaCandidato($ficha);
+            $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
+            self::criarPessoaSaude($pessoa->idt_pessoa, $fichaSaude);
+            self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
+        }
+
+        // ── Dados exclusivos do ECC (cônjuge + filhos) ───────────────────────
+        $fichaEcc = $ficha->fichaEcc;
+
+        if (!$fichaEcc) {
+            return; // Ficha VEM ou SGM: encerra aqui
+        }
+
+        // Cônjuge
+        if ($fichaEcc->num_cpf_conjuge) {
+            $pessoaConjuge = self::criarPessoaConjuge($fichaEcc);
+            $fichaEcc->update(['idt_pessoa' => $pessoaConjuge->idt_pessoa]);
+            self::criarPessoaSaude($pessoaConjuge->idt_pessoa, $fichaSaude);
+            self::criarParticipante($pessoaConjuge->idt_pessoa, $ficha->idt_evento);
+        }
+
+        // Cada filho
+        foreach ($fichaEcc->filhos as $filho) {
+            if ($filho->num_cpf_filho) {
+                $pessoaFilho = self::criarPessoaFilho($filho);
+                $filho->update(['idt_pessoa' => $pessoaFilho->idt_pessoa]);
+                self::criarParticipante($pessoaFilho->idt_pessoa, $ficha->idt_evento);
+            }
+        }
+    }
+
+    /**
+     * Remove todos os participantes vinculados a esta ficha:
+     * candidato, cônjuge e filhos (quando ECC).
+     */
+    private static function desaprovarFicha(Ficha $ficha): void
+    {
+        // Candidato
+        self::removerParticipante($ficha->idt_pessoa, $ficha->idt_evento);
+
+        $fichaEcc = $ficha->fichaEcc;
+
+        if (!$fichaEcc) {
+            return;
+        }
+
+        // Cônjuge
+        self::removerParticipante($fichaEcc->idt_pessoa, $ficha->idt_evento);
+
+        // Cada filho
+        foreach ($fichaEcc->filhos as $filho) {
+            self::removerParticipante($filho->idt_pessoa, $ficha->idt_evento);
+        }
+    }
+
+    private static function criarPessoaCandidato(Ficha $ficha): Pessoa
     {
         $dados = [
+            'num_cpf_pessoa' => $ficha->num_cpf_candidato,
             'nom_pessoa' => $ficha->nom_candidato,
             'nom_apelido' => $ficha->nom_apelido,
             'tel_pessoa' => $ficha->tel_candidato,
@@ -84,6 +143,57 @@ class FichaService
 
         return Pessoa::updateOrCreate(
             ['eml_pessoa' => $ficha->eml_candidato],
+            $dados
+        );
+    }
+
+    private static function criarPessoaConjuge(FichaEcc $fichaEcc): Pessoa
+    {
+        $dados = [
+            'num_cpf_pessoa' => $fichaEcc->num_cpf_conjuge,
+            'nom_pessoa'     => $fichaEcc->nom_conjuge,
+            'nom_apelido'    => $fichaEcc->nom_apelido_conjuge,
+            'tel_pessoa'     => $fichaEcc->tel_conjuge,
+            'dat_nascimento' => $fichaEcc->dat_nascimento_conjuge,
+            'eml_pessoa'     => $fichaEcc->eml_conjuge,
+            'tam_camiseta'   => $fichaEcc->tam_camiseta_conjuge,
+            'tip_genero'     => $fichaEcc->tip_genero_conjuge,
+        ];
+
+        if ($fichaEcc->eml_conjuge) {
+            $usuario = UserService::getUsuarioByEmail($fichaEcc->eml_conjuge);
+
+            if ($usuario) {
+                $dados['idt_usuario'] = $usuario->id;
+            }
+        }
+
+        return Pessoa::updateOrCreate(
+            ['num_cpf_pessoa' => $fichaEcc->num_cpf_conjuge],
+            $dados
+        );
+    }
+
+    private static function criarPessoaFilho(FichaEccFilho $filho): Pessoa
+    {
+        $dados = [
+            'num_cpf_pessoa' => $filho->num_cpf_filho,
+            'nom_pessoa'     => $filho->nom_filho,
+            'dat_nascimento' => $filho->dat_nascimento_filho,
+            'eml_pessoa'     => $filho->eml_filho,
+            'tel_pessoa'     => $filho->tel_filho,
+        ];
+
+        if ($filho->eml_filho) {
+            $usuario = UserService::getUsuarioByEmail($filho->eml_filho);
+
+            if ($usuario) {
+                $dados['idt_usuario'] = $usuario->id;
+            }
+        }
+
+        return Pessoa::updateOrCreate(
+            ['num_cpf_pessoa' => $filho->num_cpf_filho],
             $dados
         );
     }

@@ -21,7 +21,7 @@ class FichaFactory extends Factory
         return [
             'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento,
             'idt_pessoa' => Pessoa::inRandomOrder()->first()?->idt_pessoa ?? Pessoa::factory(),
-            'cpf_candidato' => $this->faker->cpf(),
+            'num_cpf_candidato' => $this->faker->cpf(false),
             'tip_genero' => $this->faker->randomElement(Genero::cases()),
             'nom_candidato' => $this->faker->name(),
             'nom_apelido' => $this->faker->firstName(),

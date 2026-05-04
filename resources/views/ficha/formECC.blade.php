@@ -23,7 +23,7 @@
             },
             qtdFilhos: {{ old('qtd_filhos', $ficha->fichaEcc?->qtd_filhos ?? 0) }},
             filhos: {{ Js::from(old('filhos', $ficha->fichaEcc?->filhos?->map(fn($f) => [
-                'cpf_filho'            => $f->cpf_filho,
+                'num_cpf_filho'            => $f->num_cpf_filho,
                 'nom_filho'            => $f->nom_filho,
                 'tel_filho'            => $f->tel_filho,
                 'eml_filho'            => $f->eml_filho,
@@ -111,11 +111,10 @@
                         Dados do(a) Participante
                     </legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-
                         {{-- Foto --}}
                         <div class="sm:col-span-2 flex flex-col items-center gap-3">
                             <div class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
-                                @if ($ficha->foto?->med_foto)
+                            @if ($ficha->foto?->med_foto)
                                     <img src="{{ Storage::url($ficha->foto->med_foto) }}" alt="Foto do participante" class="w-full h-full object-cover" />
                                 @else
                                     <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500" aria-hidden="true" />
@@ -136,16 +135,16 @@
 
                         {{-- CPF --}}
                         <div>
-                            <label for="cpf_candidato"
+                            <label for="num_cpf_candidato"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
                                 CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
-                            <input type="text" name="cpf_candidato" id="cpf_candidato"
+                            <input type="text" name="num_cpf_candidato" id="num_cpf_candidato"
                                 x-bind:disabled="bloqueado" required maxlength="14" autocomplete="off"
-                                value="{{ old('cpf_candidato', $ficha->cpf_candidato) }}"
+                                value="{{ old('num_cpf_candidato', $ficha->num_cpf_candidato) }}"
                                 placeholder="000.000.000-00" aria-required="true"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('cpf_candidato') border-red-500 @enderror" />
-                            @error('cpf_candidato')
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('num_cpf_candidato') border-red-500 @enderror" />
+                            @error('num_cpf_candidato')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                             @enderror
                         </div>
@@ -357,16 +356,16 @@
 
                         {{-- CPF cônjuge --}}
                         <div>
-                            <label for="cpf_conjuge"
+                            <label for="num_cpf_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
                                 CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
-                            <input type="text" name="cpf_conjuge" id="cpf_conjuge"
+                            <input type="text" name="num_cpf_conjuge" id="num_cpf_conjuge"
                                 x-bind:disabled="bloqueado" required maxlength="14" autocomplete="off"
-                                value="{{ old('cpf_conjuge', $ficha->fichaEcc?->cpf_conjuge) }}"
+                                value="{{ old('num_cpf_conjuge', $ficha->fichaEcc?->num_cpf_conjuge) }}"
                                 placeholder="000.000.000-00" aria-required="true"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('cpf_conjuge') border-red-500 @enderror" />
-                            @error('cpf_conjuge')
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('num_cpf_conjuge') border-red-500 @enderror" />
+                            @error('num_cpf_conjuge')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                             @enderror
                         </div>
@@ -739,13 +738,13 @@
 
                                         {{-- CPF filho --}}
                                         <div>
-                                            <label :for="`cpf_filho_${index}`"
+                                            <label :for="`num_cpf_filho_${index}`"
                                                 class="block text-sm text-gray-600 dark:text-gray-400 mb-1">CPF</label>
                                             <input type="text"
-                                                :name="`filhos[${index}][cpf_filho]`"
-                                                :id="`cpf_filho_${index}`"
+                                                :name="`filhos[${index}][num_cpf_filho]`"
+                                                :id="`num_cpf_filho_${index}`"
                                                 x-bind:disabled="bloqueado" maxlength="14" autocomplete="off"
-                                                :value="filhos[index]?.cpf_filho ?? ''"
+                                                :value="filhos[index]?.num_cpf_filho ?? ''"
                                                 placeholder="000.000.000-00"
                                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>

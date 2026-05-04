@@ -16,7 +16,9 @@ return new class extends Migration
             $table->foreignId('idt_ficha')
                 ->constrained('ficha', 'idt_ficha')
                 ->onDelete('cascade');
-            $table->string('cpf_filho', 20);
+            $table->foreignId('idt_pessoa')->nullable()
+                ->constrained('pessoa', 'idt_pessoa')->nullOnDelete(); // pessoa criada apos aprovacao
+            $table->string('num_cpf_filho', 20)->unique();
             $table->string('nom_filho', 255);
             $table->date('dat_nascimento_filho');
             $table->string('eml_filho', 255)->nullable();

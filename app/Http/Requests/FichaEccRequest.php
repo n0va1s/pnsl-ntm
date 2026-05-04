@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
+
 class FichaEccRequest extends FichaRequest
 {
     public function authorize(): bool
@@ -18,7 +20,8 @@ class FichaEccRequest extends FichaRequest
             'med_conjuge' => 'nullable|image|max:4096',
 
             // ── Cônjuge (tabela ficha_ecc) ────────────────────────────────────
-            'cpf_conjuge'            => 'required|string|max:14',
+            'num_cpf_conjuge'        => 'required|string|max:20',
+                Rule::unique('ficha_ecc', 'num_cpf_conjuge')->ignore($this->ficha, 'idt_ficha'),
             'nom_conjuge'            => 'required|string|max:255',
             'nom_apelido_conjuge'    => 'nullable|string|max:100',
             'tip_genero_conjuge'     => 'required|string|max:3',
@@ -38,7 +41,7 @@ class FichaEccRequest extends FichaRequest
 
             // ── Filhos (array dinâmico → tabela ficha_ecc_filho) ─────────────
             'filhos'                        => 'nullable|array|max:20',
-            'filhos.*.cpf_filho'            => 'nullable|string|max:14',
+            'filhos.*.num_cpf_filho'            => 'nullable|string|max:14',
             'filhos.*.nom_filho'            => 'nullable|string|max:255',
             'filhos.*.dat_nascimento_filho' => 'nullable|date',
             'filhos.*.eml_filho'            => 'nullable|email|max:255',
@@ -48,61 +51,80 @@ class FichaEccRequest extends FichaRequest
 
     public function messages(): array
     {
-        return array_merge(parent::messages(), [
-            // Cônjuge
-            'cpf_conjuge.required'            => 'O CPF do cônjuge é obrigatório.',
-            'cpf_conjuge.string'              => 'O CPF do cônjuge deve ser um texto.',
-            'cpf_conjuge.max'                 => 'O CPF do cônjuge deve ter no máximo 14 caracteres.',
-            'nom_conjuge.required'            => 'O nome do cônjuge é obrigatório.',
-            'nom_conjuge.string'              => 'O nome do cônjuge deve ser um texto.',
-            'nom_conjuge.max'                 => 'O nome do cônjuge deve ter no máximo 255 caracteres.',
-            'nom_apelido_conjuge.string'      => 'O apelido do cônjuge deve ser um texto.',
-            'nom_apelido_conjuge.max'         => 'O apelido do cônjuge deve ter no máximo 100 caracteres.',
-            'tip_genero_conjuge.required'     => 'O gênero do cônjuge é obrigatório.',
-            'tip_genero_conjuge.string'       => 'O gênero do cônjuge deve ser um texto.',
-            'tip_genero_conjuge.max'          => 'O gênero do cônjuge deve ter no máximo 3 caracteres.',
+       return array_merge(parent::messages(), [
+            // ── Foto do Cônjuge ──
+            'med_conjuge.image' => 'O arquivo da foto do cônjuge deve ser uma imagem.',
+            'med_conjuge.max'   => 'A foto do cônjuge não pode ultrapassar 4MB.',
+
+            // ── Cônjuge ──
+            'num_cpf_conjuge.required' => 'O CPF do cônjuge é obrigatório.',
+            'num_cpf_conjuge.string'   => 'O CPF do cônjuge deve ser um texto.',
+            'num_cpf_conjuge.max'      => 'O CPF do cônjuge deve ter no máximo 20 caracteres.',
+            'num_cpf_conjuge.unique'   => 'Este CPF de cônjuge já está cadastrado.',
+            
+            'nom_conjuge.required' => 'O nome do cônjuge é obrigatório.',
+            'nom_conjuge.string'   => 'O nome do cônjuge deve ser um texto.',
+            'nom_conjuge.max'      => 'O nome do cônjuge não pode exceder 255 caracteres.',
+            
+            'nom_apelido_conjuge.string' => 'O apelido do cônjuge deve ser um texto.',
+            'nom_apelido_conjuge.max'    => 'O apelido do cônjuge não pode exceder 100 caracteres.',
+            
+            'tip_genero_conjuge.required' => 'O gênero do cônjuge é obrigatório.',
+            'tip_genero_conjuge.string'   => 'O gênero do cônjuge deve ser um texto.',
+            'tip_genero_conjuge.max'      => 'O gênero do cônjuge deve ter no máximo 3 caracteres.',
+            
             'dat_nascimento_conjuge.required' => 'A data de nascimento do cônjuge é obrigatória.',
             'dat_nascimento_conjuge.date'     => 'A data de nascimento do cônjuge deve ser uma data válida.',
-            'tel_conjuge.string'              => 'O telefone do cônjuge deve ser um texto.',
-            'tel_conjuge.max'                 => 'O telefone do cônjuge deve ter no máximo 20 caracteres.',
-            'eml_conjuge.email'               => 'O e-mail do cônjuge deve ser um endereço de e-mail válido.',
-            'eml_conjuge.max'                 => 'O e-mail do cônjuge deve ter no máximo 255 caracteres.',
-            'nom_profissao_conjuge.string'    => 'A profissão do cônjuge deve ser um texto.',
-            'nom_profissao_conjuge.max'       => 'A profissão do cônjuge deve ter no máximo 150 caracteres.',
-            'ind_catolico_conjuge.boolean'    => 'O campo "É católico?" do cônjuge deve ser verdadeiro ou falso.',
-            'tip_habilidade_conjuge.string'   => 'A habilidade do cônjuge deve ser um texto.',
-            'tip_habilidade_conjuge.max'      => 'A habilidade do cônjuge deve ter no máximo 3 caracteres.',
-            'tam_camiseta_conjuge.required'   => 'O tamanho da camiseta do cônjuge é obrigatório.',
-            'tam_camiseta_conjuge.string'     => 'O tamanho da camiseta do cônjuge deve ser um texto.',
-            'tam_camiseta_conjuge.max'        => 'O tamanho da camiseta do cônjuge deve ter no máximo 3 caracteres.',
+            
+            'tel_conjuge.string' => 'O telefone do cônjuge deve ser um texto.',
+            'tel_conjuge.max'    => 'O telefone do cônjuge não pode exceder 20 caracteres.',
+            
+            'eml_conjuge.email' => 'Informe um e-mail válido para o cônjuge.',
+            'eml_conjuge.max'   => 'O e-mail do cônjuge não pode exceder 255 caracteres.',
+            
+            'nom_profissao_conjuge.string' => 'A profissão do cônjuge deve ser um texto.',
+            'nom_profissao_conjuge.max'    => 'A profissão do cônjuge não pode exceder 150 caracteres.',
+            
+            'ind_catolico_conjuge.boolean' => 'O campo sobre religião católica do cônjuge deve ser sim ou não.',
+            
+            'tip_habilidade_conjuge.string' => 'A habilidade do cônjuge deve ser um texto.',
+            'tip_habilidade_conjuge.max'    => 'A habilidade do cônjuge deve ter no máximo 3 caracteres.',
+            
+            'tam_camiseta_conjuge.required' => 'O tamanho da camiseta do cônjuge é obrigatório.',
+            'tam_camiseta_conjuge.string'   => 'O tamanho da camiseta do cônjuge deve ser um texto.',
+            'tam_camiseta_conjuge.max'      => 'O tamanho da camiseta do cônjuge deve ter no máximo 3 caracteres.',
 
-            // Informações comuns
+            // ── Informações Comuns do Casal ──
             'tip_estado_civil.required' => 'O estado civil é obrigatório.',
             'tip_estado_civil.string'   => 'O estado civil deve ser um texto.',
             'tip_estado_civil.max'      => 'O estado civil deve ter no máximo 3 caracteres.',
-            'nom_paroquia.string'       => 'O nome da paróquia deve ser um texto.',
-            'nom_paroquia.max'          => 'O nome da paróquia deve ter no máximo 150 caracteres.',
-            'dat_casamento.date'        => 'A data do casamento deve ser uma data válida.',
-            'qtd_filhos.integer'        => 'A quantidade de filhos deve ser um número inteiro.',
-            'qtd_filhos.min'            => 'A quantidade de filhos deve ser no mínimo 0.',
-            'qtd_filhos.max'            => 'A quantidade de filhos deve ser no máximo 20.',
+            
+            'nom_paroquia.string' => 'O nome da paróquia deve ser um texto.',
+            'nom_paroquia.max'    => 'O nome da paróquia não pode exceder 150 caracteres.',
+            
+            'dat_casamento.date' => 'A data do casamento deve ser uma data válida.',
+            
+            'qtd_filhos.integer' => 'A quantidade de filhos deve ser um número inteiro.',
+            'qtd_filhos.min'     => 'A quantidade de filhos não pode ser negativa.',
+            'qtd_filhos.max'     => 'O limite máximo para o campo filhos é de 20.',
 
-            // Foto
-            'med_conjuge.image' => 'A foto do cônjuge deve ser uma imagem.',
-            'med_conjuge.max'   => 'A foto do cônjuge não pode ultrapassar 4MB.',
-
-            // Filhos
-            'filhos.array'                  => 'Os filhos devem ser um array.',
-            'filhos.max'                    => 'Não é possível cadastrar mais de 20 filhos.',
-            'filhos.*.cpf_filho.string'     => 'O CPF do filho deve ser um texto.',
-            'filhos.*.cpf_filho.max'        => 'O CPF do filho deve ter no máximo 14 caracteres.',
-            'filhos.*.nom_filho.string'     => 'O nome do filho deve ser um texto.',
-            'filhos.*.nom_filho.max'        => 'O nome do filho deve ter no máximo 255 caracteres.',
+            // ── Filhos (Array Dinâmico) ──
+            'filhos.array' => 'O formato dos dados de filhos é inválido.',
+            'filhos.max'   => 'É permitido cadastrar no máximo 20 filhos.',
+            
+            'filhos.*.num_cpf_filho.string' => 'O CPF do filho deve ser um texto.',
+            'filhos.*.num_cpf_filho.max'    => 'O CPF do filho não pode exceder 14 caracteres.',
+            
+            'filhos.*.nom_filho.string' => 'O nome do filho deve ser um texto.',
+            'filhos.*.nom_filho.max'    => 'O nome do filho não pode exceder 255 caracteres.',
+            
             'filhos.*.dat_nascimento_filho.date' => 'A data de nascimento do filho deve ser uma data válida.',
-            'filhos.*.eml_filho.email'      => 'O e-mail do filho deve ser válido.',
-            'filhos.*.eml_filho.max'        => 'O e-mail do filho deve ter no máximo 255 caracteres.',
-            'filhos.*.tel_filho.string'     => 'O telefone do filho deve ser um texto.',
-            'filhos.*.tel_filho.max'        => 'O telefone do filho deve ter no máximo 20 caracteres.',
+            
+            'filhos.*.eml_filho.email' => 'O e-mail informado para o filho é inválido.',
+            'filhos.*.eml_filho.max'   => 'O e-mail do filho não pode exceder 255 caracteres.',
+            
+            'filhos.*.tel_filho.string' => 'O telefone do filho deve ser um texto.',
+            'filhos.*.tel_filho.max'    => 'O telefone do filho não pode exceder 20 caracteres.',
         ]);
     }
 }

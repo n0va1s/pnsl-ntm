@@ -17,7 +17,9 @@ return new class extends Migration
         Schema::table('ficha_ecc', function (Blueprint $table) {
 
             // ── Cônjuge ──────────────────────────────────────────────────────
-            $table->string('cpf_conjuge', 20);
+            $table->foreignId('idt_pessoa')->nullable()
+                ->constrained('pessoa', 'idt_pessoa')->nullOnDelete(); // pessoa criada apos aprovacao
+            $table->string('num_cpf_conjuge', 20)->unique();
             $table->string('tip_genero_conjuge', 3)->nullable();
             $table->string('eml_conjuge', 255)->nullable()->after('tel_conjuge');
             $table->string('nom_profissao_conjuge', 255)->nullable()->after('eml_conjuge');
@@ -42,10 +44,16 @@ return new class extends Migration
             $table->primary(['idt_ficha']);
         });
 
+        // -- Inclusão de informações comuns na ficha e pessoa
         Schema::table('ficha', function (Blueprint $table) {
-            $table->string('cpf_candidato')->nullable()->after('idt_pessoa');    
+            $table->string('num_cpf_candidato', 20)->nullable()->unique()->after('idt_pessoa');    
             $table->string('nom_profissao')->nullable();
             $table->string('tip_habilidade', 1)->nullable();
+        });
+
+        Schema::table('pessoa', function (Blueprint $table) {
+            $table->string('num_cpf_pessoa', 20)->nullable()->unique()->after('idt_pessoa');    
+            $table->string('nom_profissao')->nullable();
         });
     }
 
@@ -72,6 +80,11 @@ return new class extends Migration
             $table->dropColumn('cpf_candidato');    
             $table->dropColumn('nom_profissao');
             $table->dropColumn('tip_habilidade');
+        });
+
+        Schema::table('pessoa', function (Blueprint $table) {
+            $table->dropColumn('cpf_pessoa');    
+            $table->dropColumn('nom_profissao');
         });
     }
 };

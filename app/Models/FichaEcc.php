@@ -21,8 +21,9 @@ class FichaEcc extends Model
 
     protected $fillable = [
         'idt_ficha',
+        'idt_pessoa',
         // Cônjuge
-        'cpf_conjuge',
+        'num_cpf_conjuge',
         'nom_conjuge',
         'nom_apelido_conjuge',
         'tip_genero_conjuge',

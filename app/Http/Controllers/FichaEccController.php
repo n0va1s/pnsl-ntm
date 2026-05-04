@@ -95,7 +95,7 @@ class FichaEccController extends Controller
         $ficha = Ficha::create($request->only([
             'idt_evento',
             'tip_genero',
-            'cpf_candidato',
+            'num_cpf_candidato',
             'nom_candidato',
             'nom_apelido',
             'dat_nascimento',
@@ -110,6 +110,7 @@ class FichaEccController extends Controller
             'ind_toca_instrumento',
             'ind_consentimento',
             'ind_restricao',
+            'nom_profissao',
             'txt_observacao',
         ]));
 
@@ -126,7 +127,7 @@ class FichaEccController extends Controller
 
         // ── Tabela ficha_ecc ──────────────────────────────────────────────────
         $ficha->fichaEcc()->create($request->only([
-            'cpf_conjuge',
+            'num_cpf_conjuge',
             'nom_conjuge',
             'nom_apelido_conjuge',
             'tip_genero_conjuge',

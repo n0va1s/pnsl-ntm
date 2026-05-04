@@ -20,7 +20,7 @@ class FichaEccFilhoFactory extends Factory
     {
         return [
             'idt_ficha' => Ficha::factory(),
-            'cpf_filho' => $this->faker->cpf(),
+            'num_cpf_filho' => $this->faker->cpf(false),
             'nom_filho' => $this->faker->firstName() . ' ' . $this->faker->lastName(),
             'dat_nascimento_filho' => $this->faker->dateTimeBetween('-18 years', 'now')->format('Y-m-d'),
             'eml_filho' => $this->faker->optional(0.7)->safeEmail(),

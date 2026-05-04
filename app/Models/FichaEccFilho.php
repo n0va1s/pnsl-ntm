@@ -15,7 +15,8 @@ class FichaEccFilho extends Model
 
     protected $fillable = [
         'idt_ficha',
-        'cpf_filho',
+        'idt_pessoa',
+        'num_cpf_filho',
         'nom_filho',
         'dat_nascimento_filho',
         'eml_filho',
