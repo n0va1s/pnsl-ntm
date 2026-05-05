@@ -48,6 +48,8 @@ class Pessoa extends Model
         'tam_camiseta' => TamanhoCamiseta::class,
     ];
 
+    protected $appends = ['is_candidato'];
+
     protected static function booted()
     {
         parent::boot();
@@ -110,6 +112,11 @@ class Pessoa extends Model
         return $this->hasMany(Voluntario::class, 'idt_pessoa');
     }
 
+    public function fichas()
+    {
+        return $this->hasMany(Ficha::class, 'idt_pessoa');
+    }
+
     public function parceiro()
     {
         return $this->belongsTo(Pessoa::class, 'idt_parceiro', 'idt_pessoa');
@@ -167,5 +174,20 @@ class Pessoa extends Model
             $q->where('nom_pessoa', 'like', "%{$search}%")
                 ->orWhere('nom_apelido', 'like', "%{$search}%");
         });
+    }
+
+    public function getIsCandidatoAttribute(): bool
+    {
+        return is_null($this->idt_usuario);
+    }
+
+    public function scopeCandidatos($query)
+    {
+        return $query->whereNull('idt_usuario');
+    }
+
+    public function scopePessoasComUsuario($query)
+    {
+        return $query->whereNotNull('idt_usuario');
     }
 }

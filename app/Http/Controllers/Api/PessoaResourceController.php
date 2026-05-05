@@ -20,18 +20,50 @@ class PessoaResourceController extends Controller
     }
 
     /**
-     * Retorna apenas as pessoas vinculadas ao Segue-me
+     * Retorna a query base para buscar pessoas vinculadas ao Segue-me
+     */
+    private function getQuerySgm()
+    {
+        return Pessoa::whereHas('fichas', function ($q) {
+            $q->join('ficha_sgm', 'ficha.idt_ficha', '=', 'ficha_sgm.idt_ficha');
+        });
+    }
+
+    /**
+     * Retorna todas as pessoas vinculadas ao Segue-me
      */
     public function indexSgm()
     {
-        // Busca Pessoas que possuem Fichas, e garante (através do join)
-        // que essa ficha existe fisicamente na tabela exclusiva do Segue-me (ficha_sgm)
-        $pessoasSgm = Pessoa::whereHas('fichas', function ($query) {
-            $query->join('ficha_sgm', 'ficha.idt_ficha', '=', 'ficha_sgm.idt_ficha');
-        })
-        ->get();
+        return PessoaResource::collection($this->getQuerySgm()->get());
+    }
 
-        return PessoaResource::collection($pessoasSgm);
+    /**
+     * Retorna apenas os candidatos vinculados ao Segue-me (sem usuário logado)
+     */
+    public function candidatosSgm()
+    {
+        return PessoaResource::collection($this->getQuerySgm()->candidatos()->get());
+    }
+
+    /**
+     * Retorna apenas os usuários vinculados ao Segue-me
+     */
+    public function usuariosSgm()
+    {
+        return PessoaResource::collection($this->getQuerySgm()->pessoasComUsuario()->get());
+    }
+
+    /**
+     * Retorna apenas uma pessoa específica vinculada ao Segue-me
+     */
+    public function showSgm(string $id)
+    {
+        // Busca a pessoa pelo ID somente se possuir a ficha do SGM
+        $pessoa = Pessoa::whereHas('fichas', function ($q) {
+            $q->join('ficha_sgm', 'ficha.idt_ficha', '=', 'ficha_sgm.idt_ficha');
+        })->findOrFail($id);
+
+        return new PessoaResource($pessoa);
     }
 
     /**

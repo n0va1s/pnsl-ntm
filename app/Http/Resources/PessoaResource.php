@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+
 class PessoaResource extends JsonResource
 {
     /**
@@ -24,6 +25,9 @@ class PessoaResource extends JsonResource
             'data_nascimento' => $this->dat_nascimento?->format('d/m/Y'),
             'sexo' => $this->tip_genero,
             'endereco' => $this->des_endereco,
+            'is_candidato' => $this->is_candidato,
         ];
     }
+
+
 }
