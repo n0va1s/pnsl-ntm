@@ -4,7 +4,7 @@
     </div>
     <!-- Seção: Sistema de Gestão -->
     <section
-        class="flex flex-col md:flex-row items-center justify-center text-center md:text-left space-y-6 md:space-y-0 md:space-x-10">
+        class="gap-8 max-w-7xl mx-auto my-16 px-4 flex flex-col md:flex-row items-center justify-center text-center md:text-left space-y-6 md:space-y-0 md:space-x-10">
         <div class="md:w-1/2 space-y-4">
             <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-400">
                 Movimente a sua Paróquia
@@ -110,7 +110,7 @@
         <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">
             Nossos Movimentos
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="gap-8 max-w-7xl mx-auto my-16 px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 
             <!-- Card VEM -->
             <div
