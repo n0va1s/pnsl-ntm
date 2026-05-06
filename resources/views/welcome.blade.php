@@ -7,7 +7,7 @@
         class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto my-16 px-4">
         <div class="md:col-span-1 space-y-4">
             <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-400">
-                Sistema de Gestão de Movimentos Paroquiais
+                Movimente a sua Paróquia
             </h2>
             <p class="max-w-2xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
                 Bem-vindo!

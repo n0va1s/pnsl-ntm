@@ -8,6 +8,8 @@ use App\Enums\TamanhoCamiseta;
 use App\Models\Evento;
 use App\Models\Ficha;
 use App\Models\FichaEcc;
+use App\Models\FichaEccFilho;
+use App\Models\FichaFoto;
 use App\Models\FichaSGM;
 use App\Models\FichaVem;
 use App\Models\Pessoa;
@@ -38,7 +40,6 @@ class FichaSeeder extends Seeder
         }
 
         for ($i = 0; $i < 300; $i++) {
-            // CORREÇÃO: Usar os Enums corretos para evitar o ValueError
             $ficha = Ficha::create([
                 'idt_evento' => $eventos->random(),
                 'idt_pessoa' => $pessoas->random(),
@@ -49,7 +50,6 @@ class FichaSeeder extends Seeder
                 'tel_candidato' => fake()->phoneNumber,
                 'eml_candidato' => fake()->safeEmail,
                 'des_endereco' => fake()->address,
-                // Sorteia um caso real do Enum em vez de uma palavra aleatória
                 'tam_camiseta' => fake()->randomElement(TamanhoCamiseta::cases()),
                 'tip_como_soube' => fake()->randomElement(ComoSoube::cases()),
                 'ind_catolico' => fake()->boolean,
@@ -67,7 +67,17 @@ class FichaSeeder extends Seeder
             } elseif ($i < 200) {
                 FichaSGM::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
             } else {
-                FichaEcc::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
+                $fichaEcc = FichaEcc::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
+
+                // Foto do participante e do cônjuge
+                FichaFoto::factory()->comConjuge()->create(['idt_ficha' => $ficha->idt_ficha]);
+
+                // Filhos conforme qtd_filhos definido na FichaEcc
+                if ($fichaEcc->qtd_filhos > 0) {
+                    FichaEccFilho::factory()
+                        ->count($fichaEcc->qtd_filhos)
+                        ->create(['idt_ficha' => $ficha->idt_ficha]);
+                }
             }
         }
 

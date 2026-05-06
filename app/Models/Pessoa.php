@@ -26,6 +26,7 @@ class Pessoa extends Model
     protected $fillable = [
         'idt_usuario',
         'idt_parceiro',
+        'num_cpf_pessoa',
         'nom_pessoa',
         'nom_apelido',
         'tel_pessoa',
@@ -36,6 +37,7 @@ class Pessoa extends Model
         'tip_genero',
         'tip_estado_civil',
         'tip_habilidade',
+        'nom_profissao',
         'ind_restricao',
     ];
 

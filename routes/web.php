@@ -111,11 +111,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/termo-vem', function () {
         return view('termos.termoVEM');
     })->name('termo.vem');
-    Route::get('fichas/vem/approve/{id}', [FichaVemController::class, 'approve'])
+    Route::get('fichas/vem/{id}/approve', [FichaVemController::class, 'approve'])
         ->name('vem.approve');
-    Route::get('fichas/ecc/approve/{id}', [FichaEccController::class, 'approve'])
+    Route::get('fichas/ecc/{id}/approve', [FichaEccController::class, 'approve'])
         ->name('ecc.approve');
-    Route::get('fichas/sgm/approve/{id}', [FichaSGMController::class, 'approve'])
+    Route::get('fichas/sgm/{id}/approve', [FichaSGMController::class, 'approve'])
         ->name('sgm.approve');
 
     Route::get(
