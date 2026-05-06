@@ -1,5 +1,25 @@
 <x-layouts.public :title="'Ficha do Segue-me'">
     <section class="px-4 py-6 w-full max-w-3xl mx-auto" aria-labelledby="page-title">
+        @php
+            $eventosJson = json_encode((object) $eventos->mapWithKeys(fn($e) => [
+                (string)$e->idt_evento => [
+                    'faixa' => $e->tip_faixa_etaria?->label() ?? 'Livre',
+                    'data_limite' => $e->dat_limite_inscricao?->format('d/m/Y') ?? '--/--/----',
+                    'vaga' => $e->qtd_vaga,
+                    'valor' => number_format($e->val_venista, 2, ',', '.')
+                ]
+            ])->all());
+        @endphp
+
+        <div x-data="{
+                bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }},
+                enviando: false,
+                selectedEventoId: '{{ old('idt_evento', $ficha->idt_evento ?? ($eventos->count() === 1 ? $eventos->first()->idt_evento : '')) }}',
+                eventosData: {{ $eventosJson }},
+                get info() {
+                    return this.eventosData[String(this.selectedEventoId)] || { faixa: '---', data_limite: '---', vaga: 0, valor: '0,00' };
+                }
+            }">
 
         {{-- ===== CABEÇALHO ===== --}}
         <div class="mb-6 space-y-4">
@@ -15,7 +35,7 @@
                     <x-heroicon-o-users class="w-5 h-5 text-blue-500 shrink-0" aria-hidden="true" />
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Público</p>
-                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">16 a 23 anos</p>
+                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100" x-text="info.faixa">16 a 23 anos</p>
                     </div>
                 </div>
                 <div role="listitem"
@@ -23,7 +43,7 @@
                     <x-heroicon-o-calendar class="w-5 h-5 text-red-500 shrink-0" aria-hidden="true" />
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Inscrições até</p>
-                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">12/07/2026</p>
+                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100" x-text="info.data_limite">12/07/2026</p>
                     </div>
                 </div>
                 <div role="listitem"
@@ -31,7 +51,7 @@
                     <x-heroicon-o-ticket class="w-5 h-5 text-green-500 shrink-0" aria-hidden="true" />
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Vagas</p>
-                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">60 vagas</p>
+                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100"><span x-text="info.vaga">60</span> vagas</p>
                     </div>
                 </div>
                 <div role="listitem"
@@ -39,7 +59,7 @@
                     <x-heroicon-o-currency-dollar class="w-5 h-5 text-yellow-500 shrink-0" aria-hidden="true" />
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Taxa</p>
-                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">R$ 120,00</p>
+                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">R$ <span x-text="info.valor">120,00</span></p>
                     </div>
                 </div>
             </div>
@@ -167,7 +187,7 @@
 
         {{-- ===== FORMULÁRIO ===== --}}
         @if ($eventos->count() > 0)
-            <form method="POST" enctype="multipart/form-data" x-data="{ bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }}, enviando: false }" @submit="enviando = true"
+            <form method="POST" enctype="multipart/form-data" @submit="enviando = true"
                 action="{{ $ficha->exists ? route('sgm.update', $ficha) : route('sgm.store') }}" class="space-y-8">
                 @csrf
                 @if ($ficha->exists)
@@ -258,12 +278,12 @@
                             <label for="idt_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Evento <span class="text-red-600">*</span>
                             </label>
-                            <select name="idt_evento" id="idt_evento" required x-bind:disabled="bloqueado"
+                            <select name="idt_evento" id="idt_evento" required x-bind:disabled="bloqueado" x-model="selectedEventoId"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('idt_evento') border-red-500 @enderror">
                                 <option class="dark:bg-zinc-700" value="">Selecione um evento</option>
                                 @foreach ($eventos as $evento)
                                     <option class="dark:bg-zinc-700" value="{{ $evento->idt_evento }}"
-                                        {{ old('idt_evento', $ficha->idt_evento) == $evento->idt_evento ? 'selected' : '' }}>
+                                        {{ old('idt_evento', $ficha->idt_evento ?? ($eventos->count() === 1 ? $eventos->first()->idt_evento : null)) == $evento->idt_evento ? 'selected' : '' }}>
                                         {{ $evento->des_evento }} - {{ $evento->dat_inicio->format('d/m/Y') }}
                                     </option>
                                 @endforeach
@@ -960,6 +980,7 @@
             </div>
 
         @endif
+        </div>
 
     </section>
 </x-layouts.public>
