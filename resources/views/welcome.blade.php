@@ -4,8 +4,8 @@
     </div>
     <!-- Seção: Sistema de Gestão -->
     <section
-        class="flex flex-col md:flex-row items-center justify-center text-center md:text-left space-y-6 md:space-y-0 md:space-x-10">
-        <div class="md:w-1/2 space-y-4">
+        class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto my-16 px-4">
+        <div class="md:col-span-1 space-y-4">
             <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-400">
                 Sistema de Gestão de Movimentos Paroquiais
             </h2>
@@ -18,7 +18,7 @@
                 Francisco para encorajar os jovens de todo o mundo para que não tenham medo de buscar a Cristo.
             </p>
         </div>
-        <div>
+        <div class="md:col-span-2">
             <div class="relative w-full max-w-2xl mx-auto overflow-hidden rounded-2xl" id="carousel">
                 <div id="carouselSlides" class="flex transition-transform duration-500">
                     <img src="https://i.imgur.com/yXiQHE9.jpeg"
@@ -110,7 +110,7 @@
         <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">
             Nossos Movimentos
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto my-16 px-4">
 
             <!-- Card VEM -->
             <div
@@ -136,9 +136,9 @@
                     <h3 class="text-xl font-bold text-orange-600 dark:text-orange-400">Segue-Me</h3>
                     <p class="text-gray-600 dark:text-gray-300 mt-2">Encontro de Jovens com Cristo</p>
                 </div>
-                <a
-                    class="mt-4 inline-block bg-gray-600 hover:bg-gray-700 text-white font-semibold px-4 py-2 rounded-md transition">
-                    Ficha do Segue-Me (Em breve)
+                <a href="{{ route('home.ficha.sgm') }}"
+                    class="mt-4 inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-md transition">
+                    Pré-inscrição do Segue-Me
                 </a>
             </div>
 
@@ -168,7 +168,8 @@
             <div class="space-y-4">
                 <!-- Quem pode participar -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Quem pode participar do VEM?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -182,7 +183,8 @@
 
                 <!-- Quantos encontros -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Quantos encontros tem no ano?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -196,7 +198,8 @@
 
                 <!-- Pós encontro -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Como funciona o pós encontro?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -204,13 +207,15 @@
                         </svg>
                     </summary>
                     <p class="mt-2 text-gray-700 dark:text-gray-100">
-                        Após o VEM, realizamos encontros temáticos e momentos de espiritualização para continuar o crescimento na fé dos jovens.
+                        Após o VEM, realizamos encontros temáticos e momentos de espiritualização para continuar o
+                        crescimento na fé dos jovens.
                     </p>
                 </details>
 
                 <!-- Taxa -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Tem que pagar?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -218,13 +223,15 @@
                         </svg>
                     </summary>
                     <p class="mt-2 text-gray-700 dark:text-gray-100">
-                        Há uma taxa para ajudar nos custos com alimentação e materiais. Caso não consiga pagar, informe durante a confirmação — seu filho(a) não deixará de participar por esse motivo.
+                        Há uma taxa para ajudar nos custos com alimentação e materiais. Caso não consiga pagar, informe
+                        durante a confirmação — seu filho(a) não deixará de participar por esse motivo.
                     </p>
                 </details>
 
                 <!-- Precisa ser católico -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Precisa ser católico?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -232,13 +239,15 @@
                         </svg>
                     </summary>
                     <p class="mt-2 text-gray-700 dark:text-gray-100">
-                        O VEM é baseado nos valores e princípios católicos. Jovens de outras religiões são bem-vindos, desde que estejam abertos a participar e ouvir.
+                        O VEM é baseado nos valores e princípios católicos. Jovens de outras religiões são bem-vindos,
+                        desde que estejam abertos a participar e ouvir.
                     </p>
                 </details>
 
                 <!-- Primeira comunhão -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Precisa ter feito primeira comunhão ou crisma?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -252,7 +261,8 @@
 
                 <!-- Pré-VEM -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Se eu não puder ir no Pré-VEM, ainda posso participar do encontro?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -260,13 +270,15 @@
                         </svg>
                     </summary>
                     <p class="mt-2 text-gray-700 dark:text-gray-100">
-                        Infelizmente não. O Pré-VEM é um momento essencial para formação e integração dos grupos. Caso não possa participar, avise a equipe responsável pela sua confirmação.
+                        Infelizmente não. O Pré-VEM é um momento essencial para formação e integração dos grupos. Caso
+                        não possa participar, avise a equipe responsável pela sua confirmação.
                     </p>
                 </details>
 
                 <!-- Como peço reembolso -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Como peço reembolso?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -283,7 +295,8 @@
 
                 <!-- Criterios de selecao -->
                 <details class="group border border-blue-200 rounded-lg p-4 bg-white dark:bg-blue-800">
-                    <summary class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-blue-700 font-medium dark:text-blue-400">
                         Quais os critérios de seleção
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-blue-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -300,25 +313,177 @@
         </section>
 
         <!-- FAQ Segue-Me -->
-        <section class="max-w-full bg-orange-50 dark:bg-orange-900 rounded-xl p-6 shadow">
-            <h4 class="font-bold text-orange-600 mb-8 dark:text-orange-400">Perguntas Frequentes - Segue-Me</h4>
+        <section class="max-w-4xl mx-auto bg-orange-50 dark:bg-orange-950 rounded-xl p-6 shadow-lg">
+            <div class="text-center mb-8">
+                <h5 class=" font-extrabold text-orange-600 dark:text-orange-400">Dúvidas Frequentes - Segue-Me 2026
+                </h5>
+            </div>
+
             <div class="space-y-4">
-                <details class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-800">
+                <!-- O que é -->
+                <details
+                    class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-900 transition-all hover:shadow-md">
                     <summary
-                        class="flex justify-between items-center cursor-pointer text-orange-700 font-medium dark:text-orange-400">
-                        Quem pode participar do Segue-Me?
+                        class="flex justify-between items-center cursor-pointer text-orange-700 font-bold dark:text-orange-300">
+                        O que é o SEGUE-ME?
                         <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </summary>
-                    <p clas="mt-2 text-gray-700 dark:text-gray-100">Jovens solteiros entre 17 e 30 anos que
-                        desejam aprofundar sua caminhada cristã.</p>
+                    <p class="mt-3 text-gray-700 dark:text-gray-200 leading-relaxed">
+                        O SEGUE-ME é um Encontro de Jovens com Cristo, um movimento nacional que proporciona momentos de
+                        espiritualidade, convivência e transformação pessoal.
+                    </p>
+                </details>
+
+                <!-- Quem pode participar -->
+                <details
+                    class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-900 transition-all hover:shadow-md">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-orange-700 font-bold dark:text-orange-300">
+                        Quem pode participar? (Idade e Localização)
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <div class="mt-3 text-gray-700 dark:text-gray-200 space-y-2">
+                        <p><strong>Faixa etária:</strong> Jovens de 16 a 23 anos.</p>
+                        <p><strong>Localidade:</strong> Priorizamos jovens do <strong>Lago Norte e Varjão</strong>.
+                            Inscritos de outros bairros próximos são avaliados caso a caso.</p>
+                        <p><strong>Não católicos:</strong> Podem participar! O encontro é aberto a todos que desejam
+                            viver uma experiência com Cristo.</p>
+                        <p><strong>Participar sozinho:</strong> Com certeza! Muitos jovens vêm sem conhecer ninguém e
+                            fazem grandes amizades durante o fim de semana.</p>
+                    </div>
+                </details>
+
+                <!-- Inscrição e Pagamento -->
+                <details
+                    class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-900 transition-all hover:shadow-md">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-orange-700 font-bold dark:text-orange-300">
+                        Como faço minha inscrição e qual o valor?
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <div class="mt-3 text-gray-700 dark:text-gray-200 space-y-2">
+                        <p><strong>Prazo final:</strong> 30/06/2026.</p>
+                        <p><strong>Taxa:</strong> O valor é destinado aos custos de alimentação e materiais. Caso tenha
+                            dificuldade financeira, fale conosco — ninguém fica de fora por esse motivo.</p>
+                        <p><strong>Confirmação:</strong> Os selecionados serão contatados via telefone pela equipe
+                            organizadora.</p>
+                    </div>
+                </details>
+
+                <!-- Documentos -->
+                <details
+                    class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-900 transition-all hover:shadow-md">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-orange-700 font-bold dark:text-orange-300">
+                        Quais documentos são necessários?
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <ul class="mt-3 list-disc ml-5 text-gray-700 dark:text-gray-200 space-y-1">
+                        <li>Documento de identidade do participante;</li>
+                        <li>Foto 3x4 (pode ser impressa em papel comum/ofício);</li>
+                        <li>Ficha de inscrição com autorização dos pais (obrigatório para menores);</li>
+                        <li>Comprovante de pagamento (salvo casos excepcionais).</li>
+                    </ul>
+                </details>
+
+                <!-- Local e Horários -->
+                <details
+                    class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-900 transition-all hover:shadow-md">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-orange-700 font-bold dark:text-orange-300">
+                        Local, Data e Horários
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <div class="mt-3 text-gray-700 dark:text-gray-200">
+                        <p><strong>Local:</strong> Paróquia Nossa Senhora do Lago</p>
+                        <p><strong>Data:</strong> 28, 29 e 30 de agosto de 2026</p>
+                        <p class="mt-2 font-semibold">Horários de chegada:</p>
+                        <ul class="list-none space-y-1">
+                            <li>🗓️ Sexta: 19h10 às 22h00</li>
+                            <li>🗓️ Sábado: 07h30 às 22h00</li>
+                            <li>🗓️ Domingo: 07h30 às 20h00</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Alimentação e Roupas -->
+                <details
+                    class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-900 transition-all hover:shadow-md">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-orange-700 font-bold dark:text-orange-300">
+                        O que levar e Alimentação
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <div class="mt-3 text-gray-700 dark:text-gray-200 space-y-2">
+                        <p><strong>Alimentação:</strong> Inclusa (Café, almoço, jantar e lanches). Existe campo na ficha
+                            para informar restrições alimentares.</p>
+                        <p><strong>Roupas:</strong> Confortáveis. Priorizar calças ou saias abaixo dos joelhos. Meninas
+                            devem evitar calça legging.</p>
+                        <p><strong>Outros:</strong> Remédios pessoais e caderno para anotações (opcional).</p>
+                    </div>
+                </details>
+
+                <!-- Regras e Segurança -->
+                <details
+                    class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-900 transition-all hover:shadow-md">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-orange-700 font-bold dark:text-orange-300">
+                        Visitas, Segurança e Emergências
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <div class="mt-3 text-gray-700 dark:text-gray-200 space-y-2">
+                        <p><strong>Visitas:</strong> Não é permitida a visita de pais ou amigos durante o encontro,
+                            salvo situações excepcionais.</p>
+                        <p><strong>Responsáveis:</strong> Sim, haverá adultos responsáveis e casais acompanhando os
+                            jovens durante todo o período do encontro.</p>
+                        <p><strong>Emergências:</strong> Em caso de necessidade, a família poderá entrar em contato com
+                            a organização através dos números fornecidos no ato da confirmação da inscrição.</p>
+                    </div>
+                </details>
+
+                <!-- Servir e Organização -->
+                <details
+                    class="group border border-orange-200 rounded-lg p-4 bg-white dark:bg-orange-900 transition-all hover:shadow-md">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer text-orange-700 font-bold dark:text-orange-300">
+                        Organização e como Servir
+                        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-orange-600"
+                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <div class="mt-3 text-gray-700 dark:text-gray-200 space-y-2">
+                        <p><strong>Posso servir em vez de participar?</strong> Para servir no Segue-Me, é necessário já
+                            ter feito o encontro (sido encontrista) anteriormente.</p>
+                        <p><strong>Quem organiza?</strong> A Equipe Dirigente e o Comando, com apoio dos diretores
+                            espirituais Padre André e Padre Lucas.</p>
+                    </div>
                 </details>
             </div>
         </section>
 
-        <!-- FAQ Segue-Me -->
+        <!-- FAQ ECC\ -->
         <section class="max-w-full bg-green-50 dark:bg-green-900 rounded-xl p-6 shadow">
             <h4 class="font-bold text-green-600 mb-8 dark:text-green-200">Perguntas Frequentes - ECC</h4>
             <div class="space-y-4">
