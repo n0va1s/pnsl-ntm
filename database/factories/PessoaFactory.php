@@ -20,7 +20,7 @@ class PessoaFactory extends Factory
         return [
             'idt_usuario' => User::factory(),
             'idt_parceiro' => null,
-            'num_cpf_pessoa' => $this->faker->cpf(false),
+            'num_cpf_pessoa' => $this->faker->numerify('###########'),
             'nom_pessoa' => $this->faker->name(),
             'nom_apelido' => $this->faker->lastName(),
             'tip_genero' => $this->faker->randomElement(Genero::cases())->value,

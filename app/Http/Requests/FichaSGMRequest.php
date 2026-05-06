@@ -28,9 +28,12 @@ class FichaSGMRequest extends FormRequest
             'nom_pai'  => 'nullable|string|max:255',
             'tel_pai'  => 'nullable|string|max:20',
             'eml_pai'  => 'nullable|email|max:100',
+            'nom_falar_com' => 'nullable|string|max:150',
+            'tel_falar_com' => 'nullable|string|max:20',
 
             // Dados pessoais SGM
             'des_naturalidade' => 'required|string|max:255',
+            'med_foto'         => 'nullable|image|max:10240',
 
             // Escolaridade
             'tip_escolaridade'          => ['required', new Enum(Escolaridade::class)],
@@ -60,6 +63,8 @@ class FichaSGMRequest extends FormRequest
             'des_naturalidade.required' => 'Informe a naturalidade do candidato.',
             'eml_mae.email'             => 'Informe um e-mail válido para a mãe.',
             'eml_pai.email'             => 'Informe um e-mail válido para o pai.',
+            'med_foto.image'            => 'A foto deve ser uma imagem.',
+            'med_foto.max'              => 'A foto não pode ter mais de 10MB.',
         ];
     }
 }

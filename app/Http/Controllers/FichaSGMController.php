@@ -7,6 +7,7 @@ use App\Http\Requests\FichaSGMRequest;
 use App\Models\Evento;
 use App\Models\Ficha;
 use App\Models\TipoMovimento;
+use App\Services\ArquivoService;
 use App\Services\FichaService;
 use App\Traits\LogContext;
 use Illuminate\Database\QueryException;
@@ -18,10 +19,12 @@ class FichaSGMController extends Controller
     use LogContext;
 
     protected $fichaService;
+    protected $arquivoService;
 
-    public function __construct(FichaService $fichaService)
+    public function __construct(FichaService $fichaService, ArquivoService $arquivoService)
     {
         $this->fichaService = $fichaService;
+        $this->arquivoService = $arquivoService;
     }
 
     public function index(Request $request)
@@ -108,7 +111,18 @@ class FichaSGMController extends Controller
 
         $ficha = Ficha::create($data);
 
+        if ($sgmRequest->hasFile('med_foto')) {
+            $this->arquivoService->upload(
+                $ficha,
+                $sgmRequest->file('med_foto'),
+                'foto',
+                'med_foto',
+                "fichas/{$ficha->idt_ficha}"
+            );
+        }
+
         $sgmData = $sgmRequest->validated();
+        unset($sgmData['med_foto']);
         $ficha->fichaSGM()->create($sgmData);
 
         if ($fichaRequest->filled('restricoes')) {
@@ -137,7 +151,7 @@ class FichaSGMController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Visualização de ficha SGM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaSGM', 'fichaSaude'])->find($id);
+        $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'foto'])->findOrFail($id);
 
         return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -152,7 +166,7 @@ class FichaSGMController extends Controller
 
         Log::info('Acesso ao formulário de edição de ficha SGM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaSGM', 'fichaSaude'])->find($id);
+        $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'foto'])->findOrFail($id);
 
         return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -187,7 +201,18 @@ class FichaSGMController extends Controller
 
         $ficha->update($fichaData);
 
+        if ($sgmRequest->hasFile('med_foto')) {
+            $this->arquivoService->upload(
+                $ficha,
+                $sgmRequest->file('med_foto'),
+                'foto',
+                'med_foto',
+                "fichas/{$ficha->idt_ficha}"
+            );
+        }
+
         $sgmData = $sgmRequest->validated();
+        unset($sgmData['med_foto']);
         $sgmData['idt_ficha'] = $ficha->idt_ficha;
 
         if ($ficha->fichaSGM) {

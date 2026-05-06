@@ -26,6 +26,9 @@ return new class extends Migration
 
             $table->string('eml_pai', 100)->nullable();
 
+            $table->string('nom_falar_com', 150)->nullable();
+            $table->string('tel_falar_com', 20)->nullable();
+
             // ── Dados pessoais ────────────────────────────────────────────────
             $table->string('des_naturalidade', 255);
 
@@ -68,6 +71,8 @@ return new class extends Migration
                 'nom_pai',
                 'tel_pai',
                 'eml_pai',
+                'nom_falar_com',
+                'tel_falar_com',
                 // Dados pessoais
                 'des_naturalidade',
                 // Escolaridade

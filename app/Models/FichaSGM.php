@@ -27,6 +27,8 @@ class FichaSGM extends Model
         'nom_pai',
         'tel_pai',
         'eml_pai',
+        'nom_falar_com',
+        'tel_falar_com',
         // Dados pessoais SGM
         'des_naturalidade',
         // Escolaridade

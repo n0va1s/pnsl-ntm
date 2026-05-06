@@ -167,7 +167,7 @@
 
         {{-- ===== FORMULÁRIO ===== --}}
         @if ($eventos->count() > 0)
-            <form method="POST" x-data="{ bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }}, enviando: false }" @submit="enviando = true"
+            <form method="POST" enctype="multipart/form-data" x-data="{ bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }}, enviando: false }" @submit="enviando = true"
                 action="{{ $ficha->exists ? route('sgm.update', $ficha) : route('sgm.store') }}" class="space-y-8">
                 @csrf
                 @if ($ficha->exists)
@@ -179,16 +179,17 @@
                     <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Dados Básicos</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {{-- Foto --}}
-                        <div class="flex flex-col items-center gap-3">
+                        <div class="flex flex-col items-center gap-3" x-data="{ photoPreview: '{{ $ficha->foto?->med_foto ? Storage::url($ficha->foto->med_foto) : '' }}' }">
                             <div
                                 class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
-                                @if ($ficha->foto?->med_foto)
-                                    <img src="{{ Storage::url($ficha->foto->med_foto) }}" alt="Foto do participante"
+                                <template x-if="photoPreview">
+                                    <img :src="photoPreview" alt="Foto do participante"
                                         class="w-full h-full object-cover" />
-                                @else
+                                </template>
+                                <template x-if="!photoPreview">
                                     <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500"
                                         aria-hidden="true" />
-                                @endif
+                                </template>
                             </div>
                             <div>
                                 <label for="med_foto"
@@ -197,6 +198,14 @@
                                 </label>
                                 <input type="file" name="med_foto" id="med_foto" accept="image/*"
                                     x-bind:disabled="bloqueado"
+                                    @change="
+                                        const file = $event.target.files[0];
+                                        if (file) {
+                                            photoPreview = URL.createObjectURL(file);
+                                        } else {
+                                            photoPreview = '{{ $ficha->foto?->med_foto ? Storage::url($ficha->foto->med_foto) : '' }}';
+                                        }
+                                    "
                                     class="block text-sm text-gray-600 dark:text-gray-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-300" />
                                 @error('med_foto')
                                     <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
@@ -520,6 +529,28 @@
                                     @endforeach
                                 </select>
                                 @error('idt_falar_com')
+                                    <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="nom_falar_com"
+                                    class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Nome do Contato</label>
+                                <input type="text" name="nom_falar_com" id="nom_falar_com" x-bind:disabled="bloqueado"
+                                    value="{{ old('nom_falar_com', optional($ficha->fichaSGM)->nom_falar_com) }}"
+                                    maxlength="150" autocomplete="off" placeholder="Nome completo"
+                                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_falar_com') border-red-500 @enderror" />
+                                @error('nom_falar_com')
+                                    <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="tel_falar_com"
+                                    class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Telefone</label>
+                                <input type="tel" name="tel_falar_com" id="tel_falar_com" x-bind:disabled="bloqueado"
+                                    value="{{ old('tel_falar_com', optional($ficha->fichaSGM)->tel_falar_com) }}"
+                                    maxlength="20" autocomplete="off" placeholder="(61) 90000-0000"
+                                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tel_falar_com') border-red-500 @enderror" />
+                                @error('tel_falar_com')
                                     <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                                 @enderror
                             </div>
