@@ -129,7 +129,7 @@ class FichaSGMController extends Controller
             'duration_ms' => $duration,
         ]));
 
-        return redirect()->route('sgm.index', ['evento' => $ficha->idt_evento])->with('success', 'Ficha cadastrada com sucesso!');
+        return redirect()->route('home')->with('success', 'Ficha cadastrada com sucesso!');
     }
 
     public function show($id)

@@ -500,7 +500,7 @@
                                 <option class="dark:bg-zinc-700" value="">Selecione uma opção</option>
                                 @foreach (\App\Enums\Escolaridade::cases() as $escolaridade)
                                     <option class="dark:bg-zinc-700" value="{{ $escolaridade->value }}"
-                                        {{ old('tip_escolaridade', $ficha->fichaSGM->tip_escolaridade?->value ?? $ficha->fichaSGM->tip_escolaridade) == $escolaridade->value ? 'selected' : '' }}>
+                                        {{ old('tip_escolaridade', $ficha->fichaSGM->tip_escolaridade?->value ?? $ficha->fichaSGM?->tip_escolaridade) == $escolaridade->value ? 'selected' : '' }}>
                                         {{ $escolaridade->label() }}
                                     </option>
                                 @endforeach
@@ -522,7 +522,7 @@
                                 <option class="dark:bg-zinc-700" value="">Selecione uma opção</option>
                                 @foreach (\App\Enums\EscolaridadeSituacao::cases() as $escolaridade)
                                     <option class="dark:bg-zinc-700" value="{{ $escolaridade->value }}"
-                                        {{ old('tip_escolaridade_situacao', $ficha->fichaSGM->tip_escolaridade_situacao?->value ?? $ficha->fichaSGM->tip_escolaridade_situacao) == $escolaridade->value ? 'selected' : '' }}>
+                                        {{ old('tip_escolaridade_situacao', $ficha->fichaSGM->tip_escolaridade_situacao?->value ?? $ficha->fichaSGM?->tip_escolaridade_situacao) == $escolaridade->value ? 'selected' : '' }}>
                                         {{ $escolaridade->label() }}
                                     </option>
                                 @endforeach
@@ -578,7 +578,7 @@
                                 <option class="dark:bg-zinc-700" value="">Selecione uma opção</option>
                                 @foreach (\App\Enums\Religiao::cases() as $religiao)
                                     <option class="dark:bg-zinc-700" value="{{ $religiao->value }}"
-                                        {{ old('tip_religiao', $ficha->fichaSGM->tip_religiao?->value ?? $ficha->fichaSGM->tip_religiao) == $religiao->value ? 'selected' : '' }}>
+                                        {{ old('tip_religiao', $ficha->fichaSGM->tip_religiao?->value ?? $ficha->fichaSGM?->tip_religiao) == $religiao->value ? 'selected' : '' }}>
                                         {{ $religiao->label() }}
                                     </option>
                                 @endforeach
