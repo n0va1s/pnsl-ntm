@@ -19,6 +19,13 @@ class Participante extends Model
         'idt_pessoa',
         'idt_evento',
         'tip_cor_troca',
+        'ind_taxa_pagou',
+        'ind_presente',
+    ];
+
+    protected $casts = [
+        'ind_taxa_pagou' => 'boolean',
+        'ind_presente' => 'boolean',
     ];
 
     protected static function booted()

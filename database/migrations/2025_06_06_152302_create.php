@@ -11,14 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Tabela Tipo_Situacao ex: cadastrada, encaminhada, aprovada
-        Schema::create('tipo_situacao', function (Blueprint $table) {
-            $table->id('idt_situacao');
-            $table->string('des_situacao', 255);
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
         // Tabela Tipo_Responsavel ex: avê, avó, pai, mae, padrinho, madrinha
         Schema::create('tipo_responsavel', function (Blueprint $table) {
             $table->id('idt_responsavel');
@@ -158,19 +150,6 @@ return new class extends Migration
             $table->unique(['idt_pessoa', 'idt_evento'], 'unique_participante_per_evento');
         });
 
-        // Tabela Presenca (Frequencia dos participantes nos eventos)
-        Schema::create('presenca', function (Blueprint $table) {
-            $table->id('idt_presenca');
-            $table->foreignId('idt_participante')
-                ->constrained('participante', 'idt_participante')
-                ->onDelete('cascade');
-            $table->date('dat_presenca');
-            $table->boolean('ind_presente')->default(false); // se o participante estava presente nesse dia
-            $table->timestamps();
-
-            $table->unique(['idt_participante', 'dat_presenca'], 'unique_presenca_por_participante');
-        });
-
         // Tabela Trabalhador indica os encontros que a pessoa trabalhou ou coordenou
         Schema::create('trabalhador', function (Blueprint $table) {
             $table->id('idt_trabalhador');
@@ -296,18 +275,6 @@ return new class extends Migration
             $table->unique(['idt_ficha', 'idt_restricao'], 'unique_ficha_saude');
         });
 
-        // Tabela Ficha_Analise é o histórico da ficha ex: ficha 14 cadastrada, ficha 14 aprovada
-        Schema::create('ficha_analise', function (Blueprint $table) {
-            $table->id('idt_analise');
-            $table->foreignId('idt_ficha')
-                ->constrained('ficha', 'idt_ficha')
-                ->onDelete('cascade');
-            $table->foreignId('idt_situacao')
-                ->constrained('tipo_situacao', 'idt_situacao');
-            $table->text('txt_analise')->nullable();
-            $table->index(['idt_ficha', 'idt_situacao'], 'ficha_analise_ficha_situacao_idx');
-        });
-
         // Tabela Contato para tirar dúvidas externas
         Schema::create('contato', function (Blueprint $table) {
             $table->id('idt_contato');
@@ -332,7 +299,6 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('contato');
-        Schema::dropIfExists('ficha_analise');
         Schema::dropIfExists('ficha_saude');
         Schema::dropIfExists('ficha_sgm');
         Schema::dropIfExists('ficha_ecc');
@@ -350,6 +316,5 @@ return new class extends Migration
         Schema::dropIfExists('tipo_movimento');
         Schema::dropIfExists('tipo_restricao');
         Schema::dropIfExists('tipo_responsavel');
-        Schema::dropIfExists('tipo_situacao');
     }
 };

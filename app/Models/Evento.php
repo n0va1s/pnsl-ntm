@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\FaixaEtaria;
+use App\Enums\TipoEvento;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,8 +31,14 @@ class Evento extends Model
         'val_trabalhador',
         'val_venista',
         'val_entrada',
+        'val_receita',
+        'val_despesa',
         'tip_evento',
+        'tip_faixa_etaria',
         'txt_informacao',
+        'txt_relatorio',
+        'med_foto',
+        'med_logo',
     ];
 
     protected $casts = [
@@ -39,17 +47,9 @@ class Evento extends Model
         'qtd_vaga' => 'integer',
         'dat_inicio' => 'date',
         'dat_termino' => 'date',
+        'tip_faixa_etaria' => FaixaEtaria::class,
+        'tip_evento' => TipoEvento::class,
     ];
-
-    public function getTipoDescricaoAttribute()
-    {
-        return match ($this->tip_evento) {
-            'E' => 'Encontro Anual',
-            'P' => 'Pós-Encontro',
-            'D' => 'Desafio',
-            default => 'Outro',
-        };
-    }
 
     /**
      * Define o relacionamento de um evento com um tipo de movimento.
@@ -100,6 +100,14 @@ class Evento extends Model
     }
 
     /**
+     * Define o relacionamento de um evento com a sua logo.
+     */
+    public function logo()
+    {
+        return $this->hasOne(EventoFoto::class, 'idt_evento');
+    }
+
+    /**
      * Scope para busca insensível a maiúsculas e minúsculas nos campos des_evento e num_evento.
      *
      * @return Builder
@@ -140,9 +148,15 @@ class Evento extends Model
     public static function getByTipo(int $tipMovimento, string $tipEvento, ?int $limite)
     {
         if ($limite) {
-            return Evento::where('idt_movimento', $tipMovimento)->where('tip_evento', $tipEvento)->orderBy('dat_inicio', 'asc')->limit($limite)->get();
+            return Evento::where('idt_movimento', $tipMovimento)
+                ->where('tip_evento', $tipEvento)
+                ->orderBy('dat_inicio', 'asc')
+                ->limit($limite)->get();
         } else {
-            return Evento::where('idt_movimento', $tipMovimento)->where('tip_evento', $tipEvento)->orderBy('dat_inicio', 'asc')->get();
+            return Evento::where('idt_movimento', $tipMovimento)
+                ->where('tip_evento', $tipEvento)
+                ->orderBy('dat_inicio', 'asc')
+                ->get();
         }
     }
 

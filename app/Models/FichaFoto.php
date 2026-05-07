@@ -5,27 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FichaAnalise extends Model
+class FichaFoto extends Model
 {
     use HasFactory;
 
-    protected $table = 'ficha_analise';
+    protected $table = 'ficha_foto';
 
-    public $timestamps = false;
+    protected $primaryKey = 'idt_ficha';
+
+    public $incrementing = false;
+
+    public $timestamps = true;
 
     protected $fillable = [
         'idt_ficha',
-        'idt_situacao',
-        'txt_analise',
+        'med_foto',
+        'med_conjuge',
     ];
 
     public function ficha()
     {
         return $this->belongsTo(Ficha::class, 'idt_ficha');
-    }
-
-    public function situacao()
-    {
-        return $this->belongsTo(TipoSituacao::class, 'idt_situacao');
     }
 }

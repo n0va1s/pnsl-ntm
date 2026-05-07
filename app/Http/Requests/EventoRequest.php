@@ -31,9 +31,14 @@ class EventoRequest extends FormRequest
             'val_venista' => 'nullable|numeric|min:0',
             'val_camiseta' => 'nullable|numeric|min:0',
             'val_entrada' => 'nullable|numeric|min:0',
-            'med_foto' => 'nullable|image|max:2048',
             'tip_evento' => 'required|string|max:1',
+            'tip_faixa_etaria' => 'required|string|max:5',
             'txt_informacao' => 'nullable|string|max:3000',
+            'val_receita' => 'nullable|numeric|min:0',
+            'val_despesa' => 'nullable|numeric|min:0',
+            'txt_relatorio' => 'nullable|string|max:3000',
+            'med_foto' => 'nullable|image|max:2048',
+            'med_logo' => 'nullable|image|max:2048',
         ];
     }
 
@@ -52,6 +57,7 @@ class EventoRequest extends FormRequest
             'num_evento.string' => 'O número do evento deve ser um texto.',
             'num_evento.max' => 'O número do evento não pode ter mais de 5 caracteres.',
             'dat_limite_inscricao.date' => 'A data de limite para inscricção deve ser uma data válida.',
+            'dat_limite_inscricao.before_or_equal' => 'A data de limite para inscricção deve ser igual ou anterior à data de início.',
             'qtd_vaga' => 'A quantidade de vagas deve ser maior que zero',
             'dat_inicio.required' => 'A data de início é obrigatória.',
             'dat_inicio.date' => 'A data de início deve ser uma data válida.',
@@ -63,8 +69,11 @@ class EventoRequest extends FormRequest
             'val_entrada.numeric' => 'O valor de entrada deve ser um número.',
             'med_foto.image' => 'O arquivo deve ser uma imagem.',
             'med_foto.max' => 'O tamanho da imagem não pode exceder 2MB.',
-            'ind_pos_encontro.required' => 'O campo pós encontro é obrigatório.',
-            'ind_pos_encontro.boolean' => 'O campo pós encontro deve ser verdadeiro ou falso.',
+            'med_logo.image' => 'O arquivo deve ser uma imagem.',
+            'med_logo.max' => 'O tamanho da imagem não pode exceder 2MB.',
+            'tip_evento.required' => 'O campo tipo de evento é obrigatório.',
+            'tip_faixa_etaria.required' => 'O campo faixa etária é obrigatório.',
+            'tip_faixa_etaria.max' => 'O campo faixa etária não pode ter mais de 5 caracteres.',
         ];
     }
 }

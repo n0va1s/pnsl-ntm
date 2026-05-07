@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TipoEvento;
 use App\Models\Evento;
 use App\Models\TipoMovimento;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -28,8 +29,11 @@ class EventoFactory extends Factory
             'val_trabalhador' => $this->faker->randomNumber(2, 45),
             'val_venista' => $this->faker->randomNumber(2, 50),
             'val_entrada' => $this->faker->randomNumber(2, 50),
-            'tip_evento' => $this->faker->randomElement(['E', 'P', 'D']),
+            'tip_evento' => $this->faker->randomElement(TipoEvento::cases())->value,
+            'val_receita' => $this->faker->randomNumber(2, 50),
+            'val_despesa' => $this->faker->randomNumber(2, 50),
             'txt_informacao' => $this->faker->optional()->paragraph(),
+            'txt_relatorio' => $this->faker->optional()->paragraph(),
         ];
     }
 }

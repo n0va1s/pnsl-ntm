@@ -28,6 +28,8 @@ class Trabalhador extends Model
         'ind_primeira_vez',
         'ind_camiseta_pediu',
         'ind_camiseta_pagou',
+        'ind_taxa_pagou',
+        'ind_presente',
     ];
 
     protected $casts = [
@@ -39,6 +41,8 @@ class Trabalhador extends Model
         'ind_primeira_vez' => 'boolean',
         'ind_camiseta_pediu' => 'boolean',
         'ind_camiseta_pagou' => 'boolean',
+        'ind_taxa_pagou' => 'boolean',
+        'ind_presente' => 'boolean',
     ];
 
     protected static function booted()

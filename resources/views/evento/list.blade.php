@@ -6,56 +6,37 @@
         <header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Gerenciar Eventos</h1>
-                <p class="text-gray-600 mt-1 dark:text-gray-400">Visualize e participe dos próximos encontros e desafios.
-                </p>
+                <p class="text-gray-600 mt-1 dark:text-gray-400">Visualize e participe dos próximos encontros e desafios.</p>
             </div>
 
             @if (Auth::user()->isAdmin())
-                {{-- Botão Novo Evento com seu padrão Azul --}}
-                <a href="{{ route('eventos.create') }}"
-                    class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none">
-                    <x-heroicon-s-plus class="w-5 h-5 mr-2" />
+                <flux:button href="{{ route('eventos.create') }}" variant="primary" icon="plus" color="green">
                     Novo Evento
-                </a>
+                </flux:button>
             @endif
         </header>
 
-        {{-- Filtros --}}
+        {{-- Filtros (Simplificados com Flux UI se preferir, ou mantendo seu padrão) --}}
         <nav class="bg-white dark:bg-zinc-800 p-5 rounded-xl border border-gray-200 dark:border-zinc-700 shadow-sm mb-8">
-            <form method="GET" action="{{ route('eventos.index') }}"
-                class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <form method="GET" action="{{ route('eventos.index') }}" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                 <div class="md:col-span-6">
-                    <input type="text" name="search" value="{{ $search }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-zinc-900 dark:border-zinc-600 dark:text-gray-200"
-                        placeholder="Buscar por descrição ou número...">
+                    <flux:input name="search" value="{{ $search }}" icon="magnifying-glass" placeholder="Buscar por descrição ou número..." />
                 </div>
 
                 <div class="md:col-span-3">
-                    <select name="idt_movimento"
-                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-900 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="">Todos os Movimentos</option>
+                    <flux:select name="idt_movimento" placeholder="Todos os Movimentos">
                         @foreach ($movimentos as $mov)
-                            <option value="{{ $mov->idt_movimento }}"
-                                {{ $idt_movimento == $mov->idt_movimento ? 'selected' : '' }}>
+                            <flux:select.option value="{{ $mov->idt_movimento }}" :selected="$idt_movimento == $mov->idt_movimento">
                                 {{ $mov->des_sigla }}
-                            </option>
+                            </flux:select.option>
                         @endforeach
-                    </select>
+                    </flux:select>
                 </div>
 
                 <div class="md:col-span-3 flex gap-2">
-                    {{-- Botão Filtrar com seu padrão Azul --}}
-                    <button type="submit"
-                        class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none flex justify-center items-center font-bold transition">
-                        <x-heroicon-s-magnifying-glass class="w-5 h-5 mr-2" />
-                        Filtrar
-                    </button>
-
+                    <flux:button type="submit" variant="filled" color="blue" class="flex-1">Filtrar</flux:button>
                     @if ($search || $idt_movimento)
-                        <a href="{{ route('eventos.index') }}"
-                            class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 flex items-center dark:bg-zinc-700 dark:text-gray-300">
-                            <x-heroicon-o-x-mark class="w-5 h-5" />
-                        </a>
+                        <flux:button href="{{ route('eventos.index') }}" icon="x-mark" variant="ghost" />
                     @endif
                 </div>
             </form>
@@ -64,12 +45,10 @@
         {{-- Grid de Cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse ($eventos as $evento)
-                <article
-                    class="flex flex-col bg-white dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-zinc-700 shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
-
+                <article class="flex flex-col bg-white dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-zinc-700 shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
+                    
                     <div class="px-5 pt-5 flex justify-between items-start">
-                        <span
-                            class="px-2 py-1 bg-gray-100 dark:bg-zinc-700 rounded text-[10px] font-black uppercase text-gray-400">
+                        <span class="px-2 py-1 bg-gray-100 dark:bg-zinc-700 rounded text-[10px] font-black uppercase text-gray-400">
                             Nº {{ $evento->num_evento }}
                         </span>
                         <x-badge-movimento :sigla="$evento->movimento->des_sigla" />
@@ -83,97 +62,49 @@
                         <div class="space-y-3">
                             <div class="flex items-center text-gray-600 dark:text-gray-300 text-sm">
                                 <x-heroicon-o-calendar class="w-4 h-4 mr-2 text-blue-500" />
-                                <span>{{ $evento->getDataInicioFormatada() }} a
-                                    {{ $evento->getDataTerminoFormatada() }}</span>
+                                <span>{{ $evento->getDataInicioFormatada() }} a {{ $evento->getDataTerminoFormatada() }}</span>
                             </div>
 
-                            <div
-                                class="flex items-center text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">
+                            <div class="flex items-center text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">
                                 <x-heroicon-o-tag class="w-4 h-4 mr-2" />
-                                {{ $evento->tipo_descricao }}
+                                {{ $evento->tip_evento->label() }}
                             </div>
                         </div>
                     </div>
 
-                    {{-- Admin Stats --}}
-                    @if (Auth::user()?->isAdmin())
-                        <div class="px-5 pb-4">
-                            {{-- Se for tipo E, usa grid de 2 colunas. Se for P ou D, usa flex centralizado --}}
-                            <div
-                                class="{{ $evento->tip_evento == 'E' ? 'grid grid-cols-2 gap-2' : 'flex justify-center' }}">
-
-                                @if ($evento->tip_evento == 'E')
-                                    <div class="{{ $evento->tip_evento == 'E' ? '' : 'w-1/2' }}">
-                                        <x-evento-card label="Fichas" :count="$evento->fichas_count"
-                                            icon="heroicon-o-user-group" color="blue" />
-                                    </div>
-                                    <x-evento-card label="Confirmados" :count="$evento->inscritos_count" :href="route('quadrante.list', ['evento' => $evento->idt_evento])"
-                                        icon="heroicon-o-check-circle" color="zinc" />
-                                    <x-evento-card label="Voluntários" :count="$evento->voluntarios_count" :href="route('montagem.list', ['evento' => $evento->idt_evento])"
-                                        icon="heroicon-o-hand-raised" color="green" />
-                                    <x-evento-card label="Trabalhadores" :count="$evento->trabalhadores_count" :href="route('trabalhadores.index', ['evento' => $evento->idt_evento])"
-                                        icon="heroicon-o-briefcase" color="orange" />
-                                @else<div class="{{ $evento->tip_evento == 'E' ? '' : 'w-1/2' }}">
-                                        <x-evento-card label="Participantes" :count="$evento->participantes_count"
-                                            icon="heroicon-o-user-group" color="blue" />
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-
-                    {{-- Footer de Ações --}}
-                    <footer
-                        class="p-4 bg-gray-50 dark:bg-zinc-800/50 border-t border-gray-100 dark:border-zinc-700 mt-auto">
+                    <footer class="p-4 bg-gray-50 dark:bg-zinc-800/50 border-t border-gray-100 dark:border-zinc-700 mt-auto">
                         @if (Auth::user()?->isAdmin())
-                            <div class="flex gap-2">
-                                {{-- Botão Editar com seu padrão Azul --}}
-                                <a href="{{ route('eventos.edit', $evento) }}"
-                                    class="flex-1 py-2 bg-blue-600 text-white rounded-md font-bold text-center hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition shadow-sm">
-                                    Editar
-                                </a>
-                                <form action="{{ route('eventos.destroy', $evento) }}" method="POST" class="flex-1"
-                                    onsubmit="return confirm('Excluir este evento?')">
-                                    @csrf @method('DELETE')
-                                    <button
-                                        class="w-full py-2 bg-red-600 text-white rounded-md font-bold hover:bg-red-700 transition">
-                                        Excluir
-                                    </button>
-                                </form>
-                            </div>
+                            <flux:button href="{{ route('eventos.gerenciamento', $evento) }}" color="blue" class="w-full">
+                                Gerenciamento
+                            </flux:button>
                         @else
                             @if ($evento->ja_inscrito_participante || $evento->ja_inscrito_voluntario)
-                                {{-- Inscrição Confirmada --}}
-                                <div
-                                    class="w-full py-2 bg-gray-100 dark:bg-zinc-700 text-gray-500 dark:text-gray-400 rounded-md font-bold text-center flex items-center justify-center gap-2 border border-gray-200 dark:border-zinc-600">
-                                    <x-heroicon-s-check-circle class="w-5 h-5" />
+                                <div class="w-full py-2 bg-gray-100 dark:bg-zinc-700 text-gray-500 dark:text-gray-400 rounded-md font-bold text-center flex items-center justify-center gap-2 border border-gray-200 dark:border-zinc-600">
+                                    <x-heroicon-s-check-circle class="w-5 h-5 text-green-500" />
                                     Inscrição Confirmada
                                 </div>
                             @else
-                                @if ($evento->tip_evento == 'E')
-                                    {{-- Caso 'E': Apenas navega para a página de criação (GET) --}}
-                                    <a href="{{ route('trabalhadores.create', ['evento' => $evento]) }}"
-                                        class="block w-full py-2 bg-green-600 text-white rounded-md font-bold text-center hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition shadow-md">
+                                {{-- Pegamos o valor do Enum para comparar com segurança --}}
+                                @php
+                                    $tipoValue = $evento->tip_evento instanceof \UnitEnum ? $evento->tip_evento->value : $evento->tip_evento;
+                                @endphp
+
+                                @if ($tipoValue === 'E')
+                                    <flux:button href="{{ route('trabalhadores.create', ['evento' => $evento]) }}" color="green" class="w-full">
                                         Quero Trabalhar
-                                    </a>
+                                    </flux:button>
                                 @else
-                                    {{-- Caso 'P' ou 'D': Inscrição direta via POST --}}
+                                    {{-- Definimos as variáveis aqui para garantir que existam apenas neste escopo --}}
                                     @php
-                                        $rotaInscricao = route('participantes.confirm', [
-                                            'evento' => $evento,
-                                            'pessoa' => Auth::user()->pessoa,
-                                        ]);
-                                        $textoBotao =
-                                            $evento->tip_evento == 'P' ? 'Vou Participar' : 'Bora pro Desafio';
+                                        $textoBotao = ($tipoValue === 'P') ? 'Vou Participar' : 'Bora pro Desafio';
                                     @endphp
 
-                                    <form method="POST" action="{{ $rotaInscricao }}"
-                                        onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').classList.add('opacity-50', 'bg-gray-400'); this.querySelector('button').innerHTML = 'Processando...';">
+                                    <form method="POST" action="{{ route('participantes.confirm', ['evento' => $evento, 'pessoa' => Auth::user()->pessoa]) }}">
                                         @csrf
-                                        <button
-                                            class="w-full py-2 bg-green-600 text-white rounded-md font-bold hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition shadow-md">
+                                        {{-- Usando o atributo 'loading' do Flux para evitar o travamento do JS manual --}}
+                                        <flux:button type="submit" color="green" class="w-full" loading>
                                             {{ $textoBotao }}
-                                        </button>
+                                        </flux:button>
                                     </form>
                                 @endif
                             @endif

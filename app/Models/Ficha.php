@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\ComoSoube;
+use App\Enums\HabilidadePrincipal;
+use App\Enums\Genero;
+use App\Enums\TamanhoCamiseta;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,14 +24,17 @@ class Ficha extends Model
         'idt_evento',
         'idt_pessoa',
         'tip_genero',
+        'num_cpf_candidato',
         'nom_candidato',
         'nom_apelido',
         'dat_nascimento',
         'tel_candidato',
         'eml_candidato',
+        'nom_profissao',
         'des_endereco',
         'tam_camiseta',
         'tip_como_soube',
+        'tip_habilidade',
         'ind_catolico',
         'ind_toca_instrumento',
         'ind_consentimento',
@@ -39,12 +46,16 @@ class Ficha extends Model
     ];
 
     protected $casts = [
-        'dat_nascimento' => 'date',
+        'dat_nascimento' => 'date:Y-m-d',
         'ind_catolico' => 'boolean',
         'ind_toca_instrumento' => 'boolean',
         'ind_consentimento' => 'boolean',
         'ind_aprovado' => 'boolean',
         'ind_restricao' => 'boolean',
+        'tip_como_soube' => ComoSoube::class,
+        'tip_habilidade' => HabilidadePrincipal::class,
+        'tam_camiseta' => TamanhoCamiseta::class,
+        'tip_genero' => Genero::class,
     ];
 
     protected static function booted()
@@ -60,15 +71,6 @@ class Ficha extends Model
             if (auth()->check()) {
                 $ficha->usu_alteracao = auth()->id();
             }
-        });
-
-        static::created(function ($ficha) {
-            $ficha->analises()->create([
-                'idt_situacao' => 1, // cadastrada
-                'txt_observacao' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
         });
     }
 
@@ -107,9 +109,9 @@ class Ficha extends Model
         return $this->hasMany(FichaSaude::class, 'idt_ficha');
     }
 
-    public function analises()
+    public function foto()
     {
-        return $this->hasMany(FichaAnalise::class, 'idt_ficha');
+        return $this->hasOne(FichaFoto::class, 'idt_ficha');
     }
 
     public function getDataNascimentoFormatada()

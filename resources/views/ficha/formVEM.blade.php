@@ -1,89 +1,62 @@
 <x-layouts.public :title="'Ficha do VEM'">
     <section class="px-4 py-6 w-full max-w-3xl mx-auto" aria-labelledby="page-title">
+        @php
+            $eventosJson = json_encode((object) $eventos->mapWithKeys(fn($e) => [
+                (string)$e->idt_evento => [
+                    'faixa' => $e->tip_faixa_etaria?->label() ?? 'Livre',
+                    'data_limite' => $e->dat_limite_inscricao?->format('d/m/Y') ?? '--/--/----',
+                    'vaga' => $e->qtd_vaga,
+                    'valor' => number_format($e->val_venista, 2, ',', '.')
+                ]
+            ])->all());
+        @endphp
+
+        <div x-data="{
+                bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }},
+                enviando: false,
+                selectedEventoId: '{{ old('idt_evento', $ficha->idt_evento ?? '') }}',
+                eventosData: {{ $eventosJson }},
+
+                get eventoSelecionado() {
+                    const id = String(this.selectedEventoId);
+                    const e = this.eventosData[id];
+                    if (!e) return { faixa: '---', data_limite: '---', vaga: 0, valor: '0,00' };
+                    return {
+                        faixa:       e.faixa,
+                        data_limite: e.data_limite,
+                        vaga:        e.vaga,
+                        valor:       e.valor,
+                    };
+                },
+                buscarPorCpf() {
+                    let cpf = document.getElementById('num_cpf_candidato').value.replace(/\D/g, '');
+                    if (cpf.length === 11) {
+                        fetch(`/pessoas/${cpf}/busca/`)
+                            .then(response => {
+                                if (response.ok) return response.json();
+                                throw new Error('Not found');
+                            })
+                            .then(data => {
+                                document.getElementById('nom_candidato').value = data.nom_pessoa || '';
+                                document.getElementById('nom_apelido').value = data.nom_apelido || '';
+                                if(data.dat_nascimento) document.getElementById('dat_nascimento').value = data.dat_nascimento.split('T')[0];
+                                document.getElementById('tel_candidato').value = data.tel_pessoa || '';
+                                document.getElementById('eml_candidato').value = data.eml_pessoa || '';
+                                document.getElementById('des_endereco').value = data.des_endereco || '';
+                                
+                                if (data.tam_camiseta) document.getElementById('tam_camiseta').value = data.tam_camiseta;
+                                if (data.tip_genero) document.getElementById('tip_genero').value = data.tip_genero;
+                            })
+                            .catch(error => console.log('Candidato ainda não existe, preenchimento manual necessário.'));
+                    }
+                }
+            }">
 
         {{-- ===== CABEÇALHO ===== --}}
         <div class="mb-6 space-y-4">
             <div>
-                <h1 id="page-title" class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Ficha do VEM
-                </h1>
+                <h1 id="page-title" class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Ficha do VEM</h1>
                 <p class="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">Paróquia Nossa Senhora do Lago</p>
-            </div>
-
-            {{-- Cards de informações rápidas --}}
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3" role="list" aria-label="Informações do evento">
-                <div role="listitem"
-                    class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
-                    <x-heroicon-o-users class="w-5 h-5 text-blue-500 shrink-0" aria-hidden="true" />
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Público</p>
-                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">12 a 15 anos</p>
-                    </div>
-                </div>
-                <div role="listitem"
-                    class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
-                    <x-heroicon-o-calendar class="w-5 h-5 text-red-500 shrink-0" aria-hidden="true" />
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Inscrições até</p>
-                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">17/05/2026</p>
-                    </div>
-                </div>
-                <div role="listitem"
-                    class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
-                    <x-heroicon-o-ticket class="w-5 h-5 text-green-500 shrink-0" aria-hidden="true" />
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Vagas</p>
-                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">50 vagas</p>
-                    </div>
-                </div>
-                <div role="listitem"
-                    class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
-                    <x-heroicon-o-currency-dollar class="w-5 h-5 text-yellow-500 shrink-0" aria-hidden="true" />
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Taxa</p>
-                        <p class="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100">R$ 120,00</p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Datas, local, roupas, garrafinha --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                <div
-                    class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
-                    <x-heroicon-o-calendar-days class="w-5 h-5 text-purple-500 shrink-0 mt-0.5" aria-hidden="true" />
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Datas</p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Pré-VEM: <span
-                                class="font-semibold">13/06/2026</span></p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-gray-100">VEM: <span
-                                class="font-semibold">20 e 21/06/2026</span></p>
-                    </div>
-                </div>
-                <div
-                    class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
-                    <x-heroicon-o-map-pin class="w-5 h-5 text-rose-500 shrink-0 mt-0.5" aria-hidden="true" />
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Local</p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Paróquia Nossa Senhora do Lago
-                        </p>
-                    </div>
-                </div>
-                <div
-                    class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
-                    <x-heroicon-o-sparkles class="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" aria-hidden="true" />
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Roupas</p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Leves e adequadas para a capela
-                        </p>
-                    </div>
-                </div>
-                <div
-                    class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
-                    <x-heroicon-o-beaker class="w-5 h-5 text-cyan-500 shrink-0 mt-0.5" aria-hidden="true" />
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Lembrete</p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Leve sua garrafinha</p>
-                    </div>
-                </div>
             </div>
 
             {{-- Etapas --}}
@@ -131,8 +104,25 @@
                     </li>
                 </ol>
             </div>
-        </div>
 
+            <div
+                class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 flex gap-3">
+                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <p class="text-sm font-semibold text-blue-800 dark:text-blue-300">Aviso sobre a participação</p>
+                    <p class="text-xs text-blue-700 dark:text-blue-400 mt-1 leading-relaxed">
+                        A realização desta pré-inscrição <strong>não garante a participação</strong> automática no
+                        encontro. Todas as fichas passarão por um processo de seleção baseado nos critérios acima, e
+                        a confirmação final ocorrerá somente após o contato e a confirmação dos dados.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
         {{-- Botão voltar (admin) --}}
         @if (Auth::user()?->isAdmin())
             <div class="flex justify-end mb-4">
@@ -146,19 +136,58 @@
         @endif
 
         @if ($eventos->count() > 0)
-            <form method="POST" x-data="{ bloqueado: {{ $ficha->ind_aprovado ? 'true' : 'false' }}, enviando: false }" @submit="enviando = true"
-                action="{{ $ficha->exists ? route('vem.update', $ficha) : route('vem.store') }}" class="space-y-6"
-                novalidate aria-label="Formulário de inscrição no VEM">
+            <form method="POST" 
+                enctype="multipart/form-data"
+                @submit="enviando = true"
+                action="{{ $ficha->exists ? route('vem.update', $ficha) : route('vem.store') }}"
+                class="space-y-6" novalidate>
                 @csrf
-                @if ($ficha->exists)
-                    @method('PUT')
-                @endif
+                @if ($ficha->exists) @method('PUT') @endif
 
                 {{-- ===== DADOS DO PARTICIPANTE ===== --}}
                 <fieldset class="bg-white dark:bg-zinc-800 rounded-md shadow p-4 sm:p-6">
                     <legend class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Dados do
                         Participante</legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        
+                        {{-- Foto --}}
+                        <div class="sm:col-span-2 flex flex-col items-center gap-3">
+                            <div class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
+                            @if ($ficha->foto?->med_foto)
+                                    <img src="{{ Storage::url($ficha->foto->med_foto) }}" alt="Foto do participante" class="w-full h-full object-cover" />
+                                @else
+                                    <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500" aria-hidden="true" />
+                                @endif
+                            </div>
+                            <div>
+                                <label for="med_foto" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-center">
+                                    Foto
+                                </label>
+                                <input type="file" name="med_foto" id="med_foto"
+                                    accept="image/*" x-bind:disabled="bloqueado"
+                                    class="block text-sm text-gray-600 dark:text-gray-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-300" />
+                                @error('med_foto')
+                                    <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- CPF --}}
+                        <div>
+                            <label for="num_cpf_candidato"
+                                class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
+                                CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
+                            </label>
+                            <input type="text" name="num_cpf_candidato" id="num_cpf_candidato"
+                                x-bind:disabled="bloqueado" required maxlength="14" autocomplete="off"
+                                value="{{ old('num_cpf_candidato', $ficha->num_cpf_candidato) }}"
+                                @blur="buscarPorCpf()"
+                                placeholder="000.000.000-00" aria-required="true"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('num_cpf_candidato') border-red-500 @enderror" />
+                            @error('num_cpf_candidato')
+                                <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         {{-- Movimento --}}
                         <div>
@@ -186,25 +215,20 @@
 
                         {{-- Evento --}}
                         <div>
-                            <label for="idt_evento"
-                                class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Evento <span class="text-red-600" aria-hidden="true">*</span><span
-                                    class="sr-only">(obrigatório)</span>
-                            </label>
-                            <select name="idt_evento" id="idt_evento" required x-bind:disabled="bloqueado"
-                                aria-required="true"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('idt_evento') border-red-500 @enderror">
+                            <label for="idt_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">Evento</label>
+                            <select name="idt_evento" id="idt_evento"
+                                x-model="selectedEventoId"
+                                @change="getEventoById()"
+                                x-bind:disabled="bloqueado"
+                                required
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
                                 <option value="">Selecione um evento</option>
                                 @foreach ($eventos as $evento)
-                                    <option value="{{ $evento->idt_evento }}"
-                                        {{ old('idt_evento', $ficha->idt_evento) == $evento->idt_evento ? 'selected' : '' }}>
+                                    <option value="{{ $evento->idt_evento }}">
                                         {{ $evento->des_evento }} - {{ $evento->dat_inicio->format('d/m/Y') }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('idt_evento')
-                                <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         {{-- Sexo --}}
@@ -218,12 +242,12 @@
                                 aria-required="true"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_genero') border-red-500 @enderror">
                                 <option value="">Selecione o sexo</option>
-                                <option value="M"
-                                    {{ old('tip_genero', $ficha->tip_genero) == 'M' ? 'selected' : '' }}>Masculino
-                                </option>
-                                <option value="F"
-                                    {{ old('tip_genero', $ficha->tip_genero) == 'F' ? 'selected' : '' }}>Feminino
-                                </option>
+                                @foreach(\App\Enums\Genero::cases() as $genero)
+                                    <option value="{{ $genero->value }}"
+                                        {{ old('tip_genero', $ficha->tip_genero?->value) == $genero->value ? 'selected' : '' }}>
+                                        {{ $genero->label() }}
+                                    </option>
+                                @endforeach
                             </select>
                             @error('tip_genero')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
@@ -340,10 +364,10 @@
                                 aria-required="true"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tam_camiseta') border-red-500 @enderror">
                                 <option value="">Selecione o tamanho</option>
-                                @foreach (['PP', 'P', 'M', 'G', 'GG', 'EG'] as $tamanho)
-                                    <option value="{{ $tamanho }}"
-                                        {{ old('tam_camiseta', $ficha->tam_camiseta) == $tamanho ? 'selected' : '' }}>
-                                        {{ $tamanho }}
+                                @foreach(\App\Enums\TamanhoCamiseta::cases() as $tamanho)
+                                    <option value="{{ $tamanho->value }}"
+                                        {{ old('tam_camiseta', $ficha->tam_camiseta?->value) == $tamanho->value ? 'selected' : '' }}>
+                                        {{ $tamanho->value }}
                                     </option>
                                 @endforeach
                             </select>
@@ -361,15 +385,12 @@
                             <select name="tip_como_soube" id="tip_como_soube" x-bind:disabled="bloqueado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_como_soube') border-red-500 @enderror">
                                 <option value="">Selecione uma opção</option>
-                                <option value="IND"
-                                    {{ old('tip_como_soube', $ficha->tip_como_soube) == 'IND' ? 'selected' : '' }}>
-                                    Indicação</option>
-                                <option value="PAD"
-                                    {{ old('tip_como_soube', $ficha->tip_como_soube) == 'PAD' ? 'selected' : '' }}>
-                                    Padre</option>
-                                <option value="OUT"
-                                    {{ old('tip_como_soube', $ficha->tip_como_soube) == 'OUT' ? 'selected' : '' }}>
-                                    Outro</option>
+                                @foreach(\App\Enums\ComoSoube::cases() as $comoSoube)
+                                    <option value="{{ $comoSoube->value }}"
+                                        {{ old('tip_como_soube', $ficha->tip_como_soube?->value) == $comoSoube->value ? 'selected' : '' }}>
+                                        {{ $comoSoube->label() }}
+                                    </option>
+                                @endforeach
                             </select>
                             @error('tip_como_soube')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
@@ -524,7 +545,7 @@
                                 <select name="idt_falar_com" id="idt_falar_com" required x-bind:disabled="bloqueado"
                                     aria-required="true"
                                     class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('idt_falar_com') border-red-500 @enderror">
-                                    <option value="">Selecione</option>
+                                    <option value="" disabled {{ old('idt_falar_com', optional($ficha->fichaVem)->idt_falar_com) ? '' : 'selected' }}>Selecione</option>
                                     @foreach ($responsaveis as $responsavel)
                                         <option value="{{ $responsavel->idt_responsavel }}"
                                             {{ old('idt_falar_com', optional($ficha->fichaVem)->idt_falar_com) == $responsavel->idt_responsavel ? 'selected' : '' }}>
@@ -687,8 +708,9 @@
                     <div x-show="mostrarRestricoes" x-transition
                         class="mt-3 bg-gray-50 dark:bg-zinc-700 rounded-md p-4" role="region"
                         aria-label="Restrições e Alergias">
-                        <h3 class="text-base sm:text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">Restrições e
-                            Alergias</h3>
+                        <h3 class="text-base sm:text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">
+                            Restrições e Alergias
+                        </h3>
                         <div class="space-y-4">
                             @php
                                 $restricoesSelecionadas = $ficha->fichaSaude->pluck('idt_restricao')->toArray();
@@ -696,6 +718,7 @@
                                     ->pluck('txt_complemento', 'idt_restricao')
                                     ->toArray();
                             @endphp
+
                             @foreach ($restricoes as $restricao)
                                 @php
                                     $checked = in_array($restricao->idt_restricao, $restricoesSelecionadas);
@@ -704,24 +727,37 @@
                                         $complementos[$restricao->idt_restricao] ?? '',
                                     );
                                 @endphp
-                                <div class="space-y-2">
+
+                                <div class="space-y-2"
+                                    x-data="{
+                                        selecionado: {{ $checked ? 'true' : 'false' }},
+                                        texto: '{{ addslashes($complemento) }}'
+                                    }">
+
                                     <div class="flex items-center gap-2">
-                                        <input type="checkbox" name="restricoes[{{ $restricao->idt_restricao }}]"
-                                            id="restricao_{{ $restricao->idt_restricao }}" value="1"
-                                            {{ $checked ? 'checked' : '' }}
+                                        <input type="checkbox"
+                                            name="restricoes[{{ $restricao->idt_restricao }}]"
+                                            id="restricao_{{ $restricao->idt_restricao }}"
+                                            value="1"
+                                            x-model="selecionado"
                                             class="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-zinc-600 focus:ring-blue-500 focus:ring-2" />
+
                                         <label for="restricao_{{ $restricao->idt_restricao }}"
                                             class="text-gray-800 dark:text-gray-100 flex items-center gap-2 cursor-pointer">
-                                            <span
-                                                class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 dark:bg-zinc-600 dark:text-gray-300">
-                                                {{ $restricao->getDescricao() }}
+                                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 dark:bg-zinc-600 dark:text-gray-300">
+                                                {{ $restricao->getTipo() }}
                                             </span>
                                             <span class="text-sm">{{ $restricao->des_restricao }}</span>
                                         </label>
                                     </div>
-                                    <input type="text" name="complementos[{{ $restricao->idt_restricao }}]"
-                                        value="{{ $complemento }}" placeholder="Complemento ou detalhes adicionais"
-                                        maxlength="255" aria-label="Complemento para {{ $restricao->des_restricao }}"
+
+                                    <input type="text"
+                                        name="complementos[{{ $restricao->idt_restricao }}]"
+                                        x-model="texto" {{-- Sincroniza o valor do input com a variável 'texto' --}}
+                                        @input="if(texto.trim().length > 0) selecionado = true" {{-- Marca o checkbox ao digitar --}}
+                                        placeholder="Complemento ou detalhes adicionais"
+                                        maxlength="255"
+                                        aria-label="Complemento para {{ $restricao->des_restricao }}"
                                         class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800" />
                                 </div>
                             @endforeach
@@ -772,37 +808,6 @@
                     </div>
                 </fieldset>
 
-                {{-- ===== ANÁLISE (admin only) ===== --}}
-                @if (Auth::user()?->isAdmin())
-                    <fieldset class="bg-white dark:bg-zinc-800 rounded-md shadow p-4 sm:p-6">
-                        <legend class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Análise
-                        </legend>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                            <div>
-                                <label for="idt_situacao"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Situação</label>
-                                <select name="idt_situacao" id="idt_situacao" required x-bind:disabled="bloqueado"
-                                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Selecione a situação</option>
-                                    @foreach ($situacoes as $situacao)
-                                        <option value="{{ $situacao->idt_situacao }}"
-                                            {{ old('idt_situacao', $ultimaSituacao->idt_situacao ?? null) == $situacao->idt_situacao ? 'selected' : '' }}>
-                                            {{ $situacao->des_situacao }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label for="txt_analise"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Análise</label>
-                                <textarea name="txt_analise" id="txt_analise" rows="3" x-bind:disabled="bloqueado"
-                                    class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:outline-none"
-                                    placeholder="Descreva a análise realizada">{{ old('txt_analise', $ultimaAnalise->txt_analise ?? '') }}</textarea>
-                            </div>
-                        </div>
-                    </fieldset>
-                @endif
-
                 {{-- ===== AÇÕES ===== --}}
                 <div class="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
                     <button type="submit" x-bind:disabled="bloqueado || enviando"
@@ -823,12 +828,90 @@
                             @else
                                 <x-heroicon-o-check class="w-5 h-5 mr-2" aria-hidden="true" />
                             @endif
-                            {{ $ficha->ind_aprovado ? 'Desfazer aprovação' : 'Aprovar' }}
+                            {{ $ficha->ind_aprovado ? 'Pendente' : 'Aprovar' }}
                         </a>
                     @endif
                 </div>
-
             </form>
+
+            <fieldset class="bg-white dark:bg-zinc-800 rounded-md shadow p-4 sm:p-6">
+                <legend class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    Resumindo</legend>
+                    {{-- Cards de informações rápidas --}}
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3" role="list" aria-label="Informações do evento">
+                    <div role="listitem" class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
+                        <x-heroicon-o-users class="w-5 h-5 text-blue-500 shrink-0" />
+                        <div>
+                            <p class="text-xs text-gray-500">Público</p>
+                            <p class="text-xs sm:text-sm font-medium" x-text="eventoSelecionado.faixa"></p>
+                        </div>
+                    </div>
+
+                    <div role="listitem" class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
+                        <x-heroicon-o-calendar class="w-5 h-5 text-red-500 shrink-0" />
+                        <div>
+                            <p class="text-xs text-gray-500">Inscrições até</p>
+                            <p class="text-xs sm:text-sm font-medium" x-text="eventoSelecionado.data_limite"></p>
+                        </div>
+                    </div>
+
+                    <div role="listitem" class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
+                        <x-heroicon-o-ticket class="w-5 h-5 text-green-500 shrink-0" />
+                        <div>
+                            <p class="text-xs text-gray-500">Vagas</p>
+                            <p class="text-xs sm:text-sm font-medium"><span x-text="eventoSelecionado.vaga"></span> vagas</p>
+                        </div>
+                    </div>
+
+                    <div role="listitem" class="flex items-center gap-2 sm:gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-2 sm:p-3">
+                        <x-heroicon-o-currency-dollar class="w-5 h-5 text-yellow-500 shrink-0" />
+                        <div>
+                            <p class="text-xs text-gray-500">Taxa</p>
+                            <p class="text-xs sm:text-sm font-medium">R$ <span x-text="eventoSelecionado.valor"></span></p>
+                        </div>
+                    </div>
+                </div>
+                {{-- Datas, local, roupas, garrafinha --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    <div
+                        class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
+                        <x-heroicon-o-calendar-days class="w-5 h-5 text-purple-500 shrink-0 mt-0.5" aria-hidden="true" />
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Datas</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Pré-VEM: <span
+                                    class="font-semibold">13/06/2026</span></p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-100">VEM: <span
+                                    class="font-semibold">20 e 21/06/2026</span></p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
+                        <x-heroicon-o-map-pin class="w-5 h-5 text-rose-500 shrink-0 mt-0.5" aria-hidden="true" />
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Local</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Paróquia Nossa Senhora do Lago
+                            </p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
+                        <x-heroicon-o-sparkles class="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" aria-hidden="true" />
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Roupas</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Leves e adequadas para a capela
+                            </p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-start gap-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-3">
+                        <x-heroicon-o-beaker class="w-5 h-5 text-cyan-500 shrink-0 mt-0.5" aria-hidden="true" />
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Lembrete</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Leve sua garrafinha</p>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
         @else
             <div role="status" aria-live="polite">
                 <div
@@ -841,6 +924,6 @@
                 </div>
             </div>
         @endif
-
+        </div>
     </section>
 </x-layouts.public>

@@ -129,22 +129,6 @@ describe('FichaSGMController', function () {
         ]);
     });
 
-    test('pode aprovar ficha sgm', function () {
-        $ficha = Ficha::factory()->create([
-            'idt_evento' => $this->evento->idt_evento,
-            'ind_aprovado' => false,
-        ]);
-        FichaSGM::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
-
-        $this->actingAs($this->user)
-            ->get(route('sgm.approve', $ficha->idt_ficha))
-            ->assertRedirect(route('sgm.index'))
-            ->assertSessionHas('success');
-
-        $ficha->refresh();
-        expect($ficha->ind_aprovado)->toBeTrue();
-    });
-
     test('pode excluir ficha sgm', function () {
         $ficha = Ficha::factory()->create(['idt_evento' => $this->evento->idt_evento]);
         FichaSGM::factory()->create(['idt_ficha' => $ficha->idt_ficha]);

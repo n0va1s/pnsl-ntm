@@ -14,19 +14,6 @@ use Illuminate\Support\Facades\Storage;
 
 class EventoService
 {
-    public function criarEventoComFoto(array $dados, ?UploadedFile $foto): Evento
-    {
-        return DB::transaction(function () use ($dados, $foto) {
-            $evento = Evento::create($dados);
-
-            if ($foto) {
-                $this->fotoUpload($evento, $foto);
-            }
-
-            return $evento;
-        });
-    }
-
     /**
      * Busca a timeline otimizada.
      * Melhoria: Uso de map dinâmico para evitar repetição de chaves.
@@ -100,44 +87,6 @@ class EventoService
 
         return Pessoa::where('qtd_pontos_total', '>', $pessoa->qtd_pontos_total)
             ->count() + 1;
-    }
-
-    public function fotoUpload(Evento $evento, ?UploadedFile $file): void
-    {
-        if (! $file) {
-            return;
-        }
-
-        DB::transaction(function () use ($evento, $file) {
-            $evento->load('foto'); // Carrega a relação
-
-            if ($evento->foto && Storage::disk('public')->exists($evento->foto->med_foto)) {
-                Storage::disk('public')->delete($evento->foto->med_foto);
-            }
-
-            $path = $file->store('fotos/evento', 'public'); // Salva o novo arquivo
-
-            $evento->foto()->updateOrCreate(
-                ['idt_evento' => $evento->idt_evento], // Busca por este ID
-                ['med_foto' => $path]                  // Atualiza ou cria com este caminho
-            );
-        });
-    }
-
-    public function fotoDelete(Evento $evento): void
-    {
-        DB::transaction(function () use ($evento) {
-            $evento->load('foto');
-
-            if ($evento->foto) {
-                if (Storage::disk('public')->exists($evento->foto->med_foto)) {
-                    Storage::disk('public')->delete($evento->foto->med_foto);
-                }
-                $evento->foto->delete();
-            }
-
-            $evento->delete();
-        });
     }
 
     public function confirmarParticipacao(Evento $evento, Pessoa $pessoa): Participante

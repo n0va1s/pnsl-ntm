@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FichaVemRequest;
 use App\Models\Evento;
 use App\Models\Ficha;
+use App\Models\FichaFoto;
 use App\Models\TipoMovimento;
 use App\Services\FichaService;
 use App\Traits\LogContext;
@@ -44,7 +45,7 @@ class FichaVemController extends Controller
             $evento = Evento::find($eventoId);
         }
 
-        $fichas = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])
+        $fichas = Ficha::with(['fichaVem', 'fichaSaude'])
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('nom_candidato', 'like', "%{$search}%")
@@ -108,6 +109,7 @@ class FichaVemController extends Controller
             'idt_evento',
             'idt_pessoa',
             'tip_genero',
+            'num_cpf_candidato',
             'nom_candidato',
             'nom_apelido',
             'dat_nascimento',
@@ -162,6 +164,14 @@ class FichaVemController extends Controller
             }
         }
 
+        if ($vemRequest->hasFile('med_foto')) {
+            $path = $vemRequest->file('med_foto')->store('fichas/fotos', 'public');
+            FichaFoto::create([
+                'idt_ficha' => $ficha->idt_ficha,
+                'med_foto' => $path
+            ]);
+        }
+
         $duration = round((microtime(true) - $start) * 1000, 2);
         Log::notice('Ficha VEM criada com sucesso', array_merge($context, [
             'ficha_id' => $ficha->idt_ficha,
@@ -179,7 +189,7 @@ class FichaVemController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Visualização de ficha VEM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude'])->find($id);
 
         return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -196,7 +206,7 @@ class FichaVemController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de edição de ficha VEM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises.situacao'])->find($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'foto'])->find($id);
 
         return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -220,13 +230,12 @@ class FichaVemController extends Controller
             'candidato' => $vemRequest->input('nom_candidato'),
         ]));
 
-        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'analises'])->findOrFail($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'foto'])->findOrFail($id);
 
         $vemData = $vemRequest->validated();
+
         $ficha->update($vemData);
 
-        // Nao usei o UpdateOrCreate porque a chave e composta
-        // Verificamos se o registro existe para decidir a operacao (update or create)
         if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai')) {
             $vemData = $vemRequest->validated();
             $vemData['idt_ficha'] = $ficha->idt_ficha;
@@ -237,26 +246,8 @@ class FichaVemController extends Controller
                 $ficha->fichaVem()->create($vemData);
             }
         }
-
-        if ($vemRequest->filled('idt_situacao')) {
-            $situacao = $vemRequest->input('idt_situacao');
-            $analise = $ficha->analises()->where('idt_situacao', $situacao)->first();
-            // A ficha ja tem a situacao
-            if ($analise) {
-                $analise->update([
-                    'txt_analise' => $vemRequest->input('txt_analise'),
-                ]);
-            } else {
-                $ficha->analises()->create([
-                    'idt_situacao' => $situacao,
-                    'txt_analise' => $vemRequest->input('txt_analise'),
-                ]);
-            }
-        }
-
         $ficha->fichaSaude()->delete();
-        // filled() avalia se o campo existe no request e nao se foi marcado ou desmarcado
-        // por isso estou testando diretamente o campo
+        
         if ($vemRequest->input('ind_restricao') == 1) {
             foreach ($vemRequest->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
@@ -268,6 +259,14 @@ class FichaVemController extends Controller
             }
         }
 
+        if ($vemRequest->hasFile('med_foto')) {
+            $path = $vemRequest->file('med_foto')->store('fichas/fotos', 'public');
+            FichaFoto::updateOrCreate(
+                ['idt_ficha' => $ficha->idt_ficha],
+                ['med_foto' => $path]
+            );
+        }
+
         $duration = round((microtime(true) - $start) * 1000, 2);
         Log::notice('Ficha VEM atualizada com sucesso', array_merge($context, [
             'ficha_id' => $id,
@@ -275,26 +274,6 @@ class FichaVemController extends Controller
         ]));
 
         return redirect()->route('vem.index')->with('success', 'Ficha atualizada com sucesso!');
-    }
-
-    public function approve($id)
-    {
-        $start = microtime(true);
-        $context = $this->getLogContext(request());
-
-        Log::warning('Tentativa de atualização de aprovação de ficha VEM', array_merge($context, [
-            'ficha_id' => $id,
-        ]));
-
-        $this->fichaService::atualizarAprovacaoFicha($id);
-
-        $duration = round((microtime(true) - $start) * 1000, 2);
-        Log::notice('Aprovação de ficha VEM atualizada com sucesso', array_merge($context, [
-            'ficha_id' => $id,
-            'duration_ms' => $duration,
-        ]));
-
-        return redirect()->route('vem.index')->with('success', 'Aprovação atualizada com sucesso!');
     }
 
     /**
@@ -310,7 +289,7 @@ class FichaVemController extends Controller
         ]));
 
         try {
-            // FichaVem, FichaSaude e FichaAnalise são deletadas por cascata
+            // FichaVem e FichaSaude são deletadas por cascade
             // Soft delete
             Ficha::find($id)->delete();
 
@@ -345,5 +324,12 @@ class FichaVemController extends Controller
                 ->route('vem.index')
                 ->with('error', 'Erro ao tentar excluir a ficha.');
         }
+    }
+
+    public function approve($id)
+    {
+        $ficha = FichaService::atualizarAprovacaoFicha($id);
+
+        return redirect()->route('vem.index')->with('success', 'Ficha aprovada com sucesso!');
     }
 }

@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\EstadoCivil;
+use App\Enums\Genero;
+use App\Enums\HabilidadePrincipal;
+use App\Enums\TamanhoCamiseta;
 use App\Mail\BoasVindasMail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +26,7 @@ class Pessoa extends Model
     protected $fillable = [
         'idt_usuario',
         'idt_parceiro',
+        'num_cpf_pessoa',
         'nom_pessoa',
         'nom_apelido',
         'tel_pessoa',
@@ -32,12 +37,17 @@ class Pessoa extends Model
         'tip_genero',
         'tip_estado_civil',
         'tip_habilidade',
+        'nom_profissao',
         'ind_restricao',
     ];
 
     protected $casts = [
-        'dat_nascimento' => 'date',
+        'dat_nascimento' => 'date:Y-m-d',
         'ind_restricao' => 'boolean',
+        'tip_estado_civil' => EstadoCivil::class,
+        'tip_habilidade' => HabilidadePrincipal::class,
+        'tip_genero' => Genero::class,
+        'tam_camiseta' => TamanhoCamiseta::class,
     ];
 
     protected static function booted()
@@ -82,7 +92,9 @@ class Pessoa extends Model
 
     public function restricoes()
     {
-        return $this->hasMany(PessoaSaude::class, 'idt_pessoa', 'idt_pessoa');
+        return $this->belongsToMany(TipoRestricao::class, 'pessoa_saude', 'idt_pessoa', 'idt_restricao')
+            ->withPivot('txt_complemento')
+            ->withTimestamps();
     }
 
     public function participantes()

@@ -16,10 +16,10 @@ class VoluntarioFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_pessoa' => Pessoa::inRandomOrder()->first()?->idt_pessoa,
-            'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento,
-            'idt_equipe' => TipoEquipe::inRandomOrder()->first()?->idt_equipe,
-            'idt_trabalhador' => Trabalhador::inRandomOrder()->first()?->idt_trabalhador ?? null,
+            'idt_pessoa' => Pessoa::inRandomOrder()->first()?->idt_pessoa ?? Pessoa::factory(),
+            'idt_evento' => Evento::inRandomOrder()->first()?->idt_evento ?? Evento::factory(),
+            'idt_equipe' => TipoEquipe::inRandomOrder()->first()?->idt_equipe ?? TipoEquipe::factory(),
+            'idt_trabalhador' => Trabalhador::inRandomOrder()->first()?->idt_trabalhador ?? Trabalhador::factory(),
             'txt_habilidade' => $this->faker->paragraph(3, true),
         ];
     }

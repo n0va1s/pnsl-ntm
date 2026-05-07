@@ -14,18 +14,13 @@ class GamificacaoFactory extends Factory
 
     public function definition(): array
     {
-        // Escolhe aleatoriamente entre uma origem de Trabalhador ou Participante
-        $origemType = $this->faker->randomElement([
-            Trabalhador::class,
-            Participante::class,
-        ]);
+        $origemType = $this->faker->randomElement([Trabalhador::class, Participante::class]);
 
-        // Tenta pegar um ID existente da model escolhida, ou cria um novo
         $origemId = $origemType::inRandomOrder()->first()?->getKey() ?? $origemType::factory();
 
         return [
             'idt_pessoa' => Pessoa::inRandomOrder()->first()?->idt_pessoa ?? Pessoa::factory(),
-            'qtd_pontos' => $this->faker->randomElement([5, 10, 15, 20, -5]), // Pontos positivos e negativos
+            'qtd_pontos' => $this->faker->randomElement([5, 10, 15, 20, -5]),
             'des_motivo' => $this->faker->sentence(4),
             'origem_type' => $origemType,
             'origem_id' => $origemId,

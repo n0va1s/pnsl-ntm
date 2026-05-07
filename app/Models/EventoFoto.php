@@ -18,6 +18,7 @@ class EventoFoto extends Model
     protected $fillable = [
         'idt_evento',
         'med_foto',
+        'med_logo',
     ];
 
     public function evento()

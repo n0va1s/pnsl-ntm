@@ -28,8 +28,8 @@ class BoasVindasMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address(env('MAIL_FROM_ADDRESS'), 'Paróquia Nossa Senhora do Lago'),
-            subject: 'Bem-vindo(a) ao Sistema de Eventos da Paróquia Nossa Senhora do Lago',
+            from: new Address(config('mail.from.address'), 'Movimento Canônico'),
+            subject: 'Bem-vindo(a) ao Movimento Canônico da Paróquia Nossa Senhora do Lago',
         );
     }
 
