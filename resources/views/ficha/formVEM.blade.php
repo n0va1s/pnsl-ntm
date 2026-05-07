@@ -104,6 +104,23 @@
                     </li>
                 </ol>
             </div>
+
+            <div
+                class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 flex gap-3">
+                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <p class="text-sm font-semibold text-blue-800 dark:text-blue-300">Aviso sobre a participação</p>
+                    <p class="text-xs text-blue-700 dark:text-blue-400 mt-1 leading-relaxed">
+                        A realização desta pré-inscrição <strong>não garante a participação</strong> automática no
+                        encontro. Todas as fichas passarão por um processo de seleção baseado nos critérios acima, e
+                        a confirmação final ocorrerá somente após o contato e a confirmação dos dados.
+                    </p>
+                </div>
+            </div>
         </div>
         
         {{-- Botão voltar (admin) --}}

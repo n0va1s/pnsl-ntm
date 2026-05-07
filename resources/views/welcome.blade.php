@@ -138,7 +138,7 @@
                 </div>
                 <a href="{{ route('home.ficha.sgm') }}"
                     class="mt-4 inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-md transition">
-                    Pré-inscrição do Segue-Me
+                    Ficha do Segue-Me
                 </a>
             </div>
 
