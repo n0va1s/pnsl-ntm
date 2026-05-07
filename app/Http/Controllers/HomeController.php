@@ -6,10 +6,13 @@ use App\Models\Contato;
 use App\Models\Evento;
 use App\Models\Ficha;
 use App\Models\TipoMovimento;
+use App\Models\User;
+use App\Notifications\NovoContatoTelegram;
 use App\Services\FichaService;
 use App\Traits\LogContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class HomeController extends Controller
 {
@@ -69,13 +72,25 @@ class HomeController extends Controller
             'idt_movimento' => 'required|exists:tipo_movimento,idt_movimento',
         ]);
 
-        Contato::create($data);
+        $contato = Contato::create($data);
 
         $duration = round((microtime(true) - $start) * 1000, 2);
         Log::notice('Contato registrado com sucesso', array_merge($context, [
             'movimento_id' => $data['idt_movimento'],
             'duration_ms' => $duration,
         ]));
+
+        $chatIds = explode(',', config('services.telegram-bot-api.chat_id', ''));
+        foreach ($chatIds as $chatId) {
+            if (trim($chatId)) {
+                try {
+                    Notification::route('telegram', trim($chatId))
+                        ->notify(new NovoContatoTelegram($contato));
+                } catch (\Throwable $e) {
+                    Log::error("Erro ao enviar notificação pro Telegram (Chat ID: {$chatId}): " . $e->getMessage());
+                }
+            }
+        }
 
         return redirect()->route('home')->with('success', 'Recebemos seu contato. Em breve retornaremos!');
     }
