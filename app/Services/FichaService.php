@@ -7,12 +7,14 @@ use App\Models\FichaEcc;
 use App\Models\FichaEccFilho;
 use App\Models\Participante;
 use App\Models\Pessoa;
+use App\Models\PessoaFoto;
 use App\Models\PessoaSaude;
 use App\Models\TipoMovimento;
 use App\Models\TipoResponsavel;
 use App\Models\TipoRestricao;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class FichaService
 {
@@ -65,6 +67,7 @@ class FichaService
             $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
             self::criarPessoaSaude($pessoa->idt_pessoa, $fichaSaude);
             self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
+            self::sincronizarFotoPessoa($ficha, $pessoa->idt_pessoa);
         }
 
         // ── Dados exclusivos do ECC (cônjuge + filhos) ───────────────────────
@@ -228,6 +231,26 @@ class FichaService
             Participante::where('idt_pessoa', $idt_pessoa)
                 ->where('idt_evento', $idt_evento)
                 ->delete();
+        }
+    }
+
+    private static function sincronizarFotoPessoa(Ficha $ficha, int $idt_pessoa): void
+    {
+        if ($ficha->foto && $ficha->foto->med_foto) {
+            $oldPath = $ficha->foto->med_foto;
+            $ext = pathinfo($oldPath, PATHINFO_EXTENSION);
+            $novaPath = "fotos/pessoa/{$idt_pessoa}.{$ext}";
+            
+            if (Storage::disk('public')->exists($oldPath) && $oldPath !== $novaPath) {
+                Storage::disk('public')->copy($oldPath, $novaPath);
+                
+                PessoaFoto::updateOrCreate(
+                    ['idt_pessoa' => $idt_pessoa],
+                    ['med_foto' => $novaPath]
+                );
+
+                $ficha->foto->update(['med_foto' => $novaPath]);
+            }
         }
     }
 }

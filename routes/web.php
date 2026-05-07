@@ -105,6 +105,9 @@ Route::middleware(['auth'])->group(function () {
         'fichas/sgm' => FichaSGMController::class,
     ]);
 
+    Route::get('pessoas/{cpf}/busca', [PessoaController::class, 'buscaPorCpf'])
+        ->name('pessoas.busca');
+
     Route::get('fichas/vem/{id}/approve', [FichaVemController::class, 'approve'])
         ->name('vem.approve');
     Route::get('fichas/ecc/{id}/approve', [FichaEccController::class, 'approve'])
