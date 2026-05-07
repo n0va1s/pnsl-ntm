@@ -13,6 +13,8 @@ class FichaFoto extends Model
 
     protected $primaryKey = 'idt_ficha';
 
+    public $incrementing = false;
+
     public $timestamps = true;
 
     protected $fillable = [

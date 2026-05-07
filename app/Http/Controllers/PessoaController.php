@@ -324,4 +324,14 @@ class PessoaController extends Controller
                 ->with('error', 'Erro ao tentar excluir a pessoa.');
         }
     }
+
+    public function buscaPorCpf($cpf)
+    {
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+        $pessoa = Pessoa::where('num_cpf_pessoa', $cpf)->first();
+        if ($pessoa) {
+            return response()->json($pessoa);
+        }
+        return response()->json(['error' => 'not found'], 404);
+    }
 }

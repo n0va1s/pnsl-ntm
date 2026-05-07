@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FichaVemRequest;
 use App\Models\Evento;
 use App\Models\Ficha;
+use App\Models\FichaFoto;
 use App\Models\TipoMovimento;
 use App\Services\FichaService;
 use App\Traits\LogContext;
@@ -108,6 +109,7 @@ class FichaVemController extends Controller
             'idt_evento',
             'idt_pessoa',
             'tip_genero',
+            'num_cpf_candidato',
             'nom_candidato',
             'nom_apelido',
             'dat_nascimento',
@@ -162,6 +164,14 @@ class FichaVemController extends Controller
             }
         }
 
+        if ($vemRequest->hasFile('med_foto')) {
+            $path = $vemRequest->file('med_foto')->store('fichas/fotos', 'public');
+            FichaFoto::create([
+                'idt_ficha' => $ficha->idt_ficha,
+                'med_foto' => $path
+            ]);
+        }
+
         $duration = round((microtime(true) - $start) * 1000, 2);
         Log::notice('Ficha VEM criada com sucesso', array_merge($context, [
             'ficha_id' => $ficha->idt_ficha,
@@ -196,7 +206,7 @@ class FichaVemController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Acesso ao formulário de edição de ficha VEM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaVem', 'fichaSaude'])->find($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'foto'])->find($id);
 
         return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
@@ -220,14 +230,12 @@ class FichaVemController extends Controller
             'candidato' => $vemRequest->input('nom_candidato'),
         ]));
 
-        $ficha = Ficha::with(['fichaVem', 'fichaSaude'])->findOrFail($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'foto'])->findOrFail($id);
 
         $vemData = $vemRequest->validated();
 
         $ficha->update($vemData);
 
-        // Nao usei o UpdateOrCreate porque a chave e composta
-        // Verificamos se o registro existe para decidir a operacao (update or create)
         if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai')) {
             $vemData = $vemRequest->validated();
             $vemData['idt_ficha'] = $ficha->idt_ficha;
@@ -239,8 +247,7 @@ class FichaVemController extends Controller
             }
         }
         $ficha->fichaSaude()->delete();
-        // filled() avalia se o campo existe no request e nao se foi marcado ou desmarcado
-        // por isso estou testando diretamente o campo
+        
         if ($vemRequest->input('ind_restricao') == 1) {
             foreach ($vemRequest->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
@@ -250,6 +257,14 @@ class FichaVemController extends Controller
                     ]);
                 }
             }
+        }
+
+        if ($vemRequest->hasFile('med_foto')) {
+            $path = $vemRequest->file('med_foto')->store('fichas/fotos', 'public');
+            FichaFoto::updateOrCreate(
+                ['idt_ficha' => $ficha->idt_ficha],
+                ['med_foto' => $path]
+            );
         }
 
         $duration = round((microtime(true) - $start) * 1000, 2);

@@ -16,8 +16,39 @@
                 enviando: false,
                 selectedEventoId: '{{ old('idt_evento', $ficha->idt_evento ?? '') }}',
                 eventosData: {{ $eventosJson }},
-                get info() {
-                    return this.eventosData[String(this.selectedEventoId)] || { faixa: '---', data_limite: '---', vagas: 0, valor: '0,00' };
+
+                get eventoSelecionado() {
+                    const id = String(this.selectedEventoId);
+                    const e = this.eventosData[id];
+                    if (!e) return { faixa: '---', data_limite: '---', vaga: 0, valor: '0,00' };
+                    return {
+                        faixa:       e.faixa,
+                        data_limite: e.data_limite,
+                        vaga:        e.vaga,
+                        valor:       e.valor,
+                    };
+                },
+                buscarPorCpf() {
+                    let cpf = document.getElementById('num_cpf_candidato').value.replace(/\D/g, '');
+                    if (cpf.length === 11) {
+                        fetch(`/pessoas/${cpf}/busca/`)
+                            .then(response => {
+                                if (response.ok) return response.json();
+                                throw new Error('Not found');
+                            })
+                            .then(data => {
+                                document.getElementById('nom_candidato').value = data.nom_pessoa || '';
+                                document.getElementById('nom_apelido').value = data.nom_apelido || '';
+                                if(data.dat_nascimento) document.getElementById('dat_nascimento').value = data.dat_nascimento.split('T')[0];
+                                document.getElementById('tel_candidato').value = data.tel_pessoa || '';
+                                document.getElementById('eml_candidato').value = data.eml_pessoa || '';
+                                document.getElementById('des_endereco').value = data.des_endereco || '';
+                                
+                                if (data.tam_camiseta) document.getElementById('tam_camiseta').value = data.tam_camiseta;
+                                if (data.tip_genero) document.getElementById('tip_genero').value = data.tip_genero;
+                            })
+                            .catch(error => console.log('Candidato ainda não existe, preenchimento manual necessário.'));
+                    }
                 }
             }">
 
@@ -74,7 +105,7 @@
                 </ol>
             </div>
         </div>
-
+        
         {{-- Botão voltar (admin) --}}
         @if (Auth::user()?->isAdmin())
             <div class="flex justify-end mb-4">
@@ -88,7 +119,8 @@
         @endif
 
         @if ($eventos->count() > 0)
-            <form method="POST"
+            <form method="POST" 
+                enctype="multipart/form-data"
                 @submit="enviando = true"
                 action="{{ $ficha->exists ? route('vem.update', $ficha) : route('vem.store') }}"
                 class="space-y-6" novalidate>
@@ -100,6 +132,45 @@
                     <legend class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Dados do
                         Participante</legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        
+                        {{-- Foto --}}
+                        <div class="sm:col-span-2 flex flex-col items-center gap-3">
+                            <div class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
+                            @if ($ficha->foto?->med_foto)
+                                    <img src="{{ Storage::url($ficha->foto->med_foto) }}" alt="Foto do participante" class="w-full h-full object-cover" />
+                                @else
+                                    <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500" aria-hidden="true" />
+                                @endif
+                            </div>
+                            <div>
+                                <label for="med_foto" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-center">
+                                    Foto
+                                </label>
+                                <input type="file" name="med_foto" id="med_foto"
+                                    accept="image/*" x-bind:disabled="bloqueado"
+                                    class="block text-sm text-gray-600 dark:text-gray-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-300" />
+                                @error('med_foto')
+                                    <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- CPF --}}
+                        <div>
+                            <label for="num_cpf_candidato"
+                                class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
+                                CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
+                            </label>
+                            <input type="text" name="num_cpf_candidato" id="num_cpf_candidato"
+                                x-bind:disabled="bloqueado" required maxlength="14" autocomplete="off"
+                                value="{{ old('num_cpf_candidato', $ficha->num_cpf_candidato) }}"
+                                @blur="buscarPorCpf()"
+                                placeholder="000.000.000-00" aria-required="true"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('num_cpf_candidato') border-red-500 @enderror" />
+                            @error('num_cpf_candidato')
+                                <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         {{-- Movimento --}}
                         <div>
@@ -130,6 +201,7 @@
                             <label for="idt_evento" class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">Evento</label>
                             <select name="idt_evento" id="idt_evento"
                                 x-model="selectedEventoId"
+                                @change="getEventoById()"
                                 x-bind:disabled="bloqueado"
                                 required
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
@@ -155,7 +227,7 @@
                                 <option value="">Selecione o sexo</option>
                                 @foreach(\App\Enums\Genero::cases() as $genero)
                                     <option value="{{ $genero->value }}"
-                                        {{ old('tip_genero', $ficha->tip_genero) == $genero->value ? 'selected' : '' }}>
+                                        {{ old('tip_genero', $ficha->tip_genero?->value) == $genero->value ? 'selected' : '' }}>
                                         {{ $genero->label() }}
                                     </option>
                                 @endforeach
@@ -277,7 +349,7 @@
                                 <option value="">Selecione o tamanho</option>
                                 @foreach(\App\Enums\TamanhoCamiseta::cases() as $tamanho)
                                     <option value="{{ $tamanho->value }}"
-                                        {{ old('tam_camiseta', $ficha->tam_camiseta) == $tamanho->value ? 'selected' : '' }}>
+                                        {{ old('tam_camiseta', $ficha->tam_camiseta?->value) == $tamanho->value ? 'selected' : '' }}>
                                         {{ $tamanho->value }}
                                     </option>
                                 @endforeach
@@ -298,7 +370,7 @@
                                 <option value="">Selecione uma opção</option>
                                 @foreach(\App\Enums\ComoSoube::cases() as $comoSoube)
                                     <option value="{{ $comoSoube->value }}"
-                                        {{ old('tip_como_soube', $ficha->tip_como_soube) == $comoSoube->value ? 'selected' : '' }}>
+                                        {{ old('tip_como_soube', $ficha->tip_como_soube?->value) == $comoSoube->value ? 'selected' : '' }}>
                                         {{ $comoSoube->label() }}
                                     </option>
                                 @endforeach
@@ -754,7 +826,7 @@
                         <x-heroicon-o-users class="w-5 h-5 text-blue-500 shrink-0" />
                         <div>
                             <p class="text-xs text-gray-500">Público</p>
-                            <p class="text-xs sm:text-sm font-medium" x-text="info.faixa"></p>
+                            <p class="text-xs sm:text-sm font-medium" x-text="eventoSelecionado.faixa"></p>
                         </div>
                     </div>
 
@@ -762,7 +834,7 @@
                         <x-heroicon-o-calendar class="w-5 h-5 text-red-500 shrink-0" />
                         <div>
                             <p class="text-xs text-gray-500">Inscrições até</p>
-                            <p class="text-xs sm:text-sm font-medium" x-text="info.data_limite"></p>
+                            <p class="text-xs sm:text-sm font-medium" x-text="eventoSelecionado.data_limite"></p>
                         </div>
                     </div>
 
@@ -770,7 +842,7 @@
                         <x-heroicon-o-ticket class="w-5 h-5 text-green-500 shrink-0" />
                         <div>
                             <p class="text-xs text-gray-500">Vagas</p>
-                            <p class="text-xs sm:text-sm font-medium"><span x-text="info.vaga"></span> vagas</p>
+                            <p class="text-xs sm:text-sm font-medium"><span x-text="eventoSelecionado.vaga"></span> vagas</p>
                         </div>
                     </div>
 
@@ -778,7 +850,7 @@
                         <x-heroicon-o-currency-dollar class="w-5 h-5 text-yellow-500 shrink-0" />
                         <div>
                             <p class="text-xs text-gray-500">Taxa</p>
-                            <p class="text-xs sm:text-sm font-medium">R$ <span x-text="info.valor"></span></p>
+                            <p class="text-xs sm:text-sm font-medium">R$ <span x-text="eventoSelecionado.valor"></span></p>
                         </div>
                     </div>
                 </div>
