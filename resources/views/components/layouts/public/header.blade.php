@@ -20,15 +20,16 @@
             <flux:navbar.item icon="home" :href="route('home')" :current="request()->routeIs('home')" wire:navigate>
                 {{ __('Início') }}
             </flux:navbar.item>
-            <flux:spacer />
             <flux:navbar.item icon="arrow-right-end-on-rectangle" :href="route('login')"
                 :current="request()->routeIs('login')" wire:navigate>
-                {{ __('Logar') }}
+                {{ __('Acesse') }}
             </flux:navbar.item>
+            @if (!Auth::check()) 
             <flux:navbar.item icon="user-plus" :href="route('register')" :current="request()->routeIs('register')"
                 wire:navigate>
-                {{ __('Cadastro') }}
+                {{ __('Cadastre-se') }}
             </flux:navbar.item>
+            @endif
         </flux:navbar>
     </flux:header>
 
@@ -49,12 +50,14 @@
                 </flux:navlist.item>
                 <flux:navlist.item icon="arrow-right-end-on-rectangle" :href="route('login')"
                     :current="request()->routeIs('login')" wire:navigate>
-                    {{ __('Logar') }}
+                    {{ __('Acesse') }}
                 </flux:navlist.item>
+                @if (!Auth::check()) 
                 <flux:navlist.item icon="user-plus" :href="route('register')"
                     :current="request()->routeIs('register')" wire:navigate>
-                    {{ __('Cadastro') }}
+                    {{ __('Cadastre-se') }}
                 </flux:navlist.item>
+                @endif
             </flux:navlist.group>
         </flux:navlist>
     </flux:sidebar>

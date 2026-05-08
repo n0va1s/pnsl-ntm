@@ -10,9 +10,8 @@
                 Movimente a sua Paróquia
             </h2>
             <p class="max-w-2xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
-                Bem-vindo!
-                Este sistema foi criado para facilitar o cadastro e
-                a organização de encontros paroquiais como: VEM, ECC e Segue-Me.
+                Bem-vindo! <br /><br />
+                Estamos aqui para facilitar a organização de encontros paroquiais como: VEM, ECC e Segue-Me.
                 <br><br>
                 "Não tenhais medo!", frase várias vezes repetida pelo Papa João Paulo II e
                 Francisco para encorajar os jovens de todo o mundo para que não tenham medo de buscar a Cristo.
