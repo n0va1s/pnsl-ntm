@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Contato;
 use App\Models\Evento;
 use App\Models\Ficha;
+use App\Models\FichaSGM;
 use App\Models\TipoMovimento;
 use App\Models\User;
 use App\Notifications\NovoContatoTelegram;
@@ -136,11 +137,9 @@ class HomeController extends Controller
 
     public function fichaSgm()
     {
-        $context = $this->getLogContext(request());
-        Log::info('Acesso ao formulário público de ficha Segue-Me', $context);
-
         $ficha = new Ficha;
         $ficha->idt_movimento = TipoMovimento::SegueMe;
+        $ficha->setRelation('fichaSGM', new FichaSGM);
         $eventos = Evento::getByTipo(TipoMovimento::SegueMe, 'E', 3);
 
         return view('ficha.formSGM', array_merge(FichaService::dadosFixosFicha($ficha), [

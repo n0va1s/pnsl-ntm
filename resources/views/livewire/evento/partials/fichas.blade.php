@@ -82,7 +82,11 @@ new class extends Component {
                 <flux:table.cell align="end">
                     <div class="flex justify-end gap-2">
                         <flux:button variant="ghost" size="sm" icon="eye"
-                            href="{{ route('vem.show', $ficha) }}" title="Ver Detalhes" />
+                            href="{{ route(match($ficha->evento->idt_movimento) {
+                                \App\Models\TipoMovimento::VEM => 'vem.show',
+                                \App\Models\TipoMovimento::SegueMe => 'sgm.show',
+                                \App\Models\TipoMovimento::ECC => 'ecc.show',
+                            }, $ficha) }}" title="Ver Detalhes" />
 
                         <flux:dropdown>
                             <flux:button variant="ghost" size="sm" icon="ellipsis-vertical" />

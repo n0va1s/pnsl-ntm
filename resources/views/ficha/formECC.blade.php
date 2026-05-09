@@ -111,23 +111,37 @@
                         Dados do(a) Participante
                     </legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        
                         {{-- Foto --}}
-                        <div class="sm:col-span-2 flex flex-col items-center gap-3">
-                            <div class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
-                            @if ($ficha->foto?->med_foto)
-                                    <img src="{{ Storage::url($ficha->foto->med_foto) }}" alt="Foto do participante" class="w-full h-full object-cover" />
-                                @else
-                                    <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500" aria-hidden="true" />
-                                @endif
+                        <div class="flex flex-col items-center gap-3" x-data="{ photoPreview: '{{ $ficha->foto?->med_conjuge ? Storage::url($ficha->foto->med_conjuge) : '' }}' }">
+                            <div
+                                class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
+                                <template x-if="photoPreview">
+                                    <img :src="photoPreview" alt="Foto do participante"
+                                        class="w-full h-full object-cover" />
+                                </template>
+                                <template x-if="!photoPreview">
+                                    <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500"
+                                        aria-hidden="true" />
+                                </template>
                             </div>
                             <div>
-                                <label for="med_foto" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-center">
+                                <label for="med_conjuge"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-center">
                                     Foto
                                 </label>
-                                <input type="file" name="med_foto" id="med_foto"
-                                    accept="image/*" x-bind:disabled="bloqueado"
+                                <input type="file" name="med_conjuge" id="med_conjuge" accept="image/*"
+                                    x-bind:disabled="bloqueado"
+                                    @change="
+                                        const file = $event.target.files[0];
+                                        if (file) {
+                                            photoPreview = URL.createObjectURL(file);
+                                        } else {
+                                            photoPreview = '{{ $ficha->foto?->med_conjuge ? Storage::url($ficha->foto->med_conjuge) : '' }}';
+                                        }
+                                    "
                                     class="block text-sm text-gray-600 dark:text-gray-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-300" />
-                                @error('med_foto')
+                                @error('med_conjuge')
                                     <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -135,16 +149,17 @@
 
                         {{-- CPF --}}
                         <div>
-                            <label for="num_cpf_candidato"
+                            <label for="num_cpf_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
                                 CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
-                            <input type="text" name="num_cpf_candidato" id="num_cpf_candidato"
+                            <input type="text" name="num_cpf_conjuge" id="num_cpf_conjuge"
                                 x-bind:disabled="bloqueado" required maxlength="14" autocomplete="off"
-                                value="{{ old('num_cpf_candidato', $ficha->num_cpf_candidato) }}"
+                                value="{{ old('num_cpf_conjuge', $ficha->num_cpf_conjuge) }}"
+                                @blur="buscarPorCpf()"
                                 placeholder="000.000.000-00" aria-required="true"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('num_cpf_candidato') border-red-500 @enderror" />
-                            @error('num_cpf_candidato')
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('num_cpf_conjuge') border-red-500 @enderror" />
+                            @error('num_cpf_conjuge')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                             @enderror
                         </div>
@@ -331,22 +346,35 @@
                         Dados do(a) Cônjuge
                     </legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-
-                        {{-- Foto cônjuge --}}
-                        <div class="sm:col-span-2 flex flex-col items-center gap-3">
-                            <div class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
-                                @if ($ficha->foto?->med_conjuge)
-                                    <img src="{{ Storage::url($ficha->foto->med_conjuge) }}" alt="Foto do cônjuge" class="w-full h-full object-cover" />
-                                @else
-                                    <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500" aria-hidden="true" />
-                                @endif
+                        
+                        {{-- Foto --}}
+                        <div class="flex flex-col items-center gap-3" x-data="{ photoPreview: '{{ $ficha->foto?->med_conjuge ? Storage::url($ficha->foto->med_conjuge) : '' }}' }">
+                            <div
+                                class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
+                                <template x-if="photoPreview">
+                                    <img :src="photoPreview" alt="Foto do participante"
+                                        class="w-full h-full object-cover" />
+                                </template>
+                                <template x-if="!photoPreview">
+                                    <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500"
+                                        aria-hidden="true" />
+                                </template>
                             </div>
                             <div>
-                                <label for="med_conjuge" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-center">
+                                <label for="med_conjuge"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-center">
                                     Foto
                                 </label>
-                                <input type="file" name="med_conjuge" id="med_conjuge"
-                                    accept="image/*" x-bind:disabled="bloqueado"
+                                <input type="file" name="med_conjuge" id="med_conjuge" accept="image/*"
+                                    x-bind:disabled="bloqueado"
+                                    @change="
+                                        const file = $event.target.files[0];
+                                        if (file) {
+                                            photoPreview = URL.createObjectURL(file);
+                                        } else {
+                                            photoPreview = '{{ $ficha->foto?->med_conjuge ? Storage::url($ficha->foto->med_conjuge) : '' }}';
+                                        }
+                                    "
                                     class="block text-sm text-gray-600 dark:text-gray-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-300" />
                                 @error('med_conjuge')
                                     <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
@@ -354,7 +382,7 @@
                             </div>
                         </div>
 
-                        {{-- CPF cônjuge --}}
+                        {{-- CPF --}}
                         <div>
                             <label for="num_cpf_conjuge"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
@@ -362,7 +390,8 @@
                             </label>
                             <input type="text" name="num_cpf_conjuge" id="num_cpf_conjuge"
                                 x-bind:disabled="bloqueado" required maxlength="14" autocomplete="off"
-                                value="{{ old('num_cpf_conjuge', $ficha->fichaEcc?->num_cpf_conjuge) }}"
+                                value="{{ old('num_cpf_conjuge', $ficha->num_cpf_conjuge) }}"
+                                @blur="buscarPorCpf()"
                                 placeholder="000.000.000-00" aria-required="true"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('num_cpf_conjuge') border-red-500 @enderror" />
                             @error('num_cpf_conjuge')
@@ -598,44 +627,6 @@
                             @enderror
                         </div>
 
-                        {{-- Regime / Estado Civil --}}
-                        <div>
-                            <label for="tip_estado_civil"
-                                class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Regime <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
-                            </label>
-                            <select name="tip_estado_civil" id="tip_estado_civil" required x-bind:disabled="bloqueado"
-                                aria-required="true"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_estado_civil') border-red-500 @enderror">
-                                <option value="">Selecione o regime</option>
-                                @foreach(\App\Enums\EstadoCivil::cases() as $estado)
-                                    <option value="{{ $estado->value }}"
-                                        {{ old('tip_estado_civil', $ficha->fichaEcc?->tip_estado_civil?->value) == $estado->value ? 'selected' : '' }}>
-                                        {{ $estado->label() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('tip_estado_civil')
-                                <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        {{-- Paróquia que frequentam --}}
-                        <div>
-                            <label for="nom_paroquia"
-                                class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Paróquia que frequentam
-                            </label>
-                            <input type="text" name="nom_paroquia" id="nom_paroquia"
-                                x-bind:disabled="bloqueado" maxlength="150"
-                                value="{{ old('nom_paroquia', $ficha->fichaEcc?->nom_paroquia) }}"
-                                placeholder="Nome da paróquia"
-                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_paroquia') border-red-500 @enderror" />
-                            @error('nom_paroquia')
-                                <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
-                            @enderror
-                        </div>
-
                         {{-- Como soube do evento --}}
                         <div>
                             <label for="tip_como_soube"
@@ -657,8 +648,24 @@
                             @enderror
                         </div>
 
+                        {{-- Paróquia que frequentam --}}
+                        <div>
+                            <label for="nom_paroquia"
+                                class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
+                                Paróquia que frequentam
+                            </label>
+                            <input type="text" name="nom_paroquia" id="nom_paroquia"
+                                x-bind:disabled="bloqueado" maxlength="150"
+                                value="{{ old('nom_paroquia', $ficha->fichaEcc?->nom_paroquia) }}"
+                                placeholder="Nome da paróquia"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_paroquia') border-red-500 @enderror" />
+                            @error('nom_paroquia')
+                                <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         {{-- Endereço --}}
-                        <div class="sm:col-span-2">
+                        <div>
                             <label for="des_endereco"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
                                 Endereço
@@ -669,6 +676,28 @@
                                 placeholder="Rua, número, bairro, cidade"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('des_endereco') border-red-500 @enderror" />
                             @error('des_endereco')
+                                <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Estado Civil --}}
+                        <div>
+                            <label for="tip_estado_civil"
+                                class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
+                                Estado Civil <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
+                            </label>
+                            <select name="tip_estado_civil" id="tip_estado_civil" required x-bind:disabled="bloqueado"
+                                aria-required="true"
+                                class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tip_estado_civil') border-red-500 @enderror">
+                                <option value="">Selecione o regime</option>
+                                @foreach(\App\Enums\EstadoCivil::cases() as $estado)
+                                    <option value="{{ $estado->value }}"
+                                        {{ old('tip_estado_civil', $ficha->fichaEcc?->tip_estado_civil?->value) == $estado->value ? 'selected' : '' }}>
+                                        {{ $estado->label() }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('tip_estado_civil')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
                             @enderror
                         </div>

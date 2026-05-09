@@ -37,8 +37,12 @@ Route::get('/otimizar-tudo', function () {
 });
 
 Route::get('/storage-link', function () {
-    Artisan::call('storage:link');
-    return 'Link simbólico criado com sucesso!';
+    try {
+        Artisan::call('storage:link');
+        return 'Link simbólico criado com sucesso!';
+    } catch (\Exception $e) {
+        return 'Erro ao criar o link: ' . $e->getMessage();
+    }
 });
 
 Route::get(

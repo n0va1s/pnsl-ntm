@@ -6,6 +6,7 @@ use App\Http\Requests\FichaRequest;
 use App\Http\Requests\FichaSGMRequest;
 use App\Models\Evento;
 use App\Models\Ficha;
+use App\Models\FichaSGM;
 use App\Models\TipoMovimento;
 use App\Services\ArquivoService;
 use App\Services\FichaService;
@@ -79,6 +80,9 @@ class FichaSGMController extends Controller
         Log::info('Acesso ao formulário de criação de ficha SGM', $context);
 
         $ficha = new Ficha;
+        $ficha->idt_movimento = TipoMovimento::SegueMe;
+        $ficha->setRelation('fichaSGM', new FichaSGM);
+
         $eventos = Evento::getByTipo(TipoMovimento::SegueMe, 'E', 3);
 
         return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [

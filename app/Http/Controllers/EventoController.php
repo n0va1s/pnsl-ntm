@@ -264,7 +264,14 @@ class EventoController extends Controller
 
         try {
             // deleta a foto e o evento
-            $this->eventoService->fotoDelete($evento);
+            if ($evento->med_foto) {
+                $this->arquivoService->excluirArquivo($evento->med_foto);
+            }
+            if ($evento->med_logo) {
+                $this->arquivoService->excluirArquivo($evento->med_logo);
+            }
+
+            $evento->delete();
 
             $duration = round((microtime(true) - $start) * 1000, 2);
 

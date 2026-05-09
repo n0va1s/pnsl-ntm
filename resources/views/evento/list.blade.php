@@ -16,7 +16,7 @@
             @endif
         </header>
 
-        {{-- Filtros (Simplificados com Flux UI se preferir, ou mantendo seu padrão) --}}
+        {{-- Filtros  --}}
         <nav class="bg-white dark:bg-zinc-800 p-5 rounded-xl border border-gray-200 dark:border-zinc-700 shadow-sm mb-8">
             <form method="GET" action="{{ route('eventos.index') }}" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                 <div class="md:col-span-6">

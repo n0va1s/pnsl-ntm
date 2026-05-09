@@ -151,20 +151,33 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         
                         {{-- Foto --}}
-                        <div class="sm:col-span-2 flex flex-col items-center gap-3">
-                            <div class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
-                            @if ($ficha->foto?->med_foto)
-                                    <img src="{{ Storage::url($ficha->foto->med_foto) }}" alt="Foto do participante" class="w-full h-full object-cover" />
-                                @else
-                                    <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500" aria-hidden="true" />
-                                @endif
+                        <div class="flex flex-col items-center gap-3" x-data="{ photoPreview: '{{ $ficha->foto?->med_foto ? Storage::url($ficha->foto->med_foto) : '' }}' }">
+                            <div
+                                class="w-28 h-28 rounded-full bg-gray-100 dark:bg-zinc-700 border-2 border-gray-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
+                                <template x-if="photoPreview">
+                                    <img :src="photoPreview" alt="Foto do participante"
+                                        class="w-full h-full object-cover" />
+                                </template>
+                                <template x-if="!photoPreview">
+                                    <x-heroicon-o-user class="w-14 h-14 text-gray-400 dark:text-gray-500"
+                                        aria-hidden="true" />
+                                </template>
                             </div>
                             <div>
-                                <label for="med_foto" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-center">
+                                <label for="med_foto"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-center">
                                     Foto
                                 </label>
-                                <input type="file" name="med_foto" id="med_foto"
-                                    accept="image/*" x-bind:disabled="bloqueado"
+                                <input type="file" name="med_foto" id="med_foto" accept="image/*"
+                                    x-bind:disabled="bloqueado"
+                                    @change="
+                                        const file = $event.target.files[0];
+                                        if (file) {
+                                            photoPreview = URL.createObjectURL(file);
+                                        } else {
+                                            photoPreview = '{{ $ficha->foto?->med_foto ? Storage::url($ficha->foto->med_foto) : '' }}';
+                                        }
+                                    "
                                     class="block text-sm text-gray-600 dark:text-gray-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-300" />
                                 @error('med_foto')
                                     <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
