@@ -53,6 +53,10 @@ describe('FichaSGMController', function () {
             'tel_pai' => '11999999999',
             'nom_mae' => 'Mae SGM',
             'tel_mae' => '11888888888',
+            'des_naturalidade' => 'Brasília',
+            'tip_escolaridade' => 'M',
+            'tip_escolaridade_situacao' => 'C',
+            'tip_religiao' => 'C',
         ];
 
         $this->actingAs($this->user)
@@ -111,6 +115,10 @@ describe('FichaSGMController', function () {
             'des_mora_quem' => 'Avós',
             'nom_mae' => 'Mae Atualizada',
             'tel_mae' => '11777777777',
+            'des_naturalidade' => 'São Paulo',
+            'tip_escolaridade' => 'S',
+            'tip_escolaridade_situacao' => 'O',
+            'tip_religiao' => 'C',
         ];
 
         $this->actingAs($this->user)

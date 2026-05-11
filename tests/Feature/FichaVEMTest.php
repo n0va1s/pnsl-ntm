@@ -46,6 +46,9 @@ describe('FichaVemController', function () {
             'tam_camiseta' => 'M',
             'ind_consentimento' => true,
             'ind_restricao' => false,
+            'ind_batizado' => false,
+            'ind_primeira_comunhao' => false,
+            'ind_crismado' => false,
 
             'nom_pai' => 'Pai VEM',
             'tel_pai' => '11999999999',
@@ -77,6 +80,9 @@ describe('FichaVemController', function () {
             'tam_camiseta' => 'G',
             'ind_consentimento' => true,
             'ind_restricao' => true,
+            'ind_batizado' => false,
+            'ind_primeira_comunhao' => false,
+            'ind_crismado' => false,
 
             'idt_falar_com' => $this->responsavel->idt_responsavel,
             'des_onde_estuda' => 'Escola Municipal',
@@ -133,6 +139,9 @@ describe('FichaVemController', function () {
             'tam_camiseta' => 'P',
             'ind_consentimento' => true,
             'ind_restricao' => false,
+            'ind_batizado' => false,
+            'ind_primeira_comunhao' => false,
+            'ind_crismado' => false,
 
             'nom_pai' => 'Pai VEM atualizado',
             'tel_pai' => '11999999999',

@@ -9,8 +9,10 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
 
-class NovoContatoTelegram extends Notification
+class NovoContatoTelegram extends Notification implements ShouldQueue
 {
+    use Queueable;
+
     protected $contato;
 
     /**
@@ -30,14 +32,19 @@ class NovoContatoTelegram extends Notification
     {
         $url = route('contatos.index');
 
-        return TelegramMessage::create()
+        $message = TelegramMessage::create()
             ->token(config('services.telegram-bot-api.token'))
             ->content("Novo contato recebido!\n\n
             . *Nome:* {$this->contato->nom_contato}\n
             . *Telefone:* {$this->contato->tel_contato}\n
             . *Email:* {$this->contato->eml_contato}\n
             . *Movimento:* {$this->contato->movimento->nom_movimento}\n
-            . *Mensagem:* {$this->contato->txt_mensagem}")
-            ->button('Ver na Plataforma', route('contatos.index'));
+            . *Mensagem:* {$this->contato->txt_mensagem}");
+
+        if (!str_contains($url, 'localhost') && !str_contains($url, '127.0.0.1')) {
+            $message->button('Ver na Plataforma', $url);
+        }
+
+        return $message;
     }
 }
