@@ -668,9 +668,10 @@
                         <div>
                             <label for="des_endereco"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Endereço
+                                Endereço <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <input type="text" name="des_endereco" id="des_endereco" x-bind:disabled="bloqueado"
+                                required aria-required="true"
                                 maxlength="255" autocomplete="street-address"
                                 value="{{ old('des_endereco', $ficha->des_endereco) }}"
                                 placeholder="Rua, número, bairro, cidade"

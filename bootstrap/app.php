@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\OnlyManagerMiddleware;
 use App\Http\Middleware\TraceIdMiddleware;
 use App\Notifications\SystemExceptionTelegram;
 use Illuminate\Foundation\Application;
@@ -16,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'manager' => OnlyManagerMiddleware::class,
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
 
         $middleware->append(TraceIdMiddleware::class);

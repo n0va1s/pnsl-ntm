@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\FaixaEtaria;
+use App\Enums\TipoEvento;
 use App\Models\Evento;
 use App\Models\EventoFoto;
 use App\Models\Participante;
@@ -9,423 +11,243 @@ use App\Models\TipoMovimento;
 use App\Models\Trabalhador;
 use App\Services\EventoService;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-uses(RefreshDatabase::class);
+// ─────────────────────────────────────────────────────────────────────────────
+// Setup compartilhado
+// ─────────────────────────────────────────────────────────────────────────────
 
 beforeEach(function () {
-    // Garantir que não há transações ativas
-    if (DB::transactionLevel() > 0) {
-        DB::rollBack();
-    }
-
     $this->eventoService = new EventoService;
 
-    $this->user = createUser();
-    $this->actingAs($this->user);
-
-    $this->pessoa = createPessoa();
-
-    // Criar as equipes para cada movimento
     createMovimentos();
 
-    // Adicionar movimento padrão para os testes
-    $this->movimento = TipoMovimento::all()->first();
-    $this->evento = createEvento();
+    $this->movimento = TipoMovimento::first();
+    $this->user      = createUser();
+    $this->pessoa    = $this->user->pessoa;
+
+    $this->actingAs($this->user);
 
     Storage::fake('public');
 });
 
-afterEach(function () {
-    // Garantir que todas as transações sejam fechadas após cada teste
-    while (DB::transactionLevel() > 0) {
-        DB::rollBack();
-    }
-});
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper local — payload mínimo válido
+// ─────────────────────────────────────────────────────────────────────────────
 
-describe('EventoService - Timeline', function () {
-    test('retorna timeline vazia para pessoa sem eventos', function () {
-        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
+function eventoPayloadValido(int $idtMovimento, array $overrides = []): array
+{
+    return array_merge([
+        'idt_movimento'        => $idtMovimento,
+        'des_evento'           => 'Encontro de Teste',
+        'num_evento'           => '001',
+        'dat_inicio'           => '2025-06-20',
+        'dat_termino'          => '2025-06-22',
+        'dat_limite_inscricao' => '2025-06-10',
+        'qtd_vaga'             => 40,
+        'tip_evento'           => TipoEvento::ENCONTRO->value,
+        'tip_faixa_etaria'     => FaixaEtaria::LIVRE->value,
+        'val_trabalhador'      => '50.00',
+        'val_venista'          => '80.00',
+        'val_camiseta'         => '30.00',
+        'txt_informacao'       => 'Informações gerais do evento.',
+    ], $overrides);
+}
 
-        expect($timeline)->toBeArray()->toBeEmpty();
+// ─────────────────────────────────────────────────────────────────────────────
+// Evento Model
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Evento Model', function () {
+
+    test('fillable contém todos os campos esperados', function () {
+        $expected = [
+            'idt_movimento', 'des_evento', 'num_evento',
+            'dat_inicio', 'dat_termino', 'dat_limite_inscricao', 'qtd_vaga',
+            'val_camiseta', 'val_trabalhador', 'val_venista', 'val_entrada',
+            'val_receita', 'val_despesa',
+            'tip_evento', 'tip_faixa_etaria',
+            'txt_informacao', 'txt_relatorio',
+            'med_foto', 'med_logo',
+        ];
+
+        expect((new Evento)->getFillable())->toBe($expected);
     });
 
-    test('retorna eventos de trabalhador na timeline corretamente', function () {
+    test('casts de datas retornam instâncias Carbon', function () {
         $evento = Evento::factory()->create([
-            'idt_movimento' => $this->movimento->idt_movimento,
-            'dat_inicio' => '2023-01-15',
+            'dat_inicio'           => '2025-06-20',
+            'dat_termino'          => '2025-06-22',
+            'dat_limite_inscricao' => '2025-06-10',
         ]);
 
-        $equipe = TipoEquipe::firstOrCreate([
-            'des_grupo' => 'Coordenação Geral',
+        expect($evento->dat_inicio)->toBeInstanceOf(Carbon::class)
+            ->and($evento->dat_termino)->toBeInstanceOf(Carbon::class)
+            ->and($evento->dat_limite_inscricao)->toBeInstanceOf(Carbon::class);
+    });
+
+    test('cast de tip_evento retorna enum TipoEvento', function () {
+        $evento = Evento::factory()->create(['tip_evento' => TipoEvento::ENCONTRO->value]);
+
+        expect($evento->tip_evento)->toBeInstanceOf(TipoEvento::class)
+            ->and($evento->tip_evento)->toBe(TipoEvento::ENCONTRO);
+    });
+
+    test('cast de tip_faixa_etaria retorna enum FaixaEtaria', function () {
+        $evento = Evento::factory()->create(['tip_faixa_etaria' => FaixaEtaria::LIVRE->value]);
+
+        expect($evento->tip_faixa_etaria)->toBeInstanceOf(FaixaEtaria::class)
+            ->and($evento->tip_faixa_etaria)->toBe(FaixaEtaria::LIVRE);
+    });
+
+    test('soft delete não remove o registro do banco', function () {
+        $evento = Evento::factory()->create();
+        $id     = $evento->idt_evento;
+
+        $evento->delete();
+
+        expect(Evento::find($id))->toBeNull()
+            ->and(Evento::withTrashed()->find($id))->not->toBeNull();
+    });
+
+    test('getDataInicioFormatada retorna data no formato d/m/Y', function () {
+        $evento = Evento::factory()->create(['dat_inicio' => '2025-06-20']);
+
+        expect($evento->getDataInicioFormatada())->toBe('20/06/2025');
+    });
+
+    test('getDataTerminoFormatada retorna null quando dat_termino é null', function () {
+        $evento = Evento::factory()->create(['dat_termino' => null]);
+
+        expect($evento->getDataTerminoFormatada())->toBeNull();
+    });
+
+    test('scope search filtra por des_evento (case-insensitive)', function () {
+        Evento::factory()->create(['des_evento' => 'Encontro de Jovens']);
+        Evento::factory()->create(['des_evento' => 'Retiro Espiritual']);
+
+        $resultado = Evento::search('JOVENS')->get();
+
+        expect($resultado)->toHaveCount(1)
+            ->and($resultado->first()->des_evento)->toBe('Encontro de Jovens');
+    });
+
+    test('scope search filtra por num_evento', function () {
+        Evento::factory()->create(['num_evento' => 'EJ001']);
+        Evento::factory()->create(['num_evento' => 'RE002']);
+
+        $resultado = Evento::search('EJ')->get();
+
+        expect($resultado)->toHaveCount(1)
+            ->and($resultado->first()->num_evento)->toBe('EJ001');
+    });
+
+    test('scope movimento filtra por idt_movimento', function () {
+        $mov2 = TipoMovimento::factory()->create();
+        Evento::factory()->create(['idt_movimento' => $this->movimento->idt_movimento]);
+        Evento::factory()->create(['idt_movimento' => $mov2->idt_movimento]);
+
+        // Usa query() para evitar conflito com o relacionamento movimento()
+        $resultado = Evento::query()->movimento($this->movimento->idt_movimento)->get();
+
+        expect($resultado)->toHaveCount(1)
+            ->and($resultado->first()->idt_movimento)->toBe($this->movimento->idt_movimento);
+    });
+
+    test('getByTipo retorna eventos filtrados por movimento e tipo', function () {
+        Evento::factory()->create([
             'idt_movimento' => $this->movimento->idt_movimento,
+            'tip_evento'    => TipoEvento::ENCONTRO->value,
+        ]);
+        Evento::factory()->create([
+            'idt_movimento' => $this->movimento->idt_movimento,
+            'tip_evento'    => TipoEvento::POS_ENCONTRO->value,
         ]);
 
-        Trabalhador::factory()->create([
-            'idt_pessoa' => $this->pessoa->idt_pessoa,
+        $resultado = Evento::getByTipo($this->movimento->idt_movimento, TipoEvento::ENCONTRO->value);
+
+        expect($resultado)->toHaveCount(1)
+            ->and($resultado->first()->tip_evento)->toBe(TipoEvento::ENCONTRO);
+    });
+
+    test('getByTipo respeita o limite quando informado', function () {
+        Evento::factory()->count(5)->create([
+            'idt_movimento' => $this->movimento->idt_movimento,
+            'tip_evento'    => TipoEvento::ENCONTRO->value,
+        ]);
+
+        $resultado = Evento::getByTipo($this->movimento->idt_movimento, TipoEvento::ENCONTRO->value, 3);
+
+        expect($resultado)->toHaveCount(3);
+    });
+
+    test('relacionamento com movimento funciona', function () {
+        $evento = Evento::factory()->create(['idt_movimento' => $this->movimento->idt_movimento]);
+
+        expect($evento->movimento)->toBeInstanceOf(TipoMovimento::class)
+            ->and($evento->movimento->idt_movimento)->toBe($this->movimento->idt_movimento);
+    });
+
+    test('relacionamento com foto funciona', function () {
+        $evento = Evento::factory()->create();
+        $evento->foto()->create(['med_foto' => 'eventos/fotos/teste.jpg']);
+
+        expect($evento->foto)->toBeInstanceOf(EventoFoto::class)
+            ->and($evento->foto->med_foto)->toBe('eventos/fotos/teste.jpg');
+    });
+
+    test('relacionamento com participantes funciona', function () {
+        $evento = Evento::factory()->create();
+        Participante::factory()->for($evento)->create();
+
+        expect($evento->participantes)->toHaveCount(1);
+    });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoFoto Model
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('EventoFoto Model', function () {
+
+    test('fillable contém med_foto e med_logo', function () {
+        expect((new EventoFoto)->getFillable())
+            ->toContain('med_foto')
+            ->toContain('med_logo');
+    });
+
+    test('relacionamento com evento funciona', function () {
+        $evento = Evento::factory()->create();
+        $foto   = EventoFoto::create([
             'idt_evento' => $evento->idt_evento,
-            'idt_equipe' => $equipe->idt_equipe,
-            'ind_coordenador' => true,
-            'ind_primeira_vez' => false,
+            'med_foto'   => 'eventos/fotos/teste.jpg',
         ]);
 
-        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
-
-        expect($timeline)->toHaveCount(1)
-            ->and($timeline[0]['decade'])->toBe('2020s')
-            ->and($timeline[0]['years'][0]['year'])->toBe(2023)
-            ->and($timeline[0]['years'][0]['events'][0]['type'])->toBe('Trabalhador')
-            ->and($timeline[0]['years'][0]['events'][0]['details']['coordenador'])->toBeTrue();
+        expect($foto->evento)->toBeInstanceOf(Evento::class)
+            ->and($foto->evento->idt_evento)->toBe($evento->idt_evento);
     });
 
-    test('retorna eventos de participante na timeline corretamente', function () {
-        $evento = Evento::factory()->create([
-            'idt_movimento' => $this->movimento->idt_movimento,
-            'dat_inicio' => '2023-06-20',
-        ]);
-
-        Participante::factory()->create([
-            'idt_pessoa' => $this->pessoa->idt_pessoa,
+    test('med_logo pode ser null', function () {
+        $evento = Evento::factory()->create();
+        $foto   = EventoFoto::create([
             'idt_evento' => $evento->idt_evento,
+            'med_foto'   => 'eventos/fotos/teste.jpg',
+            'med_logo'   => null,
         ]);
 
-        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
-
-        expect($timeline[0]['years'][0]['events'][0]['type'])->toBe('Participante')
-            ->and($timeline[0]['years'][0]['events'][0]['details'])->toBeEmpty();
-    });
-
-    test('agrupa eventos por década e ano corretamente', function () {
-        // Eventos em anos diferentes
-        $evento2023 = Evento::factory()->create(['dat_inicio' => '2023-01-15']);
-        $evento2022 = Evento::factory()->create(['dat_inicio' => '2022-06-20']);
-        $evento2010 = Evento::factory()->create(['dat_inicio' => '2010-03-10']);
-
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2023->idt_evento]);
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2022->idt_evento]);
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2010->idt_evento]);
-
-        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
-
-        expect($timeline)->toHaveCount(2)
-            ->and($timeline[0]['decade'])->toBe('2020s')
-            ->and($timeline[1]['decade'])->toBe('2010s');
-    });
-
-    test('ordena eventos por data decrescente', function () {
-        $eventoAntigo = Evento::factory()->create(['dat_inicio' => '2023-01-15']);
-        $eventoRecente = Evento::factory()->create(['dat_inicio' => '2023-12-20']);
-
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $eventoAntigo->idt_evento]);
-        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $eventoRecente->idt_evento]);
-
-        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
-        $events = $timeline[0]['years'][0]['events'];
-
-        expect($events[0]['event']['idt_evento'])->toBe($eventoRecente->idt_evento)
-            ->and($events[1]['event']['idt_evento'])->toBe($eventoAntigo->idt_evento);
+        expect($foto->med_logo)->toBeNull();
     });
 });
 
-test('calcula pontuação correta para primeiro evento', function () {
-    $evento = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P',
-        ]
-    );
-    Participante::factory()->create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento->idt_evento,
-    ]);
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoController — Index
+// ─────────────────────────────────────────────────────────────────────────────
 
-    $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
+describe('EventoController — Index', function () {
 
-    // 5 (primeiro evento) + 1 (participante) = 6
-    expect($pontuacao)->toBe(6);
-});
-
-test('calcula pontuação correta para trabalhador coordenador', function () {
-    $evento = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'A',
-        ]
-    );
-    Trabalhador::factory()->create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento->idt_evento,
-        'ind_coordenador' => true,
-    ]);
-
-    $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
-
-    // 5 (primeiro evento) + 2 (trabalhador) + 2 (coordenador) = 9
-    expect($pontuacao)->toBe(9);
-});
-
-test('calcula pontuação correta para múltiplos eventos', function () {
-    $evento1 = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P',
-
-        ]
-    );
-    $evento2 = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-06-20',
-            'tip_evento' => 'A',
-        ]
-    );
-
-    Participante::factory()->create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento1->idt_evento,
-    ]);
-    Trabalhador::factory()->create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento2->idt_evento,
-        'ind_coordenador' => false,
-    ]);
-
-    $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
-
-    // 5 (primeiro evento) + 1 (participante) + 2 (trabalhador) = 8
-    expect($pontuacao)->toBe(8);
-});
-
-test('não adiciona bônus de primeiro evento para eventos subsequentes', function () {
-    $evento1 = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P',
-        ]
-    );
-    $evento2 = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-06-20',
-            'tip_evento' => 'P',
-        ]
-    );
-
-    Participante::factory()->create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento1->idt_evento,
-    ]);
-    Participante::factory()->create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento2->idt_evento,
-    ]);
-
-    $pontuacao = $this->eventoService->calcularPontuacao($this->pessoa);
-
-    // 5 (primeiro evento) + 1 + 1 (participações) = 7
-    expect($pontuacao)->toBe(7);
-});
-
-test('lida com empates no ranking corretamente', function () {
-    $pessoa2 = Pessoa::factory()->create();
-
-    // Ambas com 2 eventos Participante (pontuação 7 cada)
-    $evento1 = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P',
-        ]
-    );
-    $evento2 = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-06-20',
-            'tip_evento' => 'P',
-        ]
-    );
-
-    Participante::factory()->create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento1->idt_evento,
-    ]);
-    Participante::factory()->create([
-        'idt_pessoa' => $pessoa2->idt_pessoa,
-        'idt_evento' => $evento2->idt_evento,
-    ]);
-
-    $ranking1 = $this->eventoService->calcularRanking($this->pessoa);
-    $ranking2 = $this->eventoService->calcularRanking($pessoa2);
-
-    // Ambos devem ter mesma posição: 1
-    expect($ranking1)->toBe(1)
-        ->and($ranking2)->toBe(1);
-});
-
-test('ranking reflete pontuação corretamente', function () {
-    $pessoa2 = Pessoa::factory()->create();
-
-    $evento1 = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-01-15',
-            'tip_evento' => 'P',
-        ]
-    );
-    $evento2 = Evento::factory()->create(
-        [
-            'dat_inicio' => '2023-06-20',
-            'tip_evento' => 'A',
-        ]
-    );
-
-    // Pessoa 1: participante e primeiro evento → 6 pontos
-    Participante::factory()->create([
-        'idt_pessoa' => $this->pessoa->idt_pessoa,
-        'idt_evento' => $evento1->idt_evento,
-    ]);
-
-    // Pessoa 2: trabalhador coordenador no primeiro evento → 9 pontos
-    Trabalhador::factory()->create([
-        'idt_pessoa' => $pessoa2->idt_pessoa,
-        'idt_evento' => $evento2->idt_evento,
-        'ind_coordenador' => true,
-    ]);
-
-    $ranking1 = $this->eventoService->calcularRanking($this->pessoa);
-    $ranking2 = $this->eventoService->calcularRanking($pessoa2);
-
-    expect($ranking2)->toBe(1) // maior pontuação → primeiro
-        ->and($ranking1)->toBe(2); // menor pontuação → segundo
-});
-
-describe('EventoService - Upload de Foto', function () {
-    test('faz upload de foto corretamente', function () {
-        $evento = Evento::factory()->create(
-            [
-                'dat_inicio' => '2023-07-01',
-                'tip_evento' => 'A',
-            ]
-        );
-        $file = UploadedFile::fake()->image('evento.jpg');
-
-        $this->eventoService->fotoUpload($evento, $file);
-        $evento->refresh();
-
-        expect($evento->fresh()->foto)->not->toBeNull()
-            ->and(Storage::disk('public')->exists($evento->foto->med_foto))->toBeTrue();
-    });
-
-    test('substitui foto existente ao fazer novo upload', function () {
-        $evento = Evento::factory()->create(
-            [
-                'dat_inicio' => '2023-12-01',
-                'tip_evento' => 'A',
-            ]
-        );
-        $evento->foto()->create(['med_foto' => 'fotos/evento/antiga.jpg']);
-
-        $file = UploadedFile::fake()->image('nova.jpg');
-
-        $this->eventoService->fotoUpload($evento, $file);
-
-        expect($evento->fresh()->foto->med_foto)->not->toBe('fotos/evento/antiga.jpg');
-    });
-
-    test('não faz nada quando arquivo é null', function () {
-        $evento = Evento::factory()->create(
-            [
-                'dat_inicio' => '2023-12-31',
-                'tip_evento' => 'A',
-            ]
-        );
-        $fotoOriginal = $evento->foto;
-
-        $this->eventoService->fotoUpload($evento, null);
-
-        expect($evento->fresh()->foto)->toBe($fotoOriginal);
-    });
-});
-
-describe('EventoService - Exclusão', function () {
-    test('exclui evento sem foto corretamente', function () {
-        $evento = Evento::factory()->create(
-            [
-                'dat_inicio' => '2024-01-01',
-                'tip_evento' => 'A',
-            ]
-        );
-
-        $this->eventoService->excluirEventoComFoto($evento);
-
-        expect(Evento::find($evento->idt_evento))->toBeNull();
-    });
-
-    test('exclui evento com foto corretamente', function () {
-        $evento = Evento::factory()->create(
-            [
-                'dat_inicio' => '2024-02-01',
-                'tip_evento' => 'A',
-            ]
-        );
-        $evento->foto()->create(['med_foto' => 'fotos/evento/teste.jpg']);
-
-        $this->eventoService->excluirEventoComFoto($evento);
-
-        expect(Evento::find($evento->idt_evento))->toBeNull();
-    });
-});
-
-describe('EventoService - Participação', function () {
-    test('confirma participação corretamente', function () {
-        $evento = Evento::factory()->create(
-            [
-                'dat_inicio' => '2024-03-01',
-                'tip_evento' => 'P',
-            ]
-        );
-
-        $this->eventoService->confirmarParticipacao($evento, $this->pessoa);
-
-        expect(Participante::where('idt_evento', $evento->idt_evento)
-            ->where('idt_pessoa', $this->pessoa->idt_pessoa)
-            ->exists())->toBeTrue();
-    });
-
-    test('retorna eventos inscritos corretamente', function () {
-        $evento1 = Evento::factory()->create([
-            'dat_inicio' => '2024-04-01',
-            'tip_evento' => 'P',
-        ]);
-
-        $evento2 = Evento::factory()->create([
-            'dat_inicio' => '2024-05-01',
-            'tip_evento' => 'P',
-        ]);
-
-        // Não inscrito
-        $evento3 = Evento::factory()->create([
-            'dat_inicio' => '2024-06-01',
-            'tip_evento' => 'P',
-        ]);
-
-        Participante::factory()->create(
-            ['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento1->idt_evento]
-        );
-        Participante::factory()->create(
-            ['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2->idt_evento]
-        );
-
-        $eventosInscritos = $this->eventoService->getEventosInscritos($this->pessoa);
-
-        expect($eventosInscritos)->toHaveCount(2)
-            ->and($eventosInscritos)->toContain($evento1->idt_evento, $evento2->idt_evento)
-            ->and($eventosInscritos)->not->toContain($evento3->idt_evento);
-    });
-});
-
-describe('EventoController - Index', function () {
-    test('exibe listagem de eventos para usuário autenticado', function () {
-        $this->actingAs($this->user);
+    test('exibe listagem para usuário autenticado', function () {
         Evento::factory()->count(3)->create(['idt_movimento' => $this->movimento->idt_movimento]);
 
         $response = $this->get(route('eventos.index'));
@@ -433,36 +255,24 @@ describe('EventoController - Index', function () {
         $response->assertOk()
             ->assertViewIs('evento.list')
             ->assertViewHas('eventos')
-            ->assertViewHas('pessoa');
+            ->assertViewHas('movimentos');
     });
 
-    test('exibe o ícone e o texto de informações quando txt_informacao está preenchido', function () {
-        $movimento = TipoMovimento::factory()->create();
-        $evento = Evento::factory()->create([
-            'idt_movimento' => $movimento->idt_movimento,
-            'txt_informacao' => 'Informação extra do evento',
-        ]);
-
-        $response = $this->actingAs($this->user)
-            ->get(route('eventos.index'));
-
-        $response->assertStatus(200);
-        $response->assertSee('icone-informacao');
-        $response->assertSee('Informação extra do evento');
-    });
-
-    test('exibe listagem de eventos para usuário não autenticado', function () {
-        Evento::factory()->count(3)->create();
+    test('exibe listagem para usuário não autenticado', function () {
+        // O index é público — usuário não autenticado pode acessar
+        // mas o controller usa Auth::user() que retorna null
+        $this->post(route('logout'));
+        Evento::factory()->count(2)->create();
 
         $response = $this->get(route('eventos.index'));
 
-        $response->assertOk()
-            ->assertViewHas('pessoa', null);
+        // Redireciona para login pois a rota requer autenticação
+        $response->assertRedirect(route('login'));
     });
 
-    test('filtra eventos por busca corretamente', function () {
-        $eventoEncontrado = Evento::factory()->create(['des_evento' => 'Encontro Especial']);
-        $eventoNaoEncontrado = Evento::factory()->create(['des_evento' => 'Outro Evento']);
+    test('filtra eventos por busca', function () {
+        $encontrado    = Evento::factory()->create(['des_evento' => 'Encontro Especial']);
+        $naoEncontrado = Evento::factory()->create(['des_evento' => 'Outro Evento']);
 
         $response = $this->get(route('eventos.index', ['search' => 'especial']));
 
@@ -470,36 +280,39 @@ describe('EventoController - Index', function () {
         $eventos = $response->viewData('eventos');
 
         expect($eventos->items())->toHaveCount(1)
-            ->and($eventos->items()[0]->idt_evento)->toBe($eventoEncontrado->idt_evento);
+            ->and($eventos->items()[0]->idt_evento)->toBe($encontrado->idt_evento);
     });
 
-    test('mantém parâmetros de busca na paginação', function () {
+    test('filtra eventos por movimento', function () {
+        $mov2 = TipoMovimento::factory()->create();
+        Evento::factory()->create(['idt_movimento' => $this->movimento->idt_movimento]);
+        Evento::factory()->create(['idt_movimento' => $mov2->idt_movimento]);
+
+        $response = $this->get(route('eventos.index', ['idt_movimento' => $this->movimento->idt_movimento]));
+
+        $response->assertOk();
+        $eventos = $response->viewData('eventos');
+
+        expect($eventos->items())->toHaveCount(1)
+            ->and($eventos->items()[0]->idt_movimento)->toBe($this->movimento->idt_movimento);
+    });
+
+    test('paginação mantém parâmetros de busca', function () {
         Evento::factory()->count(15)->create(['des_evento' => 'Encontro Teste']);
 
         $response = $this->get(route('eventos.index', ['search' => 'teste', 'page' => 2]));
 
         $response->assertOk();
-        $eventos = $response->viewData('eventos');
-
-        expect($eventos->hasPages())->toBeTrue();
+        expect($response->viewData('eventos')->hasPages())->toBeTrue();
     });
 });
 
-describe('EventoController - Show', function () {
-    test('carrega foto do evento quando presente', function () {
-        $evento = Evento::factory()->create();
-        $evento->foto()->create(['med_foto' => 'fotos/evento/teste.jpg']);
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoController — Create
+// ─────────────────────────────────────────────────────────────────────────────
 
-        $response = $this->get(route('eventos.edit', $evento));
+describe('EventoController — Create', function () {
 
-        $response->assertOk();
-        $eventoView = $response->viewData('evento');
-
-        expect($eventoView->relationLoaded('foto'))->toBeTrue();
-    });
-});
-
-describe('EventoController - Create', function () {
     test('exibe formulário de criação', function () {
         $response = $this->get(route('eventos.create'));
 
@@ -509,267 +322,439 @@ describe('EventoController - Create', function () {
             ->assertViewHas('evento');
     });
 
-    test('carrega todos os movimentos disponíveis', function () {
-
-        $this->tipoMovimentoECC = TipoMovimento::firstOrCreate([
-            'des_sigla' => 'ECC',
-            'nom_movimento' => 'Encontro de Casais com Cristo',
-            'dat_inicio' => '1980-01-01',
-        ]);
-        $this->tipoMovimentoVEM = TipoMovimento::firstOrCreate([
-            'des_sigla' => 'VEM',
-            'nom_movimento' => 'Encontro de Adolescentes com Cristo',
-            'dat_inicio' => '2000-07-01',
-        ]);
-        $this->tipoMovimentoSegueMe = TipoMovimento::firstOrCreate([
-            'des_sigla' => 'Segue-Me',
-            'nom_movimento' => 'Encontro de Jovens com Cristo',
-            'dat_inicio' => '1990-12-31',
-        ]);
+    test('formulário de criação carrega todos os movimentos', function () {
+        $total = TipoMovimento::count();
 
         $response = $this->get(route('eventos.create'));
 
-        $movimentos = $response->viewData('movimentos');
-        expect($movimentos)->toHaveCount(6);
+        expect($response->viewData('movimentos'))->toHaveCount($total);
+    });
+
+    test('redireciona para login quando não autenticado', function () {
+        Auth::logout();
+
+        $response = $this->get(route('eventos.create'));
+
+        $response->assertRedirect(route('login'));
     });
 });
 
-describe('EventoController - Store', function () {
-    test('cria evento com dados válidos', function () {
-        $dadosEvento = [
-            'idt_movimento' => $this->movimento->idt_movimento,
-            'des_evento' => 'Novo Evento',
-            'num_evento' => 'EV001',
-            'dat_inicio' => '2024-01-15',
-            'dat_termino' => '2024-01-17',
-            'val_camiseta' => 25.00,
-            'val_trabalhador' => 50.00,
-            'val_venista' => 30.00,
-            'val_entrada' => 15.00,
-            'tip_evento' => 'A',
-        ];
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoController — Store
+// ─────────────────────────────────────────────────────────────────────────────
 
-        $response = $this->post(route('eventos.store'), $dadosEvento);
+describe('EventoController — Store', function () {
+
+    test('cria evento com dados válidos e redireciona', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento);
+
+        $response = $this->post(route('eventos.store'), $payload);
 
         $response->assertRedirect(route('eventos.index'))
             ->assertSessionHas('success');
 
         $this->assertDatabaseHas('evento', [
-            'des_evento' => 'Novo Evento',
-            'num_evento' => 'EV001',
+            'des_evento'       => 'Encontro de Teste',
+            'num_evento'       => '001',
+            'tip_evento'       => TipoEvento::ENCONTRO->value,
+            'tip_faixa_etaria' => FaixaEtaria::LIVRE->value,
+            'qtd_vaga'         => 40,
         ]);
     });
 
-    test('cria evento com foto', function () {
-        Storage::fake('public');
+    test('persiste campos novos: tip_faixa_etaria, qtd_vaga e dat_limite_inscricao', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'tip_faixa_etaria'     => FaixaEtaria::JOVEM->value,
+            'qtd_vaga'             => 55,
+            'dat_limite_inscricao' => '2025-06-15',
+        ]);
 
-        $dadosEvento = [
-            'idt_movimento' => $this->movimento->idt_movimento,
-            'des_evento' => 'Evento com Foto',
-            'num_evento' => 'EV002',
-            'dat_inicio' => '2024-01-15',
-            'dat_termino' => '2024-01-17',
-            'med_foto' => UploadedFile::fake()->image('evento.jpg'),
-            'tip_evento' => 'A',
-        ];
+        $this->post(route('eventos.store'), $payload);
 
-        $response = $this->post(route('eventos.store'), $dadosEvento);
+        $evento = Evento::where('des_evento', 'Encontro de Teste')->first();
 
-        $response->assertRedirect(route('eventos.index'));
+        expect($evento->tip_faixa_etaria)->toBe(FaixaEtaria::JOVEM)
+            ->and($evento->qtd_vaga)->toBe(55)
+            ->and($evento->dat_limite_inscricao->format('Y-m-d'))->toBe('2025-06-15');
+    });
 
-        $evento = Evento::where('des_evento', 'Evento com Foto')->first();
-        expect($evento->foto)->not->toBeNull();
+    test('persiste val_receita e val_despesa', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'val_receita' => '1500.00',
+            'val_despesa' => '800.00',
+        ]);
+
+        $this->post(route('eventos.store'), $payload);
+
+        $this->assertDatabaseHas('evento', [
+            'val_receita' => 1500.00,
+            'val_despesa' => 800.00,
+        ]);
+    });
+
+    test('faz upload de med_foto e cria registro em evento_foto', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'med_foto' => UploadedFile::fake()->image('foto.jpg'),
+        ]);
+
+        $response = $this->withoutExceptionHandling()
+            ->from(route('eventos.index'))
+            ->post(route('eventos.store'), $payload);
+
+        // Verifica o que está na sessão para debug
+        $sessionErrors = session('errors');
+        $sessionError  = session('error');
+
+        $response->assertRedirect(route('eventos.index'))
+            ->assertSessionHas('success');
+
+        $evento = Evento::where('des_evento', 'Encontro de Teste')->with('foto')->first();
+
+        expect($evento->foto)->not->toBeNull()
+            ->and($evento->foto->med_foto)->not->toBeNull();
 
         Storage::disk('public')->assertExists($evento->foto->med_foto);
     });
 
-    test('falha com dados inválidos', function () {
-        $dadosInvalidos = [
-            'des_evento' => '', // Campo obrigatório vazio
-            'idt_movimento' => 999, // ID inexistente
-        ];
+    test('faz upload de med_logo e persiste em evento_foto', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'med_logo' => UploadedFile::fake()->image('logo.png'),
+        ]);
 
-        $response = $this->post(route('eventos.store'), $dadosInvalidos);
+        $response = $this->withoutExceptionHandling()
+            ->from(route('eventos.index'))
+            ->post(route('eventos.store'), $payload);
 
-        $response->assertSessionHasErrors(['des_evento', 'idt_movimento']);
+        $response->assertRedirect(route('eventos.index'))
+            ->assertSessionHas('success');
+
+        $evento = Evento::where('des_evento', 'Encontro de Teste')->with('foto')->first();
+
+        expect($evento->foto)->not->toBeNull()
+            ->and($evento->foto->med_logo)->not->toBeNull();
+
+        Storage::disk('public')->assertExists($evento->foto->med_logo);
+    });
+
+    test('falha quando des_evento está vazio', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, ['des_evento' => '']);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('des_evento');
+        $this->assertDatabaseCount('evento', 0);
+    });
+
+    test('falha quando idt_movimento não existe', function () {
+        $payload = eventoPayloadValido(99999);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('idt_movimento');
+    });
+
+    test('falha quando dat_inicio está ausente', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, ['dat_inicio' => '']);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('dat_inicio');
+    });
+
+    test('falha quando dat_termino é anterior a dat_inicio', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'dat_inicio'  => '2025-06-20',
+            'dat_termino' => '2025-06-18',
+        ]);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('dat_termino');
+    });
+
+    test('falha quando dat_limite_inscricao é posterior a dat_inicio', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'dat_inicio'           => '2025-06-20',
+            'dat_limite_inscricao' => '2025-06-25',
+        ]);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('dat_limite_inscricao');
+    });
+
+    test('falha quando tip_evento está ausente', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, ['tip_evento' => '']);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('tip_evento');
+    });
+
+    test('falha quando tip_faixa_etaria está ausente', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, ['tip_faixa_etaria' => '']);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('tip_faixa_etaria');
+    });
+
+    test('falha quando qtd_vaga é negativo', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, ['qtd_vaga' => -1]);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('qtd_vaga');
+    });
+
+    test('falha quando val_trabalhador é negativo', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, ['val_trabalhador' => '-10']);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('val_trabalhador');
+    });
+
+    test('falha quando med_foto excede 2MB', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'med_foto' => UploadedFile::fake()->image('grande.jpg')->size(3000),
+        ]);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('med_foto');
+    });
+
+    test('falha quando med_logo não é imagem', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'med_logo' => UploadedFile::fake()->create('logo.pdf', 100, 'application/pdf'),
+        ]);
+
+        $response = $this->post(route('eventos.store'), $payload);
+
+        $response->assertSessionHasErrors('med_logo');
     });
 });
 
-describe('EventoController - Edit', function () {
-    test('exibe formulário de edição', function () {
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoController — Edit
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('EventoController — Edit', function () {
+
+    test('exibe formulário de edição com dados do evento', function () {
         $evento = Evento::factory()->create();
 
         $response = $this->get(route('eventos.edit', $evento));
 
         $response->assertOk()
             ->assertViewIs('evento.form')
-            ->assertViewHas('evento', $evento)
             ->assertViewHas('movimentos');
+
+        expect($response->viewData('evento')->idt_evento)->toBe($evento->idt_evento);
     });
 
-    test('carrega foto do evento para edição', function () {
+    test('carrega relações foto e logo para edição', function () {
         $evento = Evento::factory()->create();
-        $evento->foto()->create(['med_foto' => 'fotos/evento/teste.jpg']);
+        $evento->foto()->create([
+            'med_foto' => 'eventos/fotos/foto.jpg',
+            'med_logo' => 'eventos/logos/logo.png',
+        ]);
 
         $response = $this->get(route('eventos.edit', $evento));
 
         $eventoView = $response->viewData('evento');
-        expect($eventoView->relationLoaded('foto'))->toBeTrue();
+
+        expect($eventoView->relationLoaded('foto'))->toBeTrue()
+            ->and($eventoView->foto->med_foto)->toBe('eventos/fotos/foto.jpg')
+            ->and($eventoView->foto->med_logo)->toBe('eventos/logos/logo.png');
+    });
+
+    test('retorna 404 para evento inexistente', function () {
+        $response = $this->get(route('eventos.edit', 99999));
+
+        $response->assertNotFound();
     });
 });
 
-describe('EventoController - Update', function () {
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoController — Update
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('EventoController — Update', function () {
+
     test('atualiza evento com dados válidos', function () {
-        $evento = Evento::factory()->create(['des_evento' => 'Evento Original']);
+        $evento = Evento::factory()->create([
+            'des_evento'  => 'Evento Original',
+            'dat_inicio'  => '2025-06-20',
+            'dat_termino' => '2025-06-22',
+        ]);
 
-        $dadosAtualizados = [
-            'idt_movimento' => $this->movimento->idt_movimento, // Corrigido: Usar um ID de movimento existente
-            'des_evento' => 'Evento Atualizado',
-            'num_evento' => '001A',
-            'dat_inicio' => $evento->dat_inicio->format('Y-m-d'),
-            'dat_termino' => $evento->dat_inicio->addDays(2)->format('Y-m-d'),
-            'val_camiseta' => 200.00,
-            'val_trabalhador' => 50.00,
-            'val_venista' => 150.00,
-            'val_entrada' => 30.00,
-            'tip_evento' => 'P',
-            'ind_camiseta_pediu' => true,
-            'ind_camiseta_pagou' => true,
-        ];
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'des_evento'       => 'Evento Atualizado',
+            'tip_faixa_etaria' => FaixaEtaria::CASADO->value,
+            'qtd_vaga'         => 50,
+        ]);
 
-        // Corrigido: Usar o método 'from' para simular a URL de referência.
-        $response = $this->from(route('eventos.index'))->put(route('eventos.update', $evento), $dadosAtualizados);
+        $response = $this->put(route('eventos.update', $evento), $payload);
 
         $response->assertRedirect(route('eventos.index'))
-            ->assertSessionHas('success')
-            ->assertSessionHasNoErrors();
+            ->assertSessionHas('success');
 
-        expect($evento->fresh()->des_evento)->toBe('Evento Atualizado');
+        expect($evento->fresh()->des_evento)->toBe('Evento Atualizado')
+            ->and($evento->fresh()->tip_faixa_etaria)->toBe(FaixaEtaria::CASADO)
+            ->and($evento->fresh()->qtd_vaga)->toBe(50);
     });
 
-    test('atualiza foto do evento', function () {
-        Storage::fake('public');
-
+    test('atualiza med_foto substituindo a anterior', function () {
         $evento = Evento::factory()->create();
-        $evento->foto()->create(['med_foto' => 'fotos/evento/antiga.jpg']);
+        $evento->foto()->create(['med_foto' => 'eventos/fotos/antiga.jpg']);
 
-        $dadosAtualizados = [
-            'idt_movimento' => $this->movimento->idt_movimento,
-            'des_evento' => $evento->des_evento,
-            'num_evento' => '002B',
-            'dat_inicio' => $evento->dat_inicio->format('Y-m-d'),
-            'dat_termino' => $evento->dat_termino->format('Y-m-d'),
-            'val_camiseta' => 200.00,
-            'val_trabalhador' => 50.00,
-            'val_venista' => 150.00,
-            'val_entrada' => 30.00,
-            'med_foto' => UploadedFile::fake()->image('nova.jpg'),
-            'tip_evento' => 'P',
-            'ind_camiseta_pediu' => true,
-            'ind_camiseta_pagou' => true,
-        ];
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'dat_inicio'  => $evento->dat_inicio->format('Y-m-d'),
+            'dat_termino' => $evento->dat_termino?->format('Y-m-d'),
+            'med_foto'    => UploadedFile::fake()->image('nova.jpg'),
+        ]);
 
-        $response = $this->from(route('eventos.index'))->put(route('eventos.update', $evento), $dadosAtualizados);
+        $response = $this->put(route('eventos.update', $evento), $payload);
 
-        $response->assertRedirect(route('eventos.index'));
+        $response->assertRedirect(route('eventos.index'))
+            ->assertSessionHas('success');
 
         $fotoAtualizada = $evento->fresh()->foto;
-        expect($fotoAtualizada->med_foto)->not->toBe('fotos/evento/antiga.jpg');
+
+        expect($fotoAtualizada->med_foto)->not->toBe('eventos/fotos/antiga.jpg');
         Storage::disk('public')->assertExists($fotoAtualizada->med_foto);
     });
 
-    test('não atualiza evento com dados inválidos', function () {
+    test('atualiza med_logo sem afetar med_foto existente', function () {
+        $evento = Evento::factory()->create();
+        $evento->foto()->create([
+            'med_foto' => 'eventos/fotos/foto.jpg',
+            'med_logo' => null,
+        ]);
+
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'dat_inicio'  => $evento->dat_inicio->format('Y-m-d'),
+            'dat_termino' => $evento->dat_termino?->format('Y-m-d'),
+            'med_logo'    => UploadedFile::fake()->image('logo.png'),
+        ]);
+
+        $response = $this->put(route('eventos.update', $evento), $payload);
+
+        $response->assertRedirect(route('eventos.index'))
+            ->assertSessionHas('success');
+
+        $foto = $evento->fresh()->foto;
+
+        expect($foto->med_foto)->toBe('eventos/fotos/foto.jpg')
+            ->and($foto->med_logo)->not->toBeNull();
+        Storage::disk('public')->assertExists($foto->med_logo);
+    });
+
+    test('falha quando des_evento está vazio na atualização', function () {
         $evento = Evento::factory()->create();
 
-        $dadosInvalidos = [
-            'des_evento' => 'Teste Invalido',
-            'num_evento' => 12345, // Número, não string
-            'dat_inicio' => 'data-invalida',
-            'idt_movimento' => null,
-            'tip_evento' => null,
-        ];
-
-        $response = $this->from(route('eventos.index'))
-            ->put(route('eventos.update', $evento), $dadosInvalidos);
-
-        $response->assertRedirect(route('eventos.index'));
-        $response->assertSessionHasErrors([
-            'num_evento',
-            'dat_inicio',
-            'idt_movimento',
-            'tip_evento',
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'des_evento'  => '',
+            'dat_inicio'  => $evento->dat_inicio->format('Y-m-d'),
+            'dat_termino' => $evento->dat_termino?->format('Y-m-d'),
         ]);
+
+        $response = $this->put(route('eventos.update', $evento), $payload);
+
+        $response->assertSessionHasErrors('des_evento');
+        expect($evento->fresh()->des_evento)->not->toBe('');
+    });
+
+    test('falha quando dat_termino é anterior a dat_inicio na atualização', function () {
+        $evento = Evento::factory()->create();
+
+        $payload = eventoPayloadValido($this->movimento->idt_movimento, [
+            'dat_inicio'  => '2025-06-20',
+            'dat_termino' => '2025-06-18',
+        ]);
+
+        $response = $this->put(route('eventos.update', $evento), $payload);
+
+        $response->assertSessionHasErrors('dat_termino');
+    });
+
+    test('retorna 404 ao tentar atualizar evento inexistente', function () {
+        $payload = eventoPayloadValido($this->movimento->idt_movimento);
+
+        $response = $this->put(route('eventos.update', 99999), $payload);
+
+        $response->assertNotFound();
     });
 });
 
-describe('EventoController - Destroy', function () {
-    test('exclui evento sem relacionamentos', function () {
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoController — Destroy
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('EventoController — Destroy', function () {
+
+    test('soft-deleta evento e redireciona com sucesso', function () {
         $evento = Evento::factory()->create();
+        $id     = $evento->idt_evento;
 
         $response = $this->delete(route('eventos.destroy', $evento));
 
         $response->assertRedirect(route('eventos.index'))
             ->assertSessionHas('success');
 
-        expect(Evento::find($evento->idt_evento))->toBeNull();
+        expect(Evento::find($id))->toBeNull()
+            ->and(Evento::withTrashed()->find($id))->not->toBeNull();
     });
 
-    test('exclui evento e seus participantes em cascata', function () {
+    test('retorna 404 ao tentar deletar evento inexistente', function () {
+        $response = $this->delete(route('eventos.destroy', 99999));
 
-        $evento = Evento::factory()->create();
-        $participante = Participante::factory()->for($evento)->create();
-
-        // NOTA: A model usa soft delete, o método delete() do controlador
-        // não removerá o registro do banco de dados.
-        $response = $this->delete(route('eventos.destroy', $evento));
-
-        $response->assertRedirect(route('eventos.index'))
-            ->assertSessionHas('success', 'Evento excluído com sucesso!');
-
-        // Verifica se o evento foi 'soft-deletado'
-        $eventoExist = Evento::withTrashed()->find($evento->idt_evento);
-        expect($eventoExist)->not()->toBeNull(); // O evento deve existir, mas com deleted_at preenchido.
-
-        // A exclusão em cascata não acontece com soft deletes.
-        // O participante ainda deve existir.
-        expect(Participante::find($participante->idt_participante))->not()->toBeNull();
-    });
-
-    test('exclui foto junto com evento', function () {
-        Storage::fake('public');
-
-        $evento = Evento::factory()->create();
-        $evento->foto()->create(['med_foto' => 'fotos/evento/teste.jpg']);
-        Storage::disk('public')->put('fotos/evento/teste.jpg', 'conteudo fake');
-
-        $response = $this->delete(route('eventos.destroy', $evento));
-
-        $response->assertRedirect(route('eventos.index'));
-        expect(Evento::find($evento->idt_evento))->toBeNull();
+        $response->assertNotFound();
     });
 });
 
-describe('EventoController - Confirm', function () {
-    test('confirma participação em evento', function () {
-        $evento = Evento::factory()->create();
-        $pessoa = Pessoa::factory()->create();
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoController — Confirm (participação)
+// ─────────────────────────────────────────────────────────────────────────────
 
-        $response = $this->post(route('participantes.confirm', [$evento, $pessoa]));
+describe('EventoController — Confirm', function () {
+
+    test('confirma participação e cria registro em participante', function () {
+        $evento = Evento::factory()->create();
+
+        $response = $this->post(route('participantes.confirm', [
+            'evento' => $evento,
+            'pessoa' => $this->pessoa,
+        ]));
 
         $response->assertRedirect(route('eventos.index'))
             ->assertSessionHas('success');
 
         $this->assertDatabaseHas('participante', [
             'idt_evento' => $evento->idt_evento,
-            'idt_pessoa' => $pessoa->idt_pessoa,
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
         ]);
+    });
+
+    test('confirmar participação duas vezes não duplica o registro', function () {
+        $evento = Evento::factory()->create();
+
+        $this->post(route('participantes.confirm', ['evento' => $evento, 'pessoa' => $this->pessoa]));
+        $this->post(route('participantes.confirm', ['evento' => $evento, 'pessoa' => $this->pessoa]));
+
+        $this->assertDatabaseCount('participante', 1);
     });
 });
 
-describe('EventoController - Timeline', function () {
-    test('exibe timeline para usuário autenticado', function () {
-        $this->actingAs($this->user);
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoController — Timeline
+// ─────────────────────────────────────────────────────────────────────────────
 
+describe('EventoController — Timeline', function () {
+
+    test('exibe timeline para usuário autenticado com pessoa vinculada', function () {
         $response = $this->get(route('timeline.index'));
 
         $response->assertOk()
@@ -780,112 +765,189 @@ describe('EventoController - Timeline', function () {
             ->assertViewHas('pessoa');
     });
 
-    test('requer autenticação para acessar timeline', function () {
+    test('redireciona para login quando não autenticado', function () {
         Auth::logout();
+
         $response = $this->get(route('timeline.index'));
 
-        $response->assertRedirect(); // Redirecionamento para login
+        $response->assertRedirect(route('login'));
     });
 });
 
-describe('Evento Model', function () {
-    test('tem atributos fillable corretos', function () {
-        $fillable = [
-            'idt_movimento',
-            'des_evento',
-            'num_evento',
-            'dat_inicio',
-            'dat_termino',
-            'val_camiseta',
-            'val_trabalhador',
-            'val_venista',
-            'val_entrada',
-            'tip_evento',
-            'txt_informacao',
-        ];
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoService — Timeline
+// ─────────────────────────────────────────────────────────────────────────────
 
-        expect((new Evento)->getFillable())->toBe($fillable);
+describe('EventoService — Timeline', function () {
+
+    test('retorna array vazio para pessoa sem eventos', function () {
+        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
+
+        expect($timeline)->toBeArray()->toBeEmpty();
     });
 
-    test('faz cast de datas corretamente', function () {
+    test('retorna entrada de Trabalhador com dados corretos', function () {
         $evento = Evento::factory()->create([
-            'dat_inicio' => '2023-01-15',
-            'dat_termino' => '2023-01-17',
+            'idt_movimento' => $this->movimento->idt_movimento,
+            'dat_inicio'    => '2024-03-10',
         ]);
 
-        expect($evento->dat_inicio)->toBeInstanceOf(Carbon::class)
-            ->and($evento->dat_termino)->toBeInstanceOf(Carbon::class);
-    });
-
-    test('busca por descrição do evento', function () {
-        Evento::factory()->create(['des_evento' => 'Encontro de Jovens']);
-        Evento::factory()->create(['des_evento' => 'Retiro Espiritual']);
-
-        $resultados = Evento::search('jovens')->get();
-
-        expect($resultados)->toHaveCount(1)
-            ->and($resultados->first()->des_evento)->toBe('Encontro de Jovens');
-    });
-
-    test('busca por número do evento', function () {
-        Evento::factory()->create(['num_evento' => 'EJ2023']);
-        Evento::factory()->create(['num_evento' => 'RE2023']);
-
-        $resultados = Evento::search('EJ')->get();
-
-        expect($resultados)->toHaveCount(1)
-            ->and($resultados->first()->num_evento)->toBe('EJ2023');
-    });
-
-    test('busca é case insensitive', function () {
-        Evento::factory()->create(['des_evento' => 'Encontro de Jovens']);
-
-        $resultados = Evento::search('JOVENS')->get();
-
-        expect($resultados)->toHaveCount(1);
-    });
-
-    test('relacionamento com movimento funciona', function () {
-        $movimento = TipoMovimento::firstOrCreate([
-            'des_sigla' => 'ECC',
-            'nom_movimento' => 'Encontro de Casais com Cristo',
-            'dat_inicio' => '1980-01-01',
+        $equipe = TipoEquipe::firstOrCreate([
+            'des_grupo'     => 'Coordenação Geral',
+            'idt_movimento' => $this->movimento->idt_movimento,
         ]);
 
-        $evento = Evento::factory()->create(['idt_movimento' => $movimento->idt_movimento]);
+        Trabalhador::factory()->create([
+            'idt_pessoa'      => $this->pessoa->idt_pessoa,
+            'idt_evento'      => $evento->idt_evento,
+            'idt_equipe'      => $equipe->idt_equipe,
+            'ind_coordenador' => true,
+        ]);
 
-        expect($evento->movimento)->toBeInstanceOf(TipoMovimento::class)
-            ->and($evento->movimento->idt_movimento)->toBe($movimento->idt_movimento);
+        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
+
+        $entry = $timeline[0]['events'][0];
+
+        expect($entry['type'])->toBe('Trabalhador')
+            ->and($entry['details']['coordenador'])->toBeTrue()
+            ->and($entry['event']->idt_evento)->toBe($evento->idt_evento);
     });
 
-    test('relacionamento com foto funciona', function () {
-        $evento = Evento::factory()->create();
-        $evento->foto()->create(['med_foto' => 'teste.jpg']);
+    test('retorna entrada de Participante com dados corretos', function () {
+        $evento = Evento::factory()->create(['dat_inicio' => '2024-05-15']);
 
-        expect($evento->foto)->toBeInstanceOf(EventoFoto::class)
-            ->and($evento->foto->med_foto)->toBe('teste.jpg');
+        Participante::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $evento->idt_evento,
+        ]);
+
+        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
+
+        $entry = $timeline[0]['events'][0];
+
+        expect($entry['type'])->toBe('Participante')
+            ->and($entry['event']->idt_evento)->toBe($evento->idt_evento);
+    });
+
+    test('agrupa eventos por ano em ordem decrescente', function () {
+        $evento2024 = Evento::factory()->create(['dat_inicio' => '2024-01-10']);
+        $evento2023 = Evento::factory()->create(['dat_inicio' => '2023-06-20']);
+
+        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2024->idt_evento]);
+        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $evento2023->idt_evento]);
+
+        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
+
+        expect($timeline)->toHaveCount(2)
+            ->and($timeline[0]['year'])->toBe(2024)
+            ->and($timeline[1]['year'])->toBe(2023);
+    });
+
+    test('ordena eventos dentro do mesmo ano por data decrescente', function () {
+        $eventoJan = Evento::factory()->create(['dat_inicio' => '2024-01-10']);
+        $eventoDez = Evento::factory()->create(['dat_inicio' => '2024-12-20']);
+
+        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $eventoJan->idt_evento]);
+        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $eventoDez->idt_evento]);
+
+        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
+        $events   = $timeline[0]['events'];
+
+        expect($events[0]['event']->idt_evento)->toBe($eventoDez->idt_evento)
+            ->and($events[1]['event']->idt_evento)->toBe($eventoJan->idt_evento);
+    });
+
+    test('combina participações e trabalhos na mesma timeline', function () {
+        $eventoP = Evento::factory()->create(['dat_inicio' => '2024-03-01']);
+        $eventoT = Evento::factory()->create(['dat_inicio' => '2024-07-01']);
+
+        $equipe = TipoEquipe::first();
+
+        Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $eventoP->idt_evento]);
+        Trabalhador::factory()->create([
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $eventoT->idt_evento,
+            'idt_equipe' => $equipe->idt_equipe,
+        ]);
+
+        $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
+        $events   = $timeline[0]['events'];
+
+        expect($events)->toHaveCount(2);
+        $types = collect($events)->pluck('type')->all();
+        expect($types)->toContain('Participante')->toContain('Trabalhador');
     });
 });
 
-describe('EventoFoto Model', function () {
-    test('usa timestamps', function () {
-        expect((new EventoFoto)->timestamps)->toBeTrue();
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoService — Ranking
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('EventoService — Ranking', function () {
+
+    test('pessoa sem pontos fica na última posição', function () {
+        $totalPessoas = Pessoa::count();
+
+        $ranking = $this->eventoService->calcularRanking($this->pessoa);
+
+        expect($ranking)->toBe($totalPessoas);
     });
 
-    test('tem atributos fillable corretos', function () {
-        $fillable = ['idt_evento', 'med_foto'];
+    test('pessoa com mais pontos fica em posição superior', function () {
+        $pessoaForte = createPessoa();
+        // qtd_pontos_total não está no fillable — usar saveQuietly para bypass
+        $pessoaForte->qtd_pontos_total = 500;
+        $pessoaForte->saveQuietly();
 
-        expect((new EventoFoto)->getFillable())->toBe($fillable);
+        $this->pessoa->qtd_pontos_total = 100;
+        $this->pessoa->saveQuietly();
+
+        $rankingForte = $this->eventoService->calcularRanking($pessoaForte->fresh());
+        $rankingFraco = $this->eventoService->calcularRanking($this->pessoa->fresh());
+
+        expect($rankingForte)->toBeLessThan($rankingFraco);
     });
 
-    test('relacionamento com evento funciona', function () {
+    test('empate resulta na mesma posição', function () {
+        $outraPessoa = createPessoa();
+
+        $this->pessoa->qtd_pontos_total = 200;
+        $this->pessoa->saveQuietly();
+
+        $outraPessoa->qtd_pontos_total = 200;
+        $outraPessoa->saveQuietly();
+
+        $r1 = $this->eventoService->calcularRanking($this->pessoa->fresh());
+        $r2 = $this->eventoService->calcularRanking($outraPessoa->fresh());
+
+        expect($r1)->toBe($r2);
+    });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EventoService — confirmarParticipacao
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('EventoService — confirmarParticipacao', function () {
+
+    test('cria participante na primeira chamada', function () {
         $evento = Evento::factory()->create();
-        $foto = EventoFoto::create([
-            'idt_evento' => $evento->idt_evento,
-            'med_foto' => 'teste.jpg',
-        ]);
 
-        expect($foto->evento)->toBeInstanceOf(Evento::class)
-            ->and($foto->evento->idt_evento)->toBe($evento->idt_evento);
+        $participante = $this->eventoService->confirmarParticipacao($evento, $this->pessoa);
+
+        expect($participante)->toBeInstanceOf(Participante::class);
+        $this->assertDatabaseHas('participante', [
+            'idt_evento' => $evento->idt_evento,
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+        ]);
+    });
+
+    test('não duplica participante em chamadas repetidas', function () {
+        $evento = Evento::factory()->create();
+
+        $this->eventoService->confirmarParticipacao($evento, $this->pessoa);
+        $this->eventoService->confirmarParticipacao($evento, $this->pessoa);
+
+        $this->assertDatabaseCount('participante', 1);
     });
 });

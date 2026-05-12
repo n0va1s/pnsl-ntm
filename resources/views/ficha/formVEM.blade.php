@@ -189,13 +189,13 @@
                         <div>
                             <label for="num_cpf_candidato"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                CPF <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
+                                CPF
                             </label>
                             <input type="text" name="num_cpf_candidato" id="num_cpf_candidato"
-                                x-bind:disabled="bloqueado" required maxlength="14" autocomplete="off"
+                                x-bind:disabled="bloqueado" maxlength="14" autocomplete="off"
                                 value="{{ old('num_cpf_candidato', $ficha->num_cpf_candidato) }}"
                                 @blur="buscarPorCpf()"
-                                placeholder="000.000.000-00" aria-required="true"
+                                placeholder="000.000.000-00"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('num_cpf_candidato') border-red-500 @enderror" />
                             @error('num_cpf_candidato')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
@@ -288,12 +288,11 @@
                         <div>
                             <label for="nom_apelido"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Apelido <span class="text-red-600" aria-hidden="true">*</span><span
-                                    class="sr-only">(obrigatório)</span>
+                                Apelido
                             </label>
                             <input type="text" name="nom_apelido" id="nom_apelido" x-bind:disabled="bloqueado"
-                                required maxlength="100" value="{{ old('nom_apelido', $ficha->nom_apelido) }}"
-                                placeholder="Como gosta de ser chamado" aria-required="true"
+                                maxlength="100" value="{{ old('nom_apelido', $ficha->nom_apelido) }}"
+                                placeholder="Como gosta de ser chamado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_apelido') border-red-500 @enderror" />
                             @error('nom_apelido')
                                 <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
@@ -354,10 +353,10 @@
                         <div>
                             <label for="des_endereco"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
-                                Endereço
+                                Endereço <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <input type="text" name="des_endereco" id="des_endereco" x-bind:disabled="bloqueado"
-                                maxlength="500" autocomplete="street-address"
+                                required maxlength="500" autocomplete="street-address" aria-required="true"
                                 value="{{ old('des_endereco', $ficha->des_endereco) }}"
                                 placeholder="Rua, número, bairro, cidade"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('des_endereco') border-red-500 @enderror" />
@@ -414,9 +413,39 @@
                 </fieldset>
 
                 {{-- ===== RESPONSÁVEIS ===== --}}
-                <fieldset class="bg-white dark:bg-zinc-800 rounded-md shadow p-4 sm:p-6">
-                    <legend class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Responsáveis
-                    </legend>
+                <fieldset class="bg-white dark:bg-zinc-800 rounded-md shadow p-4 sm:p-6"
+                    x-data="{
+                        nomMae: '{{ old('nom_mae', optional($ficha->fichaVem)->nom_mae) }}',
+                        nomPai: '{{ old('nom_pai', optional($ficha->fichaVem)->nom_pai) }}',
+                        nomResp: '{{ old('nom_responsavel', optional($ficha->fichaVem)->nom_responsavel) }}',
+                        get algumPreenchido() {
+                            return this.nomMae.trim() !== '' || this.nomPai.trim() !== '' || this.nomResp.trim() !== '';
+                        }
+                    }">
+                    <legend class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">Responsáveis</legend>
+
+                    {{-- Aviso de obrigatoriedade --}}
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Preencha ao menos um responsável: <strong>mãe</strong>, <strong>pai</strong> ou <strong>responsável</strong>.
+                        Também indique com quem devemos falar em caso de necessidade.
+                    </p>
+
+                    {{-- Erro geral de responsáveis --}}
+                    @error('responsaveis')
+                        <div class="mb-4 flex items-center gap-2 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 px-4 py-3" role="alert">
+                            <x-heroicon-o-exclamation-circle class="w-5 h-5 text-red-500 shrink-0" aria-hidden="true" />
+                            <p class="text-sm text-red-700 dark:text-red-400">{{ $message }}</p>
+                        </div>
+                    @enderror
+
+                    {{-- Alerta dinâmico (Alpine) --}}
+                    <div x-show="!algumPreenchido" x-transition
+                        class="mb-4 flex items-center gap-2 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-4 py-3"
+                        role="alert" aria-live="polite">
+                        <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-amber-500 shrink-0" aria-hidden="true" />
+                        <p class="text-sm text-amber-700 dark:text-amber-400">Preencha o nome de ao menos um responsável.</p>
+                    </div>
+
                     <div class="space-y-6">
 
                         {{-- Mãe --}}
@@ -427,7 +456,7 @@
                                     <label for="nom_mae"
                                         class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Nome</label>
                                     <input type="text" name="nom_mae" id="nom_mae" x-bind:disabled="bloqueado"
-                                        value="{{ old('nom_mae', optional($ficha->fichaVem)->nom_mae) }}"
+                                        x-model="nomMae"
                                         maxlength="255" autocomplete="off" placeholder="Nome completo"
                                         class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_mae') border-red-500 @enderror" />
                                     @error('nom_mae')
@@ -467,7 +496,7 @@
                                     <label for="nom_pai"
                                         class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Nome</label>
                                     <input type="text" name="nom_pai" id="nom_pai" x-bind:disabled="bloqueado"
-                                        value="{{ old('nom_pai', optional($ficha->fichaVem)->nom_pai) }}"
+                                        x-model="nomPai"
                                         maxlength="255" autocomplete="off" placeholder="Nome completo"
                                         class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_pai') border-red-500 @enderror" />
                                     @error('nom_pai')
@@ -503,8 +532,7 @@
                         <div class="border-t border-gray-200 dark:border-zinc-600 pt-5">
                             <p class="font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
                                 Responsável
-                                <span class="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">(caso não more
-                                    com os pais)</span>
+                                <span class="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">(caso não more com os pais)</span>
                             </p>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-2">
                                 <div>
@@ -512,7 +540,7 @@
                                         class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Nome</label>
                                     <input type="text" name="nom_responsavel" id="nom_responsavel"
                                         x-bind:disabled="bloqueado"
-                                        value="{{ old('nom_responsavel', optional($ficha->fichaVem)->nom_responsavel) }}"
+                                        x-model="nomResp"
                                         maxlength="150" autocomplete="off" placeholder="Nome completo"
                                         class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_responsavel') border-red-500 @enderror" />
                                     @error('nom_responsavel')
@@ -547,8 +575,19 @@
                         </div>
 
                         {{-- Falar com | Onde estuda | Mora com quem --}}
-                        <div
-                            class="border-t border-gray-200 dark:border-zinc-600 pt-5 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+                        <div class="border-t border-gray-200 dark:border-zinc-600 pt-5 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+                                    <label for="tel_mae"
+                                        class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Telefone</label>
+                                    <input type="tel" name="tel_mae" id="tel_mae" x-bind:disabled="bloqueado"
+                                        value="{{ old('tel_mae', optional($ficha->fichaVem)->tel_mae) }}"
+                                        maxlength="20" autocomplete="off" placeholder="(61) 90000-0000"
+                                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tel_mae') border-red-500 @enderror" />
+                                    @error('tel_mae')
+                                        <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                        {{-- Falar com | Onde estuda | Mora com quem --}}
+                        <div class="border-t border-gray-200 dark:border-zinc-600 pt-5 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
                             <div>
                                 <label for="idt_falar_com"
                                     class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">

@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Enums\Perfil;
 use App\Models\Gamificacao;
 use App\Observers\GamificacaoObserver;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,40 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gamificacao::observe(GamificacaoObserver::class);
+
+        $this->registrarGates();
+    }
+
+    /**
+     * Registra todos os Gates de autorização da aplicação.
+     */
+    private function registrarGates(): void
+    {
+        // Área administrativa global
+        Gate::define('acessar-configuracoes', fn ($user) => $user->isAdmin());
+        Gate::define('acessar-contatos',      fn ($user) => $user->isAdmin());
+        Gate::define('gerenciar-eventos',     fn ($user) => $user->isAdmin());
+
+        // Acesso ao painel de gerenciamento de um evento (qualquer aba)
+        Gate::define('acessar-gerenciamento-evento', function ($user, $evento) {
+            return $user->isAdmin() || $user->trabalhaNoEvento($evento->idt_evento);
+        });
+
+        // Abas do gerenciamento — coord e espec só têm acesso se trabalharem no evento
+        foreach (Perfil::abasPermitidas() as $aba => $perfisPermitidos) {
+            Gate::define("evento-tab-{$aba}", function ($user, $evento) use ($perfisPermitidos) {
+                if (! $user->hasRole(...$perfisPermitidos)) {
+                    return false;
+                }
+
+                // admin passa direto; coord e espec precisam estar no evento
+                if ($user->isAdmin()) {
+                    return true;
+                }
+
+                return $user->trabalhaNoEvento($evento->idt_evento);
+            });
+        }
     }
 
     /**

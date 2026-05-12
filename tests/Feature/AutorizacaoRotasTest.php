@@ -1,0 +1,178 @@
+<?php
+
+use App\Models\User;
+use App\Models\Pessoa;
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function userComRole(string $role): User
+{
+    $user = User::factory()->create(['role' => $role]);
+    // Garante que a pessoa vinculada existe (criada pelo observer do User)
+    return $user;
+}
+
+// ---------------------------------------------------------------------------
+// Rotas públicas (sem autenticação)
+// ---------------------------------------------------------------------------
+
+test('home é acessível sem autenticação', function () {
+    $this->get('/')->assertStatus(200);
+});
+
+// ---------------------------------------------------------------------------
+// Redirecionamento de guest para rotas protegidas
+// ---------------------------------------------------------------------------
+
+$rotasAuth = [
+    '/dashboard',
+    '/vem',
+    '/ecc',
+    '/sgm',
+    '/timeline',
+    '/participantes',
+    '/aniversario',
+    '/termo-sgm',
+    '/termo-vem',
+    '/quadrante',
+    '/montagem',
+    '/avaliacao',
+    '/trabalhadores/create',
+    '/trabalhadores/review',
+    '/eventos',
+    '/pessoas',
+    '/fichas/vem',
+    '/fichas/ecc',
+    '/fichas/sgm',
+    '/settings/profile',
+    '/settings/password',
+    '/settings/appearance',
+];
+
+foreach ($rotasAuth as $rota) {
+    test("guest é redirecionado em {$rota}", function () use ($rota) {
+        $this->get($rota)->assertRedirect();
+    });
+}
+
+// ---------------------------------------------------------------------------
+// Rotas somente ADMIN — outros perfis recebem 403
+// ---------------------------------------------------------------------------
+
+$rotasAdmin = [
+    '/contatos',
+    '/configuracoes',
+    '/configuracoes/role',
+    '/configuracoes/equipe',
+    '/configuracoes/movimento',
+    '/configuracoes/responsavel',
+    '/configuracoes/restricao',
+    '/eventos/create',
+    '/pessoas/create',
+    '/fichas/vem/create',
+    '/fichas/ecc/create',
+    '/fichas/sgm/create',
+];
+
+foreach ($rotasAdmin as $rota) {
+    test("admin acessa {$rota}", function () use ($rota) {
+        createMovimentos();
+        $this->actingAs(userComRole('admin'))
+            ->get($rota)
+            ->assertStatus(200);
+    });
+
+    foreach (['coord', 'espec', 'user'] as $perfil) {
+        test("{$perfil} recebe 403 em {$rota}", function () use ($rota, $perfil) {
+            $this->actingAs(userComRole($perfil))
+                ->get($rota)
+                ->assertStatus(403);
+        });
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Rota /trabalhadores — admin e coord acessam, espec e user recebem 403
+// ---------------------------------------------------------------------------
+
+test('admin acessa /trabalhadores', function () {
+    createMovimentos();
+    $this->actingAs(userComRole('admin'))
+        ->get('/trabalhadores')
+        ->assertStatus(200);
+});
+
+test('coord acessa /trabalhadores', function () {
+    createMovimentos();
+    $this->actingAs(userComRole('coord'))
+        ->get('/trabalhadores')
+        ->assertStatus(200);
+});
+
+test('espec recebe 403 em /trabalhadores', function () {
+    $this->actingAs(userComRole('espec'))
+        ->get('/trabalhadores')
+        ->assertStatus(403);
+});
+
+test('user recebe 403 em /trabalhadores', function () {
+    $this->actingAs(userComRole('user'))
+        ->get('/trabalhadores')
+        ->assertStatus(403);
+});
+
+// ---------------------------------------------------------------------------
+// Rotas de listagem — todos os perfis autenticados acessam
+// ---------------------------------------------------------------------------
+
+$rotasListagem = [
+    '/eventos',
+    '/pessoas',
+    '/fichas/vem',
+    '/fichas/ecc',
+    '/fichas/sgm',
+    '/dashboard',
+    '/timeline',
+    '/participantes',
+    '/aniversario',
+];
+
+foreach ($rotasListagem as $rota) {
+    foreach (['admin', 'coord', 'espec', 'user'] as $perfil) {
+        test("{$perfil} acessa listagem {$rota}", function () use ($rota, $perfil) {
+            createMovimentos();
+            $this->actingAs(userComRole($perfil))
+                ->get($rota)
+                ->assertStatus(200);
+        });
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Gerenciamento de evento — guest redireciona, user recebe 403
+// ---------------------------------------------------------------------------
+
+test('guest é redirecionado em gerenciamento de evento', function () {
+    createMovimentos();
+    $evento = createEvento();
+    $this->get("/eventos/{$evento->idt_evento}/gerenciamento")
+        ->assertRedirect();
+});
+
+test('user recebe 403 em gerenciamento de evento', function () {
+    createMovimentos();
+    $evento = createEvento();
+    $this->actingAs(userComRole('user'))
+        ->get("/eventos/{$evento->idt_evento}/gerenciamento")
+        ->assertStatus(403);
+});
+
+test('admin acessa gerenciamento de evento', function () {
+    createMovimentos();
+    $evento = createEvento();
+    $this->actingAs(userComRole('admin'))
+        ->get("/eventos/{$evento->idt_evento}/gerenciamento")
+        ->assertStatus(200);
+});

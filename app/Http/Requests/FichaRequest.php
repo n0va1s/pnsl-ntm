@@ -25,7 +25,7 @@ class FichaRequest extends FormRequest
             'tel_candidato' => 'nullable|string|max:20',
             'eml_candidato' => 'required|email|max:255',
             'nom_profissao' => 'nullable|string|max:150',
-            'des_endereco' => 'nullable|string|max:255',
+            'des_endereco' => 'required|string|max:255',
             'tam_camiseta' => 'required|string|max:3',
             'tip_como_soube' => 'nullable|string|max:3',
             'tip_habilidade' => 'nullable|string|max:1',
@@ -73,6 +73,7 @@ class FichaRequest extends FormRequest
             // Profissão e Endereço
             'nom_profissao.string' => 'A profissão deve ser um texto.',
             'nom_profissao.max'    => 'A profissão deve ter no máximo 150 caracteres.',
+            'des_endereco.required' => 'O endereço é obrigatório.',
             'des_endereco.string'  => 'O endereço deve ser um texto.',
             'des_endereco.max'     => 'O endereço deve ter no máximo 255 caracteres.',
 

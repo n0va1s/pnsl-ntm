@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Validator;
+
 class FichaVemRequest extends FichaRequest
 {
     public function authorize(): bool
@@ -36,20 +38,40 @@ class FichaVemRequest extends FichaRequest
         ]);
     }
 
+    /**
+     * Validações adicionais após as regras básicas.
+     * Exige que ao menos um responsável (mãe, pai ou responsável) tenha o nome preenchido.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $temMae         = filled($this->input('nom_mae'));
+            $temPai         = filled($this->input('nom_pai'));
+            $temResponsavel = filled($this->input('nom_responsavel'));
+
+            if (! $temMae && ! $temPai && ! $temResponsavel) {
+                $validator->errors()->add(
+                    'responsaveis',
+                    'Informe ao menos um responsável: dados da mãe, pai ou responsável.'
+                );
+            }
+        });
+    }
+
     public function messages(): array
     {
         return [
             'idt_falar_com.required' => 'Informe com quem devemos falar em caso de necessidade.',
             'idt_falar_com.exists' => 'O responsável selecionado é inválido.',
-            
+
             'des_onde_estuda.required' => 'Informe onde o candidato estuda.',
             'des_onde_estuda.string' => 'A instituição de ensino deve ser um texto.',
             'des_onde_estuda.max' => 'A instituição de ensino deve ter no máximo 255 caracteres.',
-            
+
             'des_mora_quem.required' => 'Informe com quem o candidato mora.',
             'des_mora_quem.string' => 'A informação sobre com quem mora deve ser um texto.',
             'des_mora_quem.max' => 'A informação sobre com quem mora deve ter no máximo 255 caracteres.',
-            
+
             'nom_pai.string' => 'O nome do pai deve ser um texto.',
             'nom_pai.max' => 'O nome do pai deve ter no máximo 255 caracteres.',
             'tel_pai.string' => 'O telefone do pai deve ser um texto.',
@@ -73,10 +95,10 @@ class FichaVemRequest extends FichaRequest
 
             'ind_batizado.required' => 'Informe se o candidato é batizado.',
             'ind_batizado.boolean' => 'O valor para batizado deve ser válido (sim ou não).',
-            
+
             'ind_primeira_comunhao.required' => 'Informe se o candidato fez a primeira comunhão.',
             'ind_primeira_comunhao.boolean' => 'O valor para primeira comunhão deve ser válido (sim ou não).',
-            
+
             'ind_crismado.required' => 'Informe se o candidato é crismado.',
             'ind_crismado.boolean' => 'O valor para crisma deve ser válido (sim ou não).',
 
@@ -85,3 +107,4 @@ class FichaVemRequest extends FichaRequest
         ];
     }
 }
+

@@ -21,6 +21,8 @@ class User extends Authenticatable
 
     const ROLE_COORDENADOR = 'coord';
 
+    const ROLE_ESPEC = 'espec';
+
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
@@ -29,6 +31,39 @@ class User extends Authenticatable
     public function isCoordenador(): bool
     {
         return $this->role === self::ROLE_COORDENADOR;
+    }
+
+    public function isEspec(): bool
+    {
+        return $this->role === self::ROLE_ESPEC;
+    }
+
+    public function hasRole(string ...$roles): bool
+    {
+        return in_array($this->role, $roles);
+    }
+
+    /**
+     * Verifica se o usuário está trabalhando (como coord ou espec) em um evento específico.
+     * Coord: precisa ter ind_coordenador = true no evento.
+     * Espec: basta estar na tabela trabalhador do evento.
+     */
+    public function trabalhaNoEvento(int $idtEvento): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        $pessoa = $this->pessoa;
+
+        if (! $pessoa) {
+            return false;
+        }
+
+        return \App\Models\Trabalhador::where('idt_evento', $idtEvento)
+            ->where('idt_pessoa', $pessoa->idt_pessoa)
+            ->when($this->isCoordenador(), fn ($q) => $q->where('ind_coordenador', true))
+            ->exists();
     }
 
     public function pessoa()
@@ -68,6 +103,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'role',
     ];
 
     /**

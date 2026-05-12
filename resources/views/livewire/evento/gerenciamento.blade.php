@@ -30,6 +30,7 @@ new class extends Component {
     public function tabs(): array
     {
         $isEncontro = $this->evento->tip_evento === TipoEvento::ENCONTRO;
+        $evento     = $this->evento;
 
         $todasAbas = [
             'resumo'       => ['icon' => 'chart-bar',      'label' => 'Resumo'],
@@ -43,9 +44,12 @@ new class extends Component {
             'contas'       => ['icon' => 'banknotes',     'label' => 'Prestação de Contas'],
         ];
 
-        return array_filter($todasAbas, function ($aba) use ($isEncontro) {
-            return !($aba['encontro_only'] ?? false) || $isEncontro;
-        });
+        return array_filter($todasAbas, function ($aba, $tab) use ($isEncontro, $evento) {
+            $tipoPermitido = !($aba['encontro_only'] ?? false) || $isEncontro;
+            $temPermissao  = \Illuminate\Support\Facades\Gate::allows("evento-tab-{$tab}", $evento);
+
+            return $tipoPermitido && $temPermissao;
+        }, ARRAY_FILTER_USE_BOTH);
     }
 }; ?>
 

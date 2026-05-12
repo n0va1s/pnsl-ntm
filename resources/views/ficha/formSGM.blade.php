@@ -331,10 +331,10 @@
                         {{-- Apelido --}}
                         <div>
                             <label for="nom_apelido" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Apelido <span class="text-red-600">*</span>
+                                Apelido
                             </label>
                             <input type="text" name="nom_apelido" id="nom_apelido" x-bind:disabled="bloqueado"
-                                value="{{ old('nom_apelido', $ficha->nom_apelido) }}" required maxlength="100"
+                                value="{{ old('nom_apelido', $ficha->nom_apelido) }}" maxlength="100"
                                 placeholder="Como gosta de ser chamado"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('nom_apelido') border-red-500 @enderror" />
                             @error('nom_apelido')
@@ -346,7 +346,7 @@
                         <div>
                             <label for="tel_candidato"
                                 class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Telefone <span class="text-red-600">*</span>
+                                Telefone
                             </label>
                             <input type="text" name="tel_candidato" id="tel_candidato"
                                 x-bind:disabled="bloqueado" value="{{ old('tel_candidato', $ficha->tel_candidato) }}"
@@ -426,9 +426,10 @@
                         {{-- Endereço --}}
                         <div class="col-span-1 md:col-span-2">
                             <label for="des_endereco" class="block font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Endereço
+                                Endereço <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">(obrigatório)</span>
                             </label>
                             <input type="text" name="des_endereco" id="des_endereco" x-bind:disabled="bloqueado"
+                                required aria-required="true"
                                 value="{{ old('des_endereco', $ficha->des_endereco) }}" maxlength="500"
                                 placeholder="Rua, número, bairro, cidade"
                                 class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('des_endereco') border-red-500 @enderror" />

@@ -7,6 +7,7 @@ use App\Enums\Escolaridade;
 use App\Enums\Religiao;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Validator;
 
 class FichaSGMRequest extends FormRequest
 {
@@ -33,6 +34,7 @@ class FichaSGMRequest extends FormRequest
 
             // Dados pessoais SGM
             'des_naturalidade' => 'required|string|max:255',
+            'tel_candidato' => 'nullable|string|max:20',
             'med_foto'         => 'nullable|image|max:10240',
 
             // Escolaridade
@@ -56,6 +58,24 @@ class FichaSGMRequest extends FormRequest
         ];
     }
 
+    /**
+     * Exige que ao menos mãe ou pai tenha o nome preenchido.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $temMae = filled($this->input('nom_mae'));
+            $temPai = filled($this->input('nom_pai'));
+
+            if (! $temMae && ! $temPai) {
+                $validator->errors()->add(
+                    'filiacao',
+                    'Informe ao menos um dos pais: dados da mãe ou dados do pai.'
+                );
+            }
+        });
+    }
+
     public function messages(): array
     {
         return [
@@ -68,3 +88,4 @@ class FichaSGMRequest extends FormRequest
         ];
     }
 }
+
