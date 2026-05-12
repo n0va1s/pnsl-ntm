@@ -41,21 +41,26 @@ class AppServiceProvider extends ServiceProvider
 
         // Acesso ao painel de gerenciamento de um evento (qualquer aba)
         Gate::define('acessar-gerenciamento-evento', function ($user, $evento) {
-            return $user->isAdmin() || $user->trabalhaNoEvento($evento->idt_evento);
+            if ($user->isAdmin()) {
+                return true;
+            }
+
+            return $user->trabalhaNoEvento($evento->idt_evento);
         });
 
-        // Abas do gerenciamento — coord e espec só têm acesso se trabalharem no evento
+        // Abas do gerenciamento — coord e espec só têm acesso se estiverem trabalhando no evento
         foreach (Perfil::abasPermitidas() as $aba => $perfisPermitidos) {
             Gate::define("evento-tab-{$aba}", function ($user, $evento) use ($perfisPermitidos) {
                 if (! $user->hasRole(...$perfisPermitidos)) {
                     return false;
                 }
 
-                // admin passa direto; coord e espec precisam estar no evento
+                // admin passa direto
                 if ($user->isAdmin()) {
                     return true;
                 }
 
+                // coord e espec precisam estar cadastrados no evento
                 return $user->trabalhaNoEvento($evento->idt_evento);
             });
         }

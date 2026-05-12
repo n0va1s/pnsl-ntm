@@ -87,18 +87,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/trabalhadores/review', [TrabalhadorController::class, 'review'])->name('trabalhadores.review');
     Route::delete('/trabalhadores/{id}', [TrabalhadorController::class, 'destroy'])->name('trabalhadores.destroy');
 
-    // Listagens — todos autenticados
+    // Listagens — todos autenticados (apenas eventos; pessoas e fichas são admin)
     Route::get('/eventos', [EventoController::class, 'index'])->name('eventos.index');
-    Route::get('/pessoas', [PessoaController::class, 'index'])->name('pessoas.index');
-    Route::get('/fichas/vem', [FichaVemController::class, 'index'])->name('vem.index');
-    Route::get('/fichas/ecc', [FichaEccController::class, 'index'])->name('ecc.index');
-    Route::get('/fichas/sgm', [FichaSGMController::class, 'index'])->name('sgm.index');
 
-    Route::get('pessoas/{cpf}/busca', [PessoaController::class, 'buscaPorCpf'])->name('pessoas.busca');
-
-    Route::get('fichas/vem/{id}/approve', [FichaVemController::class, 'approve'])->name('vem.approve');
-    Route::get('fichas/ecc/{id}/approve', [FichaEccController::class, 'approve'])->name('ecc.approve');
-    Route::get('fichas/sgm/{id}/approve', [FichaSGMController::class, 'approve'])->name('sgm.approve');
+    // Edição do próprio perfil de pessoa — todos os perfis autenticados
+    Route::get('/pessoas/{pessoa}/edit', [PessoaController::class, 'edit'])->name('pessoas.edit');
+    Route::put('/pessoas/{pessoa}', [PessoaController::class, 'update'])->name('pessoas.update');
+    Route::patch('/pessoas/{pessoa}', [PessoaController::class, 'update']);
 
     // Settings — todos autenticados
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
@@ -141,16 +136,17 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/eventos/{evento}', [EventoController::class, 'update']);
         Route::delete('/eventos/{evento}', [EventoController::class, 'destroy'])->name('eventos.destroy');
 
-        // Pessoas
+        // Pessoas — listagem, busca e CRUD
+        Route::get('/pessoas', [PessoaController::class, 'index'])->name('pessoas.index');
+        Route::get('pessoas/{cpf}/busca', [PessoaController::class, 'buscaPorCpf'])->name('pessoas.busca');
         Route::get('/pessoas/create', [PessoaController::class, 'create'])->name('pessoas.create');
         Route::post('/pessoas', [PessoaController::class, 'store'])->name('pessoas.store');
         Route::get('/pessoas/{pessoa}', [PessoaController::class, 'show'])->name('pessoas.show');
-        Route::get('/pessoas/{pessoa}/edit', [PessoaController::class, 'edit'])->name('pessoas.edit');
-        Route::put('/pessoas/{pessoa}', [PessoaController::class, 'update'])->name('pessoas.update');
-        Route::patch('/pessoas/{pessoa}', [PessoaController::class, 'update']);
         Route::delete('/pessoas/{pessoa}', [PessoaController::class, 'destroy'])->name('pessoas.destroy');
 
-        // Fichas VEM
+        // Fichas VEM — listagem, aprovação e CRUD
+        Route::get('/fichas/vem', [FichaVemController::class, 'index'])->name('vem.index');
+        Route::get('fichas/vem/{id}/approve', [FichaVemController::class, 'approve'])->name('vem.approve');
         Route::get('/fichas/vem/create', [FichaVemController::class, 'create'])->name('vem.create');
         Route::post('/fichas/vem', [FichaVemController::class, 'store'])->name('vem.store');
         Route::get('/fichas/vem/{vem}', [FichaVemController::class, 'show'])->name('vem.show');
@@ -159,7 +155,9 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/fichas/vem/{vem}', [FichaVemController::class, 'update']);
         Route::delete('/fichas/vem/{vem}', [FichaVemController::class, 'destroy'])->name('vem.destroy');
 
-        // Fichas ECC
+        // Fichas ECC — listagem, aprovação e CRUD
+        Route::get('/fichas/ecc', [FichaEccController::class, 'index'])->name('ecc.index');
+        Route::get('fichas/ecc/{id}/approve', [FichaEccController::class, 'approve'])->name('ecc.approve');
         Route::get('/fichas/ecc/create', [FichaEccController::class, 'create'])->name('ecc.create');
         Route::post('/fichas/ecc', [FichaEccController::class, 'store'])->name('ecc.store');
         Route::get('/fichas/ecc/{ecc}', [FichaEccController::class, 'show'])->name('ecc.show');
@@ -168,7 +166,9 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/fichas/ecc/{ecc}', [FichaEccController::class, 'update']);
         Route::delete('/fichas/ecc/{ecc}', [FichaEccController::class, 'destroy'])->name('ecc.destroy');
 
-        // Fichas SGM
+        // Fichas SGM — listagem, aprovação e CRUD
+        Route::get('/fichas/sgm', [FichaSGMController::class, 'index'])->name('sgm.index');
+        Route::get('fichas/sgm/{id}/approve', [FichaSGMController::class, 'approve'])->name('sgm.approve');
         Route::get('/fichas/sgm/create', [FichaSGMController::class, 'create'])->name('sgm.create');
         Route::post('/fichas/sgm', [FichaSGMController::class, 'store'])->name('sgm.store');
         Route::get('/fichas/sgm/{sgm}', [FichaSGMController::class, 'show'])->name('sgm.show');

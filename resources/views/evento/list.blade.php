@@ -66,47 +66,46 @@
                             </div>
 
                             <div class="flex items-center text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">
-                                <x-heroicon-o-tag class="w-4 h-4 mr-2" />
-                                {{ $evento->tip_evento->label() }}
+                                <x-heroicon-o-tag class="w-4 h-4 mr-2 shrink-0" />
+                                <span class="flex-1">{{ $evento->tip_evento->label() }}</span>
+                                @if (Auth::user()?->hasRole('admin', 'espec'))
+                                    <a href="{{ route('eventos.gerenciamento', $evento) }}"
+                                       title="Gerenciamento"
+                                       class="ml-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                        <x-heroicon-o-cog-6-tooth class="w-8 h-8" />
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>
 
                     <footer class="p-4 bg-gray-50 dark:bg-zinc-800/50 border-t border-gray-100 dark:border-zinc-700 mt-auto">
-                        @if (Auth::user()?->isAdmin())
-                            <flux:button href="{{ route('eventos.gerenciamento', $evento) }}" color="blue" class="w-full">
-                                Gerenciamento
-                            </flux:button>
+                        {{-- Botão de participação — visível para todos os perfis --}}
+                        @if ($evento->ja_inscrito_participante || $evento->ja_inscrito_voluntario)
+                            <div class="w-full py-2 bg-gray-100 dark:bg-zinc-700 text-gray-500 dark:text-gray-400 rounded-md font-bold text-center flex items-center justify-center gap-2 border border-gray-200 dark:border-zinc-600">
+                                <x-heroicon-s-check-circle class="w-5 h-5 text-green-500" />
+                                Inscrição Confirmada
+                            </div>
                         @else
-                            @if ($evento->ja_inscrito_participante || $evento->ja_inscrito_voluntario)
-                                <div class="w-full py-2 bg-gray-100 dark:bg-zinc-700 text-gray-500 dark:text-gray-400 rounded-md font-bold text-center flex items-center justify-center gap-2 border border-gray-200 dark:border-zinc-600">
-                                    <x-heroicon-s-check-circle class="w-5 h-5 text-green-500" />
-                                    Inscrição Confirmada
-                                </div>
+                            @php
+                                $tipoValue = $evento->tip_evento instanceof \UnitEnum ? $evento->tip_evento->value : $evento->tip_evento;
+                            @endphp
+
+                            @if ($tipoValue === 'E')
+                                <flux:button href="{{ route('trabalhadores.create', ['evento' => $evento]) }}" color="green" class="w-full">
+                                    Quero Trabalhar
+                                </flux:button>
                             @else
-                                {{-- Pegamos o valor do Enum para comparar com segurança --}}
                                 @php
-                                    $tipoValue = $evento->tip_evento instanceof \UnitEnum ? $evento->tip_evento->value : $evento->tip_evento;
+                                    $textoBotao = ($tipoValue === 'P') ? 'Vou Participar' : 'Bora pro Desafio';
                                 @endphp
 
-                                @if ($tipoValue === 'E')
-                                    <flux:button href="{{ route('trabalhadores.create', ['evento' => $evento]) }}" color="green" class="w-full">
-                                        Quero Trabalhar
+                                <form method="POST" action="{{ route('participantes.confirm', ['evento' => $evento, 'pessoa' => Auth::user()->pessoa]) }}">
+                                    @csrf
+                                    <flux:button type="submit" color="green" class="w-full" loading>
+                                        {{ $textoBotao }}
                                     </flux:button>
-                                @else
-                                    {{-- Definimos as variáveis aqui para garantir que existam apenas neste escopo --}}
-                                    @php
-                                        $textoBotao = ($tipoValue === 'P') ? 'Vou Participar' : 'Bora pro Desafio';
-                                    @endphp
-
-                                    <form method="POST" action="{{ route('participantes.confirm', ['evento' => $evento, 'pessoa' => Auth::user()->pessoa]) }}">
-                                        @csrf
-                                        {{-- Usando o atributo 'loading' do Flux para evitar o travamento do JS manual --}}
-                                        <flux:button type="submit" color="green" class="w-full" loading>
-                                            {{ $textoBotao }}
-                                        </flux:button>
-                                    </form>
-                                @endif
+                                </form>
                             @endif
                         @endif
                     </footer>

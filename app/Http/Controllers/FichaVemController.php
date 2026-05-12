@@ -128,9 +128,8 @@ class FichaVemController extends Controller
 
         $ficha = Ficha::create($data);
 
-        if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai')) {
+        if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai') || $vemRequest->filled('nom_responsavel')) {
 
-            $vemData = $vemRequest->validated();
             $vemData = $vemRequest->only([
                 'idt_falar_com',
                 'des_onde_estuda',
@@ -232,12 +231,48 @@ class FichaVemController extends Controller
 
         $ficha = Ficha::with(['fichaVem', 'fichaSaude', 'foto'])->findOrFail($id);
 
-        $vemData = $vemRequest->validated();
+        $fichaData = $vemRequest->only([
+            'idt_evento',
+            'idt_pessoa',
+            'tip_genero',
+            'num_cpf_candidato',
+            'nom_candidato',
+            'nom_apelido',
+            'dat_nascimento',
+            'tel_candidato',
+            'eml_candidato',
+            'des_endereco',
+            'tam_camiseta',
+            'tip_como_soube',
+            'ind_catolico',
+            'ind_toca_instrumento',
+            'ind_consentimento',
+            'ind_aprovado',
+            'ind_restricao',
+            'txt_observacao',
+        ]);
 
-        $ficha->update($vemData);
+        $ficha->update($fichaData);
 
-        if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai')) {
-            $vemData = $vemRequest->validated();
+        if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai') || $vemRequest->filled('nom_responsavel')) {
+            $vemData = $vemRequest->only([
+                'idt_falar_com',
+                'des_onde_estuda',
+                'des_mora_quem',
+                'nom_pai',
+                'eml_pai',
+                'tel_pai',
+                'nom_mae',
+                'tel_mae',
+                'eml_mae',
+                'nom_responsavel',
+                'tel_responsavel',
+                'eml_responsavel',
+                'ind_batizado',
+                'ind_primeira_comunhao',
+                'ind_crismado',
+                'nom_paroquia',
+            ]);
             $vemData['idt_ficha'] = $ficha->idt_ficha;
 
             if ($ficha->fichaVem) {

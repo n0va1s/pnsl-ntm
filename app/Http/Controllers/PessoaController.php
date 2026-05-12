@@ -177,6 +177,12 @@ class PessoaController extends Controller
             'restricoes',
         ])->findOrFail($id);
 
+        // Usuários não-admin só podem editar a própria pessoa
+        $user = auth()->user();
+        if (! $user->isAdmin() && optional($user->pessoa)->idt_pessoa !== $pessoa->idt_pessoa) {
+            abort(403);
+        }
+
         $restricoes = TipoRestricao::select(
             'idt_restricao',
             'tip_restricao',
@@ -214,11 +220,17 @@ class PessoaController extends Controller
 
         $pessoa = Pessoa::with(['foto', 'usuario', 'restricoes'])->findOrFail($id);
 
-        $user = $this->userService::getUsuarioByEmail($request->input('eml_pessoa'));
+        // Usuários não-admin só podem editar a própria pessoa
+        $user = auth()->user();
+        if (! $user->isAdmin() && optional($user->pessoa)->idt_pessoa !== $pessoa->idt_pessoa) {
+            abort(403);
+        }
+
+        $user2 = $this->userService::getUsuarioByEmail($request->input('eml_pessoa'));
         $data = $request->validated();
 
-        if ($user) {
-            $data['idt_usuario'] = $user->id;
+        if ($user2) {
+            $data['idt_usuario'] = $user2->id;
         }
 
         $pessoa->update($data);

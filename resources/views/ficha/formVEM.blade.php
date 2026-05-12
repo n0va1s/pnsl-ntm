@@ -576,18 +576,6 @@
 
                         {{-- Falar com | Onde estuda | Mora com quem --}}
                         <div class="border-t border-gray-200 dark:border-zinc-600 pt-5 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
-                                    <label for="tel_mae"
-                                        class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Telefone</label>
-                                    <input type="tel" name="tel_mae" id="tel_mae" x-bind:disabled="bloqueado"
-                                        value="{{ old('tel_mae', optional($ficha->fichaVem)->tel_mae) }}"
-                                        maxlength="20" autocomplete="off" placeholder="(61) 90000-0000"
-                                        class="w-full rounded-md border border-gray-300 dark:border-zinc-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tel_mae') border-red-500 @enderror" />
-                                    @error('tel_mae')
-                                        <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                        {{-- Falar com | Onde estuda | Mora com quem --}}
-                        <div class="border-t border-gray-200 dark:border-zinc-600 pt-5 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
                             <div>
                                 <label for="idt_falar_com"
                                     class="block font-medium text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">

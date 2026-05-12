@@ -52,15 +52,15 @@ enum Perfil: string
     public static function abasPermitidas(): array
     {
         return [
-            'resumo'        => [self::ADMIN->value, self::COORD->value],
-            'participantes' => [self::ADMIN->value, self::COORD->value],
-            'trabalhadores' => [self::ADMIN->value, self::COORD->value],
-            'presenca'      => [self::ADMIN->value, self::COORD->value],
-            'crachas'       => [self::ADMIN->value, self::ESPEC->value],
-            'quadrante'     => [self::ADMIN->value, self::ESPEC->value],
-            'fichas'        => [self::ADMIN->value],
-            'voluntarios'   => [self::ADMIN->value],
-            'contas'        => [self::ADMIN->value],
+            'resumo'        => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'participantes' => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'trabalhadores' => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'presenca'      => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'crachas'       => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'quadrante'     => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'fichas'        => [self::ADMIN->value, self::ESPEC->value],
+            'voluntarios'   => [self::ADMIN->value, self::ESPEC->value],
+            'contas'        => [self::ADMIN->value, self::ESPEC->value],
         ];
     }
 }
