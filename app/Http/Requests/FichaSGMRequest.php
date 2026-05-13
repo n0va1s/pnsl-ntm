@@ -34,7 +34,6 @@ class FichaSGMRequest extends FormRequest
 
             // Dados pessoais SGM
             'des_naturalidade' => 'required|string|max:255',
-            'tel_candidato' => 'nullable|string|max:20',
             'med_foto'         => 'nullable|image|max:10240',
 
             // Escolaridade
