@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
@@ -28,7 +27,7 @@ class NovoContatoTelegram extends Notification implements ShouldQueue
         return [TelegramChannel::class];
     }
 
-    public function toTelegram( $notifiable)
+    public function toTelegram($notifiable)
     {
         $url = route('contatos.index');
 
@@ -41,7 +40,7 @@ class NovoContatoTelegram extends Notification implements ShouldQueue
             . *Movimento:* {$this->contato->movimento->nom_movimento}\n
             . *Mensagem:* {$this->contato->txt_mensagem}");
 
-        if (!str_contains($url, 'localhost') && !str_contains($url, '127.0.0.1')) {
+        if (! str_contains($url, 'localhost') && ! str_contains($url, '127.0.0.1')) {
             $message->button('Ver na Plataforma', $url);
         }
 

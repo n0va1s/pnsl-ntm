@@ -13,8 +13,8 @@ class FichaFotoFactory extends Factory
     public function definition(): array
     {
         return [
-            'idt_ficha'   => Ficha::factory(),
-            'med_foto'    => 'fichas/' . $this->faker->uuid() . '.jpg',
+            'idt_ficha' => Ficha::factory(),
+            'med_foto' => 'fichas/'.$this->faker->uuid().'.jpg',
             'med_conjuge' => null,
         ];
     }
@@ -25,7 +25,7 @@ class FichaFotoFactory extends Factory
     public function comConjuge(): static
     {
         return $this->state(fn () => [
-            'med_conjuge' => 'fichas/' . $this->faker->uuid() . '.jpg',
+            'med_conjuge' => 'fichas/'.$this->faker->uuid().'.jpg',
         ]);
     }
 }

@@ -167,7 +167,7 @@ class FichaVemController extends Controller
             $path = $vemRequest->file('med_foto')->store('fichas/fotos', 'public');
             FichaFoto::create([
                 'idt_ficha' => $ficha->idt_ficha,
-                'med_foto' => $path
+                'med_foto' => $path,
             ]);
         }
 
@@ -282,7 +282,7 @@ class FichaVemController extends Controller
             }
         }
         $ficha->fichaSaude()->delete();
-        
+
         if ($vemRequest->input('ind_restricao') == 1) {
             foreach ($vemRequest->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {

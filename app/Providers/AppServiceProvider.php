@@ -36,8 +36,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // Área administrativa global
         Gate::define('acessar-configuracoes', fn ($user) => $user->isAdmin());
-        Gate::define('acessar-contatos',      fn ($user) => $user->isAdmin());
-        Gate::define('gerenciar-eventos',     fn ($user) => $user->isAdmin());
+        Gate::define('acessar-contatos', fn ($user) => $user->isAdmin());
+        Gate::define('gerenciar-eventos', fn ($user) => $user->isAdmin());
 
         // Acesso ao painel de gerenciamento de um evento (qualquer aba)
         Gate::define('acessar-gerenciamento-evento', function ($user, $evento) {

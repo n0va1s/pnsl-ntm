@@ -45,8 +45,8 @@ class FichaVemRequest extends FichaRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator) {
-            $temMae         = filled($this->input('nom_mae'));
-            $temPai         = filled($this->input('nom_pai'));
+            $temMae = filled($this->input('nom_mae'));
+            $temPai = filled($this->input('nom_pai'));
             $temResponsavel = filled($this->input('nom_responsavel'));
 
             if (! $temMae && ! $temPai && ! $temResponsavel) {
@@ -107,4 +107,3 @@ class FichaVemRequest extends FichaRequest
         ];
     }
 }
-

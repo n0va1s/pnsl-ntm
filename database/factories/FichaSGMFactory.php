@@ -16,12 +16,12 @@ class FichaSGMFactory extends Factory
     public function definition(): array
     {
         $cursosSuperiores = ['Direito', 'Medicina', 'Engenharia', 'Administração', 'Psicologia', 'Pedagogia'];
-        $cursosMedio      = ['Ensino Médio', 'Técnico em Informática', 'Técnico em Administração'];
-        $escolaridade     = fake()->randomElement(Escolaridade::cases());
+        $cursosMedio = ['Ensino Médio', 'Técnico em Informática', 'Técnico em Administração'];
+        $escolaridade = fake()->randomElement(Escolaridade::cases());
 
         return [
             // Chave – preenchida pelo Seeder para evitar recursividade
-            'idt_ficha'    => null,
+            'idt_ficha' => null,
 
             // Responsável
             'idt_falar_com' => TipoResponsavel::inRandomOrder()->first()?->idt_responsavel,
@@ -36,29 +36,29 @@ class FichaSGMFactory extends Factory
             'eml_pai' => fake()->optional(0.5)->safeEmail(),
 
             // ── Dados pessoais ────────────────────────────────────────
-            'des_naturalidade' => fake()->city() . ' - ' . fake()->stateAbbr(),
+            'des_naturalidade' => fake()->city().' - '.fake()->stateAbbr(),
 
             // ── Escolaridade ──────────────────────────────────────────
-            'tip_escolaridade'          => $escolaridade,
+            'tip_escolaridade' => $escolaridade,
             'tip_escolaridade_situacao' => fake()->randomElement(EscolaridadeSituacao::cases()),
-            'des_curso'                 => $escolaridade === Escolaridade::SUPERIOR
+            'des_curso' => $escolaridade === Escolaridade::SUPERIOR
                 ? fake()->randomElement($cursosSuperiores)
                 : fake()->optional(0.5)->randomElement($cursosMedio),
             'nom_instituicao' => fake()->optional(0.8)->company(),
 
             // ── Religião ──────────────────────────────────────────────
-            'tip_religiao'  => fake()->randomElement(Religiao::cases()),
-            'nom_paroquia'  => fake()->optional(0.6)->randomElement([
+            'tip_religiao' => fake()->randomElement(Religiao::cases()),
+            'nom_paroquia' => fake()->optional(0.6)->randomElement([
                 'Nossa Senhora do Lago',
                 'São José',
                 'Santo Antônio',
                 'Nossa Senhora Aparecida',
                 'Santa Luzia',
             ]),
-            'ind_batismo'   => fake()->boolean(85),
-            'ind_eucaristia'=> fake()->boolean(75),
-            'ind_crisma'    => fake()->boolean(50),
-            'des_participa_movimento'=> fake()->optional(0.4)->randomElement([
+            'ind_batismo' => fake()->boolean(85),
+            'ind_eucaristia' => fake()->boolean(75),
+            'ind_crisma' => fake()->boolean(50),
+            'des_participa_movimento' => fake()->optional(0.4)->randomElement([
                 'Jovens da Paróquia',
                 'Coral',
                 'Catequese',

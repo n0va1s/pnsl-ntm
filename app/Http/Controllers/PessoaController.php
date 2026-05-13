@@ -344,6 +344,7 @@ class PessoaController extends Controller
         if ($pessoa) {
             return response()->json($pessoa);
         }
+
         return response()->json(['error' => 'not found'], 404);
     }
 }

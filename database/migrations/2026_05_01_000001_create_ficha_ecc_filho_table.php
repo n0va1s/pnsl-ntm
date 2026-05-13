@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('eml_filho', 255)->nullable();
             $table->string('tel_filho', 20)->nullable();
             $table->timestamps();
-            
+
             $table->index('idt_ficha');
         });
     }

@@ -7,7 +7,6 @@ use App\Models\Evento;
 use App\Models\Ficha;
 use App\Models\FichaSGM;
 use App\Models\TipoMovimento;
-use App\Models\User;
 use App\Notifications\NovoContatoTelegram;
 use App\Services\FichaService;
 use App\Traits\LogContext;
@@ -88,7 +87,7 @@ class HomeController extends Controller
                     Notification::route('telegram', trim($chatId))
                         ->notify(new NovoContatoTelegram($contato));
                 } catch (\Throwable $e) {
-                    Log::error("Erro ao enviar notificação pro Telegram (Chat ID: {$chatId}): " . $e->getMessage());
+                    Log::error("Erro ao enviar notificação pro Telegram (Chat ID: {$chatId}): ".$e->getMessage());
                 }
             }
         }

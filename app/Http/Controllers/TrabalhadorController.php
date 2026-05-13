@@ -96,15 +96,15 @@ class TrabalhadorController extends Controller
         $eventoId = $request->get('evento');
         Log::info('Acesso ao formulário de candidatura de trabalhador', array_merge($context, ['evento_id' => $eventoId]));
 
-        if($eventoId){
+        if ($eventoId) {
             $evento = Evento::findOrFail($eventoId);
         } else {
-            $evento = new Evento();
+            $evento = new Evento;
         }
 
         if ($evento) {
             $equipes = TipoEquipe::where('idt_movimento', $evento->idt_movimento ?? null)
-            ->select('idt_equipe', 'des_grupo')->get();
+                ->select('idt_equipe', 'des_grupo')->get();
         } else {
             $equipes = TipoEquipe::all();
         }

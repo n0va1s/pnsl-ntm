@@ -25,8 +25,8 @@ beforeEach(function () {
     createMovimentos();
 
     $this->movimento = TipoMovimento::first();
-    $this->user      = createUser();
-    $this->pessoa    = $this->user->pessoa;
+    $this->user = createUser();
+    $this->pessoa = $this->user->pessoa;
 
     $this->actingAs($this->user);
 
@@ -40,19 +40,19 @@ beforeEach(function () {
 function eventoPayloadValido(int $idtMovimento, array $overrides = []): array
 {
     return array_merge([
-        'idt_movimento'        => $idtMovimento,
-        'des_evento'           => 'Encontro de Teste',
-        'num_evento'           => '001',
-        'dat_inicio'           => '2025-06-20',
-        'dat_termino'          => '2025-06-22',
+        'idt_movimento' => $idtMovimento,
+        'des_evento' => 'Encontro de Teste',
+        'num_evento' => '001',
+        'dat_inicio' => '2025-06-20',
+        'dat_termino' => '2025-06-22',
         'dat_limite_inscricao' => '2025-06-10',
-        'qtd_vaga'             => 40,
-        'tip_evento'           => TipoEvento::ENCONTRO->value,
-        'tip_faixa_etaria'     => FaixaEtaria::LIVRE->value,
-        'val_trabalhador'      => '50.00',
-        'val_venista'          => '80.00',
-        'val_camiseta'         => '30.00',
-        'txt_informacao'       => 'Informações gerais do evento.',
+        'qtd_vaga' => 40,
+        'tip_evento' => TipoEvento::ENCONTRO->value,
+        'tip_faixa_etaria' => FaixaEtaria::LIVRE->value,
+        'val_trabalhador' => '50.00',
+        'val_venista' => '80.00',
+        'val_camiseta' => '30.00',
+        'txt_informacao' => 'Informações gerais do evento.',
     ], $overrides);
 }
 
@@ -78,8 +78,8 @@ describe('Evento Model', function () {
 
     test('casts de datas retornam instâncias Carbon', function () {
         $evento = Evento::factory()->create([
-            'dat_inicio'           => '2025-06-20',
-            'dat_termino'          => '2025-06-22',
+            'dat_inicio' => '2025-06-20',
+            'dat_termino' => '2025-06-22',
             'dat_limite_inscricao' => '2025-06-10',
         ]);
 
@@ -104,7 +104,7 @@ describe('Evento Model', function () {
 
     test('soft delete não remove o registro do banco', function () {
         $evento = Evento::factory()->create();
-        $id     = $evento->idt_evento;
+        $id = $evento->idt_evento;
 
         $evento->delete();
 
@@ -159,11 +159,11 @@ describe('Evento Model', function () {
     test('getByTipo retorna eventos filtrados por movimento e tipo', function () {
         Evento::factory()->create([
             'idt_movimento' => $this->movimento->idt_movimento,
-            'tip_evento'    => TipoEvento::ENCONTRO->value,
+            'tip_evento' => TipoEvento::ENCONTRO->value,
         ]);
         Evento::factory()->create([
             'idt_movimento' => $this->movimento->idt_movimento,
-            'tip_evento'    => TipoEvento::POS_ENCONTRO->value,
+            'tip_evento' => TipoEvento::POS_ENCONTRO->value,
         ]);
 
         $resultado = Evento::getByTipo($this->movimento->idt_movimento, TipoEvento::ENCONTRO->value);
@@ -175,7 +175,7 @@ describe('Evento Model', function () {
     test('getByTipo respeita o limite quando informado', function () {
         Evento::factory()->count(5)->create([
             'idt_movimento' => $this->movimento->idt_movimento,
-            'tip_evento'    => TipoEvento::ENCONTRO->value,
+            'tip_evento' => TipoEvento::ENCONTRO->value,
         ]);
 
         $resultado = Evento::getByTipo($this->movimento->idt_movimento, TipoEvento::ENCONTRO->value, 3);
@@ -220,9 +220,9 @@ describe('EventoFoto Model', function () {
 
     test('relacionamento com evento funciona', function () {
         $evento = Evento::factory()->create();
-        $foto   = EventoFoto::create([
+        $foto = EventoFoto::create([
             'idt_evento' => $evento->idt_evento,
-            'med_foto'   => 'eventos/fotos/teste.jpg',
+            'med_foto' => 'eventos/fotos/teste.jpg',
         ]);
 
         expect($foto->evento)->toBeInstanceOf(Evento::class)
@@ -231,10 +231,10 @@ describe('EventoFoto Model', function () {
 
     test('med_logo pode ser null', function () {
         $evento = Evento::factory()->create();
-        $foto   = EventoFoto::create([
+        $foto = EventoFoto::create([
             'idt_evento' => $evento->idt_evento,
-            'med_foto'   => 'eventos/fotos/teste.jpg',
-            'med_logo'   => null,
+            'med_foto' => 'eventos/fotos/teste.jpg',
+            'med_logo' => null,
         ]);
 
         expect($foto->med_logo)->toBeNull();
@@ -271,7 +271,7 @@ describe('EventoController — Index', function () {
     });
 
     test('filtra eventos por busca', function () {
-        $encontrado    = Evento::factory()->create(['des_evento' => 'Encontro Especial']);
+        $encontrado = Evento::factory()->create(['des_evento' => 'Encontro Especial']);
         $naoEncontrado = Evento::factory()->create(['des_evento' => 'Outro Evento']);
 
         $response = $this->get(route('eventos.index', ['search' => 'especial']));
@@ -354,18 +354,18 @@ describe('EventoController — Store', function () {
             ->assertSessionHas('success');
 
         $this->assertDatabaseHas('evento', [
-            'des_evento'       => 'Encontro de Teste',
-            'num_evento'       => '001',
-            'tip_evento'       => TipoEvento::ENCONTRO->value,
+            'des_evento' => 'Encontro de Teste',
+            'num_evento' => '001',
+            'tip_evento' => TipoEvento::ENCONTRO->value,
             'tip_faixa_etaria' => FaixaEtaria::LIVRE->value,
-            'qtd_vaga'         => 40,
+            'qtd_vaga' => 40,
         ]);
     });
 
     test('persiste campos novos: tip_faixa_etaria, qtd_vaga e dat_limite_inscricao', function () {
         $payload = eventoPayloadValido($this->movimento->idt_movimento, [
-            'tip_faixa_etaria'     => FaixaEtaria::JOVEM->value,
-            'qtd_vaga'             => 55,
+            'tip_faixa_etaria' => FaixaEtaria::JOVEM->value,
+            'qtd_vaga' => 55,
             'dat_limite_inscricao' => '2025-06-15',
         ]);
 
@@ -403,7 +403,7 @@ describe('EventoController — Store', function () {
 
         // Verifica o que está na sessão para debug
         $sessionErrors = session('errors');
-        $sessionError  = session('error');
+        $sessionError = session('error');
 
         $response->assertRedirect(route('eventos.index'))
             ->assertSessionHas('success');
@@ -463,7 +463,7 @@ describe('EventoController — Store', function () {
 
     test('falha quando dat_termino é anterior a dat_inicio', function () {
         $payload = eventoPayloadValido($this->movimento->idt_movimento, [
-            'dat_inicio'  => '2025-06-20',
+            'dat_inicio' => '2025-06-20',
             'dat_termino' => '2025-06-18',
         ]);
 
@@ -474,7 +474,7 @@ describe('EventoController — Store', function () {
 
     test('falha quando dat_limite_inscricao é posterior a dat_inicio', function () {
         $payload = eventoPayloadValido($this->movimento->idt_movimento, [
-            'dat_inicio'           => '2025-06-20',
+            'dat_inicio' => '2025-06-20',
             'dat_limite_inscricao' => '2025-06-25',
         ]);
 
@@ -585,15 +585,15 @@ describe('EventoController — Update', function () {
 
     test('atualiza evento com dados válidos', function () {
         $evento = Evento::factory()->create([
-            'des_evento'  => 'Evento Original',
-            'dat_inicio'  => '2025-06-20',
+            'des_evento' => 'Evento Original',
+            'dat_inicio' => '2025-06-20',
             'dat_termino' => '2025-06-22',
         ]);
 
         $payload = eventoPayloadValido($this->movimento->idt_movimento, [
-            'des_evento'       => 'Evento Atualizado',
+            'des_evento' => 'Evento Atualizado',
             'tip_faixa_etaria' => FaixaEtaria::CASADO->value,
-            'qtd_vaga'         => 50,
+            'qtd_vaga' => 50,
         ]);
 
         $response = $this->put(route('eventos.update', $evento), $payload);
@@ -611,9 +611,9 @@ describe('EventoController — Update', function () {
         $evento->foto()->create(['med_foto' => 'eventos/fotos/antiga.jpg']);
 
         $payload = eventoPayloadValido($this->movimento->idt_movimento, [
-            'dat_inicio'  => $evento->dat_inicio->format('Y-m-d'),
+            'dat_inicio' => $evento->dat_inicio->format('Y-m-d'),
             'dat_termino' => $evento->dat_termino?->format('Y-m-d'),
-            'med_foto'    => UploadedFile::fake()->image('nova.jpg'),
+            'med_foto' => UploadedFile::fake()->image('nova.jpg'),
         ]);
 
         $response = $this->put(route('eventos.update', $evento), $payload);
@@ -635,9 +635,9 @@ describe('EventoController — Update', function () {
         ]);
 
         $payload = eventoPayloadValido($this->movimento->idt_movimento, [
-            'dat_inicio'  => $evento->dat_inicio->format('Y-m-d'),
+            'dat_inicio' => $evento->dat_inicio->format('Y-m-d'),
             'dat_termino' => $evento->dat_termino?->format('Y-m-d'),
-            'med_logo'    => UploadedFile::fake()->image('logo.png'),
+            'med_logo' => UploadedFile::fake()->image('logo.png'),
         ]);
 
         $response = $this->put(route('eventos.update', $evento), $payload);
@@ -656,8 +656,8 @@ describe('EventoController — Update', function () {
         $evento = Evento::factory()->create();
 
         $payload = eventoPayloadValido($this->movimento->idt_movimento, [
-            'des_evento'  => '',
-            'dat_inicio'  => $evento->dat_inicio->format('Y-m-d'),
+            'des_evento' => '',
+            'dat_inicio' => $evento->dat_inicio->format('Y-m-d'),
             'dat_termino' => $evento->dat_termino?->format('Y-m-d'),
         ]);
 
@@ -671,7 +671,7 @@ describe('EventoController — Update', function () {
         $evento = Evento::factory()->create();
 
         $payload = eventoPayloadValido($this->movimento->idt_movimento, [
-            'dat_inicio'  => '2025-06-20',
+            'dat_inicio' => '2025-06-20',
             'dat_termino' => '2025-06-18',
         ]);
 
@@ -697,7 +697,7 @@ describe('EventoController — Destroy', function () {
 
     test('soft-deleta evento e redireciona com sucesso', function () {
         $evento = Evento::factory()->create();
-        $id     = $evento->idt_evento;
+        $id = $evento->idt_evento;
 
         $response = $this->delete(route('eventos.destroy', $evento));
 
@@ -789,18 +789,18 @@ describe('EventoService — Timeline', function () {
     test('retorna entrada de Trabalhador com dados corretos', function () {
         $evento = Evento::factory()->create([
             'idt_movimento' => $this->movimento->idt_movimento,
-            'dat_inicio'    => '2024-03-10',
+            'dat_inicio' => '2024-03-10',
         ]);
 
         $equipe = TipoEquipe::firstOrCreate([
-            'des_grupo'     => 'Coordenação Geral',
+            'des_grupo' => 'Coordenação Geral',
             'idt_movimento' => $this->movimento->idt_movimento,
         ]);
 
         Trabalhador::factory()->create([
-            'idt_pessoa'      => $this->pessoa->idt_pessoa,
-            'idt_evento'      => $evento->idt_evento,
-            'idt_equipe'      => $equipe->idt_equipe,
+            'idt_pessoa' => $this->pessoa->idt_pessoa,
+            'idt_evento' => $evento->idt_evento,
+            'idt_equipe' => $equipe->idt_equipe,
             'ind_coordenador' => true,
         ]);
 
@@ -851,7 +851,7 @@ describe('EventoService — Timeline', function () {
         Participante::factory()->create(['idt_pessoa' => $this->pessoa->idt_pessoa, 'idt_evento' => $eventoDez->idt_evento]);
 
         $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
-        $events   = $timeline[0]['events'];
+        $events = $timeline[0]['events'];
 
         expect($events[0]['event']->idt_evento)->toBe($eventoDez->idt_evento)
             ->and($events[1]['event']->idt_evento)->toBe($eventoJan->idt_evento);
@@ -871,7 +871,7 @@ describe('EventoService — Timeline', function () {
         ]);
 
         $timeline = $this->eventoService->getEventosTimeline($this->pessoa);
-        $events   = $timeline[0]['events'];
+        $events = $timeline[0]['events'];
 
         expect($events)->toHaveCount(2);
         $types = collect($events)->pluck('type')->all();

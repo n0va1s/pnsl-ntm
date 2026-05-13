@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('nom_profissao_conjuge', 255)->nullable()->after('eml_conjuge');
             $table->boolean('ind_catolico_conjuge')->default(false)->after('nom_profissao_conjuge');
             $table->string('tip_habilidade_conjuge', 1)->nullable()->after('ind_catolico_conjuge');
-            
+
             // ── Informações comuns do casal ───────────────────────────────────
             $table->string('tip_estado_civil', 3)->nullable()->after('tam_camiseta_conjuge');
             $table->string('nom_paroquia', 150)->nullable()->after('tip_estado_civil');
@@ -46,13 +46,13 @@ return new class extends Migration
 
         // -- Inclusão de informações comuns na ficha e pessoa
         Schema::table('ficha', function (Blueprint $table) {
-            $table->string('num_cpf_candidato', 20)->nullable()->unique()->after('idt_pessoa');    
+            $table->string('num_cpf_candidato', 20)->nullable()->unique()->after('idt_pessoa');
             $table->string('nom_profissao')->nullable();
             $table->string('tip_habilidade', 1)->nullable();
         });
 
         Schema::table('pessoa', function (Blueprint $table) {
-            $table->string('num_cpf_pessoa', 20)->nullable()->unique()->after('idt_pessoa');    
+            $table->string('num_cpf_pessoa', 20)->nullable()->unique()->after('idt_pessoa');
             $table->string('nom_profissao')->nullable();
         });
     }
@@ -61,7 +61,7 @@ return new class extends Migration
     {
         Schema::table('ficha_ecc', function (Blueprint $table) {
             $table->dropColumn([
-                'cpf_conjuge',    
+                'cpf_conjuge',
                 'tip_genero_conjuge',
                 'eml_conjuge',
                 'nom_profissao_conjuge',
@@ -77,13 +77,13 @@ return new class extends Migration
         Schema::dropIfExists('ficha_foto');
 
         Schema::table('ficha', function (Blueprint $table) {
-            $table->dropColumn('cpf_candidato');    
+            $table->dropColumn('cpf_candidato');
             $table->dropColumn('nom_profissao');
             $table->dropColumn('tip_habilidade');
         });
 
         Schema::table('pessoa', function (Blueprint $table) {
-            $table->dropColumn('cpf_pessoa');    
+            $table->dropColumn('cpf_pessoa');
             $table->dropColumn('nom_profissao');
         });
     }

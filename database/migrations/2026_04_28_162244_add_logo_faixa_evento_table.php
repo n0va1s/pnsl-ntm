@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('evento', function (Blueprint $table) {
-             $table->char('tip_faixa_etaria', 5)->nullable(); //Ex:12-15, 60+
+            $table->char('tip_faixa_etaria', 5)->nullable(); // Ex:12-15, 60+
         });
-        
+
         Schema::table('evento_foto', function (Blueprint $table) {
             $table->string('med_logo')->nullable()->after('med_foto');
         });

@@ -18,7 +18,7 @@ class FichaRequest extends FormRequest
             'idt_evento' => 'required|exists:evento,idt_evento',
             'tip_genero' => 'required|string|max:3',
             'num_cpf_candidato' => 'nullable|string|max:20',
-                Rule::unique('ficha', 'num_cpf_candidato')->ignore($this->ficha, 'idt_ficha'),
+            Rule::unique('ficha', 'num_cpf_candidato')->ignore($this->ficha, 'idt_ficha'),
             'nom_candidato' => 'required|string|max:255',
             'nom_apelido' => 'nullable|string|max:255',
             'dat_nascimento' => 'required|date',
@@ -42,55 +42,55 @@ class FichaRequest extends FormRequest
         return [
             // Evento
             'idt_evento.required' => 'O evento é obrigatório.',
-            'idt_evento.exists'   => 'O evento selecionado não existe.',
+            'idt_evento.exists' => 'O evento selecionado não existe.',
 
             // Gênero
             'tip_genero.required' => 'O gênero é obrigatório.',
-            'tip_genero.string'   => 'O gênero deve ser um texto.',
-            'tip_genero.max'      => 'O gênero deve ter no máximo 3 caracteres.',
+            'tip_genero.string' => 'O gênero deve ser um texto.',
+            'tip_genero.max' => 'O gênero deve ter no máximo 3 caracteres.',
 
             // CPF
             'num_cpf_candidato.string' => 'O CPF do candidato deve ser um texto.',
-            'num_cpf_candidato.max'    => 'O CPF do candidato deve ter no máximo 20 caracteres.',
+            'num_cpf_candidato.max' => 'O CPF do candidato deve ter no máximo 20 caracteres.',
             'num_cpf_candidato.unique' => 'Este CPF já está cadastrado em nossa base de dados.',
 
             // Nome e Apelido
             'nom_candidato.required' => 'O nome do candidato é obrigatório.',
-            'nom_candidato.string'   => 'O nome do candidato deve ser um texto.',
-            'nom_candidato.max'      => 'O nome do candidato deve ter no máximo 255 caracteres.',
-            'nom_apelido.string'     => 'O apelido deve ser um texto.',
-            'nom_apelido.max'        => 'O apelido deve ter no máximo 255 caracteres.',
+            'nom_candidato.string' => 'O nome do candidato deve ser um texto.',
+            'nom_candidato.max' => 'O nome do candidato deve ter no máximo 255 caracteres.',
+            'nom_apelido.string' => 'O apelido deve ser um texto.',
+            'nom_apelido.max' => 'O apelido deve ter no máximo 255 caracteres.',
 
             // Nascimento e Contato
             'dat_nascimento.required' => 'A data de nascimento é obrigatória.',
-            'dat_nascimento.date'     => 'A data de nascimento deve ser uma data válida.',
-            'tel_candidato.string'    => 'O telefone deve ser um texto.',
-            'tel_candidato.max'       => 'O telefone deve ter no máximo 20 caracteres.',
-            'eml_candidato.required'  => 'O e-mail é obrigatório.',
-            'eml_candidato.email'     => 'Informe um endereço de e-mail válido.',
-            'eml_candidato.max'       => 'O e-mail não pode ultrapassar 255 caracteres.',
+            'dat_nascimento.date' => 'A data de nascimento deve ser uma data válida.',
+            'tel_candidato.string' => 'O telefone deve ser um texto.',
+            'tel_candidato.max' => 'O telefone deve ter no máximo 20 caracteres.',
+            'eml_candidato.required' => 'O e-mail é obrigatório.',
+            'eml_candidato.email' => 'Informe um endereço de e-mail válido.',
+            'eml_candidato.max' => 'O e-mail não pode ultrapassar 255 caracteres.',
 
             // Profissão e Endereço
             'nom_profissao.string' => 'A profissão deve ser um texto.',
-            'nom_profissao.max'    => 'A profissão deve ter no máximo 150 caracteres.',
+            'nom_profissao.max' => 'A profissão deve ter no máximo 150 caracteres.',
             'des_endereco.required' => 'O endereço é obrigatório.',
-            'des_endereco.string'  => 'O endereço deve ser um texto.',
-            'des_endereco.max'     => 'O endereço deve ter no máximo 255 caracteres.',
+            'des_endereco.string' => 'O endereço deve ser um texto.',
+            'des_endereco.max' => 'O endereço deve ter no máximo 255 caracteres.',
 
             // Atributos Específicos
-            'tam_camiseta.required'  => 'O tamanho da camiseta é obrigatório.',
-            'tam_camiseta.string'    => 'O tamanho da camiseta deve ser um texto.',
-            'tam_camiseta.max'       => 'O tamanho da camiseta deve ter no máximo 3 caracteres.',
-            'tip_como_soube.string'  => 'O campo "Como soube" deve ser um texto.',
-            'tip_como_soube.max'     => 'O campo "Como soube" deve ter no máximo 3 caracteres.',
-            'tip_habilidade.string'  => 'A habilidade deve ser um texto.',
-            'tip_habilidade.max'     => 'A habilidade deve ter no máximo 1 caractere.',
+            'tam_camiseta.required' => 'O tamanho da camiseta é obrigatório.',
+            'tam_camiseta.string' => 'O tamanho da camiseta deve ser um texto.',
+            'tam_camiseta.max' => 'O tamanho da camiseta deve ter no máximo 3 caracteres.',
+            'tip_como_soube.string' => 'O campo "Como soube" deve ser um texto.',
+            'tip_como_soube.max' => 'O campo "Como soube" deve ter no máximo 3 caracteres.',
+            'tip_habilidade.string' => 'A habilidade deve ser um texto.',
+            'tip_habilidade.max' => 'A habilidade deve ter no máximo 1 caractere.',
 
             // Booleano / Flags
-            'ind_catolico.boolean'         => 'O campo "É católico?" deve ser verdadeiro ou falso.',
+            'ind_catolico.boolean' => 'O campo "É católico?" deve ser verdadeiro ou falso.',
             'ind_toca_instrumento.boolean' => 'O campo "Toca instrumento?" deve ser verdadeiro ou falso.',
-            'ind_restricao.required'       => 'Informe se há alguma restrição.',
-            'ind_restricao.boolean'        => 'O campo restrição deve ser verdadeiro ou falso.',
+            'ind_restricao.required' => 'Informe se há alguma restrição.',
+            'ind_restricao.boolean' => 'O campo restrição deve ser verdadeiro ou falso.',
 
             // Consentimento
             'ind_consentimento.required' => 'O consentimento é obrigatório.',

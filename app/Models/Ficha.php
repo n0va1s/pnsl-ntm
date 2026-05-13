@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Enums\ComoSoube;
-use App\Enums\HabilidadePrincipal;
 use App\Enums\Genero;
+use App\Enums\HabilidadePrincipal;
 use App\Enums\TamanhoCamiseta;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

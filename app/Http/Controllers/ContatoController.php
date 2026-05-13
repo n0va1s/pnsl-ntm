@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contato;
-use App\Models\User;
 use App\Notifications\NovoContatoTelegram;
 use App\Traits\LogContext;
 use Illuminate\Http\RedirectResponse;
@@ -70,7 +69,6 @@ class ContatoController extends Controller
             'idt_movimento' => 'required|exists:tipo_movimento,idt_movimento',
         ]);
 
-
         $contato = Contato::create($data);
 
         $chatIds = explode(',', config('services.telegram-bot-api.chat_id', ''));
@@ -80,7 +78,7 @@ class ContatoController extends Controller
                     Notification::route('telegram', trim($chatId))
                         ->notify(new NovoContatoTelegram($contato));
                 } catch (\Throwable $e) {
-                    Log::error("Erro ao enviar notificação pro Telegram (Chat ID: {$chatId}): " . $e->getMessage());
+                    Log::error("Erro ao enviar notificação pro Telegram (Chat ID: {$chatId}): ".$e->getMessage());
                 }
             }
         }

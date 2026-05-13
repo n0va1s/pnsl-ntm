@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\User;
 use App\Models\Pessoa;
+use App\Models\User;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -10,6 +10,7 @@ use App\Models\Pessoa;
 function userComRole(string $role): User
 {
     $user = User::factory()->create(['role' => $role]);
+
     // Garante que a pessoa vinculada existe (criada pelo observer do User)
     return $user;
 }

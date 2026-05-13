@@ -14,41 +14,41 @@ uses(RefreshDatabase::class);
 function dadosCandidatoVem(array $overrides = []): array
 {
     return array_merge([
-        'tip_genero'           => 'M',
-        'nom_candidato'        => 'Lucas Oliveira',
-        'nom_apelido'          => 'Luca',
-        'dat_nascimento'       => '2007-03-15',
-        'tel_candidato'        => '61999991111',
-        'eml_candidato'        => 'lucas@email.com',
-        'des_endereco'         => 'Rua das Palmeiras, 42',
-        'tam_camiseta'         => 'M',
-        'tip_como_soube'       => 'IND',
-        'ind_catolico'         => 1,
+        'tip_genero' => 'M',
+        'nom_candidato' => 'Lucas Oliveira',
+        'nom_apelido' => 'Luca',
+        'dat_nascimento' => '2007-03-15',
+        'tel_candidato' => '61999991111',
+        'eml_candidato' => 'lucas@email.com',
+        'des_endereco' => 'Rua das Palmeiras, 42',
+        'tam_camiseta' => 'M',
+        'tip_como_soube' => 'IND',
+        'ind_catolico' => 1,
         'ind_toca_instrumento' => 0,
-        'ind_consentimento'    => 1,
-        'ind_restricao'        => 0,
-        'txt_observacao'       => null,
+        'ind_consentimento' => 1,
+        'ind_restricao' => 0,
+        'txt_observacao' => null,
     ], $overrides);
 }
 
 function dadosVem(array $overrides = []): array
 {
     return array_merge([
-        'des_onde_estuda'       => 'Escola Estadual Centro',
-        'des_mora_quem'         => 'Pais',
-        'nom_mae'               => 'Ana Oliveira',
-        'tel_mae'               => '61988882222',
-        'eml_mae'               => 'ana@email.com',
-        'nom_pai'               => null,
-        'tel_pai'               => null,
-        'eml_pai'               => null,
-        'nom_responsavel'       => null,
-        'tel_responsavel'       => null,
-        'eml_responsavel'       => null,
-        'ind_batizado'          => 1,
+        'des_onde_estuda' => 'Escola Estadual Centro',
+        'des_mora_quem' => 'Pais',
+        'nom_mae' => 'Ana Oliveira',
+        'tel_mae' => '61988882222',
+        'eml_mae' => 'ana@email.com',
+        'nom_pai' => null,
+        'tel_pai' => null,
+        'eml_pai' => null,
+        'nom_responsavel' => null,
+        'tel_responsavel' => null,
+        'eml_responsavel' => null,
+        'ind_batizado' => 1,
         'ind_primeira_comunhao' => 1,
-        'ind_crismado'          => 0,
-        'nom_paroquia'          => 'Paroquia Sao Jose',
+        'ind_crismado' => 0,
+        'nom_paroquia' => 'Paroquia Sao Jose',
     ], $overrides);
 }
 
@@ -62,7 +62,7 @@ beforeEach(function () {
     $this->evento = createEvento();
 
     $this->responsavel = TipoResponsavel::factory()->create();
-    $this->restricoes  = TipoRestricao::factory()->count(3)->create();
+    $this->restricoes = TipoRestricao::factory()->count(3)->create();
 });
 
 // ── LISTAGEM E FORMULARIOS ────────────────────────────────────────────────────
@@ -89,7 +89,7 @@ describe('FichaVemController - LISTAGEM E FORMULARIOS', function () {
 
     test('listagem filtra por nome do candidato', function () {
         Ficha::factory()->create([
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'nom_candidato' => 'Candidato Unico VEM',
         ]);
 
@@ -122,7 +122,7 @@ describe('FichaVemController - INCLUSAO', function () {
             dadosCandidatoVem(),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -135,9 +135,9 @@ describe('FichaVemController - INCLUSAO', function () {
         expect($ficha)->not->toBeNull();
 
         $this->assertDatabaseHas('ficha_vem', [
-            'idt_ficha'       => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'des_onde_estuda' => 'Escola Estadual Centro',
-            'des_mora_quem'   => 'Pais',
+            'des_mora_quem' => 'Pais',
         ]);
     });
 
@@ -153,7 +153,7 @@ describe('FichaVemController - INCLUSAO', function () {
                 'eml_pai' => 'jose@email.com',
             ]),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -165,7 +165,7 @@ describe('FichaVemController - INCLUSAO', function () {
 
         $this->assertDatabaseHas('ficha_vem', [
             'idt_ficha' => $ficha->idt_ficha,
-            'nom_pai'   => 'Jose Oliveira',
+            'nom_pai' => 'Jose Oliveira',
         ]);
     });
 
@@ -173,15 +173,15 @@ describe('FichaVemController - INCLUSAO', function () {
         $payload = array_merge(
             dadosCandidatoVem(['eml_candidato' => 'resp_only@email.com']),
             dadosVem([
-                'nom_mae'         => null,
-                'tel_mae'         => null,
-                'eml_mae'         => null,
+                'nom_mae' => null,
+                'tel_mae' => null,
+                'eml_mae' => null,
                 'nom_responsavel' => 'Tia Carla',
                 'tel_responsavel' => '61966664444',
                 'eml_responsavel' => 'carla@email.com',
             ]),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -192,7 +192,7 @@ describe('FichaVemController - INCLUSAO', function () {
         $ficha = Ficha::where('eml_candidato', 'resp_only@email.com')->first();
 
         $this->assertDatabaseHas('ficha_vem', [
-            'idt_ficha'       => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'nom_responsavel' => 'Tia Carla',
         ]);
     });
@@ -205,13 +205,13 @@ describe('FichaVemController - INCLUSAO', function () {
             ]),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
-                'restricoes'    => [
+                'restricoes' => [
                     $this->restricoes[0]->idt_restricao => true,
                     $this->restricoes[1]->idt_restricao => true,
                 ],
-                'complementos'  => [
+                'complementos' => [
                     $this->restricoes[0]->idt_restricao => 'Alergia a amendoim',
                     $this->restricoes[1]->idt_restricao => 'Asma',
                 ],
@@ -230,13 +230,13 @@ describe('FichaVemController - INCLUSAO', function () {
         $payload = array_merge(
             dadosCandidatoVem(['eml_candidato' => 'crismado@email.com']),
             dadosVem([
-                'ind_batizado'          => 1,
+                'ind_batizado' => 1,
                 'ind_primeira_comunhao' => 1,
-                'ind_crismado'          => 1,
-                'nom_paroquia'          => 'Paroquia Nossa Senhora',
+                'ind_crismado' => 1,
+                'nom_paroquia' => 'Paroquia Nossa Senhora',
             ]),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -247,7 +247,7 @@ describe('FichaVemController - INCLUSAO', function () {
         $ficha = Ficha::where('eml_candidato', 'crismado@email.com')->first();
 
         $this->assertDatabaseHas('ficha_vem', [
-            'idt_ficha'    => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'ind_crismado' => true,
             'nom_paroquia' => 'Paroquia Nossa Senhora',
         ]);
@@ -257,18 +257,18 @@ describe('FichaVemController - INCLUSAO', function () {
         $payload = array_merge(
             dadosCandidatoVem(['eml_candidato' => 'sem_resp@email.com']),
             dadosVem([
-                'nom_mae'         => null,
-                'tel_mae'         => null,
-                'eml_mae'         => null,
-                'nom_pai'         => null,
-                'tel_pai'         => null,
-                'eml_pai'         => null,
+                'nom_mae' => null,
+                'tel_mae' => null,
+                'eml_mae' => null,
+                'nom_pai' => null,
+                'tel_pai' => null,
+                'eml_pai' => null,
                 'nom_responsavel' => null,
                 'tel_responsavel' => null,
                 'eml_responsavel' => null,
             ]),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -295,7 +295,7 @@ describe('FichaVemController - INCLUSAO', function () {
             dadosCandidatoVem(['eml_candidato' => 'sem_vem@email.com']),
             [
                 'idt_evento' => $this->evento->idt_evento,
-                'nom_mae'    => 'Mae Teste',
+                'nom_mae' => 'Mae Teste',
             ]
         );
 
@@ -315,7 +315,7 @@ describe('FichaVemController - INCLUSAO', function () {
             dadosCandidatoVem(['eml_candidato' => 'email-invalido']),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -329,7 +329,7 @@ describe('FichaVemController - INCLUSAO', function () {
             dadosCandidatoVem(['eml_candidato' => 'candidato@email.com']),
             dadosVem(['eml_mae' => 'email-invalido']),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -343,7 +343,7 @@ describe('FichaVemController - INCLUSAO', function () {
             dadosCandidatoVem(['ind_consentimento' => 0]),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -357,7 +357,7 @@ describe('FichaVemController - INCLUSAO', function () {
             dadosCandidatoVem(['eml_candidato' => 'falar_invalido@email.com']),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => 99999,
             ]
         );
@@ -398,7 +398,7 @@ describe('FichaVemController - ALTERACAO', function () {
 
     test('pode atualizar dados do candidato', function () {
         $ficha = Ficha::factory()->create([
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'nom_candidato' => 'Nome Original',
         ]);
         FichaVem::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
@@ -407,11 +407,11 @@ describe('FichaVemController - ALTERACAO', function () {
             dadosCandidatoVem([
                 'nom_candidato' => 'Nome Atualizado',
                 'eml_candidato' => 'atualizado@email.com',
-                'tip_genero'    => 'F',
+                'tip_genero' => 'F',
             ]),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -428,7 +428,7 @@ describe('FichaVemController - ALTERACAO', function () {
     test('pode atualizar dados do VEM (escola e responsavel)', function () {
         $ficha = Ficha::factory()->create(['idt_evento' => $this->evento->idt_evento]);
         FichaVem::factory()->create([
-            'idt_ficha'       => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'des_onde_estuda' => 'Escola Antiga',
         ]);
 
@@ -436,7 +436,7 @@ describe('FichaVemController - ALTERACAO', function () {
             dadosCandidatoVem(['eml_candidato' => $ficha->eml_candidato]),
             dadosVem(['des_onde_estuda' => 'Escola Nova']),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -458,7 +458,7 @@ describe('FichaVemController - ALTERACAO', function () {
             dadosCandidatoVem(['eml_candidato' => $ficha->eml_candidato]),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -467,14 +467,14 @@ describe('FichaVemController - ALTERACAO', function () {
             ->assertSessionHas('success');
 
         $this->assertDatabaseHas('ficha_vem', [
-            'idt_ficha'       => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'des_onde_estuda' => 'Escola Estadual Centro',
         ]);
     });
 
     test('pode atualizar restricoes de saude', function () {
         $ficha = Ficha::factory()->create([
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'ind_restricao' => 0,
         ]);
         FichaVem::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
@@ -486,10 +486,10 @@ describe('FichaVemController - ALTERACAO', function () {
             ]),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
-                'restricoes'    => [$this->restricoes[0]->idt_restricao => 1],
-                'complementos'  => [$this->restricoes[0]->idt_restricao => 'Alergia a frutos do mar'],
+                'restricoes' => [$this->restricoes[0]->idt_restricao => 1],
+                'complementos' => [$this->restricoes[0]->idt_restricao => 'Alergia a frutos do mar'],
             ]
         );
 
@@ -504,13 +504,13 @@ describe('FichaVemController - ALTERACAO', function () {
 
     test('restricoes antigas sao substituidas ao atualizar', function () {
         $ficha = Ficha::factory()->create([
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'ind_restricao' => 1,
         ]);
         FichaVem::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
 
         $ficha->fichaSaude()->create([
-            'idt_restricao'   => $this->restricoes[0]->idt_restricao,
+            'idt_restricao' => $this->restricoes[0]->idt_restricao,
             'txt_complemento' => 'Restricao antiga',
         ]);
 
@@ -523,13 +523,13 @@ describe('FichaVemController - ALTERACAO', function () {
             ]),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
-                'restricoes'    => [
+                'restricoes' => [
                     $this->restricoes[1]->idt_restricao => 1,
                     $this->restricoes[2]->idt_restricao => 1,
                 ],
-                'complementos'  => [
+                'complementos' => [
                     $this->restricoes[1]->idt_restricao => 'Nova restricao 1',
                     $this->restricoes[2]->idt_restricao => 'Nova restricao 2',
                 ],
@@ -565,7 +565,7 @@ describe('FichaVemController - ALTERACAO', function () {
             dadosCandidatoVem(['eml_candidato' => $ficha->eml_candidato]),
             dadosVem(),
             [
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'idt_falar_com' => $this->responsavel->idt_responsavel,
             ]
         );
@@ -581,7 +581,7 @@ describe('FichaVemController - APROVACAO', function () {
 
     test('pode aprovar ficha VEM nao aprovada', function () {
         $ficha = Ficha::factory()->create([
-            'idt_evento'   => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'ind_aprovado' => false,
         ]);
         FichaVem::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
@@ -595,7 +595,7 @@ describe('FichaVemController - APROVACAO', function () {
 
     test('pode desaprovar ficha VEM ja aprovada (toggle)', function () {
         $ficha = Ficha::factory()->create([
-            'idt_evento'   => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'ind_aprovado' => true,
         ]);
         FichaVem::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
@@ -609,7 +609,7 @@ describe('FichaVemController - APROVACAO', function () {
 
     test('aprovacao redireciona para listagem VEM', function () {
         $ficha = Ficha::factory()->create([
-            'idt_evento'   => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'ind_aprovado' => false,
         ]);
         FichaVem::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
@@ -657,12 +657,12 @@ describe('FichaVemController - EXCLUSAO', function () {
 
     test('restricoes de saude permanecem no banco apos soft delete', function () {
         $ficha = Ficha::factory()->create([
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'ind_restricao' => 1,
         ]);
         FichaVem::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
         $ficha->fichaSaude()->create([
-            'idt_restricao'   => $this->restricoes[0]->idt_restricao,
+            'idt_restricao' => $this->restricoes[0]->idt_restricao,
             'txt_complemento' => 'Alergia',
         ]);
 

@@ -50,11 +50,11 @@ class FichaSGM extends Model
     ];
 
     protected $casts = [
-        'tip_religiao'              => Religiao::class,
+        'tip_religiao' => Religiao::class,
         'tip_escolaridade_situacao' => EscolaridadeSituacao::class,
-        'ind_batismo'               => 'boolean',
-        'ind_eucaristia'            => 'boolean',
-        'ind_crisma'                => 'boolean',
+        'ind_batismo' => 'boolean',
+        'ind_eucaristia' => 'boolean',
+        'ind_crisma' => 'boolean',
     ];
 
     public function ficha()

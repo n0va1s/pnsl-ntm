@@ -145,11 +145,11 @@ class Evento extends Model
      * @param  string  $tipEvento  // E - evento anual, P - pós-encontro, D - desafio
      * @return int|null $limite // quantidade de linha retornadas
      */
-    public static function getByTipo(int $tipMovimento, string $tipEvento, ?int $limite = null) 
+    public static function getByTipo(int $tipMovimento, string $tipEvento, ?int $limite = null)
     {
         $query = self::where('idt_movimento', $tipMovimento)
-                    ->where('tip_evento', $tipEvento)
-                    ->orderBy('dat_inicio', 'asc');
+            ->where('tip_evento', $tipEvento)
+            ->orderBy('dat_inicio', 'asc');
 
         if ($limite) {
             return $query->limit($limite)->get();

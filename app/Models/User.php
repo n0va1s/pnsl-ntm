@@ -60,7 +60,7 @@ class User extends Authenticatable
             return false;
         }
 
-        return \App\Models\Trabalhador::where('idt_evento', $idtEvento)
+        return Trabalhador::where('idt_evento', $idtEvento)
             ->where('idt_pessoa', $pessoa->idt_pessoa)
             ->when($this->isCoordenador(), fn ($q) => $q->where('ind_coordenador', true))
             ->exists();

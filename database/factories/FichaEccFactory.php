@@ -25,34 +25,34 @@ class FichaEccFactory extends Factory
             'idt_ficha' => null,
 
             // ── Cônjuge ───────────────────────────────────────────────────────
-            'nom_conjuge'           => $this->faker->name(),
-            'nom_apelido_conjuge'   => $this->faker->firstName(),
-            'num_cpf_conjuge'       => $this->faker->numerify('###########'),
-            'tip_genero_conjuge'    => $this->faker->randomElement(Genero::cases())->value,
+            'nom_conjuge' => $this->faker->name(),
+            'nom_apelido_conjuge' => $this->faker->firstName(),
+            'num_cpf_conjuge' => $this->faker->numerify('###########'),
+            'tip_genero_conjuge' => $this->faker->randomElement(Genero::cases())->value,
             'dat_nascimento_conjuge' => Carbon::parse(
                 $this->faker->dateTimeBetween('-70 years', '-20 years')
             )->format('Y-m-d'),
-            'tel_conjuge'           => $this->faker->numerify('619########'),
-            'eml_conjuge'           => $this->faker->safeEmail(),
+            'tel_conjuge' => $this->faker->numerify('619########'),
+            'eml_conjuge' => $this->faker->safeEmail(),
             'nom_profissao_conjuge' => $this->faker->jobTitle(),
-            'ind_catolico_conjuge'  => $this->faker->boolean(80),
+            'ind_catolico_conjuge' => $this->faker->boolean(80),
             'tip_habilidade_conjuge' => $this->faker->randomElement(HabilidadePrincipal::cases())->value,
-            'tam_camiseta_conjuge'  => $this->faker->randomElement(TamanhoCamiseta::cases())->value,
+            'tam_camiseta_conjuge' => $this->faker->randomElement(TamanhoCamiseta::cases())->value,
 
             // ── Informações comuns do casal ───────────────────────────────────
-            'tip_estado_civil'  => $this->faker->randomElement([
+            'tip_estado_civil' => $this->faker->randomElement([
                 EstadoCivil::CASADO->value,
                 EstadoCivil::SEGUNDA_UNIAO->value,
                 EstadoCivil::UNIAO_ESTAVEL->value,
             ]),
-            'nom_paroquia'      => $this->faker->randomElement([
+            'nom_paroquia' => $this->faker->randomElement([
                 'Paróquia Nossa Senhora do Lago',
                 'Paróquia São José',
                 'Paróquia Cristo Rei',
                 'Paróquia Nossa Senhora Aparecida',
             ]),
-            'dat_casamento'     => $dataCasamento,
-            'qtd_filhos'        => $this->faker->numberBetween(0, 5),
+            'dat_casamento' => $dataCasamento,
+            'qtd_filhos' => $this->faker->numberBetween(0, 5),
         ];
     }
 
@@ -63,7 +63,7 @@ class FichaEccFactory extends Factory
     {
         return $this->state(fn () => [
             'tip_estado_civil' => EstadoCivil::CASADO->value,
-            'dat_casamento'    => Carbon::parse(
+            'dat_casamento' => Carbon::parse(
                 $this->faker->dateTimeBetween('-20 years', '-1 year')
             )->format('Y-m-d'),
         ]);
@@ -82,7 +82,7 @@ class FichaEccFactory extends Factory
     {
         return $this->state(fn () => [
             'tip_estado_civil' => EstadoCivil::UNIAO_ESTAVEL->value,
-            'dat_casamento'    => null,
+            'dat_casamento' => null,
         ]);
     }
 

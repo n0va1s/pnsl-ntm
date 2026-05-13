@@ -30,20 +30,23 @@ Route::get('/limpar-tudo', function () {
     Artisan::call('cache:clear');
     Artisan::call('view:clear');
     Artisan::call('optimize:clear');
+
     return 'Clear realizado! Tente acessar a home agora.';
 });
 
 Route::get('/otimizar-tudo', function () {
     Artisan::call('optimize');
+
     return 'Optimize realizado! Tente acessar a home agora.';
 });
 
 Route::get('/storage-link', function () {
     try {
         Artisan::call('storage:link');
+
         return 'Link simbólico criado com sucesso!';
-    } catch (\Exception $e) {
-        return 'Erro ao criar o link: ' . $e->getMessage();
+    } catch (Exception $e) {
+        return 'Erro ao criar o link: '.$e->getMessage();
     }
 });
 
@@ -184,10 +187,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/configuracoes/role/change', [TipoPerfilController::class, 'change'])->name('role.change');
 
         Route::resources([
-            'configuracoes/equipe'      => TipoEquipeController::class,
-            'configuracoes/movimento'   => TipoMovimentoController::class,
+            'configuracoes/equipe' => TipoEquipeController::class,
+            'configuracoes/movimento' => TipoMovimentoController::class,
             'configuracoes/responsavel' => TipoResponsavelController::class,
-            'configuracoes/restricao'   => TipoRestricaoController::class,
+            'configuracoes/restricao' => TipoRestricaoController::class,
         ]);
     });
 });

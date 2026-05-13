@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\TraceIdMiddleware;
 use App\Notifications\SystemExceptionTelegram;
 use Illuminate\Foundation\Application;
@@ -7,6 +8,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -15,20 +18,20 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'role' => RoleMiddleware::class,
         ]);
 
         $middleware->append(TraceIdMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->reportable(function (Throwable $e) {
-            if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface && $e->getStatusCode() < 500) {
+            if ($e instanceof HttpExceptionInterface && $e->getStatusCode() < 500) {
                 return;
             }
 
-            $errorHash = md5($e->getMessage() . $e->getFile() . $e->getLine());
-            
-            if (!Cache::has('error_notification_' . $errorHash)) {
+            $errorHash = md5($e->getMessage().$e->getFile().$e->getLine());
+
+            if (! Cache::has('error_notification_'.$errorHash)) {
                 $traceId = app()->has('trace_id') ? app('trace_id') : 'N/A';
                 $chatId = config('services.telegram-bot-api.chat_id');
 
@@ -37,7 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->notify(new SystemExceptionTelegram($e, $traceId));
                 }
 
-                Cache::put('error_notification_' . $errorHash, true, now()->addMinutes(5));
+                Cache::put('error_notification_'.$errorHash, true, now()->addMinutes(5));
             }
         });
     })->create();

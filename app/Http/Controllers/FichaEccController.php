@@ -27,22 +27,22 @@ class FichaEccController extends Controller
      */
     public function index(Request $request)
     {
-        $start   = microtime(true);
+        $start = microtime(true);
         $context = $this->getLogContext($request);
 
-        $search   = $request->get('search');
+        $search = $request->get('search');
         $eventoId = $request->get('evento');
-        $evento   = $eventoId ? Evento::find($eventoId) : null;
+        $evento = $eventoId ? Evento::find($eventoId) : null;
 
         Log::info('Requisição de listagem de fichas ECC iniciada', array_merge($context, [
-            'search_term'   => $search,
+            'search_term' => $search,
             'evento_filtro' => $eventoId,
         ]));
 
         $fichas = Ficha::with(['fichaEcc', 'fichaSaude'])
             ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
                 $q->where('nom_candidato', 'like', "%{$search}%")
-                  ->orWhere('nom_apelido', 'like', "%{$search}%");
+                    ->orWhere('nom_apelido', 'like', "%{$search}%");
             }))
             ->when($eventoId, fn ($q) => $q->where('idt_evento', $eventoId))
             ->whereHas('evento', fn ($q) => $q->where('idt_movimento', TipoMovimento::ECC))
@@ -52,7 +52,7 @@ class FichaEccController extends Controller
 
         Log::notice('Listagem de fichas ECC concluída', array_merge($context, [
             'total_fichas' => $fichas->total(),
-            'duration_ms'  => round((microtime(true) - $start) * 1000, 2),
+            'duration_ms' => round((microtime(true) - $start) * 1000, 2),
         ]));
 
         return view('ficha.listECC', compact('fichas', 'search', 'evento'));
@@ -65,14 +65,14 @@ class FichaEccController extends Controller
     {
         Log::info('Acesso ao formulário de criação de ficha ECC', $this->getLogContext(request()));
 
-        $ficha   = new Ficha;
+        $ficha = new Ficha;
         $eventos = Evento::getByTipo(TipoMovimento::ECC, 'E', 3);
 
         return view('ficha.formECC', array_merge(
             $this->fichaService::dadosFixosFicha($ficha),
             [
-                'ficha'           => $ficha,
-                'eventos'         => $eventos,
+                'ficha' => $ficha,
+                'eventos' => $eventos,
                 'movimentopadrao' => TipoMovimento::ECC,
             ]
         ));
@@ -83,7 +83,7 @@ class FichaEccController extends Controller
      */
     public function store(FichaEccRequest $request)
     {
-        $start   = microtime(true);
+        $start = microtime(true);
         $context = $this->getLogContext($request);
 
         Log::info('Tentativa de criação de ficha ECC', array_merge($context, [
@@ -161,13 +161,12 @@ class FichaEccController extends Controller
             }
         }
 
-
         // ── Restrições de saúde ───────────────────────────────────────────────
         if ($request->input('ind_restricao') == 1) {
             foreach ($request->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
                     $ficha->fichaSaude()->create([
-                        'idt_restricao'   => $idt_restricao,
+                        'idt_restricao' => $idt_restricao,
                         'txt_complemento' => $request->input("complementos.{$idt_restricao}"),
                     ]);
                 }
@@ -175,7 +174,7 @@ class FichaEccController extends Controller
         }
 
         Log::notice('Ficha ECC criada com sucesso', array_merge($context, [
-            'ficha_id'    => $ficha->idt_ficha,
+            'ficha_id' => $ficha->idt_ficha,
             'duration_ms' => round((microtime(true) - $start) * 1000, 2),
         ]));
 
@@ -194,8 +193,8 @@ class FichaEccController extends Controller
         return view('ficha.formECC', array_merge(
             $this->fichaService::dadosFixosFicha($ficha),
             [
-                'ficha'           => $ficha,
-                'eventos'         => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
+                'ficha' => $ficha,
+                'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
                 'movimentopadrao' => TipoMovimento::ECC,
             ]
         ));
@@ -207,14 +206,14 @@ class FichaEccController extends Controller
     public function edit($id)
     {
         Log::info('Acesso ao formulário de edição de ficha ECC', array_merge($this->getLogContext(request()), ['ficha_id' => $id]));
-        
+
         $ficha = Ficha::with(['fichaEcc.filhos', 'fichaSaude', 'foto'])->findOrFail($id);
-        
+
         return view('ficha.formECC', array_merge(
             $this->fichaService::dadosFixosFicha($ficha),
             [
-                'ficha'           => $ficha,
-                'eventos'         => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
+                'ficha' => $ficha,
+                'eventos' => Evento::where('idt_movimento', TipoMovimento::ECC)->get(),
                 'movimentopadrao' => TipoMovimento::ECC,
             ]
         ));
@@ -225,11 +224,11 @@ class FichaEccController extends Controller
      */
     public function update(FichaEccRequest $request, $id)
     {
-        $start   = microtime(true);
+        $start = microtime(true);
         $context = $this->getLogContext($request);
 
         Log::info('Tentativa de atualização de ficha ECC', array_merge($context, [
-            'ficha_id'  => $id,
+            'ficha_id' => $id,
             'candidato' => $request->input('nom_candidato'),
         ]));
 
@@ -321,7 +320,7 @@ class FichaEccController extends Controller
             foreach ($request->input('restricoes', []) as $idt_restricao => $value) {
                 if ($value) {
                     $ficha->fichaSaude()->create([
-                        'idt_restricao'   => $idt_restricao,
+                        'idt_restricao' => $idt_restricao,
                         'txt_complemento' => $request->input("complementos.{$idt_restricao}"),
                     ]);
                 }
@@ -329,7 +328,7 @@ class FichaEccController extends Controller
         }
 
         Log::notice('Ficha ECC atualizada com sucesso', array_merge($context, [
-            'ficha_id'    => $ficha->idt_ficha,
+            'ficha_id' => $ficha->idt_ficha,
             'duration_ms' => round((microtime(true) - $start) * 1000, 2),
         ]));
 
@@ -341,7 +340,7 @@ class FichaEccController extends Controller
      */
     public function destroy($id)
     {
-        $start   = microtime(true);
+        $start = microtime(true);
         $context = $this->getLogContext(request());
 
         Log::warning('Tentativa de exclusão de ficha ECC', array_merge($context, ['ficha_id' => $id]));
@@ -350,7 +349,7 @@ class FichaEccController extends Controller
             Ficha::findOrFail($id)->delete();
 
             Log::notice('Ficha ECC excluída com sucesso', array_merge($context, [
-                'ficha_id'    => $id,
+                'ficha_id' => $id,
                 'duration_ms' => round((microtime(true) - $start) * 1000, 2),
             ]));
 
@@ -358,10 +357,10 @@ class FichaEccController extends Controller
 
         } catch (QueryException $e) {
             Log::error('Erro de Query ao excluir ficha ECC', array_merge($context, [
-                'ficha_id'    => $id,
-                'sql_state'   => $e->getCode(),
-                'exception'   => get_class($e),
-                'message'     => $e->getMessage(),
+                'ficha_id' => $id,
+                'sql_state' => $e->getCode(),
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
                 'duration_ms' => round((microtime(true) - $start) * 1000, 2),
             ]));
 

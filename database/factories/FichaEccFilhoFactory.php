@@ -7,7 +7,7 @@ use App\Models\FichaEccFilho;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\FichaEccFilho>
+ * @extends Factory<FichaEccFilho>
  */
 class FichaEccFilhoFactory extends Factory
 {
@@ -21,7 +21,7 @@ class FichaEccFilhoFactory extends Factory
         return [
             'idt_ficha' => Ficha::factory(),
             'num_cpf_filho' => $this->faker->numerify('###########'),
-            'nom_filho' => $this->faker->firstName() . ' ' . $this->faker->lastName(),
+            'nom_filho' => $this->faker->firstName().' '.$this->faker->lastName(),
             'dat_nascimento_filho' => $this->faker->dateTimeBetween('-18 years', 'now')->format('Y-m-d'),
             'eml_filho' => $this->faker->optional(0.7)->safeEmail(),
             'tel_filho' => $this->faker->optional(0.6)->phoneNumber(),
@@ -35,7 +35,7 @@ class FichaEccFilhoFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'nom_filho' => $this->faker->firstName('male') . ' ' . $this->faker->lastName(),
+                'nom_filho' => $this->faker->firstName('male').' '.$this->faker->lastName(),
             ];
         });
     }
@@ -47,7 +47,7 @@ class FichaEccFilhoFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'nom_filho' => $this->faker->firstName('female') . ' ' . $this->faker->lastName(),
+                'nom_filho' => $this->faker->firstName('female').' '.$this->faker->lastName(),
             ];
         });
     }

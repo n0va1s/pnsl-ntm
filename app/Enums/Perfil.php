@@ -4,28 +4,28 @@ namespace App\Enums;
 
 enum Perfil: string
 {
-    case ADMIN   = 'admin';
-    case COORD   = 'coord';
-    case ESPEC   = 'espec';
-    case USER    = 'user';
+    case ADMIN = 'admin';
+    case COORD = 'coord';
+    case ESPEC = 'espec';
+    case USER = 'user';
 
     public function label(): string
     {
         return match ($this) {
-            self::ADMIN   => 'Administrador',
-            self::COORD   => 'Coordenador',
-            self::ESPEC   => 'Especialista',
-            self::USER    => 'Usuário',
+            self::ADMIN => 'Administrador',
+            self::COORD => 'Coordenador',
+            self::ESPEC => 'Especialista',
+            self::USER => 'Usuário',
         };
     }
 
     public function icon(): string
     {
         return match ($this) {
-            self::ADMIN   => 'shield-exclamation',
-            self::COORD   => 'users',
-            self::ESPEC   => 'wrench-screwdriver',
-            self::USER    => 'user',
+            self::ADMIN => 'shield-exclamation',
+            self::COORD => 'users',
+            self::ESPEC => 'wrench-screwdriver',
+            self::USER => 'user',
         };
     }
 
@@ -52,15 +52,15 @@ enum Perfil: string
     public static function abasPermitidas(): array
     {
         return [
-            'resumo'        => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'resumo' => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
             'participantes' => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
             'trabalhadores' => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
-            'presenca'      => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
-            'crachas'       => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
-            'quadrante'     => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
-            'fichas'        => [self::ADMIN->value, self::ESPEC->value],
-            'voluntarios'   => [self::ADMIN->value, self::ESPEC->value],
-            'contas'        => [self::ADMIN->value, self::ESPEC->value],
+            'presenca' => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'crachas' => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'quadrante' => [self::ADMIN->value, self::COORD->value, self::ESPEC->value],
+            'fichas' => [self::ADMIN->value, self::ESPEC->value],
+            'voluntarios' => [self::ADMIN->value, self::ESPEC->value],
+            'contas' => [self::ADMIN->value, self::ESPEC->value],
         ];
     }
 }

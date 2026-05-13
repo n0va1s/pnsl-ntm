@@ -43,15 +43,15 @@ class FichaEcc extends Model
 
     protected $casts = [
         // Cônjuge
-        'dat_nascimento_conjuge'  => 'date:Y-m-d',
-        'ind_catolico_conjuge'    => 'boolean',
-        'tip_genero_conjuge'      => Genero::class,
-        'tip_habilidade_conjuge'  => HabilidadePrincipal::class,
-        'tam_camiseta_conjuge'    => TamanhoCamiseta::class,
+        'dat_nascimento_conjuge' => 'date:Y-m-d',
+        'ind_catolico_conjuge' => 'boolean',
+        'tip_genero_conjuge' => Genero::class,
+        'tip_habilidade_conjuge' => HabilidadePrincipal::class,
+        'tam_camiseta_conjuge' => TamanhoCamiseta::class,
         // Casal
-        'tip_estado_civil'        => EstadoCivil::class,
-        'dat_casamento'           => 'date:Y-m-d',
-        'qtd_filhos'              => 'integer',
+        'tip_estado_civil' => EstadoCivil::class,
+        'dat_casamento' => 'date:Y-m-d',
+        'qtd_filhos' => 'integer',
     ];
 
     public function ficha()
@@ -64,4 +64,3 @@ class FichaEcc extends Model
         return $this->hasMany(FichaEccFilho::class, 'idt_ficha');
     }
 }
-

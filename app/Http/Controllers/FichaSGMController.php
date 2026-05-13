@@ -20,6 +20,7 @@ class FichaSGMController extends Controller
     use LogContext;
 
     protected $fichaService;
+
     protected $arquivoService;
 
     public function __construct(FichaService $fichaService, ArquivoService $arquivoService)

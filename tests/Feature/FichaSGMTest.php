@@ -8,7 +8,6 @@ use App\Models\TipoResponsavel;
 use App\Models\TipoRestricao;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
@@ -28,21 +27,21 @@ function criarAdmin(): User
 function dadosFichaBase(array $overrides = []): array
 {
     return array_merge([
-        'tip_genero'        => 'M',
-        'nom_candidato'     => 'João Segue-Me',
-        'nom_apelido'       => 'João',
-        'dat_nascimento'    => '2000-06-15',
-        'tel_candidato'     => '(61) 99999-0001',
-        'eml_candidato'     => 'joao.sgm@email.com',
-        'nom_profissao'     => 'Estudante',
-        'des_endereco'      => 'Quadra 5, Bloco A, Apt 101',
-        'tam_camiseta'      => 'M',
-        'tip_como_soube'    => 'IND',
-        'tip_habilidade'    => 'A',
-        'ind_catolico'      => 1,
+        'tip_genero' => 'M',
+        'nom_candidato' => 'João Segue-Me',
+        'nom_apelido' => 'João',
+        'dat_nascimento' => '2000-06-15',
+        'tel_candidato' => '(61) 99999-0001',
+        'eml_candidato' => 'joao.sgm@email.com',
+        'nom_profissao' => 'Estudante',
+        'des_endereco' => 'Quadra 5, Bloco A, Apt 101',
+        'tam_camiseta' => 'M',
+        'tip_como_soube' => 'IND',
+        'tip_habilidade' => 'A',
+        'ind_catolico' => 1,
         'ind_toca_instrumento' => 0,
         'ind_consentimento' => 1,
-        'ind_restricao'     => 0,
+        'ind_restricao' => 0,
     ], $overrides);
 }
 
@@ -52,20 +51,20 @@ function dadosFichaBase(array $overrides = []): array
 function dadosSGMBase(int $idtFalarCom, array $overrides = []): array
 {
     return array_merge([
-        'idt_falar_com'             => $idtFalarCom,
-        'nom_mae'                   => 'Maria Mãe',
-        'tel_mae'                   => '(61) 98888-0001',
-        'eml_mae'                   => 'mae@email.com',
-        'des_naturalidade'          => 'Brasília - DF',
-        'tip_escolaridade'          => 'S',
+        'idt_falar_com' => $idtFalarCom,
+        'nom_mae' => 'Maria Mãe',
+        'tel_mae' => '(61) 98888-0001',
+        'eml_mae' => 'mae@email.com',
+        'des_naturalidade' => 'Brasília - DF',
+        'tip_escolaridade' => 'S',
         'tip_escolaridade_situacao' => 'C',
-        'des_curso'                 => 'Direito',
-        'nom_instituicao'           => 'UnB',
-        'tip_religiao'              => 'C',
-        'nom_paroquia'              => 'Nossa Senhora do Lago',
-        'ind_batismo'               => 1,
-        'ind_eucaristia'            => 1,
-        'ind_crisma'                => 0,
+        'des_curso' => 'Direito',
+        'nom_instituicao' => 'UnB',
+        'tip_religiao' => 'C',
+        'nom_paroquia' => 'Nossa Senhora do Lago',
+        'ind_batismo' => 1,
+        'ind_eucaristia' => 1,
+        'ind_crisma' => 0,
     ], $overrides);
 }
 
@@ -83,9 +82,9 @@ beforeEach(function () {
         ['idt_movimento' => 3, 'nom_movimento' => 'Encontro de Jovens com Cristo', 'des_sigla' => 'Segue-Me', 'dat_inicio' => '1990-12-31', 'created_at' => now(), 'updated_at' => now()],
     ]);
 
-    $this->evento     = Evento::factory()->create(['idt_movimento' => TipoMovimento::SegueMe]);
+    $this->evento = Evento::factory()->create(['idt_movimento' => TipoMovimento::SegueMe]);
     $this->responsavel = TipoResponsavel::factory()->create();
-    $this->restricoes  = TipoRestricao::factory()->count(2)->create();
+    $this->restricoes = TipoRestricao::factory()->count(2)->create();
 });
 
 // ── Acesso não autenticado ────────────────────────────────────────────────────
@@ -146,13 +145,13 @@ describe('FichaSGMController — Listagem', function () {
 
     test('listagem filtra por nome do candidato', function () {
         $ficha1 = Ficha::factory()->create([
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'nom_candidato' => 'Ana Buscável',
         ]);
         FichaSGM::factory()->create(['idt_ficha' => $ficha1->idt_ficha]);
 
         $ficha2 = Ficha::factory()->create([
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'nom_candidato' => 'Carlos Outro',
         ]);
         FichaSGM::factory()->create(['idt_ficha' => $ficha2->idt_ficha]);
@@ -195,15 +194,15 @@ describe('FichaSGMController — Criação', function () {
 
         $this->assertDatabaseHas('ficha', [
             'nom_candidato' => 'João Segue-Me',
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
         ]);
 
         $ficha = Ficha::where('nom_candidato', 'João Segue-Me')->first();
 
         $this->assertDatabaseHas('ficha_sgm', [
-            'idt_ficha'        => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'des_naturalidade' => 'Brasília - DF',
-            'nom_mae'          => 'Maria Mãe',
+            'nom_mae' => 'Maria Mãe',
         ]);
     });
 
@@ -226,20 +225,20 @@ describe('FichaSGMController — Criação', function () {
 
         $this->assertDatabaseHas('ficha_sgm', [
             'idt_ficha' => $ficha->idt_ficha,
-            'nom_pai'   => 'José Pai',
+            'nom_pai' => 'José Pai',
         ]);
     });
 
     test('pode criar ficha SGM com restrições de saúde', function () {
         $payload = array_merge(
             dadosFichaBase([
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'eml_candidato' => 'restricao@email.com',
                 'ind_restricao' => 1,
             ]),
             dadosSGMBase($this->responsavel->idt_responsavel),
             [
-                'restricoes'  => [$this->restricoes[0]->idt_restricao => true],
+                'restricoes' => [$this->restricoes[0]->idt_restricao => true],
                 'complementos' => [$this->restricoes[0]->idt_restricao => 'Alergia a amendoim'],
             ]
         );
@@ -252,8 +251,8 @@ describe('FichaSGMController — Criação', function () {
         expect($ficha->fichaSaude)->toHaveCount(1);
 
         $this->assertDatabaseHas('ficha_saude', [
-            'idt_ficha'       => $ficha->idt_ficha,
-            'idt_restricao'   => $this->restricoes[0]->idt_restricao,
+            'idt_ficha' => $ficha->idt_ficha,
+            'idt_restricao' => $this->restricoes[0]->idt_restricao,
             'txt_complemento' => 'Alergia a amendoim',
         ]);
     });
@@ -262,11 +261,11 @@ describe('FichaSGMController — Criação', function () {
         $payload = array_merge(
             dadosFichaBase(['idt_evento' => $this->evento->idt_evento, 'eml_candidato' => 'religiao@email.com']),
             dadosSGMBase($this->responsavel->idt_responsavel, [
-                'tip_religiao'            => 'E',
-                'nom_paroquia'            => null,
-                'ind_batismo'             => 0,
-                'ind_eucaristia'          => 0,
-                'ind_crisma'              => 0,
+                'tip_religiao' => 'E',
+                'nom_paroquia' => null,
+                'ind_batismo' => 0,
+                'ind_eucaristia' => 0,
+                'ind_crisma' => 0,
                 'des_participa_movimento' => 'Grupo de Jovens',
             ])
         );
@@ -277,8 +276,8 @@ describe('FichaSGMController — Criação', function () {
         $ficha = Ficha::where('eml_candidato', 'religiao@email.com')->first();
 
         $this->assertDatabaseHas('ficha_sgm', [
-            'idt_ficha'               => $ficha->idt_ficha,
-            'tip_religiao'            => 'E',
+            'idt_ficha' => $ficha->idt_ficha,
+            'tip_religiao' => 'E',
             'des_participa_movimento' => 'Grupo de Jovens',
         ]);
     });
@@ -299,7 +298,7 @@ describe('FichaSGMController — Criação', function () {
         $ficha = Ficha::where('eml_candidato', 'convidou@email.com')->first();
 
         $this->assertDatabaseHas('ficha_sgm', [
-            'idt_ficha'    => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'nom_convidou' => 'Pedro Amigo',
             'end_convidou' => 'Rua das Flores, 10',
         ]);
@@ -469,14 +468,14 @@ describe('FichaSGMController — Atualização', function () {
 
         $payload = array_merge(
             dadosFichaBase([
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'nom_candidato' => 'Nome Atualizado',
                 'eml_candidato' => 'atualizado@email.com',
-                'tip_genero'    => 'F',
+                'tip_genero' => 'F',
             ]),
             dadosSGMBase($this->responsavel->idt_responsavel, [
                 'des_naturalidade' => 'São Paulo - SP',
-                'nom_mae'          => 'Mãe Atualizada',
+                'nom_mae' => 'Mãe Atualizada',
             ])
         );
 
@@ -485,39 +484,39 @@ describe('FichaSGMController — Atualização', function () {
             ->assertSessionHas('success');
 
         $this->assertDatabaseHas('ficha', [
-            'idt_ficha'     => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'nom_candidato' => 'Nome Atualizado',
         ]);
 
         $this->assertDatabaseHas('ficha_sgm', [
-            'idt_ficha'        => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'des_naturalidade' => 'São Paulo - SP',
-            'nom_mae'          => 'Mãe Atualizada',
+            'nom_mae' => 'Mãe Atualizada',
         ]);
     });
 
     test('atualização recria restrições de saúde', function () {
         $ficha = Ficha::factory()->create([
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'ind_restricao' => true,
         ]);
         FichaSGM::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
 
         // Cria restrição inicial
         $ficha->fichaSaude()->create([
-            'idt_restricao'   => $this->restricoes[0]->idt_restricao,
+            'idt_restricao' => $this->restricoes[0]->idt_restricao,
             'txt_complemento' => 'Restrição antiga',
         ]);
 
         $payload = array_merge(
             dadosFichaBase([
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'eml_candidato' => $ficha->eml_candidato,
                 'ind_restricao' => 1,
             ]),
             dadosSGMBase($this->responsavel->idt_responsavel),
             [
-                'restricoes'   => [$this->restricoes[1]->idt_restricao => true],
+                'restricoes' => [$this->restricoes[1]->idt_restricao => true],
                 'complementos' => [$this->restricoes[1]->idt_restricao => 'Nova restrição'],
             ]
         );
@@ -527,21 +526,21 @@ describe('FichaSGMController — Atualização', function () {
 
         // Restrição antiga deve ter sido removida
         $this->assertDatabaseMissing('ficha_saude', [
-            'idt_ficha'     => $ficha->idt_ficha,
+            'idt_ficha' => $ficha->idt_ficha,
             'idt_restricao' => $this->restricoes[0]->idt_restricao,
         ]);
 
         // Nova restrição deve existir
         $this->assertDatabaseHas('ficha_saude', [
-            'idt_ficha'       => $ficha->idt_ficha,
-            'idt_restricao'   => $this->restricoes[1]->idt_restricao,
+            'idt_ficha' => $ficha->idt_ficha,
+            'idt_restricao' => $this->restricoes[1]->idt_restricao,
             'txt_complemento' => 'Nova restrição',
         ]);
     });
 
     test('atualização sem restrições limpa ficha_saude', function () {
         $ficha = Ficha::factory()->create([
-            'idt_evento'    => $this->evento->idt_evento,
+            'idt_evento' => $this->evento->idt_evento,
             'ind_restricao' => true,
         ]);
         FichaSGM::factory()->create(['idt_ficha' => $ficha->idt_ficha]);
@@ -552,7 +551,7 @@ describe('FichaSGMController — Atualização', function () {
 
         $payload = array_merge(
             dadosFichaBase([
-                'idt_evento'    => $this->evento->idt_evento,
+                'idt_evento' => $this->evento->idt_evento,
                 'eml_candidato' => $ficha->eml_candidato,
                 'ind_restricao' => 0,
             ]),

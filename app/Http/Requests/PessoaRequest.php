@@ -20,8 +20,8 @@ class PessoaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'num_cpf_pessoa' => ['required', 'string', 'max:20', 
-                Rule::unique('pessoa', 'num_cpf_pessoa')->ignore($this->pessoa, 'idt_pessoa')
+            'num_cpf_pessoa' => ['required', 'string', 'max:20',
+                Rule::unique('pessoa', 'num_cpf_pessoa')->ignore($this->pessoa, 'idt_pessoa'),
             ],
             'nom_pessoa' => ['required', 'string', 'max:255'],
             'nom_apelido' => ['nullable', 'string', 'max:255'],
@@ -35,11 +35,11 @@ class PessoaRequest extends FormRequest
             'tip_habilidade' => ['nullable', new Enum(HabilidadePrincipal::class)],
             'idt_parceiro' => ['nullable', 'exists:pessoa,idt_pessoa'],
             'med_foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-            'ind_restricao'  => ['nullable', 'boolean'],
+            'ind_restricao' => ['nullable', 'boolean'],
             'nom_profissao' => ['nullable', 'string', 'max:255'],
-            'restricoes'     => ['nullable', 'array'],
-            'restricoes.*'   => ['boolean'],
-            'complementos'   => ['nullable', 'array'],
+            'restricoes' => ['nullable', 'array'],
+            'restricoes.*' => ['boolean'],
+            'complementos' => ['nullable', 'array'],
             'complementos.*' => ['nullable', 'string', 'max:255'],
         ];
     }
@@ -49,54 +49,54 @@ class PessoaRequest extends FormRequest
         return [
             // CPF
             'num_cpf_pessoa.required' => 'O CPF é obrigatório.',
-            'num_cpf_pessoa.string'   => 'O CPF não precisa de pontos ou traços.',
-            'num_cpf_pessoa.max'      => 'O CPF não pode ter mais de 20 caracteres.',
-            'num_cpf_pessoa.unique'   => 'Este CPF já está cadastrado.',
+            'num_cpf_pessoa.string' => 'O CPF não precisa de pontos ou traços.',
+            'num_cpf_pessoa.max' => 'O CPF não pode ter mais de 20 caracteres.',
+            'num_cpf_pessoa.unique' => 'Este CPF já está cadastrado.',
 
             // Nome e Apelido
             'nom_pessoa.required' => 'O nome da pessoa é obrigatório.',
-            'nom_pessoa.max'      => 'O nome da pessoa não pode ter mais de 255 caracteres.',
-            'nom_apelido.max'     => 'O apelido não pode ter mais de 255 caracteres.',
+            'nom_pessoa.max' => 'O nome da pessoa não pode ter mais de 255 caracteres.',
+            'nom_apelido.max' => 'O apelido não pode ter mais de 255 caracteres.',
 
             // Contato
-            'tel_pessoa.regex'    => 'O telefone deve estar em um formato válido. Ex: (99) 99999-9999.',
+            'tel_pessoa.regex' => 'O telefone deve estar em um formato válido. Ex: (99) 99999-9999.',
             'eml_pessoa.required' => 'O e-mail é obrigatório.',
-            'eml_pessoa.email'    => 'Informe um e-mail válido.',
-            'eml_pessoa.max'      => 'O e-mail não pode ter mais de 255 caracteres.',
-            'eml_pessoa.unique'   => 'Este e-mail já está sendo utilizado.',
+            'eml_pessoa.email' => 'Informe um e-mail válido.',
+            'eml_pessoa.max' => 'O e-mail não pode ter mais de 255 caracteres.',
+            'eml_pessoa.unique' => 'Este e-mail já está sendo utilizado.',
 
             // Nascimento e Endereço
             'dat_nascimento.required' => 'A data de nascimento é obrigatória.',
-            'dat_nascimento.date'     => 'A data de nascimento deve ser uma data válida.',
-            'dat_nascimento.before'   => 'A data de nascimento deve ser anterior a hoje.',
-            'dat_nascimento.after'    => 'A data de nascimento deve ser posterior a 01/01/1925.',
-            'des_endereco.min'        => 'O endereço deve conter pelo menos 10 caracteres.',
-            'des_endereco.max'        => 'O endereço não pode ter mais de 255 caracteres.',
+            'dat_nascimento.date' => 'A data de nascimento deve ser uma data válida.',
+            'dat_nascimento.before' => 'A data de nascimento deve ser anterior a hoje.',
+            'dat_nascimento.after' => 'A data de nascimento deve ser posterior a 01/01/1925.',
+            'des_endereco.min' => 'O endereço deve conter pelo menos 10 caracteres.',
+            'des_endereco.max' => 'O endereço não pode ter mais de 255 caracteres.',
 
             // Enums (Usando a sintaxe genérica 'enum' para simplificar)
             'tam_camiseta.required' => 'Selecione o tamanho da camiseta.',
-            'tam_camiseta.enum'     => 'O tamanho da camiseta selecionado é inválido.',
-            'tip_genero.required'   => 'Informe o gênero.',
-            'tip_genero.enum'       => 'O gênero selecionado é inválido.',
+            'tam_camiseta.enum' => 'O tamanho da camiseta selecionado é inválido.',
+            'tip_genero.required' => 'Informe o gênero.',
+            'tip_genero.enum' => 'O gênero selecionado é inválido.',
             'tip_estado_civil.enum' => 'O estado civil selecionado é inválido.',
-            'tip_habilidade.enum'   => 'A habilidade selecionada é inválida.',
+            'tip_habilidade.enum' => 'A habilidade selecionada é inválida.',
 
             // Relacionamentos e Outros
-            'idt_parceiro.exists'   => 'O parceiro selecionado não existe na nossa base de dados.',
-            'nom_profissao.max'     => 'A profissão não pode ter mais de 255 caracteres.',
+            'idt_parceiro.exists' => 'O parceiro selecionado não existe na nossa base de dados.',
+            'nom_profissao.max' => 'A profissão não pode ter mais de 255 caracteres.',
             'ind_restricao.boolean' => 'O campo de restrição deve ser verdadeiro ou falso.',
 
             // Foto
             'med_foto.image' => 'O arquivo deve ser uma imagem.',
             'med_foto.mimes' => 'A imagem deve estar nos formatos: jpeg, png, jpg, webp.',
-            'med_foto.max'   => 'A imagem não pode ser maior que 5MB.',
+            'med_foto.max' => 'A imagem não pode ser maior que 5MB.',
 
             // Arrays (Restrições e Complementos)
-            'restricoes.array'         => 'O formato das restrições é inválido.',
-            'restricoes.*.boolean'     => 'Cada restrição deve ser um valor booleano.',
-            'complementos.array'       => 'O formato dos complementos é inválido.',
-            'complementos.*.string'    => 'Cada complemento deve ser um texto.',
-            'complementos.*.max'       => 'Cada complemento não pode exceder 255 caracteres.',
+            'restricoes.array' => 'O formato das restrições é inválido.',
+            'restricoes.*.boolean' => 'Cada restrição deve ser um valor booleano.',
+            'complementos.array' => 'O formato dos complementos é inválido.',
+            'complementos.*.string' => 'Cada complemento deve ser um texto.',
+            'complementos.*.max' => 'Cada complemento não pode exceder 255 caracteres.',
         ];
     }
 }

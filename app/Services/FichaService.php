@@ -73,7 +73,7 @@ class FichaService
         // ── Dados exclusivos do ECC (cônjuge + filhos) ───────────────────────
         $fichaEcc = $ficha->fichaEcc;
 
-        if (!$fichaEcc) {
+        if (! $fichaEcc) {
             return; // Ficha VEM ou SGM: encerra aqui
         }
 
@@ -106,7 +106,7 @@ class FichaService
 
         $fichaEcc = $ficha->fichaEcc;
 
-        if (!$fichaEcc) {
+        if (! $fichaEcc) {
             return;
         }
 
@@ -138,9 +138,9 @@ class FichaService
 
         if ($ficha->eml_candidato) {
             $usuario = UserService::getUsuarioByEmail($ficha->eml_candidato);
-            
+
             if ($usuario) {
-                $dados['idt_usuario'] = $usuario->id; 
+                $dados['idt_usuario'] = $usuario->id;
             }
         }
 
@@ -154,13 +154,13 @@ class FichaService
     {
         $dados = [
             'num_cpf_pessoa' => $fichaEcc->num_cpf_conjuge,
-            'nom_pessoa'     => $fichaEcc->nom_conjuge,
-            'nom_apelido'    => $fichaEcc->nom_apelido_conjuge,
-            'tel_pessoa'     => $fichaEcc->tel_conjuge,
+            'nom_pessoa' => $fichaEcc->nom_conjuge,
+            'nom_apelido' => $fichaEcc->nom_apelido_conjuge,
+            'tel_pessoa' => $fichaEcc->tel_conjuge,
             'dat_nascimento' => $fichaEcc->dat_nascimento_conjuge,
-            'eml_pessoa'     => $fichaEcc->eml_conjuge,
-            'tam_camiseta'   => $fichaEcc->tam_camiseta_conjuge,
-            'tip_genero'     => $fichaEcc->tip_genero_conjuge,
+            'eml_pessoa' => $fichaEcc->eml_conjuge,
+            'tam_camiseta' => $fichaEcc->tam_camiseta_conjuge,
+            'tip_genero' => $fichaEcc->tip_genero_conjuge,
         ];
 
         if ($fichaEcc->eml_conjuge) {
@@ -181,10 +181,10 @@ class FichaService
     {
         $dados = [
             'num_cpf_pessoa' => $filho->num_cpf_filho,
-            'nom_pessoa'     => $filho->nom_filho,
+            'nom_pessoa' => $filho->nom_filho,
             'dat_nascimento' => $filho->dat_nascimento_filho,
-            'eml_pessoa'     => $filho->eml_filho,
-            'tel_pessoa'     => $filho->tel_filho,
+            'eml_pessoa' => $filho->eml_filho,
+            'tel_pessoa' => $filho->tel_filho,
         ];
 
         if ($filho->eml_filho) {
@@ -219,8 +219,8 @@ class FichaService
     {
         Participante::updateOrCreate(
             [
-                'idt_pessoa' => $idt_pessoa, 
-                'idt_evento' => $idt_evento
+                'idt_pessoa' => $idt_pessoa,
+                'idt_evento' => $idt_evento,
             ]
         );
     }
@@ -240,10 +240,10 @@ class FichaService
             $oldPath = $ficha->foto->med_foto;
             $ext = pathinfo($oldPath, PATHINFO_EXTENSION);
             $novaPath = "fotos/pessoa/{$idt_pessoa}.{$ext}";
-            
+
             if (Storage::disk('public')->exists($oldPath) && $oldPath !== $novaPath) {
                 Storage::disk('public')->copy($oldPath, $novaPath);
-                
+
                 PessoaFoto::updateOrCreate(
                     ['idt_pessoa' => $idt_pessoa],
                     ['med_foto' => $novaPath]

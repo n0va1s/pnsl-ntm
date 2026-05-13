@@ -7,11 +7,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
+
 class SystemExceptionTelegram extends Notification implements ShouldQueue
 {
     use Queueable;
 
     protected $exception;
+
     protected $traceId;
 
     public function __construct(\Throwable $exception, ?string $traceId)
@@ -35,10 +37,10 @@ class SystemExceptionTelegram extends Notification implements ShouldQueue
         return TelegramMessage::create()
             ->token(config('services.telegram-bot-api.token'))
             ->content("🚨 *EXCEÇÃO DETECTADA!* 🚨\n\n"
-                . "🔍 *Trace ID:* `" . $this->traceId . "`\n"
-                . "🏷️ *Classe:* `" . get_class($this->exception) . "`\n"
-                . "📄 *Arquivo:* `" . $arquivo . ":" . $linha . "`\n"
-                . "💬 *Erro:* " . $erroMsg
+                .'🔍 *Trace ID:* `'.$this->traceId."`\n"
+                .'🏷️ *Classe:* `'.get_class($this->exception)."`\n"
+                .'📄 *Arquivo:* `'.$arquivo.':'.$linha."`\n"
+                .'💬 *Erro:* '.$erroMsg
             );
     }
 }

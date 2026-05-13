@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Models\Ficha;
 use App\Models\FichaEcc;
@@ -13,44 +13,44 @@ uses(RefreshDatabase::class);
 function dadosParticipante(array $overrides = []): array
 {
     return array_merge([
-        'tip_genero'           => 'M',
-        'num_cpf_candidato'    => '123.456.789-00',
-        'nom_candidato'        => 'Carlos Silva',
-        'nom_apelido'          => 'Car',
-        'dat_nascimento'       => '1980-01-01',
-        'tel_candidato'        => '(61) 99999-9999',
-        'eml_candidato'        => 'carlos@email.com',
-        'nom_profissao'        => 'Engenheiro',
-        'des_endereco'         => 'Rua das Flores, 123',
-        'tam_camiseta'         => 'M',
-        'tip_como_soube'       => 'IND',
-        'tip_habilidade'       => 'A',
-        'ind_catolico'         => 1,
+        'tip_genero' => 'M',
+        'num_cpf_candidato' => '123.456.789-00',
+        'nom_candidato' => 'Carlos Silva',
+        'nom_apelido' => 'Car',
+        'dat_nascimento' => '1980-01-01',
+        'tel_candidato' => '(61) 99999-9999',
+        'eml_candidato' => 'carlos@email.com',
+        'nom_profissao' => 'Engenheiro',
+        'des_endereco' => 'Rua das Flores, 123',
+        'tam_camiseta' => 'M',
+        'tip_como_soube' => 'IND',
+        'tip_habilidade' => 'A',
+        'ind_catolico' => 1,
         'ind_toca_instrumento' => 0,
-        'ind_consentimento'    => 1,
-        'ind_restricao'        => 0,
-        'txt_observacao'       => null,
+        'ind_consentimento' => 1,
+        'ind_restricao' => 0,
+        'txt_observacao' => null,
     ], $overrides);
 }
 
 function dadosConjuge(array $overrides = []): array
 {
     return array_merge([
-        'num_cpf_conjuge'        => '987.654.321-00',
-        'nom_conjuge'            => 'Maria Silva',
-        'nom_apelido_conjuge'    => 'Mari',
-        'tip_genero_conjuge'     => 'F',
+        'num_cpf_conjuge' => '987.654.321-00',
+        'nom_conjuge' => 'Maria Silva',
+        'nom_apelido_conjuge' => 'Mari',
+        'tip_genero_conjuge' => 'F',
         'dat_nascimento_conjuge' => '1982-01-01',
-        'tel_conjuge'            => '(61) 98888-8888',
-        'eml_conjuge'            => 'maria@email.com',
-        'nom_profissao_conjuge'  => 'Medica',
-        'ind_catolico_conjuge'   => 1,
+        'tel_conjuge' => '(61) 98888-8888',
+        'eml_conjuge' => 'maria@email.com',
+        'nom_profissao_conjuge' => 'Medica',
+        'ind_catolico_conjuge' => 1,
         'tip_habilidade_conjuge' => 'A',
-        'tam_camiseta_conjuge'   => 'P',
-        'tip_estado_civil'       => 'C',
-        'nom_paroquia'           => 'Paroquia do Lago',
-        'dat_casamento'          => '2010-06-15',
-        'qtd_filhos'             => 0,
+        'tam_camiseta_conjuge' => 'P',
+        'tip_estado_civil' => 'C',
+        'nom_paroquia' => 'Paroquia do Lago',
+        'dat_casamento' => '2010-06-15',
+        'qtd_filhos' => 0,
     ], $overrides);
 }
 
@@ -109,16 +109,16 @@ describe('FichaEccController - INCLUSAO', function () {
         $ficha = Ficha::where('eml_candidato', 'carlos@email.com')->first();
 
         $this->assertDatabaseHas('ficha', [
-            'idt_ficha'         => $ficha->idt_ficha,
-            'nom_candidato'     => 'Carlos Silva',
+            'idt_ficha' => $ficha->idt_ficha,
+            'nom_candidato' => 'Carlos Silva',
             'num_cpf_candidato' => '123.456.789-00',
             'ind_consentimento' => true,
         ]);
 
         $this->assertDatabaseHas('ficha_ecc', [
-            'idt_ficha'        => $ficha->idt_ficha,
-            'nom_conjuge'      => 'Maria Silva',
-            'num_cpf_conjuge'  => '987.654.321-00',
+            'idt_ficha' => $ficha->idt_ficha,
+            'nom_conjuge' => 'Maria Silva',
+            'num_cpf_conjuge' => '987.654.321-00',
             'tip_estado_civil' => 'C',
         ]);
     });
@@ -171,13 +171,13 @@ describe('FichaEccController - INCLUSAO', function () {
         $payload = array_merge(
             ['idt_evento' => $this->evento->idt_evento],
             dadosParticipante([
-                'eml_candidato'     => 'paulo@email.com',
+                'eml_candidato' => 'paulo@email.com',
                 'num_cpf_candidato' => '333.333.333-33',
-                'ind_restricao'     => 1,
+                'ind_restricao' => 1,
             ]),
             dadosConjuge(['num_cpf_conjuge' => '444.444.444-44', 'nom_conjuge' => 'Julia']),
             [
-                'restricoes'   => [1 => 1, 2 => 1],
+                'restricoes' => [1 => 1, 2 => 1],
                 'complementos' => [1 => 'Alergia a amendoim', 2 => 'Sem gluten'],
             ]
         );
@@ -194,13 +194,13 @@ describe('FichaEccController - INCLUSAO', function () {
         $payload = array_merge(
             ['idt_evento' => $this->evento->idt_evento],
             dadosParticipante([
-                'eml_candidato'     => 'semrestricao@email.com',
+                'eml_candidato' => 'semrestricao@email.com',
                 'num_cpf_candidato' => '555.555.555-55',
-                'ind_restricao'     => 0,
+                'ind_restricao' => 0,
             ]),
             dadosConjuge(['num_cpf_conjuge' => '666.666.666-66']),
             [
-                'restricoes'   => [1 => 1],
+                'restricoes' => [1 => 1],
                 'complementos' => [1 => 'Deve ser ignorado'],
             ]
         );
@@ -339,21 +339,21 @@ describe('FichaEccController - ALTERACAO', function () {
         $payload = array_merge(
             ['idt_evento' => $this->evento->idt_evento],
             dadosParticipante([
-                'tip_genero'        => 'F',
-                'nom_candidato'     => 'Nome Atualizado',
-                'nom_apelido'       => 'Novo Apelido',
-                'dat_nascimento'    => '1985-01-01',
-                'eml_candidato'     => 'novo@email.com',
+                'tip_genero' => 'F',
+                'nom_candidato' => 'Nome Atualizado',
+                'nom_apelido' => 'Novo Apelido',
+                'dat_nascimento' => '1985-01-01',
+                'eml_candidato' => 'novo@email.com',
                 'num_cpf_candidato' => $ficha->num_cpf_candidato,
             ]),
             [
-                'num_cpf_conjuge'        => $ecc->num_cpf_conjuge,
-                'nom_conjuge'            => $ecc->nom_conjuge,
-                'tip_genero_conjuge'     => $ecc->tip_genero_conjuge?->value,
+                'num_cpf_conjuge' => $ecc->num_cpf_conjuge,
+                'nom_conjuge' => $ecc->nom_conjuge,
+                'tip_genero_conjuge' => $ecc->tip_genero_conjuge?->value,
                 'dat_nascimento_conjuge' => $ecc->dat_nascimento_conjuge->format('Y-m-d'),
-                'tam_camiseta_conjuge'   => $ecc->tam_camiseta_conjuge?->value,
+                'tam_camiseta_conjuge' => $ecc->tam_camiseta_conjuge?->value,
                 'tip_habilidade_conjuge' => $ecc->tip_habilidade_conjuge?->value,
-                'tip_estado_civil'       => $ecc->tip_estado_civil?->value,
+                'tip_estado_civil' => $ecc->tip_estado_civil?->value,
             ]
         );
 
@@ -379,20 +379,20 @@ describe('FichaEccController - ALTERACAO', function () {
             ['idt_evento' => $this->evento->idt_evento],
             dadosParticipante([
                 'num_cpf_candidato' => $ficha->num_cpf_candidato,
-                'tip_genero'        => $ficha->tip_genero?->value,
-                'nom_candidato'     => $ficha->nom_candidato,
-                'dat_nascimento'    => $ficha->dat_nascimento->format('Y-m-d'),
-                'eml_candidato'     => $ficha->eml_candidato,
-                'tam_camiseta'      => $ficha->tam_camiseta?->value,
+                'tip_genero' => $ficha->tip_genero?->value,
+                'nom_candidato' => $ficha->nom_candidato,
+                'dat_nascimento' => $ficha->dat_nascimento->format('Y-m-d'),
+                'eml_candidato' => $ficha->eml_candidato,
+                'tam_camiseta' => $ficha->tam_camiseta?->value,
             ]),
             [
-                'num_cpf_conjuge'        => $ecc->num_cpf_conjuge,
-                'nom_conjuge'            => 'Nome Conjuge Atualizado',
-                'tip_genero_conjuge'     => 'F',
+                'num_cpf_conjuge' => $ecc->num_cpf_conjuge,
+                'nom_conjuge' => 'Nome Conjuge Atualizado',
+                'tip_genero_conjuge' => 'F',
                 'dat_nascimento_conjuge' => '1990-05-15',
-                'tam_camiseta_conjuge'   => 'M',
+                'tam_camiseta_conjuge' => 'M',
                 'tip_habilidade_conjuge' => $ecc->tip_habilidade_conjuge?->value,
-                'tip_estado_civil'       => 'C',
+                'tip_estado_civil' => 'C',
             ]
         );
 
@@ -415,22 +415,22 @@ describe('FichaEccController - ALTERACAO', function () {
             ['idt_evento' => $this->evento->idt_evento],
             dadosParticipante([
                 'num_cpf_candidato' => $ficha->num_cpf_candidato,
-                'tip_genero'        => $ficha->tip_genero?->value,
-                'nom_candidato'     => $ficha->nom_candidato,
-                'dat_nascimento'    => $ficha->dat_nascimento->format('Y-m-d'),
-                'eml_candidato'     => $ficha->eml_candidato,
-                'tam_camiseta'      => $ficha->tam_camiseta?->value,
+                'tip_genero' => $ficha->tip_genero?->value,
+                'nom_candidato' => $ficha->nom_candidato,
+                'dat_nascimento' => $ficha->dat_nascimento->format('Y-m-d'),
+                'eml_candidato' => $ficha->eml_candidato,
+                'tam_camiseta' => $ficha->tam_camiseta?->value,
             ]),
             [
-                'num_cpf_conjuge'        => $ecc->num_cpf_conjuge,
-                'nom_conjuge'            => $ecc->nom_conjuge,
-                'tip_genero_conjuge'     => $ecc->tip_genero_conjuge?->value,
+                'num_cpf_conjuge' => $ecc->num_cpf_conjuge,
+                'nom_conjuge' => $ecc->nom_conjuge,
+                'tip_genero_conjuge' => $ecc->tip_genero_conjuge?->value,
                 'dat_nascimento_conjuge' => $ecc->dat_nascimento_conjuge->format('Y-m-d'),
-                'tam_camiseta_conjuge'   => $ecc->tam_camiseta_conjuge?->value,
+                'tam_camiseta_conjuge' => $ecc->tam_camiseta_conjuge?->value,
                 'tip_habilidade_conjuge' => $ecc->tip_habilidade_conjuge?->value,
-                'tip_estado_civil'       => $ecc->tip_estado_civil?->value,
-                'qtd_filhos'             => 1,
-                'filhos'                 => [
+                'tip_estado_civil' => $ecc->tip_estado_civil?->value,
+                'qtd_filhos' => 1,
+                'filhos' => [
                     ['nom_filho' => 'Novo Filho', 'dat_nascimento_filho' => '2010-03-20'],
                 ],
             ]
@@ -463,22 +463,22 @@ describe('FichaEccController - ALTERACAO', function () {
             ['idt_evento' => $this->evento->idt_evento],
             dadosParticipante([
                 'num_cpf_candidato' => $ficha->num_cpf_candidato,
-                'tip_genero'        => $ficha->tip_genero?->value,
-                'nom_candidato'     => $ficha->nom_candidato,
-                'dat_nascimento'    => $ficha->dat_nascimento->format('Y-m-d'),
-                'eml_candidato'     => $ficha->eml_candidato,
-                'tam_camiseta'      => $ficha->tam_camiseta?->value,
+                'tip_genero' => $ficha->tip_genero?->value,
+                'nom_candidato' => $ficha->nom_candidato,
+                'dat_nascimento' => $ficha->dat_nascimento->format('Y-m-d'),
+                'eml_candidato' => $ficha->eml_candidato,
+                'tam_camiseta' => $ficha->tam_camiseta?->value,
             ]),
             [
-                'num_cpf_conjuge'        => $ecc->num_cpf_conjuge,
-                'nom_conjuge'            => $ecc->nom_conjuge,
-                'tip_genero_conjuge'     => $ecc->tip_genero_conjuge?->value,
+                'num_cpf_conjuge' => $ecc->num_cpf_conjuge,
+                'nom_conjuge' => $ecc->nom_conjuge,
+                'tip_genero_conjuge' => $ecc->tip_genero_conjuge?->value,
                 'dat_nascimento_conjuge' => $ecc->dat_nascimento_conjuge->format('Y-m-d'),
-                'tam_camiseta_conjuge'   => $ecc->tam_camiseta_conjuge?->value,
+                'tam_camiseta_conjuge' => $ecc->tam_camiseta_conjuge?->value,
                 'tip_habilidade_conjuge' => $ecc->tip_habilidade_conjuge?->value,
-                'tip_estado_civil'       => $ecc->tip_estado_civil?->value,
-                'qtd_filhos'             => 2,
-                'filhos'                 => [
+                'tip_estado_civil' => $ecc->tip_estado_civil?->value,
+                'qtd_filhos' => 2,
+                'filhos' => [
                     ['nom_filho' => 'Novo Filho 1', 'dat_nascimento_filho' => '2005-01-15'],
                     ['nom_filho' => 'Novo Filho 2', 'dat_nascimento_filho' => '2008-06-20'],
                 ],
@@ -504,23 +504,23 @@ describe('FichaEccController - ALTERACAO', function () {
             ['idt_evento' => $this->evento->idt_evento],
             dadosParticipante([
                 'num_cpf_candidato' => $ficha->num_cpf_candidato,
-                'tip_genero'        => $ficha->tip_genero?->value,
-                'nom_candidato'     => $ficha->nom_candidato,
-                'dat_nascimento'    => $ficha->dat_nascimento->format('Y-m-d'),
-                'eml_candidato'     => $ficha->eml_candidato,
-                'tam_camiseta'      => $ficha->tam_camiseta?->value,
-                'ind_restricao'     => 1,
+                'tip_genero' => $ficha->tip_genero?->value,
+                'nom_candidato' => $ficha->nom_candidato,
+                'dat_nascimento' => $ficha->dat_nascimento->format('Y-m-d'),
+                'eml_candidato' => $ficha->eml_candidato,
+                'tam_camiseta' => $ficha->tam_camiseta?->value,
+                'ind_restricao' => 1,
             ]),
             [
-                'num_cpf_conjuge'        => $ecc->num_cpf_conjuge,
-                'nom_conjuge'            => $ecc->nom_conjuge,
-                'tip_genero_conjuge'     => $ecc->tip_genero_conjuge?->value,
+                'num_cpf_conjuge' => $ecc->num_cpf_conjuge,
+                'nom_conjuge' => $ecc->nom_conjuge,
+                'tip_genero_conjuge' => $ecc->tip_genero_conjuge?->value,
                 'dat_nascimento_conjuge' => $ecc->dat_nascimento_conjuge->format('Y-m-d'),
-                'tam_camiseta_conjuge'   => $ecc->tam_camiseta_conjuge?->value,
+                'tam_camiseta_conjuge' => $ecc->tam_camiseta_conjuge?->value,
                 'tip_habilidade_conjuge' => $ecc->tip_habilidade_conjuge?->value,
-                'tip_estado_civil'       => $ecc->tip_estado_civil?->value,
-                'restricoes'             => [1 => 1],
-                'complementos'           => [1 => 'Alergia a frutos do mar'],
+                'tip_estado_civil' => $ecc->tip_estado_civil?->value,
+                'restricoes' => [1 => 1],
+                'complementos' => [1 => 'Alergia a frutos do mar'],
             ]
         );
 
@@ -545,21 +545,21 @@ describe('FichaEccController - ALTERACAO', function () {
             ['idt_evento' => $this->evento->idt_evento],
             dadosParticipante([
                 'num_cpf_candidato' => $ficha->num_cpf_candidato,
-                'tip_genero'        => $ficha->tip_genero?->value,
-                'nom_candidato'     => $ficha->nom_candidato,
-                'dat_nascimento'    => $ficha->dat_nascimento->format('Y-m-d'),
-                'eml_candidato'     => $ficha->eml_candidato,
-                'tam_camiseta'      => $ficha->tam_camiseta?->value,
-                'ind_restricao'     => 0,
+                'tip_genero' => $ficha->tip_genero?->value,
+                'nom_candidato' => $ficha->nom_candidato,
+                'dat_nascimento' => $ficha->dat_nascimento->format('Y-m-d'),
+                'eml_candidato' => $ficha->eml_candidato,
+                'tam_camiseta' => $ficha->tam_camiseta?->value,
+                'ind_restricao' => 0,
             ]),
             [
-                'num_cpf_conjuge'        => $ecc->num_cpf_conjuge,
-                'nom_conjuge'            => $ecc->nom_conjuge,
-                'tip_genero_conjuge'     => $ecc->tip_genero_conjuge?->value,
+                'num_cpf_conjuge' => $ecc->num_cpf_conjuge,
+                'nom_conjuge' => $ecc->nom_conjuge,
+                'tip_genero_conjuge' => $ecc->tip_genero_conjuge?->value,
                 'dat_nascimento_conjuge' => $ecc->dat_nascimento_conjuge->format('Y-m-d'),
-                'tam_camiseta_conjuge'   => $ecc->tam_camiseta_conjuge?->value,
+                'tam_camiseta_conjuge' => $ecc->tam_camiseta_conjuge?->value,
                 'tip_habilidade_conjuge' => $ecc->tip_habilidade_conjuge?->value,
-                'tip_estado_civil'       => $ecc->tip_estado_civil?->value,
+                'tip_estado_civil' => $ecc->tip_estado_civil?->value,
             ]
         );
 
