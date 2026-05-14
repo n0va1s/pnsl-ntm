@@ -46,7 +46,7 @@
                     @php $pessoa = $membro->pessoa; @endphp
                     <div class="bg-white dark:bg-zinc-800 rounded-xl shadow border border-gray-200 dark:border-zinc-700 p-5 flex flex-col gap-3">
 
-                        {{-- Cabeçalho do card: foto + nome --}}
+                        {{-- Cabeçalho do card: foto + nome + pontos --}}
                         <div class="flex items-center gap-3">
                             @if ($pessoa->foto && $pessoa->foto->url_foto)
                                 <img src="{{ asset('storage/' . $pessoa->foto->url_foto) }}"
@@ -58,7 +58,7 @@
                                 </div>
                             @endif
 
-                            <div class="min-w-0">
+                            <div class="min-w-0 flex-1">
                                 <p class="font-semibold text-gray-900 dark:text-gray-100 truncate">
                                     {{ $pessoa->nom_pessoa }}
                                 </p>
@@ -72,6 +72,14 @@
                                         Coordenador(a)
                                     </span>
                                 @endif
+                            </div>
+
+                            {{-- Total de pontos Aura --}}
+                            @php $totalPontos = $pessoa->pontos->sum('qtd_pontos'); @endphp
+                            <div class="flex-shrink-0 flex flex-col items-center justify-center bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg px-2.5 py-1.5 min-w-[48px]"
+                                title="Pontos Aura">
+                                <span class="text-base font-bold text-amber-600 dark:text-amber-400 leading-none">{{ $totalPontos }}</span>
+                                <span class="text-[9px] font-semibold text-amber-500 dark:text-amber-500 uppercase tracking-wide mt-0.5">pts</span>
                             </div>
                         </div>
 
@@ -91,27 +99,15 @@
                             @endif
                         </div>
 
-                        {{-- Restrições --}}
+                        {{-- Restrições de saúde --}}
                         @if ($pessoa->restricoes->isNotEmpty())
                             <div class="border-t border-gray-100 dark:border-zinc-700 pt-3">
                                 <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                                    Restrições
+                                    Restrições de Saúde
                                 </p>
                                 <div class="flex flex-wrap gap-1.5">
                                     @foreach ($pessoa->restricoes as $restricao)
-                                        @php
-                                            $cor = match($restricao->tip_restricao) {
-                                                'ALE' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-                                                'INT' => 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-                                                'MED' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-                                                'CUT' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-                                                'PNE' => 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-                                                'VEG' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-                                                'RES' => 'bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200',
-                                                default => 'bg-gray-100 text-gray-800 dark:bg-zinc-700 dark:text-gray-200',
-                                            };
-                                        @endphp
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $cor }}"
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $restricao->getCor() }}"
                                             title="{{ $restricao->pivot->txt_complemento ?? '' }}">
                                             {{ $restricao->des_restricao }}
                                         </span>

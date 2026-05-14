@@ -25,8 +25,16 @@
                     <x-heroicon-o-user class="w-10 h-10 text-gray-400 dark:text-gray-500" />
                 </div>
             @endif
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $pessoa->nom_pessoa }}</h1>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-3">
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">{{ $pessoa->nom_pessoa }}</h1>
+                    @php $totalPontos = $pessoa->pontos->sum('qtd_pontos'); @endphp
+                    <div class="flex-shrink-0 flex flex-col items-center justify-center bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg px-3 py-1.5 min-w-[52px]"
+                        title="Pontos Aura">
+                        <span class="text-lg font-bold text-amber-600 dark:text-amber-400 leading-none">{{ $totalPontos }}</span>
+                        <span class="text-[9px] font-semibold text-amber-500 uppercase tracking-wide mt-0.5">pts</span>
+                    </div>
+                </div>
                 @if ($pessoa->nom_apelido)
                     <p class="text-gray-500 dark:text-gray-400 text-sm">{{ $pessoa->nom_apelido }}</p>
                 @endif
@@ -95,20 +103,8 @@
                 </h2>
                 <div class="space-y-2">
                     @foreach ($pessoa->restricoes as $restricao)
-                        @php
-                            $cor = match($restricao->tip_restricao) {
-                                'ALE' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-                                'INT' => 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-                                'MED' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-                                'CUT' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-                                'PNE' => 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-                                'VEG' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-                                'RES' => 'bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200',
-                                default => 'bg-gray-100 text-gray-800 dark:bg-zinc-700 dark:text-gray-200',
-                            };
-                        @endphp
                         <div class="flex items-start gap-3">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $cor }} flex-shrink-0 mt-0.5">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $restricao->getCor() }} flex-shrink-0 mt-0.5">
                                 {{ $restricao->getTipo() }}
                             </span>
                             <div>

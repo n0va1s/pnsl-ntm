@@ -34,6 +34,7 @@ class PessoaController extends Controller
         $pessoa = Pessoa::with([
             'foto:idt_pessoa,med_foto',
             'restricoes',
+            'pontos',
             'trabalhadores.evento:idt_evento,des_evento,dat_inicio',
             'trabalhadores.equipe:idt_equipe,des_grupo',
         ])->findOrFail($id);

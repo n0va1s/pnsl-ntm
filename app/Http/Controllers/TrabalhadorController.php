@@ -392,7 +392,7 @@ class TrabalhadorController extends Controller
             // Busca todos os trabalhadores da mesma equipe e evento, exceto o próprio coordenador
             $membros = Trabalhador::with([
                 'pessoa' => function ($q) {
-                    $q->with(['restricoes']);
+                    $q->with(['restricoes', 'pontos']);
                 },
             ])
                 ->where('idt_evento', $coordenacao->idt_evento)
