@@ -23,36 +23,43 @@ new class extends Component {
         $idtEquipe = $this->selectedEquipes[$idtPessoa] ?? null;
 
         if (!$idtEquipe) {
-            $this->dispatch('notify', message: 'Selecione uma equipe antes de aprovar.');
+            $this->dispatch('notify', message: 'Selecione uma equipe antes de aprovar.', type: 'info');
+            return;
+        }
+
+        // Evita duplicidade: verifica se já existe trabalhador para esta pessoa neste evento
+        $jaExiste = Trabalhador::where('idt_evento', $this->evento->idt_evento)
+            ->where('idt_pessoa', $idtPessoa)
+            ->exists();
+
+        if ($jaExiste) {
+            $this->dispatch('notify', message: 'Este voluntário já foi confirmado como trabalhador.', type: 'info');
             return;
         }
 
         DB::transaction(function () use ($idtPessoa, $idtEquipe) {
-            $trabalhador = Trabalhador::create([
-                'idt_evento'  => $this->evento->idt_evento,
-                'idt_pessoa'  => $idtPessoa,
-                'idt_equipe'  => $idtEquipe,
-            ]);
+            // Usa firstOrCreate para garantir idempotência mesmo em cliques rápidos
+            $trabalhador = Trabalhador::firstOrCreate(
+                [
+                    'idt_evento' => $this->evento->idt_evento,
+                    'idt_pessoa' => $idtPessoa,
+                ],
+                [
+                    'idt_equipe' => $idtEquipe,
+                ]
+            );
 
-            $voluntarioExistente = Voluntario::where('idt_evento', $this->evento->idt_evento)
+            // Vincula todos os voluntários pendentes desta pessoa neste evento ao trabalhador criado
+            Voluntario::where('idt_evento', $this->evento->idt_evento)
                 ->where('idt_pessoa', $idtPessoa)
-                ->where('idt_equipe', $idtEquipe)
                 ->whereNull('idt_trabalhador')
-                ->first();
-
-            if ($voluntarioExistente) {
-                $voluntarioExistente->update(['idt_trabalhador' => $trabalhador->idt_trabalhador]);
-            } else {
-                Voluntario::create([
-                    'idt_evento'      => $this->evento->idt_evento,
-                    'idt_pessoa'      => $idtPessoa,
-                    'idt_equipe'      => $idtEquipe,
-                    'idt_trabalhador' => $trabalhador->idt_trabalhador,
-                ]);
-            }
+                ->update(['idt_trabalhador' => $trabalhador->idt_trabalhador]);
         });
 
-        $this->dispatch('notify', message: 'Voluntário confirmado como trabalhador!');
+        // Limpa a seleção de equipe para este voluntário
+        unset($this->selectedEquipes[$idtPessoa]);
+
+        $this->dispatch('notify', message: 'Voluntário confirmado como trabalhador!', type: 'sucesso');
     }
 
     public function with(): array

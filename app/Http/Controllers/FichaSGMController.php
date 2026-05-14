@@ -156,7 +156,16 @@ class FichaSGMController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Visualização de ficha SGM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaSGM', 'fichaSaude', 'foto'])->findOrFail($id);
+        $ficha = Ficha::with(['fichaSGM', 'fichaSaude.restricao', 'foto', 'evento'])->findOrFail($id);
+
+        // Modo impressão: view dedicada sem formulário de edição
+        if (request()->boolean('print') || request()->has('print')) {
+            return view('ficha.print', [
+                'ficha'    => $ficha,
+                'tipo'     => 'SGM',
+                'rotaEdit' => route('sgm.edit', $ficha),
+            ]);
+        }
 
         return view('ficha.formSGM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,

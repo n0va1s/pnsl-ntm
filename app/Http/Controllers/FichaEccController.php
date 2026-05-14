@@ -188,7 +188,16 @@ class FichaEccController extends Controller
     {
         Log::info('Visualização de ficha ECC', array_merge($this->getLogContext(request()), ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaEcc.filhos', 'fichaSaude', 'foto'])->findOrFail($id);
+        $ficha = Ficha::with(['fichaEcc.filhos', 'fichaSaude.restricao', 'foto', 'evento'])->findOrFail($id);
+
+        // Modo impressão: view dedicada sem formulário de edição
+        if (request()->boolean('print') || request()->has('print')) {
+            return view('ficha.print', [
+                'ficha'    => $ficha,
+                'tipo'     => 'ECC',
+                'rotaEdit' => route('ecc.edit', $ficha),
+            ]);
+        }
 
         return view('ficha.formECC', array_merge(
             $this->fichaService::dadosFixosFicha($ficha),

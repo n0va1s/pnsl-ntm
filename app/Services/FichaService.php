@@ -56,19 +56,28 @@ class FichaService
      *
      * - VEM / SGM: apenas o candidato torna-se Pessoa.
      * - ECC: o candidato, o cônjuge e cada filho tornam-se Pessoas independentes.
+     *
+     * @throws \RuntimeException quando o CPF do candidato está ausente (impede criação da Pessoa).
      */
     private static function aprovarFicha(Ficha $ficha): void
     {
         $fichaSaude = $ficha->fichaSaude->toArray();
 
         // ── Candidato (comum a todos os tipos) ───────────────────────────────
-        if ($ficha->num_cpf_candidato) {
-            $pessoa = self::criarPessoaCandidato($ficha);
-            $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
-            self::criarPessoaSaude($pessoa->idt_pessoa, $fichaSaude);
-            self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
-            self::sincronizarFotoPessoa($ficha, $pessoa->idt_pessoa);
+        if (! $ficha->num_cpf_candidato) {
+            // CPF ausente: aprovação marcada, mas participante NÃO pode ser criado.
+            // Lança exceção para que a transação seja revertida e o chamador informe o usuário.
+            throw new \RuntimeException(
+                "A ficha de {$ficha->nom_candidato} não possui CPF cadastrado. " .
+                "Preencha o CPF antes de aprovar."
+            );
         }
+
+        $pessoa = self::criarPessoaCandidato($ficha);
+        $ficha->update(['idt_pessoa' => $pessoa->idt_pessoa]);
+        self::criarPessoaSaude($pessoa->idt_pessoa, $fichaSaude);
+        self::criarParticipante($pessoa->idt_pessoa, $ficha->idt_evento);
+        self::sincronizarFotoPessoa($ficha, $pessoa->idt_pessoa);
 
         // ── Dados exclusivos do ECC (cônjuge + filhos) ───────────────────────
         $fichaEcc = $ficha->fichaEcc;

@@ -83,8 +83,15 @@ new class extends Component {
 
             {{-- Lateral: Imagem --}}
            <div class="shrink-0 bg-zinc-50 border-r" style="width: 2.2cm; border-color: {{ $pessoa['grupo_cor'] }}44;">
-                <img src="{{ asset($evento->foto->med_logo) }}"
-                    class="w-full h-full object-cover object-top grayscale opacity-80" />
+                @if($evento->foto?->med_foto)
+                    <img src="{{ asset('storage/' . $evento->foto->med_foto) }}"
+                        class="w-full h-full object-cover object-top grayscale opacity-80"
+                        alt="{{ $evento->des_evento }}" />
+                @else
+                    <div class="w-full h-full flex items-center justify-center bg-zinc-100">
+                        <span class="text-[8px] text-zinc-400 text-center px-1 leading-tight">{{ $evento->des_evento }}</span>
+                    </div>
+                @endif
             </div>
 
             {{-- Conteúdo Direita --}}

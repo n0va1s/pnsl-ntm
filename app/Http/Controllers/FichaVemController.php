@@ -188,7 +188,16 @@ class FichaVemController extends Controller
         $context = $this->getLogContext(request());
         Log::info('Visualização de ficha VEM', array_merge($context, ['ficha_id' => $id]));
 
-        $ficha = Ficha::with(['fichaVem', 'fichaSaude'])->find($id);
+        $ficha = Ficha::with(['fichaVem', 'fichaSaude.restricao', 'foto', 'evento'])->find($id);
+
+        // Modo impressão: view dedicada sem formulário de edição
+        if (request()->boolean('print') || request()->has('print')) {
+            return view('ficha.print', [
+                'ficha'    => $ficha,
+                'tipo'     => 'VEM',
+                'rotaEdit' => route('vem.edit', $ficha),
+            ]);
+        }
 
         return view('ficha.formVEM', array_merge($this->fichaService::dadosFixosFicha($ficha), [
             'ficha' => $ficha,
