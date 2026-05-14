@@ -45,10 +45,28 @@
                     :current="request()->routeIs('pessoas.edit')" wire:navigate>
                     {{ __('Meus Dados') }}
                 </flux:navlist.item>
+                @if (Auth::user() && Auth::user()->isCoordenador())
+                    <flux:navlist.item icon="user-group" :href="route('trabalhadores.minha-equipe')"
+                        :current="request()->routeIs('trabalhadores.minha-equipe')" wire:navigate>
+                        {{ __('Minha Equipe') }}
+                    </flux:navlist.item>
+                @endif
                 @if (Auth::user() && Auth::user()->isAdmin())
                     <flux:navlist.item icon="user" :href="route('pessoas.index')"
                         :current="request()->routeIs('pessoas.index')" wire:navigate>
                         {{ __('Pessoas') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item icon="document-text" :href="route('vem.index')"
+                        :current="request()->routeIs('vem.*')" wire:navigate>
+                        {{ __('Fichas VEM') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item icon="document-text" :href="route('sgm.index')"
+                        :current="request()->routeIs('sgm.*')" wire:navigate>
+                        {{ __('Fichas SGM') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item icon="document-text" :href="route('ecc.index')"
+                        :current="request()->routeIs('ecc.*')" wire:navigate>
+                        {{ __('Fichas ECC') }}
                     </flux:navlist.item>
                 @endif
             </flux:navlist.group>

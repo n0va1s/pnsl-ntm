@@ -72,16 +72,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/timeline', [EventoController::class, 'timeline'])->name('timeline.index');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/aniversario', [AniversarioController::class, 'index'])->name('aniversario.index');
-    Route::get('/quadrante', [TrabalhadorController::class, 'generate'])->name('quadrante.list');
-    Route::get('/montagem', [TrabalhadorController::class, 'mount'])->name('montagem.list');
-    Route::get('/avaliacao', [TrabalhadorController::class, 'review'])->name('avaliacao.review');
-    Route::post('/avaliacao', [TrabalhadorController::class, 'send'])->name('avaliacao.send');
 
     Route::get('/termo-sgm', fn () => view('termos.termoSGM'))->name('termo.sgm');
     Route::get('/termo-vem', fn () => view('termos.termoVEM'))->name('termo.vem');
 
-    Route::get('/participantes', [ParticipanteController::class, 'index'])->name('participantes.index');
-    Route::post('/participantes', [ParticipanteController::class, 'change'])->name('participantes.change');
     Route::post('/participantes/{evento}/{pessoa}', [EventoController::class, 'confirm'])->name('participantes.confirm');
 
     // Trabalhadores — create/review/store/destroy acessíveis a todos autenticados
@@ -89,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/trabalhadores', [TrabalhadorController::class, 'store'])->name('trabalhadores.store');
     Route::get('/trabalhadores/review', [TrabalhadorController::class, 'review'])->name('trabalhadores.review');
     Route::delete('/trabalhadores/{id}', [TrabalhadorController::class, 'destroy'])->name('trabalhadores.destroy');
+    Route::get('/minha-equipe', [TrabalhadorController::class, 'minhaEquipe'])->name('trabalhadores.minha-equipe');
 
     // Listagens — todos autenticados (apenas eventos; pessoas e fichas são admin)
     Route::get('/eventos', [EventoController::class, 'index'])->name('eventos.index');
@@ -97,6 +92,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pessoas/{pessoa}/edit', [PessoaController::class, 'edit'])->name('pessoas.edit');
     Route::put('/pessoas/{pessoa}', [PessoaController::class, 'update'])->name('pessoas.update');
     Route::patch('/pessoas/{pessoa}', [PessoaController::class, 'update']);
+
+    // Visualização de pessoa — todos os perfis autenticados (ex: coordenadores vendo membros da equipe)
+    Route::get('/pessoas/{pessoa}', [PessoaController::class, 'show'])->name('pessoas.show');
 
     // Settings — todos autenticados
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
@@ -109,7 +107,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['role:admin,coord'])->group(function () {
         Route::get('/trabalhadores', [TrabalhadorController::class, 'index'])->name('trabalhadores.index');
-        Route::post('/montagem', [TrabalhadorController::class, 'confirm'])->name('montagem.confirm');
     });
 
     // -----------------------------------------------------------------------
@@ -144,7 +141,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('pessoas/{cpf}/busca', [PessoaController::class, 'buscaPorCpf'])->name('pessoas.busca');
         Route::get('/pessoas/create', [PessoaController::class, 'create'])->name('pessoas.create');
         Route::post('/pessoas', [PessoaController::class, 'store'])->name('pessoas.store');
-        Route::get('/pessoas/{pessoa}', [PessoaController::class, 'show'])->name('pessoas.show');
         Route::delete('/pessoas/{pessoa}', [PessoaController::class, 'destroy'])->name('pessoas.destroy');
 
         // Fichas VEM — listagem, aprovação e CRUD

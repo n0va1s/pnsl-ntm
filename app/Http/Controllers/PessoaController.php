@@ -26,6 +26,27 @@ class PessoaController extends Controller
         $this->userService = $userService;
     }
 
+    public function show($id): View
+    {
+        $start = microtime(true);
+        $context = $this->getLogContext(request());
+
+        $pessoa = Pessoa::with([
+            'foto:idt_pessoa,med_foto',
+            'restricoes',
+            'trabalhadores.evento:idt_evento,des_evento,dat_inicio',
+            'trabalhadores.equipe:idt_equipe,des_grupo',
+        ])->findOrFail($id);
+
+        $duration = round((microtime(true) - $start) * 1000, 2);
+        Log::notice('Visualização de pessoa', array_merge($context, [
+            'pessoa_id' => $id,
+            'duration_ms' => $duration,
+        ]));
+
+        return view('pessoa.show', compact('pessoa'));
+    }
+
     public function index(Request $request): View
     {
         $start = microtime(true);

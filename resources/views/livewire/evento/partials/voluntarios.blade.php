@@ -12,6 +12,8 @@ new class extends Component {
     public Evento $evento;
     public string $search = '';
     public array $selectedEquipes = [];
+    public array $indCoordenador = [];
+    public array $indPrimeiraVez = [];
 
     public function mount(Evento $evento): void
     {
@@ -20,7 +22,9 @@ new class extends Component {
 
     public function confirmarTrabalhador(int $idtPessoa): void
     {
-        $idtEquipe = $this->selectedEquipes[$idtPessoa] ?? null;
+        $idtEquipe     = $this->selectedEquipes[$idtPessoa] ?? null;
+        $coordenador   = (bool) ($this->indCoordenador[$idtPessoa] ?? false);
+        $primeiraVez   = (bool) ($this->indPrimeiraVez[$idtPessoa] ?? false);
 
         if (!$idtEquipe) {
             $this->dispatch('notify', message: 'Selecione uma equipe antes de aprovar.', type: 'info');
@@ -37,7 +41,7 @@ new class extends Component {
             return;
         }
 
-        DB::transaction(function () use ($idtPessoa, $idtEquipe) {
+        DB::transaction(function () use ($idtPessoa, $idtEquipe, $coordenador, $primeiraVez) {
             // Usa firstOrCreate para garantir idempotência mesmo em cliques rápidos
             $trabalhador = Trabalhador::firstOrCreate(
                 [
@@ -45,7 +49,9 @@ new class extends Component {
                     'idt_pessoa' => $idtPessoa,
                 ],
                 [
-                    'idt_equipe' => $idtEquipe,
+                    'idt_equipe'       => $idtEquipe,
+                    'ind_coordenador'  => $coordenador,
+                    'ind_primeira_vez' => $primeiraVez,
                 ]
             );
 
@@ -56,8 +62,10 @@ new class extends Component {
                 ->update(['idt_trabalhador' => $trabalhador->idt_trabalhador]);
         });
 
-        // Limpa a seleção de equipe para este voluntário
+        // Limpa a seleção para este voluntário
         unset($this->selectedEquipes[$idtPessoa]);
+        unset($this->indCoordenador[$idtPessoa]);
+        unset($this->indPrimeiraVez[$idtPessoa]);
 
         $this->dispatch('notify', message: 'Voluntário confirmado como trabalhador!', type: 'sucesso');
     }
@@ -156,6 +164,33 @@ new class extends Component {
 
                 <div class="p-4 border-t border-zinc-100 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50 flex flex-col gap-2">
                     <p class="text-[10px] font-bold uppercase text-zinc-400 mb-0.5 tracking-wider">Aprovar candidato:</p>
+
+                    {{-- Coordenador --}}
+                    <label class="flex items-center gap-2 text-xs text-zinc-700 dark:text-zinc-300 cursor-pointer select-none">
+                        <input type="hidden" wire:model="indCoordenador.{{ $pessoa->idt_pessoa }}" value="0">
+                        <input
+                            type="checkbox"
+                            wire:model="indCoordenador.{{ $pessoa->idt_pessoa }}"
+                            value="1"
+                            id="ind_coordenador_{{ $pessoa->idt_pessoa }}"
+                            class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-500"
+                        >
+                        Coordenador(a)
+                    </label>
+
+                    {{-- Primeira vez --}}
+                    <label class="flex items-center gap-2 text-xs text-zinc-700 dark:text-zinc-300 cursor-pointer select-none">
+                        <input type="hidden" wire:model="indPrimeiraVez.{{ $pessoa->idt_pessoa }}" value="0">
+                        <input
+                            type="checkbox"
+                            wire:model="indPrimeiraVez.{{ $pessoa->idt_pessoa }}"
+                            value="1"
+                            id="ind_primeira_vez_{{ $pessoa->idt_pessoa }}"
+                            class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-500"
+                        >
+                        Primeira vez
+                    </label>
+
                     <select wire:model="selectedEquipes.{{ $pessoa->idt_pessoa }}" class="w-full p-2 text-xs border border-zinc-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">Selecione a equipe...</option>
                         @foreach ($equipes as $equipe)
