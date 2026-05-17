@@ -7,8 +7,11 @@ use App\Models\Trabalhador;
 use App\Models\Pessoa;
 use Illuminate\Support\Facades\DB;
 use Livewire\Volt\Component;
+use Livewire\WithPagination;
 
 new class extends Component {
+    use WithPagination;
+
     public Evento $evento;
     public string $search = '';
     public array $selectedEquipes = [];
@@ -222,6 +225,6 @@ new class extends Component {
     </div>
 
     <div class="mt-6">
-        {{ $voluntarios->links() }}
+        {{ $voluntarios->links(data: ['scrollTo' => false]) }}
     </div>
 </div>

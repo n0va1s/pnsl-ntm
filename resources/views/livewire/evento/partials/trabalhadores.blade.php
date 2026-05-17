@@ -2,8 +2,11 @@
 
 use App\Models\Evento;
 use Livewire\Volt\Component;
+use Livewire\WithPagination;
 
 new class extends Component {
+    use WithPagination;
+
     public Evento $evento;
     public string $search = '';
 
@@ -192,7 +195,7 @@ new class extends Component {
     </flux:table>
 
     <div class="mt-4">
-        {{ $trabalhadores->links() }}
+        {{ $trabalhadores->links(data: ['scrollTo' => false]) }}
     </div>
 
     {{-- Modal de Avaliação --}}

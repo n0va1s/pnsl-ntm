@@ -22,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->append(TraceIdMiddleware::class);
+        $middleware->web(append: [
+            \Livewire\Features\SupportDisablingBackButtonCache\DisableBackButtonCacheMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->reportable(function (Throwable $e) {

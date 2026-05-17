@@ -2,16 +2,25 @@
 
 use App\Models\Evento;
 use Livewire\Volt\Component;
+use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 new class extends Component {
+    use WithPagination;
+
     public Evento $evento;
     public string $search = '';
 
     public function mount(Evento $evento): void
     {
         $this->evento = $evento;
+    }
+
+    // Reseta a paginação quando a busca muda
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
     }
 
     public function atualizarAprovacao(int $fichaId): void
@@ -312,6 +321,6 @@ new class extends Component {
     </flux:table>
 
     <div class="mt-4">
-        {{ $fichas->links() }}
+        {{ $fichas->links(data: ['scrollTo' => false]) }}
     </div>
 </div>

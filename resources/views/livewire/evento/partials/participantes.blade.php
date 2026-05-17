@@ -2,14 +2,22 @@
 
 use App\Models\Evento;
 use Livewire\Volt\Component;
+use Livewire\WithPagination;
 
 new class extends Component {
+    use WithPagination;
+
     public Evento $evento;
     public string $search = '';
 
     public function mount(Evento $evento): void
     {
         $this->evento = $evento;
+    }
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
     }
 
     public function atualizarTroca(int $participanteId, string $novaCor): void
@@ -113,6 +121,6 @@ new class extends Component {
     </flux:table>
 
     <div class="mt-4">
-        {{ $participantes->links() }}
+        {{ $participantes->links(data: ['scrollTo' => false]) }}
     </div>
 </div>
