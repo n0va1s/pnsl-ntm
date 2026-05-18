@@ -10,7 +10,9 @@ use App\Models\TipoMovimento;
 use App\Services\FichaService;
 use App\Traits\LogContext;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class FichaVemController extends Controller
@@ -126,58 +128,89 @@ class FichaVemController extends Controller
             'txt_observacao',
         ]);
 
-        $ficha = Ficha::create($data);
+        try {
+            DB::beginTransaction();
 
-        if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai') || $vemRequest->filled('nom_responsavel')) {
+            $ficha = Ficha::create($data);
 
-            $vemData = $vemRequest->only([
-                'idt_falar_com',
-                'des_onde_estuda',
-                'des_mora_quem',
-                'nom_pai',
-                'eml_pai',
-                'tel_pai',
-                'nom_mae',
-                'tel_mae',
-                'eml_mae',
-                'nom_responsavel',
-                'tel_responsavel',
-                'eml_responsavel',
-                'ind_batizado',
-                'ind_primeira_comunhao',
-                'ind_crismado',
-                'nom_paroquia',
-            ]);
+            if ($vemRequest->filled('nom_mae') || $vemRequest->filled('nom_pai') || $vemRequest->filled('nom_responsavel')) {
+                $vemData = $vemRequest->only([
+                    'idt_falar_com',
+                    'des_onde_estuda',
+                    'des_mora_quem',
+                    'nom_pai',
+                    'eml_pai',
+                    'tel_pai',
+                    'nom_mae',
+                    'tel_mae',
+                    'eml_mae',
+                    'nom_responsavel',
+                    'tel_responsavel',
+                    'eml_responsavel',
+                    'ind_batizado',
+                    'ind_primeira_comunhao',
+                    'ind_crismado',
+                    'nom_paroquia',
+                ]);
 
-            $ficha->fichaVem()->create($vemData);
-        }
+                $ficha->fichaVem()->create($vemData);
+            }
 
-        if ($vemRequest->filled('restricoes')) {
-            foreach ($vemRequest->restricoes as $idt_restricao => $value) {
-                if ($value) {
-                    $ficha->fichaSaude()->create([
-                        'idt_restricao' => $idt_restricao,
-                        'txt_complemento' => $vemRequest->input("complementos.$idt_restricao"),
-                    ]);
+            if ($vemRequest->filled('restricoes')) {
+                foreach ($vemRequest->restricoes as $idt_restricao => $value) {
+                    if ($value) {
+                        $ficha->fichaSaude()->create([
+                            'idt_restricao' => $idt_restricao,
+                            'txt_complemento' => $vemRequest->input("complementos.$idt_restricao"),
+                        ]);
+                    }
                 }
             }
+
+            if ($vemRequest->hasFile('med_foto')) {
+                $path = $vemRequest->file('med_foto')->store('fichas/fotos', 'public');
+                FichaFoto::create([
+                    'idt_ficha' => $ficha->idt_ficha,
+                    'med_foto' => $path,
+                ]);
+            }
+
+            DB::commit();
+
+            $duration = round((microtime(true) - $start) * 1000, 2);
+            Log::notice('Ficha VEM criada com sucesso', array_merge($context, [
+                'ficha_id' => $ficha->idt_ficha,
+                'duration_ms' => $duration,
+            ]));
+
+            return redirect()->route('home')->with('success', 'Ficha cadastrada com sucesso!');
+
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            DB::rollBack();
+
+            Log::warning('Ficha VEM duplicada - CPF ja cadastrado', array_merge($context, [
+                'num_cpf' => $vemRequest->input('num_cpf_candidato'),
+                'message' => $e->getMessage(),
+            ]));
+
+            return back()
+                ->withInput()
+                ->withErrors(['num_cpf_candidato' => 'Este CPF ja possui uma ficha cadastrada. Entre em contato com a equipe.']);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Erro inesperado ao criar ficha VEM', array_merge($context, [
+                'exception' => get_class($e),
+                'message'   => $e->getMessage(),
+                'file'      => $e->getFile(),
+                'line'      => $e->getLine(),
+            ]));
+
+            return back()
+                ->withInput()
+                ->with('error', 'Ocorreu um erro ao salvar a ficha. Tente novamente.');
         }
-
-        if ($vemRequest->hasFile('med_foto')) {
-            $path = $vemRequest->file('med_foto')->store('fichas/fotos', 'public');
-            FichaFoto::create([
-                'idt_ficha' => $ficha->idt_ficha,
-                'med_foto' => $path,
-            ]);
-        }
-
-        $duration = round((microtime(true) - $start) * 1000, 2);
-        Log::notice('Ficha VEM criada com sucesso', array_merge($context, [
-            'ficha_id' => $ficha->idt_ficha,
-            'duration_ms' => $duration,
-        ]));
-
-        return redirect()->route('home')->with('success', 'Ficha cadastrada com sucesso!');
     }
 
     /**
