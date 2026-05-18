@@ -32,18 +32,34 @@ return Application::configure(basePath: dirname(__DIR__))
                 return;
             }
 
-            $errorHash = md5($e->getMessage().$e->getFile().$e->getLine());
+            // Garante que o erro sempre vai para o log, independente do Telegram
+            \Illuminate\Support\Facades\Log::error($e->getMessage(), [
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
-            if (! Cache::has('error_notification_'.$errorHash)) {
-                $traceId = app()->has('trace_id') ? app('trace_id') : 'N/A';
-                $chatId = config('services.telegram-bot-api.chat_id');
+            // Protege contra falha no cache (ex: banco indisponível) para não
+            // silenciar o erro original nem impedir o log acima
+            try {
+                $errorHash = md5($e->getMessage().$e->getFile().$e->getLine());
 
-                if ($chatId) {
-                    Notification::route('telegram', $chatId)
-                        ->notify(new SystemExceptionTelegram($e, $traceId));
+                if (! Cache::has('error_notification_'.$errorHash)) {
+                    $traceId = app()->has('trace_id') ? app('trace_id') : 'N/A';
+                    $chatId = config('services.telegram-bot-api.chat_id');
+
+                    if ($chatId) {
+                        Notification::route('telegram', $chatId)
+                            ->notify(new SystemExceptionTelegram($e, $traceId));
+                    }
+
+                    Cache::put('error_notification_'.$errorHash, true, now()->addMinutes(5));
                 }
-
-                Cache::put('error_notification_'.$errorHash, true, now()->addMinutes(5));
+            } catch (Throwable $cacheException) {
+                \Illuminate\Support\Facades\Log::warning('Falha ao enviar notificação de erro (cache/telegram indisponível)', [
+                    'cache_error' => $cacheException->getMessage(),
+                ]);
             }
         });
     })->create();

@@ -95,7 +95,7 @@
                                 <flux:button href="{{ route('trabalhadores.create', ['evento' => $evento]) }}" color="green" class="w-full">
                                     Quero Trabalhar
                                 </flux:button>
-                            @else
+                            @elseif (Auth::user()->pessoa)
                                 @php
                                     $textoBotao = ($tipoValue === 'P') ? 'Vou Participar' : 'Bora pro Desafio';
                                 @endphp
@@ -106,6 +106,10 @@
                                         {{ $textoBotao }}
                                     </flux:button>
                                 </form>
+                            @else
+                                <div class="w-full py-2 text-center text-sm text-gray-500 dark:text-gray-400">
+                                    Complete seu cadastro para participar.
+                                </div>
                             @endif
                         @endif
                     </footer>

@@ -137,7 +137,6 @@
                     </span>
                 </div>
             </div>
-        </div>
 
             <!-- Card Segue-Me -->
             <div
